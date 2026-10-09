@@ -1,0 +1,50 @@
+{
+  "generated_at": "2026-10-09T21:52:13.019693+00:00",
+  "machine": "Linux-7.2.9-1-cachyos-x86_64-with-glibc2.41",
+  "python": "3.11.17",
+  "packages": {
+    "aquacrop": "3.1.0",
+    "ortools": "9.15.6755",
+    "numpy": "2.4.6",
+    "pandas": "3.0.6",
+    "geopandas": "1.1.4",
+    "shapely": "2.1.2",
+    "pyproj": "3.7.2",
+    "pyarrow": "25.0.1",
+    "rasterio": "1.4.4",
+    "pystac-client": "0.9.0",
+    "httpx": "0.28.1",
+    "lightgbm": "4.7.0",
+    "scikit-learn": "1.9.1",
+    "fastapi": "0.141.1",
+    "pydantic": "2.13.5",
+    "uvicorn": "0.54.0",
+    "openai": "3.19.2",
+    "pytest": "9.1.1",
+    "hypothesis": "6.168.1"
+  },
+  "delineate_weights": [
+    "DelineateAnything-S.pt",
+    "DelineateAnything.pt",
+    "DelineateAnythingv2.pt"
+  ],
+  "in_container": true,
+  "cpu_count": 20,
+  "gpu": "unavailable",
+  "disk_free_gb": 156.9,
+  "network": {
+    "pypi": "ok 200",
+    "earth_search": "ok 200",
+    "open_meteo_archive": "ok 200",
+    "overpass": "ok 200",
+    "zenodo_grain": "ok 200",
+    "huggingface": "ok 200",
+    "openai": "reachable 401"
+  },
+  "provider": {
+    "key_configured": true,
+    "model": "gpt-6-luna",
+    "smoke": "ok: model available"
+  },
+  "missing": []
+}

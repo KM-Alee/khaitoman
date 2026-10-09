@@ -7,7 +7,7 @@ Status values: `not_started`, `in_progress`, `passed`, `failed`, `blocked`.
 
 | ID | Outcome | Status | Evidence / notes |
 |---|---|---|---|
-| M0 | Feasibility and contracts: envs locked, science/solver sample timed, data/hardware/provider access, schemas frozen | in_progress | Docker images built; doctor all required present; AquaCrop quickstart + CP-SAT fixture pass. Remaining: timed crop runs, Delineate sample, provider check, frozen schemas |
+| M0 | Feasibility and contracts: envs locked, science/solver sample timed, data/hardware/provider access, schemas frozen | in_progress | Docker images built; `make doctor` all present (no GPU; CPU torch 2.14.1). Provider `gpt-6-luna` available (`make provider-check`). AquaCrop wheat on real Open-Meteo weather: warm-up 0.35 s, median 0.166 s/run (`evidence/benchmarks/crop-bench-*.json`) so ~2,900 runs ≈ 8 min single-process. CP-SAT T12.2 fixture passes. Domain contract frozen in `api/aabflow/domain/schemas`. Remaining: Delineate sample run (data stream) |
 | M1 | Real source packages: two AOIs, acquisition/import, inference/review, fields/graph/manifest, onboarding pipeline | not_started | |
 | M2 | Exact domain engine: two crops, weather, ledger, crop adapter, candidates; science batch launched | not_started | |
 | M3 | Decisions: baselines, all actions, live selection, constraints, economics/rights | not_started | |
@@ -64,3 +64,9 @@ Status values: `not_started`, `in_progress`, `passed`, `failed`, `blocked`.
 | AT16 | Onboarding publishes second pilot through real review/validation | M6 | not_started | |
 | AT17 | Copilot completes evaluated tool workflows with real services | M7 | not_started | |
 | AT18 | Clean restart restores runs, marks interrupted jobs honestly | M6 | not_started | |
+
+## Decisions and defaults (overnight build, pablo away)
+
+- Copilot model: `gpt-6-luna` from `.env` (`AABFLOW_OPENAI_MODEL`), verified available 2026-10-09.
+- Default AquaCrop wheat profile: simulation window must run to the profile's `latest_harvest`; a window ending mid-May returned no harvest row (bench script).
+- Default yields from uncalibrated AquaCrop parameters look high (wheat ~7.6 t/ha rainfed at 30.8N 72.5E); `crop_calibration=uncalibrated` stays visible until a plausibility check against Punjab district estimates.
