@@ -1,0 +1,15 @@
+{
+  "generated_at": "2026-10-09T21:58:50.003545+00:00",
+  "model": "gpt-6-luna",
+  "tool_call_name": "inspect_run",
+  "tool_call_args": {
+    "run_id": "run_demo",
+    "field_id": "field-007"
+  },
+  "followup_text_chars": 87,
+  "latency_s": 27.93,
+  "request_ids": [
+    "resp_0ce900e7f5535f16006ac9639455bc87d09202b24a49274d16",
+    "resp_0ce900e7f5535f16006ac9639829cc87d0ae12d0e431d054d2"
+  ]
+}

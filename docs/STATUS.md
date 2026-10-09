@@ -70,3 +70,5 @@ Status values: `not_started`, `in_progress`, `passed`, `failed`, `blocked`.
 - Copilot model: `gpt-6-luna` from `.env` (`AABFLOW_OPENAI_MODEL`), verified available 2026-10-09.
 - Default AquaCrop wheat profile: simulation window must run to the profile's `latest_harvest`; a window ending mid-May returned no harvest row (bench script).
 - Default yields from uncalibrated AquaCrop parameters look high (wheat ~7.6 t/ha rainfed at 30.8N 72.5E); `crop_calibration=uncalibrated` stays visible until a plausibility check against Punjab district estimates.
+- Copilot provider: strict function calling with `gpt-6-luna` verified through the Responses API (tool call + function_call_output follow-up; `evidence/environment/provider-tools-*.json`). Measured ~14 s per model call, so the 90 s turn budget (T11.4) allows ~5 rounds; M7 must stream tool-state feedback and keep rounds low.
+- Overnight streams run in parallel per `docs/STREAMS.md`; the integrator commits.
