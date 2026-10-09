@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from zoneinfo import ZoneInfo
 
 PKT = ZoneInfo("Asia/Karachi")
@@ -15,12 +15,12 @@ def require_aware(dt: datetime, name: str = "instant") -> datetime:
 
 
 def to_utc(dt: datetime) -> datetime:
-    return require_aware(dt).astimezone(timezone.utc)
+    return require_aware(dt).astimezone(UTC)
 
 
 def parse_instant(text: str) -> datetime:
     """Parse an ISO instant that must include an offset or Z."""
-    return to_utc(datetime.fromisoformat(text.replace("Z", "+00:00")))
+    return to_utc(datetime.fromisoformat(text))
 
 
 def local_crop_date(dt: datetime) -> date:

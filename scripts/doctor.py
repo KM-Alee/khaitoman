@@ -18,15 +18,31 @@ import shutil
 import subprocess
 import sys
 import urllib.request
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 REQUIRED_DISTS = [
-    "aquacrop", "ortools", "numpy", "pandas", "geopandas", "shapely", "pyproj", "pyarrow",
-    "rasterio", "pystac-client", "httpx", "lightgbm", "scikit-learn", "fastapi", "pydantic",
-    "uvicorn", "openai", "pytest", "hypothesis",
+    "aquacrop",
+    "ortools",
+    "numpy",
+    "pandas",
+    "geopandas",
+    "shapely",
+    "pyproj",
+    "pyarrow",
+    "rasterio",
+    "pystac-client",
+    "httpx",
+    "lightgbm",
+    "scikit-learn",
+    "fastapi",
+    "pydantic",
+    "uvicorn",
+    "openai",
+    "pytest",
+    "hypothesis",
 ]
 ENDPOINTS = {
     "pypi": "https://pypi.org/simple/",
@@ -41,7 +57,7 @@ ENDPOINTS = {
 
 def _run(cmd: list[str]) -> str | None:
     try:
-        out = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+        out = subprocess.run(cmd, capture_output=True, text=True, timeout=30, check=False)
     except (OSError, subprocess.TimeoutExpired):
         return None
     return out.stdout.strip() if out.returncode == 0 else None
@@ -60,7 +76,11 @@ def _reachable(url: str) -> str:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--provider-smoke", action="store_true", help="call the OpenAI API with the configured model")
+    ap.add_argument(
+        "--provider-smoke",
+        action="store_true",
+        help="call the OpenAI API with the configured model",
+    )
     args = ap.parse_args()
 
     try:
@@ -71,7 +91,7 @@ def main() -> int:
         pass
 
     missing: list[str] = []
-    report: dict = {"generated_at": datetime.now(timezone.utc).isoformat(), "machine": platform.platform()}
+    report: dict = {"generated_at": datetime.now(UTC).isoformat(), "machine": platform.platform()}
 
     report["python"] = sys.version.split()[0]
     if not report["python"].startswith("3.11."):
@@ -93,7 +113,10 @@ def main() -> int:
 
     report["in_container"] = Path("/.dockerenv").exists()
     report["cpu_count"] = os.cpu_count()
-    report["gpu"] = _run(["nvidia-smi", "--query-gpu=name,driver_version", "--format=csv,noheader"]) or "unavailable"
+    report["gpu"] = (
+        _run(["nvidia-smi", "--query-gpu=name,driver_version", "--format=csv,noheader"])
+        or "unavailable"
+    )
     report["disk_free_gb"] = round(shutil.disk_usage(ROOT).free / 1e9, 1)
 
     report["network"] = {k: _reachable(u) for k, u in ENDPOINTS.items()}
@@ -115,7 +138,7 @@ def main() -> int:
     report["provider"] = provider
 
     report["missing"] = missing
-    out = ROOT / "evidence/environment" / f"doctor-{datetime.now(timezone.utc):%Y%m%dT%H%M%SZ}.json"
+    out = ROOT / "evidence/environment" / f"doctor-{datetime.now(UTC):%Y%m%dT%H%M%SZ}.json"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(report, indent=2))
 

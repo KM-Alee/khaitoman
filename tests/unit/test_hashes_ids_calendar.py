@@ -1,5 +1,5 @@
 import math
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from decimal import Decimal
 
 import pytest
@@ -30,7 +30,7 @@ def test_rejects_nonfinite_and_naive_datetimes():
 
 def test_aware_instants_normalize_to_utc():
     pkt = datetime(2026, 10, 10, 8, 0, tzinfo=cal.PKT)
-    utc = datetime(2026, 10, 10, 3, 0, tzinfo=timezone.utc)
+    utc = datetime(2026, 10, 10, 3, 0, tzinfo=UTC)
     assert hashes.canonical_json(pkt) == hashes.canonical_json(utc)
 
 

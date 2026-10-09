@@ -1,7 +1,7 @@
 # AabFlow command interface (T13.4). Everything runs in Docker; only Docker is needed on the host.
 # Targets not built yet fail loudly; none fake success.
 .NOTPARALLEL:
-.PHONY: help setup build deps up down logs shell lock doctor provider-check test science-smoke \
+.PHONY: help setup build deps up down logs shell lock doctor provider-check test lint science-smoke \
         contracts web-test web-build ui-checks demo vision-weights vision-shell \
         water-tests pilot-a pilot-b candidates train-surrogate domain-tests core-acceptance copilot-evals release-check
 
@@ -49,6 +49,9 @@ provider-check:   ## doctor plus a real OpenAI model-availability call
 
 test:             ## fast Python unit tests
 	$(API) pytest -q --ignore=tests/scientific
+
+lint:             ## ruff check + format check (hooks auto-fix edited files)
+	$(API) sh -c "ruff check api tests scripts && ruff format --check api tests scripts"
 
 science-smoke:    ## T5.4 crop engine gates (real AquaCrop)
 	$(API) pytest -q tests/scientific

@@ -31,3 +31,18 @@ Put `OPENAI_API_KEY` in `.env` for the copilot. `make help` lists every command.
 | Frozen demo / browser checks | `make demo` / `make ui-checks` |
 
 Containers run as your user (`HOST_UID`/`HOST_GID` in `.env`), so generated files stay yours. `data/` is mounted from the repo, and large data is git-ignored.
+
+## Building with Claude Code
+
+The repo ships a shared Claude Code setup in `.claude/`, so both contributors get the same workflow. Open Claude Code in this folder.
+
+| Command | What it does |
+|---|---|
+| `/status` | Where the build stands and the next step |
+| `/milestone M1` | Builds a whole milestone from the specs, with tests, status update and a local commit |
+| `/feature F05` | Same for one feature |
+| `/acceptance` | Runs every check and refreshes AT01–AT18 in `docs/STATUS.md` |
+| `/fix <error>` | Reproduces a failure and fixes the root cause |
+| `/spec <question>` | Answers from the PRD and tech doc with section references |
+
+Edits are auto-accepted and routine `make`, `docker compose` and `git` commands run without prompts; pushes, hard resets and reading `.env` are blocked. Python edits are auto-linted, and tests run before Claude finishes a task. Splitting work: one person per milestone stream (data, science, optimizer/API, UI), each committing on their own branch.

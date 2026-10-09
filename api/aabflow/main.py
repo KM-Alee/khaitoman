@@ -12,9 +12,8 @@ from fastapi.staticfiles import StaticFiles
 
 load_dotenv()
 
-from aabflow import config  # noqa: E402
-from aabflow.repositories.sqlite import init_db  # noqa: E402
-
+from aabflow import config
+from aabflow.repositories.sqlite import init_db
 
 
 @asynccontextmanager

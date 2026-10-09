@@ -5,7 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import math
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from decimal import Decimal
 from typing import Any
 
@@ -30,7 +30,7 @@ def _normalize(obj: Any) -> Any:
     if isinstance(obj, datetime):
         if obj.tzinfo is None:
             raise CanonicalizationError("naive datetimes are ambiguous; use UTC instants")
-        return obj.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+        return obj.astimezone(UTC).isoformat().replace("+00:00", "Z")
     if isinstance(obj, date):
         return obj.isoformat()
     if isinstance(obj, dict):
@@ -49,7 +49,9 @@ def canonical_json(obj: Any) -> str:
 
     Callers sort set-like ID arrays (or pass a set) before hashing.
     """
-    return json.dumps(_normalize(obj), sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False)
+    return json.dumps(
+        _normalize(obj), sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False
+    )
 
 
 def sha256_hex(data: bytes | str) -> str:

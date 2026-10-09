@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "defaultMode": "acceptEdits",
+    "allow": [
+      "Bash(make:*)",
+      "Bash(docker compose:*)",
+      "Bash(docker build:*)",
+      "Bash(docker images:*)",
+      "Bash(docker ps:*)",
+      "Bash(docker logs:*)",
+      "Bash(docker inspect:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git branch:*)",
+      "Bash(git switch:*)",
+      "Bash(git checkout:*)",
+      "Bash(git stash:*)",
+      "Bash(git restore:*)",
+      "Bash(git mv:*)",
+      "Bash(git rm:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(wc:*)",
+      "Bash(grep:*)",
+      "Bash(rg:*)",
+      "Bash(find:*)",
+      "Bash(sed -n:*)",
+      "Bash(jq:*)",
+      "Bash(mkdir:*)",
+      "Bash(sha256sum:*)",
+      "Bash(./scripts/hooks/*)",
+      "WebFetch(domain:aquacropos.github.io)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:pypi.org)",
+      "WebFetch(domain:developers.google.com)",
+      "WebFetch(domain:docs.pydantic.dev)",
+      "WebFetch(domain:fastapi.tiangolo.com)",
+      "WebFetch(domain:maplibre.org)",
+      "WebFetch(domain:echarts.apache.org)",
+      "WebFetch(domain:vite.dev)",
+      "WebFetch(domain:react.dev)",
+      "WebFetch(domain:tanstack.com)",
+      "WebFetch(domain:tailwindcss.com)",
+      "WebFetch(domain:playwright.dev)",
+      "WebFetch(domain:open-meteo.com)",
+      "WebFetch(domain:earth-search.aws.element84.com)",
+      "WebFetch(domain:wiki.openstreetmap.org)",
+      "WebFetch(domain:grain-canals.readthedocs.io)",
+      "WebFetch(domain:lightgbm.readthedocs.io)",
+      "WebFetch(domain:developers.openai.com)",
+      "WebFetch(domain:docs.docker.com)"
+    ],
+    "ask": [
+      "Edit(./prd-flow-v2.md)",
+      "Edit(./aab-flow-tech-doc-v2.md)",
+      "Bash(docker system prune:*)",
+      "Bash(docker volume rm:*)",
+      "Bash(docker image rm:*)",
+      "Bash(docker rmi:*)",
+      "Bash(git rebase:*)",
+      "Bash(git merge:*)"
+    ],
+    "deny": [
+      "Bash(git push:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(git clean:*)",
+      "Bash(rm -rf data:*)",
+      "Bash(rm -rf ./data:*)",
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Edit(./review/originals/**)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          { "type": "command", "command": "\"$CLAUDE_PROJECT_DIR\"/scripts/hooks/session_start.sh", "timeout": 20 }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          { "type": "command", "command": "\"$CLAUDE_PROJECT_DIR\"/scripts/hooks/post_edit.sh", "timeout": 60 }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          { "type": "command", "command": "\"$CLAUDE_PROJECT_DIR\"/scripts/hooks/stop_checks.sh", "timeout": 300 }
+        ]
+      }
+    ]
+  }
+}

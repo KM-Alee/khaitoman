@@ -66,3 +66,7 @@ markers = [
 line-length = 100
 target-version = "py311"
 src = ["api", "tests"]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests build naive datetimes on purpose to prove they are rejected.
+"tests/**" = ["DTZ001"]

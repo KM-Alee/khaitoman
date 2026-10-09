@@ -53,6 +53,7 @@ def delivery_factor(value: float, name: str = "delivery_factor") -> float:
 
 # --- water, area, yield ----------------------------------------------------
 
+
 def depth_mm_to_volume_m3(depth_mm: float, area_ha: float) -> float:
     return nonnegative(depth_mm, "depth_mm") * nonnegative(area_ha, "area_ha") * M3_PER_MM_HA
 
@@ -104,13 +105,24 @@ def application_efficiency_to_aquacrop_percent(eff_fraction: float) -> float:
 
 # --- ponds and pumps -------------------------------------------------------
 
+
 def pond_evaporation_m3(k_evap: float, et0_mm: float, surface_area_m2: float) -> float:
     """Open-water evaporation from ET0 via a declared coefficient (T4.4)."""
-    return nonnegative(k_evap, "k_evap") * nonnegative(et0_mm, "et0_mm") * nonnegative(surface_area_m2, "surface_area_m2") / 1000.0
+    return (
+        nonnegative(k_evap, "k_evap")
+        * nonnegative(et0_mm, "et0_mm")
+        * nonnegative(surface_area_m2, "surface_area_m2")
+        / 1000.0
+    )
 
 
 def pond_rain_m3(rain_mm: float, surface_area_m2: float, capture_fraction: float) -> float:
-    return nonnegative(rain_mm, "rain_mm") * nonnegative(surface_area_m2, "surface_area_m2") * fraction(capture_fraction, "capture_fraction") / 1000.0
+    return (
+        nonnegative(rain_mm, "rain_mm")
+        * nonnegative(surface_area_m2, "surface_area_m2")
+        * fraction(capture_fraction, "capture_fraction")
+        / 1000.0
+    )
 
 
 def pump_energy_kwh(volume_m3: float, head_m: float, efficiency: float) -> float:
@@ -118,10 +130,17 @@ def pump_energy_kwh(volume_m3: float, head_m: float, efficiency: float) -> float
     eta = fraction(efficiency, "pump_efficiency")
     if eta == 0:
         raise UnitError("pump efficiency must be > 0")
-    return 1000.0 * 9.80665 * nonnegative(volume_m3, "volume_m3") * nonnegative(head_m, "head_m") / (3.6e6 * eta)
+    return (
+        1000.0
+        * 9.80665
+        * nonnegative(volume_m3, "volume_m3")
+        * nonnegative(head_m, "head_m")
+        / (3.6e6 * eta)
+    )
 
 
 # --- conservative integer scaling (T6.2) -----------------------------------
+
 
 def _ratio(value: float, quantum: float) -> Decimal:
     q = Decimal(repr(nonnegative(quantum, "quantum")))
@@ -151,6 +170,7 @@ def required_service_quanta(value: float, quantum: float = DEFAULT_WATER_QUANTUM
 
 
 # --- money (T3.2): Decimal rates, integer PKR ------------------------------
+
 
 def decimal_rate(rate: str | Decimal) -> Decimal:
     """Rates arrive as decimal strings (PKR/kg, PKR/m³); floats are rejected."""
