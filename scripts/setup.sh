@@ -1,35 +1,28 @@
 #!/usr/bin/env bash
-# AabFlow: install everything the build needs, using uv for all Python.
+# AabFlow: one command to get a contributor from clone to a working Docker stack.
 #
-#   ./scripts/setup.sh                 # everything
-#   ./scripts/setup.sh --skip-vision   # skip Delineate Anything env + weights
-#   ./scripts/setup.sh --cpu           # force CPU torch even if a GPU answers
+#   ./scripts/setup.sh                 # everything (dev images, vision image + weights, demo/test images, checks)
+#   ./scripts/setup.sh --skip-vision   # skip the Delineate Anything image and weights
+#   ./scripts/setup.sh --gpu           # CUDA torch in the vision image (needs nvidia-container-toolkit)
 #   ./scripts/setup.sh --skip-checks   # don't run doctor/tests at the end
 #
-# Safe to re-run: every step is idempotent. A full log is saved under
-# evidence/environment/ as M0 evidence (T1.3, T12.5).
+# Only Docker is installed on the host. Python (uv), Node and all libraries live
+# in images. Safe to re-run. The log is saved under evidence/environment/ (M0 evidence).
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
-SKIP_VISION=0 SKIP_CHECKS=0 FORCE_CPU=0
+SKIP_VISION=0 SKIP_CHECKS=0 GPU=0
 for arg in "$@"; do
   case "$arg" in
     --skip-vision) SKIP_VISION=1 ;;
     --skip-checks) SKIP_CHECKS=1 ;;
-    --cpu) FORCE_CPU=1 ;;
-    -h|--help) sed -n '2,10p' "$0"; exit 0 ;;
+    --gpu) GPU=1 ;;
+    -h|--help) sed -n '2,11p' "$0"; exit 0 ;;
     *) echo "unknown option: $arg" >&2; exit 2 ;;
   esac
 done
-
-PYTHON_VERSION=3.11
-NODE_MAJOR=24
-# Delineate Anything pinned to the commit checked on 2026-10-10 (T2.4: confirm against the pinned commit).
-DELINEATE_REPO=https://github.com/Lavreniuk/Delineate-Anything.git
-DELINEATE_COMMIT=4cfab87ecccbe8d1bda4167676f623e3728570d9
-DELINEATE_WEIGHTS=(DelineateAnything.pt DelineateAnythingv2.pt DelineateAnything-S.pt)
 
 STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 LOG="$ROOT/evidence/environment/setup-$STAMP.log"
@@ -42,141 +35,86 @@ warn() { printf '\033[1;33m    warning:\033[0m %s\n' "$*"; }
 die()  { printf '\033[1;31m    error:\033[0m %s\n' "$*"; exit 1; }
 have() { command -v "$1" >/dev/null 2>&1; }
 
-pkg_install() {
-  # Installs system packages with whatever manager this machine has.
-  if have pacman; then sudo pacman -S --needed --noconfirm "$@"
-  elif have apt-get; then sudo apt-get update -qq && sudo apt-get install -y "$@"
-  elif have dnf; then sudo dnf install -y "$@"
-  elif have brew; then brew install "$@"
-  else die "no supported package manager found; install manually: $*"
-  fi
+# Network on the build machine can be flaky; retry image builds a few times.
+retry() {
+  local n=1 max=3
+  until "$@"; do
+    [[ $n -ge $max ]] && return 1
+    warn "attempt $n failed; retrying in $((n * 10))s"
+    sleep $((n * 10)); n=$((n + 1))
+  done
 }
+
+COMPOSE=(docker compose)
+[[ $GPU -eq 1 ]] && COMPOSE+=(-f compose.yaml -f compose.gpu.yaml)
 
 echo "AabFlow setup $STAMP on $(uname -srm)"
 
 # ---------------------------------------------------------------------------
-step "1/8 System packages (git, make, curl, GDAL for the vision env)"
-NEED=()
-have git  || NEED+=(git)
-have make || NEED+=(make)
-have curl || NEED+=(curl)
-if [[ $SKIP_VISION -eq 0 ]] && ! have gdal-config; then
-  if have pacman || have brew; then NEED+=(gdal)
-  elif have apt-get; then NEED+=(gdal-bin libgdal-dev)
-  elif have dnf; then NEED+=(gdal gdal-devel)
+step "1/6 Docker engine, Compose v2, Buildx"
+if ! have docker || ! docker compose version >/dev/null 2>&1 || ! docker buildx version >/dev/null 2>&1; then
+  echo "    installing Docker (needs sudo)"
+  if have pacman; then sudo pacman -S --needed --noconfirm docker docker-compose docker-buildx
+  elif have apt-get; then curl -fsSL https://get.docker.com | sudo sh
+  elif have dnf; then sudo dnf install -y docker-ce docker-ce-cli docker-compose-plugin docker-buildx-plugin
+  else die "install Docker Engine with the compose and buildx plugins, then re-run"
   fi
 fi
-if [[ ${#NEED[@]} -gt 0 ]]; then
-  echo "    installing: ${NEED[*]} (needs sudo)"
-  pkg_install "${NEED[@]}"
+if ! docker info >/dev/null 2>&1; then
+  if have systemctl; then sudo systemctl enable --now docker; fi
+  docker info >/dev/null 2>&1 || {
+    if ! id -nG | grep -qw docker; then
+      sudo usermod -aG docker "$USER"
+      die "added $USER to the docker group: log out and back in (or run 'newgrp docker'), then re-run"
+    fi
+    die "Docker daemon is not reachable"
+  }
 fi
-ok "git $(git --version | awk '{print $3}'), make, curl present"
-[[ $SKIP_VISION -eq 0 ]] && ok "GDAL $(gdal-config --version)"
+ok "$(docker --version)"
+ok "$(docker compose version)"
 
 # ---------------------------------------------------------------------------
-step "2/8 uv and Python $PYTHON_VERSION"
-if ! have uv; then
-  curl -LsSf https://astral.sh/uv/install.sh | sh
-  export PATH="$HOME/.local/bin:$PATH"
-fi
-ok "$(uv --version)"
-uv python install "$PYTHON_VERSION"
-ok "Python $PYTHON_VERSION managed by uv"
+step "2/6 Local config (.env)"
+[[ -f .env ]] || { cp .env.example .env; ok "created .env from .env.example"; }
+grep -q '^HOST_UID=' .env || echo "HOST_UID=$(id -u)" >> .env
+grep -q '^HOST_GID=' .env || echo "HOST_GID=$(id -g)" >> .env
+ok "containers run as $(id -u):$(id -g) so files they write stay yours"
+grep -q '^OPENAI_API_KEY=.\+' .env && ok "OPENAI_API_KEY set" || warn "OPENAI_API_KEY empty in .env (needed for the copilot, M7)"
 
 # ---------------------------------------------------------------------------
-step "3/8 Main Python env (.venv): science, GIS, optimizer, API, surrogate, copilot"
-uv lock
-uv sync --python "$PYTHON_VERSION"
-uv run python - <<'PY'
-import aquacrop, ortools, pandas, numpy, geopandas, rasterio, pystac_client, lightgbm, sklearn, fastapi, pydantic, openai
-from importlib.metadata import version as v
-for d in ["aquacrop","ortools","numpy","pandas","geopandas","shapely","pyproj","pyarrow","rasterio",
-          "pystac-client","lightgbm","scikit-learn","fastapi","pydantic","uvicorn","openai","pytest","hypothesis"]:
-    print(f"    {d:15s} {v(d)}")
-PY
-ok "main env imports passed; uv.lock written"
+step "3/6 Dev images: api (Python 3.11 + uv.lock) and web (Node 24 + package-lock)"
+export DOCKER_BUILDKIT=1
+retry "${COMPOSE[@]}" build api web
+ok "aabflow-dev:local and aabflow-web-dev:local built"
 
 # ---------------------------------------------------------------------------
-step "4/8 Node $NODE_MAJOR"
-node_major() { node -v 2>/dev/null | sed -E 's/^v([0-9]+).*/\1/'; }
-if [[ "$(node_major)" != "$NODE_MAJOR" ]]; then
-  if have fnm; then
-    fnm install "$NODE_MAJOR" && eval "$(fnm env)" && fnm use "$NODE_MAJOR"
-  elif [[ -s "${NVM_DIR:-$HOME/.nvm}/nvm.sh" ]]; then
-    # shellcheck disable=SC1091
-    . "${NVM_DIR:-$HOME/.nvm}/nvm.sh" && nvm install "$NODE_MAJOR" && nvm use "$NODE_MAJOR"
-  else
-    curl -fsSL https://fnm.vercel.app/install | bash -s -- --skip-shell
-    export PATH="$HOME/.local/share/fnm:$PATH"
-    eval "$(fnm env)" && fnm install "$NODE_MAJOR" && fnm use "$NODE_MAJOR"
-  fi
-fi
-[[ "$(node_major)" == "$NODE_MAJOR" ]] || die "Node $NODE_MAJOR not active (found $(node -v 2>/dev/null || echo none))"
-ok "node $(node -v), npm $(npm -v)"
-
-# ---------------------------------------------------------------------------
-step "5/8 Web dependencies (React, Vite, MapLibre, ECharts, Tailwind, tests)"
-( cd web && if [[ -f package-lock.json ]]; then npm ci; else npm install; fi )
-ok "web/node_modules installed; package-lock.json pinned"
-
-# ---------------------------------------------------------------------------
-step "6/8 Playwright Chromium (UI checks, offline test)"
-( cd web && npx playwright install chromium ) || warn "Playwright browser install failed; UI checks will not run until fixed"
+step "4/6 Demo and browser-test images"
+retry "${COMPOSE[@]}" --profile test build demo e2e
+ok "aabflow:local (frozen demo) and aabflow-e2e:local (Playwright) built"
 
 # ---------------------------------------------------------------------------
 if [[ $SKIP_VISION -eq 0 ]]; then
-  step "7/8 Vision env (.venv-vision): Delineate Anything + torch + GDAL bindings + weights"
-  VDIR="$ROOT/vision/Delineate-Anything"
-  if [[ ! -d "$VDIR/.git" ]]; then git clone "$DELINEATE_REPO" "$VDIR"; fi
-  git -C "$VDIR" fetch --quiet origin
-  git -C "$VDIR" checkout --quiet "$DELINEATE_COMMIT"
-  ok "Delineate Anything at $(git -C "$VDIR" rev-parse --short HEAD)"
-
-  [[ -x .venv-vision/bin/python ]] || uv venv --python "$PYTHON_VERSION" .venv-vision
-  VPY="$ROOT/.venv-vision/bin/python"
-
-  GPU=0
-  if [[ $FORCE_CPU -eq 0 ]] && have nvidia-smi && nvidia-smi >/dev/null 2>&1; then GPU=1; fi
-  if [[ $GPU -eq 1 ]]; then
-    echo "    nvidia-smi answered: installing CUDA torch"
-    uv pip install --python "$VPY" torch torchvision --index-url https://download.pytorch.org/whl/cu128
-  else
-    echo "    no working GPU driver (or --cpu): installing CPU torch"
-    uv pip install --python "$VPY" torch torchvision --index-url https://download.pytorch.org/whl/cpu
-  fi
-  uv pip install --python "$VPY" -r "$VDIR/requirements.txt"
-  # GDAL Python bindings must match the system libgdal exactly.
-  uv pip install --python "$VPY" setuptools wheel numpy
-  uv pip install --python "$VPY" --no-build-isolation "gdal[numpy]==$(gdal-config --version)"
-
-  WEIGHTS_DIR="$ROOT/data/models/delineate-anything"
-  mkdir -p "$WEIGHTS_DIR"
-  for w in "${DELINEATE_WEIGHTS[@]}"; do
-    "$VPY" -c "from huggingface_hub import hf_hub_download as d; print('    ' + d('MykolaL/DelineateAnything', '$w', local_dir='$WEIGHTS_DIR'))"
-  done
-  ( cd "$WEIGHTS_DIR" && sha256sum ./*.pt > SHA256SUMS ) && ok "weights hashed in data/models/delineate-anything/SHA256SUMS"
-
-  "$VPY" - <<'PY'
-import torch, ultralytics
-from osgeo import gdal
-print(f"    torch {torch.__version__} cuda_available={torch.cuda.is_available()}")
-print(f"    ultralytics {ultralytics.__version__}, gdal {gdal.__version__}")
-PY
-  ok "vision env imports passed"
+  step "5/6 Vision image (Delineate Anything, torch, GDAL) and model weights"
+  retry "${COMPOSE[@]}" --profile vision build vision
+  mkdir -p data/models/delineate-anything
+  retry "${COMPOSE[@]}" --profile vision run --rm --no-deps vision python /app/scripts/fetch_weights.py
+  ok "weights in data/models/delineate-anything (hashes in SHA256SUMS)"
 else
-  step "7/8 Vision env skipped (--skip-vision)"
+  step "5/6 Vision image skipped (--skip-vision)"
 fi
 
 # ---------------------------------------------------------------------------
-step "8/8 Local config and checks"
-if [[ ! -f .env ]]; then cp .env.example .env; ok "created .env from .env.example (add OPENAI_API_KEY there)"; fi
-
+step "6/6 Checks"
 if [[ $SKIP_CHECKS -eq 0 ]]; then
-  uv run python scripts/doctor.py || warn "doctor reported missing items (see above)"
-  uv run pytest -q || die "pytest failed"
-  ( cd web && npm run test && npm run build ) || die "web tests/build failed"
-  ok "pytest, vitest and production web build passed"
+  make doctor || warn "doctor reported missing items (see above)"
+  make test || die "unit tests failed"
+  make science-smoke || die "AquaCrop smoke test failed"
+  make web-test || die "web tests failed"
+  make web-build || die "web build failed"
+  ok "unit tests, crop smoke, vitest and production web build passed"
+else
+  echo "    skipped (--skip-checks)"
 fi
 
 printf '\n\033[1;32mSetup finished.\033[0m Log: %s\n' "${LOG#"$ROOT"/}"
-echo "Next: tell Claude it's done. Dev servers: 'make dev-api' and 'make dev-web'."
+echo "Start developing with 'make up' (API http://127.0.0.1:8000, UI http://127.0.0.1:5173)."

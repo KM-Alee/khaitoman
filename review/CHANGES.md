@@ -29,3 +29,7 @@ Full scope is kept. Every F01–F20 feature and AT01–AT18 test is unchanged. O
 - **Presentation time:** is it 09:35 on 11 Oct, or the end of 10 Oct? If it's the end of 10 Oct, the window is about half as long.
 - **Copilot last:** the docs build the copilot last, at M7, which is apparently your earlier call. It's an AI hackathon, so if M7 slips, judges see no AI. Keep it last, or wire a thin version right after M3?
 - **Copilot provider:** does AICON require or sponsor a specific model provider?
+
+## Packaging change (pablo, 10 Oct)
+
+17. **Docker for everything.** A second contributor joined, so the whole build now runs in Docker Compose: `api` (Python 3.11 + uv), `web` (Node 24 + Vite), `vision` (Delineate Anything + torch + GDAL), `demo` (frozen app image) and `e2e` (Playwright). Only Docker is needed on the host. The demo starts from prebuilt images with no network. Python resolution is pinned with `exclude-newer` for reproducibility. No feature or acceptance test changed (T0.1, T1.1–T1.4, T12.4, T13.2, T13.4; PRD §0.2 runtime row).

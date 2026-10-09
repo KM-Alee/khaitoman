@@ -1,0 +1,111 @@
+AabFlow setup 20261009T201024Z on Linux 7.2.9-1-cachyos x86_64
+
+[1;34m==> 1/8 System packages (git, make, curl, GDAL for the vision env)[0m
+    installing: gdal (needs sudo)
+resolving dependencies...
+looking for conflicting packages...
+
+Package (11)                    New Version  Net Change  Download Size
+
+cachyos-extra-v3/blosc          1.21.6-2.1     0.11 MiB               
+cachyos-extra-v3/crypto++       8.9.0-3.1      6.54 MiB               
+cachyos-extra-v3/geos           3.15.0-1.1     8.19 MiB               
+cachyos-extra-v3/libfreexl      2.0.0-3.1      0.10 MiB               
+cachyos-extra-v3/libgeotiff     1.7.4-1.1      0.37 MiB               
+cachyos-extra-v3/librttopo      1.1.0-6.1      0.61 MiB               
+cachyos-extra-v3/libspatialite  5.1.0-4.1     17.34 MiB               
+cachyos-extra-v3/proj           9.8.1-1.1     15.58 MiB       2.08 MiB
+cachyos-core-v3/unixodbc        2.3.14-1.1     0.95 MiB               
+cachyos-extra-v3/xerces-c       3.3.0-4.1      8.63 MiB               
+cachyos-extra-v3/gdal           3.13.3-3.1    46.79 MiB               
+
+Total Download Size:     2.08 MiB
+Total Installed Size:  105.22 MiB
+
+:: Proceed with installation? [Y/n] 
+:: Retrieving packages...
+ proj-9.8.1-1.1-x86_64_v3 downloading...
+error: failed retrieving file 'proj-9.8.1-1.1-x86_64_v3.pkg.tar.zst' from mirror5.krfoss.org : Connection timed out after 10000 milliseconds
+checking keyring...
+checking package integrity...
+loading package files...
+checking for file conflicts...
+:: Processing package changes...
+installing blosc...
+installing crypto++...
+installing geos...
+installing libfreexl...
+installing proj...
+installing libgeotiff...
+installing librttopo...
+installing libspatialite...
+installing unixodbc...
+installing xerces-c...
+installing gdal...
+Optional dependencies for gdal
+    arrow: Arrow/Parquet support
+    cfitsio: FITS support [installed]
+    hdf5: HDF5 support [installed]
+    libheif: HEIF support [installed]
+    libjxl: JPEG XL support [installed]
+    mariadb-libs: MySQL support
+    netcdf: netCDF support
+    openexr: EXR support [installed]
+    openjpeg2: JP2 support [installed]
+    podofo: PDF support
+    poppler: PDF support [installed]
+    postgresql-libs: PostgreSQL support
+    libwebp: WebP support [installed]
+:: Running post-transaction hooks...
+(1/1) Arming ConditionNeedsUpdate...
+[1;32m    ok:[0m git 2.56.0, make, curl present
+[1;32m    ok:[0m GDAL 3.13.3
+
+[1;34m==> 2/8 uv and Python 3.11[0m
+[1;32m    ok:[0m uv 0.12.14 (x86_64-unknown-linux-gnu)
+Installed Python 3.11.16 in 22ms
+ + cpython-3.11.16-linux-x86_64-gnu (python3.11)
+[1;32m    ok:[0m Python 3.11 managed by uv
+
+[1;34m==> 3/8 Main Python env (.venv): science, GIS, optimizer, API, surrogate, copilot[0m
+Using CPython 3.11.16
+Resolved 110 packages in 17.01s
+Using CPython 3.11.16
+Creating virtual environment at: .venv
+Resolved 110 packages in 1ms
+   Building aabflow @ file:///home/kali/Projects/khaitoman
+Downloading lightgbm (3.3MiB)
+Downloading openai (2.1MiB)
+Downloading numpy (16.1MiB)
+Downloading ruff (9.9MiB)
+Downloading pydantic-core (2.1MiB)
+Downloading scikit-learn (8.9MiB)
+Downloading shapely (2.2MiB)
+Downloading pyproj (9.1MiB)
+Downloading pyogrio (31.8MiB)
+Downloading aquacrop (10.2MiB)
+Downloading ortools (28.4MiB)
+Downloading rasterio (34.2MiB)
+Downloading pyarrow (51.4MiB)
+      Built aabflow @ file:///home/kali/Projects/khaitoman
+ Downloaded openai
+ Downloaded pydantic-core
+ Downloaded shapely
+ Downloaded lightgbm
+ Downloaded scikit-learn
+ Downloaded pyproj
+ Downloaded ruff
+ Downloaded aquacrop
+ Downloaded numpy
+ Downloaded ortools
+ Downloaded pyogrio
+error: Failed to download `pyarrow==26.0.0`
+  cause: Request failed after 4 retries in 46.2s
+  cause: Failed to fetch:
+         `https://files.pythonhosted.org/packages/e1/81/8e685683897a6d3d5887c3e2fd24f3c14bc5d6d6bb3a2387484e665c580e/pyarrow-26.0.0-cp311-cp311-manylinux_2_28_x86_64.whl`
+  cause: error sending request for url
+         (https://files.pythonhosted.org/packages/e1/81/8e685683897a6d3d5887c3e2fd24f3c14bc5d6d6bb3a2387484e665c580e/pyarrow-26.0.0-cp311-cp311-manylinux_2_28_x86_64.whl)
+  cause: client error (Connect)
+  cause: operation timed out
+
+hint: `pyarrow` (v26.0.0) was included because `aabflow` (v2.0.0) depends on `pyarrow`

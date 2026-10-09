@@ -42,7 +42,7 @@ The target is deliberately ambitious for the remaining time. A written plan is n
 | Surrogate | Crop-specific validated LightGBM previews, followed by exact crop simulation before a new option becomes actionable |
 | Onboarding | Draw/import AOI, acquire or import a source package, run/reuse genuine inference, review fields/topology/assumptions, publish a pilot |
 | Copilot | Grounded reading, scenario branching, solving, comparisons, explanations, stress/frontier requests, navigation, and local report creation |
-| Runtime | Core analytical application and published pilot packages run offline; hosted conversational generation and new online acquisition require connectivity |
+| Runtime | Core analytical application and published pilot packages run offline from prebuilt Docker images; hosted conversational generation and new online acquisition require connectivity |
 | Presentation | Rehearsed 5-minute story plus a deeper interactive route covering every full-release feature |
 
 These are acceptance targets, not current measurements. Field count can be configurable above/below 30 for development, but the full release certificate requires the target fixture in each pilot. Extra arbitrary regions, mixed-crop economic optimization, real gate actuation, aquifer forecasting, and voice are outside this release.

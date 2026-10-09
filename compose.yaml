@@ -1,0 +1,63 @@
+# AabFlow local stack. Ports bind to loopback only (T14).
+#   docker compose up            -> api (:8000, reload) + web (:5173, Vite)
+#   --profile vision             -> Delineate Anything runner
+#   --profile demo               -> frozen app image on :8000 (stop the dev api first)
+#   --profile test               -> Playwright against the demo service
+# HOST_UID/HOST_GID come from .env so files written into the repo stay yours.
+name: aabflow
+
+x-user: &user
+  user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
+
+services:
+  api:
+    <<: *user
+    build: { context: ., target: dev }
+    image: aabflow-dev:local
+    env_file: [{ path: .env, required: false }]
+    ports: ["127.0.0.1:8000:8000"]
+    volumes: [".:/app"]
+
+  web:
+    <<: *user
+    build:
+      context: .
+      target: web-dev
+      args: { HOST_UID: "${HOST_UID:-1000}", HOST_GID: "${HOST_GID:-1000}" }
+    image: aabflow-web-dev:local
+    environment: { VITE_API_TARGET: "http://api:8000" }
+    ports: ["127.0.0.1:5173:5173"]
+    volumes:
+      - ".:/app"
+      - "/app/web/node_modules" # keeps the image's node_modules; refresh with `make deps`
+    depends_on: [api]
+
+  vision:
+    <<: *user
+    profiles: [vision]
+    build:
+      context: .
+      dockerfile: docker/vision.Dockerfile
+      args: { TORCH_INDEX: "${TORCH_INDEX:-https://download.pytorch.org/whl/cpu}" }
+    image: aabflow-vision:local
+    volumes: [".:/app"]
+
+  demo:
+    profiles: [demo, test]
+    build: { context: ., target: app }
+    image: aabflow:local
+    env_file: [{ path: .env, required: false }]
+    ports: ["127.0.0.1:8000:8000"]
+    volumes: ["./data:/app/data"]
+
+  e2e:
+    <<: *user
+    profiles: [test]
+    build: { context: ., target: e2e }
+    image: aabflow-e2e:local
+    environment: { PLAYWRIGHT_BASE_URL: "http://demo:8000" }
+    volumes:
+      - ".:/app"
+      - "/app/web/node_modules"
+    depends_on: [demo]
+    command: ["npx", "playwright", "test"]

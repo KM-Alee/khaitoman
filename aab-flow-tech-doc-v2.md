@@ -25,6 +25,7 @@ This is a build contract. Commands naming `aabflow.*`, `make` targets, scripts, 
 | Crop engine | AquaCrop-OSPy 3.1.0 in a locked Python 3.11 environment; raw output retained |
 | Optimizer | OR-Tools CP-SAT over vetted finite policy candidates; shared repair configuration enumeration |
 | UI/runtime | React + TypeScript + Vite static build, served by FastAPI at demo time |
+| Packaging | Docker Engine + Compose v2 for every contributor and the demo; uv inside images; only Docker on the host |
 | Data store | SQLite (stdlib `sqlite3`, one `schema.sql`) for metadata/jobs/evidence; immutable Parquet/GeoJSON/raster/run bundles |
 | Advanced analyses | Services reusing the same scenario/candidate/solve/validation pipeline |
 | Copilot | Final feature milestone; backend tool registry and OpenAI Responses; no direct solver arithmetic in language model |
@@ -72,13 +73,14 @@ React/Vite UI <── HTTP + SSE ── FastAPI domain services
 
 Demo mode uses one local origin: `http://127.0.0.1:8000`. FastAPI serves the compiled static frontend and `/api/v2`. Development uses Vite on 5173 proxying `/api/v2` and `/assets` to 8000. Register API and asset routes before the SPA history fallback; unknown API paths must return JSON 404, not `index.html`.
 
-The core requires no managed cloud database, remote basemap, CDN, Redis, or container runtime. CPU-bound work runs outside the asynchronous API event loop. Published source packages and completed outputs are local. Hosted chat and online onboarding are distinct network capabilities with visible status.
+The core requires no managed cloud database, remote basemap, CDN, or Redis. It runs as a local Docker Compose stack (see T1.3) so that every contributor and the presenting laptop share identical environments; images are built ahead of time and the demo needs no network to start. CPU-bound work runs outside the asynchronous API event loop. Published source packages and completed outputs are local. Hosted chat and online onboarding are distinct network capabilities with visible status.
 
 ### T1.2 Technology register
 
 | Layer | Selected technology | Reason and constraint |
 |---|---|---|
-| Python environment | Python 3.11 + uv, locked dependencies | Available managed interpreter; isolate scientific wheels from vision stack |
+| Containers | Docker Engine, Compose v2, BuildKit; images on Debian trixie slim | Identical environments for two contributors and the demo laptop; dependency changes go through lockfiles and an image rebuild |
+| Python environment | Python 3.11 + uv inside the image, locked by `uv.lock` (`exclude-newer` pinned) | Isolate scientific wheels from the vision stack, which has its own image |
 | Crop science | `aquacrop==3.1.0`, pandas, NumPy | Documented schedule interface; avoid an unsupported rewrite of crop physiology |
 | Discrete decisions | OR-Tools CP-SAT | Integer constraints, binary portfolios, feasibility and objective bounds |
 | GIS | GeoPandas, Shapely, pyproj, pyarrow | Actual CRS/geometry operations and GeoParquet |
@@ -105,16 +107,24 @@ Pydantic emits JSON Schema; use it to generate and test public contracts. Vendor
 
 ### T1.3 Environment and first dependency proof
 
-Use a writable uv cache in restricted environments. These are setup commands for the application repository once its package manifests exist:
+Docker is the only host requirement. All Python runs under uv inside images, and all Node under Node 24 inside images. Never install scientific packages on the host.
+
+| Image (compose service) | Dockerfile target | Contents |
+|---|---|---|
+| `aabflow-dev:local` (`api`) | `Dockerfile` → `dev` | Python 3.11, `uv sync --frozen` into `/opt/venv`; source bind-mounted; Uvicorn with reload on 127.0.0.1:8000 |
+| `aabflow-web-dev:local` (`web`) | `Dockerfile` → `web-dev` | Node 24, `npm ci` from `web/package-lock.json`; Vite on 127.0.0.1:5173 proxying to `api` |
+| `aabflow:local` (`demo`) | `Dockerfile` → `app` | Frozen API + compiled frontend on one origin, 127.0.0.1:8000 |
+| `aabflow-e2e:local` (`e2e`) | `Dockerfile` → `e2e` | Playwright image matching the pinned `@playwright/test` version |
+| `aabflow-vision:local` (`vision`) | `docker/vision.Dockerfile` | Delineate Anything at a pinned commit, torch (CPU by default, CUDA via `compose.gpu.yaml`), GDAL bindings matching the image's libgdal |
 
 ```bash
-UV_CACHE_DIR=/tmp/aabflow-uv uv python list --only-installed
-UV_CACHE_DIR=/tmp/aabflow-uv uv venv --python 3.11 .venv-science
-UV_CACHE_DIR=/tmp/aabflow-uv uv pip install --python .venv-science/bin/python aquacrop==3.1.0 ortools pandas numpy
-.venv-science/bin/python -c 'import aquacrop, ortools; print("science imports passed")'
+./scripts/setup.sh          # Docker check, .env, all images, weights, doctor and smoke tests
+make up                     # api + web dev stack
+make test science-smoke     # tests inside the api image
+make lock build             # after editing pyproject.toml or web/package.json
 ```
 
-After proving compatibility, create the full `pyproject.toml` and `uv.lock`, then use `uv sync --frozen`. Keep `.venv-vision`/its lock separate. Do not install scientific packages into the system interpreter. Determine Torch CPU/CUDA availability with an actual inference run. Download a compatible CPU wheel if GPU support is unavailable; record timing.
+Containers run as the host user (`HOST_UID`/`HOST_GID` in `.env`) so files written into the bind-mounted repository stay owned by the contributor. Ports bind to loopback only. `data/` is bind-mounted, so pilot packages, runs, and weights persist outside images. Determine torch CPU/CUDA availability with an actual inference run in the vision container and record timing.
 
 The official AquaCrop quickstart is the first crop smoke, followed by a one-season prescribed-schedule test. PyPI identifies the 3.1.0 distribution; inspect the exact installed distribution's license and dependency metadata because upstream metadata and repository license text may differ. [AquaCrop distribution](https://pypi.org/project/aquacrop/3.1.0/)
 
@@ -156,6 +166,9 @@ contracts/{openapi.json,schemas,examples}/
 tests/{unit,property,integration,scientific,e2e,fixtures,copilot}/
 scripts/{doctor,acquire,verify_assets,offline_audit,release_report}/
 evidence/{environment,commands,benchmarks,screenshots,rehearsal}/
+Dockerfile                    # dev, web-dev, web-build, app, e2e targets
+docker/vision.Dockerfile
+compose.yaml, compose.gpu.yaml
 Makefile
 pyproject.toml
 uv.lock
@@ -1175,15 +1188,15 @@ Use global CPU limits: two concurrent analytical workers by default, each with a
 
 ### T12.4 Offline acceptance procedure
 
-1. Build production frontend; populate the permitted local pilot/data/model/font/icon package.
-2. Stop online acquisition/background training. Start the local server from the frozen checkout/environment.
+1. Build the `app` image (production frontend included); populate the permitted local pilot/data/model/font/icon package under `data/`.
+2. Stop online acquisition/background training. Start the `demo` service from the prebuilt image (`make demo`); it must not pull, build, or download anything.
 3. Deny outbound network in the test harness/browser. Allow only the local origin; record blocked unexpected requests.
 4. Open both pilots, inspect fields/evidence, solve a new bounded scenario, compare/replay, build a small new frontier, evaluate a stress set with cached exact science, and export a report.
 5. Restart the server and reload immutable runs; verify hashes and job state recovery.
 6. Open the copilot while offline; verify truthful unavailable state and continued core access.
 7. Restore the configured provider connection and run actual copilot tasks. Record that this is the connected portion of the demo.
 
-Package raw sources only where permitted. If a binary cannot be redistributed, provide a manifest-driven acquisition step and test the prepared presenting laptop package. “Clean clone works offline” requires a distributable asset bundle and dependency wheel/cache bundle as well as source code; do not claim it otherwise.
+Package raw sources only where permitted. If a binary cannot be redistributed, provide a manifest-driven acquisition step and test the prepared presenting laptop package. “Clean clone works offline” requires a distributable asset bundle and prebuilt images (`docker save` of `aabflow:local`, or images built on the presenting laptop while online) as well as source code; do not claim it otherwise.
 
 ### T12.5 Release report schema
 
@@ -1232,6 +1245,8 @@ If a checkpoint slips, recompute the remaining offsets immediately rather than c
 
 When a team is available, assign independent ownership after schemas freeze: (1) GIS/data/inference, (2) crop/ledger/candidates, (3) optimizer/API/jobs, (4) UI/design/integration. One integrator owns shared contracts and full-path tests. Each owner supplies versioned artifacts with command evidence. All analytical definitions remain in domain services.
 
+Contributors share one environment through the Docker images and lockfiles. A dependency change is a commit to `pyproject.toml`/`uv.lock` or `web/package.json`/`package-lock.json`; the other contributor runs `make build`.
+
 For a solo implementation, follow dependencies in milestone order and use deterministic batch jobs to generate science while implementing UI/services. Do not divide work into incompatible independently invented schemas. Adding agents or team members is an execution choice, not evidence of available staffing.
 
 Before M7, only check model account/connectivity and reserve its integration interface. Implement the copilot after the complete non-chat system works, as requested. This avoids teaching the assistant a set of tools whose behavior is still changing.
@@ -1254,7 +1269,12 @@ Before M7, only check model account/connectivity and reserve its integration int
 
 ### T13.4 CLI and Make interface to implement
 
+All targets run inside the compose services; the host needs only Docker and make.
+
 ```bash
+make setup                  # first-time: Docker check, images, weights, checks
+make up / make down         # dev stack: api :8000 (reload), web :5173
+make lock / make build      # re-lock and rebuild images after dependency edits
 make doctor                 # versions, required assets, CPU/GPU/network/provider capability status
 make contracts              # export OpenAPI/types/schema fixtures; fail on drift
 make science-smoke          # official + local two-crop schedule/irrigation checks
@@ -1269,7 +1289,7 @@ make ui-checks              # interaction, accessibility, viewports, visual capt
 make core-acceptance        # all non-chat full features including offline/restart
 make copilot-evals          # only after core acceptance; 30 cases x 3 runs
 make release-check          # aggregate F/AT evidence, report failure accurately
-make demo                   # serve frozen local build/data; no downloads or package install
+make demo                   # run the prebuilt app image; no builds, downloads or package install
 ```
 
 Commands exit nonzero on failed requirements and preserve logs. They do not merely print “success.” `make demo` must not train a model, retrieve weights, or call an online basemap on startup. `make doctor` redacts secrets and distinguishes a configured key from a successful provider smoke call.

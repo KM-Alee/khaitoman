@@ -1,46 +1,83 @@
-# AabFlow command interface (T13.4). Targets not built yet fail loudly; none fake success.
-.PHONY: setup doctor provider-check test science-smoke contracts web-build web-test ui-checks dev-api dev-web demo \
+# AabFlow command interface (T13.4). Everything runs in Docker; only Docker is needed on the host.
+# Targets not built yet fail loudly; none fake success.
+.NOTPARALLEL:
+.PHONY: help setup build deps up down logs shell lock doctor provider-check test science-smoke \
+        contracts web-test web-build ui-checks demo vision-weights vision-shell \
         water-tests pilot-a pilot-b candidates train-surrogate domain-tests core-acceptance copilot-evals release-check
 
-UV := uv run
+DC   := docker compose
+API  := $(DC) run --rm --no-deps api
+WEB  := $(DC) run --rm --no-deps web
+VIS  := $(DC) --profile vision run --rm --no-deps vision
 
-setup:            ## install everything (uv + npm + vision env + weights)
+help:             ## list targets
+	@grep -E '^[a-z-]+:.*##' $(MAKEFILE_LIST) | sed -E 's/:.*## /\t/' | expand -t 18
+
+setup:            ## first-time install: Docker check, all images, weights, checks
 	./scripts/setup.sh
 
-doctor:           ## versions, assets, GPU, network, provider key status
-	$(UV) python scripts/doctor.py
+build:            ## rebuild dev images after dependency changes
+	$(DC) build api web
+
+deps: lock build  ## re-lock, rebuild, and refresh the web node_modules volume
+	$(DC) up -d --renew-anon-volumes web
+
+up:               ## API on :8000 (reload) + Vite UI on :5173
+	$(DC) up -d api web
+	@echo "API http://127.0.0.1:8000/api/v2/health   UI http://127.0.0.1:5173"
+
+down:
+	$(DC) --profile vision --profile demo --profile test down
+
+logs:
+	$(DC) logs -f api web
+
+shell:            ## bash in the API container
+	$(API) bash
+
+lock:             ## regenerate uv.lock and web/package-lock.json after editing dependencies
+	$(API) uv lock
+	$(WEB) npm install --package-lock-only --ignore-scripts
+
+doctor:           ## versions, assets, network, provider key status (all containers)
+	$(API) python scripts/doctor.py
+	$(WEB) sh -c 'echo "node $$(node -v), npm $$(npm -v)"; test -d node_modules/vite && echo "web deps: ok"'
+	-$(VIS) python -c "import torch, ultralytics; from osgeo import gdal; print('vision: torch', torch.__version__, 'cuda', torch.cuda.is_available(), 'ultralytics', ultralytics.__version__, 'gdal', gdal.__version__)"
 
 provider-check:   ## doctor plus a real OpenAI model-availability call
-	$(UV) python scripts/doctor.py --provider-smoke
+	$(API) python scripts/doctor.py --provider-smoke
 
 test:             ## fast Python unit tests
-	$(UV) pytest -q -m "not scientific"
+	$(API) pytest -q -m "not scientific"
 
-science-smoke:    ## T5.4 crop engine gates
-	$(UV) pytest -q -m scientific
+science-smoke:    ## T5.4 crop engine gates (real AquaCrop)
+	$(API) pytest -q -m scientific
 
 contracts:        ## export OpenAPI and regenerate TypeScript types
-	$(UV) python -c "import json; from aabflow.main import app; open('contracts/openapi.json','w').write(json.dumps(app.openapi(), indent=2, sort_keys=True))"
-	cd web && npm run gen:api
-
-web-build:
-	cd web && npm ci && npm run build
+	$(API) python -c "import json; from aabflow.main import app; open('contracts/openapi.json','w').write(json.dumps(app.openapi(), indent=2, sort_keys=True))"
+	$(WEB) npm run gen:api
 
 web-test:
-	cd web && npm run test
+	$(WEB) npm run test
 
-ui-checks:
-	cd web && npm run e2e
+web-build:
+	$(WEB) npm run build
 
-dev-api:          ## FastAPI with reload on :8000
-	$(UV) uvicorn aabflow.main:app --app-dir api --reload --host 127.0.0.1 --port 8000
+ui-checks:        ## Playwright + axe against the frozen demo image
+	$(DC) --profile test build demo e2e
+	$(DC) --profile test run --rm e2e
+	$(DC) --profile test stop demo
 
-dev-web:          ## Vite on :5173 proxying /api/v2 to :8000
-	cd web && npm run dev
+demo:             ## frozen build on :8000; no installs or downloads at start
+	$(DC) stop api
+	$(DC) --profile demo up -d demo
+	@echo "Demo http://127.0.0.1:8000"
 
-demo:             ## serve the frozen build on one local origin; no installs or downloads
-	@test -f web/dist/index.html || (echo "web/dist missing: run make web-build first" && exit 1)
-	$(UV) uvicorn aabflow.main:app --app-dir api --host 127.0.0.1 --port 8000
+vision-weights:   ## download Delineate Anything weights + SHA256SUMS
+	$(VIS) python /app/scripts/fetch_weights.py
+
+vision-shell:
+	$(VIS) bash
 
 water-tests pilot-a pilot-b candidates train-surrogate domain-tests core-acceptance copilot-evals release-check:
 	@echo "make $@: not implemented yet" >&2; exit 1

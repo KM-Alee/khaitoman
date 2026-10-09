@@ -1,5 +1,8 @@
 """`make doctor`: versions, assets, CPU/GPU, network and provider status (T13.4).
 
+Runs in the api container; `make doctor` checks the web and vision containers
+separately.
+
 Exits nonzero when a required item is missing. Secrets are never printed; a
 configured key is reported separately from a successful provider call, which
 only runs with --provider-smoke.
@@ -83,26 +86,12 @@ def main() -> int:
             missing.append(d)
     report["packages"] = dists
 
-    node = _run(["node", "-v"])
-    report["node"] = node
-    if not node or not node.startswith("v24"):
-        missing.append("node 24")
-    report["web_node_modules"] = (ROOT / "web/node_modules").is_dir()
-    if not report["web_node_modules"]:
-        missing.append("web/node_modules")
-    report["web_built"] = (ROOT / "web/dist/index.html").is_file()
-
-    vpy = ROOT / ".venv-vision/bin/python"
-    report["vision"] = _run([str(vpy), "-c", "import torch, ultralytics; from osgeo import gdal; "
-                             "print(torch.__version__, torch.cuda.is_available(), ultralytics.__version__, gdal.__version__)"]) \
-        if vpy.exists() else None
-    if not report["vision"]:
-        missing.append("vision env (.venv-vision)")
     weights = sorted(p.name for p in (ROOT / "data/models/delineate-anything").glob("*.pt"))
     report["delineate_weights"] = weights
     if not weights:
         missing.append("Delineate Anything weights")
 
+    report["in_container"] = Path("/.dockerenv").exists()
     report["cpu_count"] = os.cpu_count()
     report["gpu"] = _run(["nvidia-smi", "--query-gpu=name,driver_version", "--format=csv,noheader"]) or "unavailable"
     report["disk_free_gb"] = round(shutil.disk_usage(ROOT).free / 1e9, 1)
