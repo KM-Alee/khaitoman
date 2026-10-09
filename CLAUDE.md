@@ -2,7 +2,7 @@
 
 AICON hackathon build: irrigation and canal water-allocation planner. Full scope: F01–F20 and AT01–AT18. Never cut scope.
 
-- Specs: `prd-flow-v2.md` (product), `aab-flow-tech-doc-v2.md` (implementation contract). `review/CHANGES.md` lists doc fixes. Do not edit or move these.
+- Specs: `prd-flow-v2.md` (product), `aab-flow-tech-doc-v2.md` (implementation contract). `review/CHANGES.md` lists doc fixes. Change them only when pablo asks, and log each change in `review/CHANGES.md`.
 - Repo layout follows tech doc T1.4. Backend package: `api/aabflow`. Frontend: `web/`.
 - Everything runs in Docker Compose (`compose.yaml`, `Dockerfile`, `docker/vision.Dockerfile`). Only Docker is on the host; never install project deps on the host.
 - Python: uv inside the `api` image, Python 3.11, locked by `uv.lock` (`exclude-newer` in pyproject). Vision (Delineate Anything) is its own image; never mix them.
