@@ -48,10 +48,10 @@ provider-check:   ## doctor plus a real OpenAI model-availability call
 	$(API) python scripts/doctor.py --provider-smoke
 
 test:             ## fast Python unit tests
-	$(API) pytest -q -m "not scientific"
+	$(API) pytest -q --ignore=tests/scientific
 
 science-smoke:    ## T5.4 crop engine gates (real AquaCrop)
-	$(API) pytest -q -m scientific
+	$(API) pytest -q tests/scientific
 
 contracts:        ## export OpenAPI and regenerate TypeScript types
 	$(API) python -c "import json; from aabflow.main import app; open('contracts/openapi.json','w').write(json.dumps(app.openapi(), indent=2, sort_keys=True))"

@@ -6,8 +6,14 @@ pytestmark = pytest.mark.scientific
 
 
 def test_quickstart_runs():
-    from aquacrop import AquaCropModel, Crop, InitialWaterContent, Soil
-    from aquacrop.utils import get_filepath, prepare_weather
+    # aquacrop/__init__.py skips its re-exports when "-m" is in sys.argv, which
+    # `pytest -m scientific` triggers. Import from the defining submodules.
+    from aquacrop.core import AquaCropModel
+    from aquacrop.entities.crop import Crop
+    from aquacrop.entities.inititalWaterContent import InitialWaterContent
+    from aquacrop.entities.soil import Soil
+    from aquacrop.utils.data import get_filepath
+    from aquacrop.utils.prepare_weather import prepare_weather
 
     weather = prepare_weather(get_filepath("tunis_climate.txt"))
     model = AquaCropModel(

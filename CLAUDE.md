@@ -8,6 +8,7 @@ AICON hackathon build: irrigation and canal water-allocation planner. Full scope
 - Python: uv inside the `api` image, Python 3.11, locked by `uv.lock` (`exclude-newer` in pyproject). Vision (Delineate Anything) is its own image; never mix them.
 - Node 24 inside the `web` image, locked by `web/package-lock.json`. `@playwright/test` is pinned exactly to match the Playwright image tag in `Dockerfile`.
 - Two contributors share the repo. Dependency changes: edit manifest, `make lock`, `make build`, commit both lockfiles.
+- AquaCrop: import from submodules (`aquacrop.core`, `aquacrop.entities.*`, `aquacrop.utils.*`). Its `__init__` skips exports whenever `-m` is in `sys.argv` (e.g. `pytest -m`, `python -m`).
 - Persistence: stdlib `sqlite3` + `api/aabflow/repositories/sqlite/schema.sql` (bump `schema_version` in `meta` on change).
 - All API routes under `/api/v2`. Unknown API paths return JSON 404.
 
