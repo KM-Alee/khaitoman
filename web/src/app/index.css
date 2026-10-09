@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+/* PRD §9.2 design tokens land here as CSS custom properties. */
+:root {
+  color-scheme: light dark;
+}

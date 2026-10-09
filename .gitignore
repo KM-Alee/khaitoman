@@ -1,0 +1,27 @@
+# Environments and secrets
+.venv/
+.venv-vision/
+.env
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.hypothesis/
+
+# Web
+web/node_modules/
+web/dist/
+web/test-results/
+web/playwright-report/
+
+# Upstream checkout and large/generated data (manifests and hashes are committed)
+vision/Delineate-Anything/
+data/**/*.pt
+data/raw/**
+data/experiments/**
+data/runs/**
+data/reports/**
+data/app.sqlite*
+!data/**/.gitkeep
+!data/**/SHA256SUMS
+!data/**/manifest.json

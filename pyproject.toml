@@ -1,0 +1,66 @@
+[project]
+name = "aabflow"
+version = "2.0.0"
+description = "AabFlow v2: irrigation and canal water-allocation planner"
+requires-python = ">=3.11,<3.12"
+dependencies = [
+    # Crop science (T1.2): engine pinned exactly
+    "aquacrop==3.1.0",
+    "numpy",
+    "pandas",
+    # Discrete decisions
+    "ortools",
+    # GIS
+    "geopandas",
+    "shapely>=2",
+    "pyproj",
+    "pyarrow",
+    # Raster acquisition
+    "rasterio",
+    "pystac-client",
+    "httpx",
+    "requests",
+    # Surrogate
+    "lightgbm",
+    "scikit-learn",
+    # API / schema
+    "fastapi",
+    "pydantic>=2",
+    "uvicorn[standard]",
+    "sse-starlette",
+    "python-multipart",
+    # Copilot (implemented last, M7)
+    "openai",
+    "python-dotenv",
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "pytest-asyncio",
+    "hypothesis",
+    "ruff",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["api/aabflow"]
+
+[tool.uv]
+default-groups = ["dev"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["api"]
+markers = [
+    "scientific: runs the real crop engine (slow)",
+    "network: needs internet access",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["api", "tests"]
