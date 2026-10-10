@@ -515,6 +515,40 @@
         "title": "CapacityInterval",
         "type": "object"
       },
+      "Co2Estimate": {
+        "additionalProperties": false,
+        "properties": {
+          "official_indicator": {
+            "const": false,
+            "default": false,
+            "title": "Official Indicator",
+            "type": "boolean"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          },
+          "status": {
+            "const": "not_estimated",
+            "default": "not_estimated",
+            "title": "Status",
+            "type": "string"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "null"
+          },
+          "value": {
+            "title": "Value",
+            "type": "null"
+          }
+        },
+        "required": [
+          "reason"
+        ],
+        "title": "Co2Estimate",
+        "type": "object"
+      },
       "ComparisonRequest": {
         "additionalProperties": false,
         "properties": {
@@ -1044,6 +1078,152 @@
         "title": "FeatureStatus",
         "type": "object"
       },
+      "FieldChange": {
+        "additionalProperties": false,
+        "properties": {
+          "baseline_production_kg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline Production Kg"
+          },
+          "baseline_run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline Run Id"
+          },
+          "causal": {
+            "default": false,
+            "title": "Causal",
+            "type": "boolean"
+          },
+          "crop": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Crop"
+          },
+          "definition_id": {
+            "title": "Definition Id",
+            "type": "string"
+          },
+          "delta_kg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delta Kg"
+          },
+          "field_id": {
+            "title": "Field Id",
+            "type": "string"
+          },
+          "production_kg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Production Kg"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/MetricStatus"
+          },
+          "unit": {
+            "const": "kg",
+            "default": "kg",
+            "title": "Unit",
+            "type": "string"
+          }
+        },
+        "required": [
+          "field_id",
+          "production_kg",
+          "status",
+          "run_id",
+          "definition_id"
+        ],
+        "title": "FieldChange",
+        "type": "object"
+      },
+      "FieldChangeSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "fields_better_off": {
+            "title": "Fields Better Off",
+            "type": "integer"
+          },
+          "fields_not_comparable": {
+            "title": "Fields Not Comparable",
+            "type": "integer"
+          },
+          "fields_unchanged": {
+            "title": "Fields Unchanged",
+            "type": "integer"
+          },
+          "fields_worse_off": {
+            "title": "Fields Worse Off",
+            "type": "integer"
+          },
+          "quantum_kg": {
+            "title": "Quantum Kg",
+            "type": "number"
+          },
+          "unit": {
+            "const": "kg",
+            "default": "kg",
+            "title": "Unit",
+            "type": "string"
+          }
+        },
+        "required": [
+          "quantum_kg",
+          "fields_worse_off",
+          "fields_better_off",
+          "fields_unchanged",
+          "fields_not_comparable"
+        ],
+        "title": "FieldChangeSummary",
+        "type": "object"
+      },
       "FieldDetail": {
         "additionalProperties": false,
         "properties": {
@@ -1500,6 +1680,133 @@
           "evidence_id"
         ],
         "title": "ImageryRef",
+        "type": "object"
+      },
+      "ImpactRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "baseline_run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline Run Id"
+          },
+          "contract_version": {
+            "const": "2.0.0",
+            "default": "2.0.0",
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "stress_analysis_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stress Analysis Id"
+          }
+        },
+        "required": [
+          "run_id"
+        ],
+        "title": "ImpactRequest",
+        "type": "object"
+      },
+      "ImpactResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "available": {
+            "title": "Available",
+            "type": "boolean"
+          },
+          "baseline_run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline Run Id"
+          },
+          "cards": {
+            "items": {
+              "$ref": "#/components/schemas/SdgCard"
+            },
+            "title": "Cards",
+            "type": "array"
+          },
+          "co2": {
+            "$ref": "#/components/schemas/Co2Estimate"
+          },
+          "compatibility_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Compatibility Label"
+          },
+          "compatible": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Compatible"
+          },
+          "distribution": {
+            "items": {
+              "$ref": "#/components/schemas/FieldChange"
+            },
+            "title": "Distribution",
+            "type": "array"
+          },
+          "field_change_summary": {
+            "$ref": "#/components/schemas/FieldChangeSummary"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "available",
+          "run_id",
+          "field_change_summary",
+          "co2"
+        ],
+        "title": "ImpactResponse",
         "type": "object"
       },
       "InfeasibilityKind": {
@@ -4511,6 +4818,172 @@
         "title": "ScenarioView",
         "type": "object"
       },
+      "SdgCard": {
+        "additionalProperties": false,
+        "properties": {
+          "baseline_run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline Run Id"
+          },
+          "card": {
+            "enum": [
+              "SDG 2.4",
+              "SDG 6.4/6.5",
+              "SDG 13.1"
+            ],
+            "title": "Card",
+            "type": "string"
+          },
+          "crop": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Crop"
+          },
+          "denominator": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Term"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "difference_from_typical": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Term"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "formula": {
+            "title": "Formula",
+            "type": "string"
+          },
+          "formulas": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Formulas",
+            "type": "object"
+          },
+          "interpretation": {
+            "title": "Interpretation",
+            "type": "string"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Limitations",
+            "type": "array"
+          },
+          "metrics": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Metrics",
+            "type": "array"
+          },
+          "numerator": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Term"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "official_indicator": {
+            "const": false,
+            "default": false,
+            "title": "Official Indicator",
+            "type": "boolean"
+          },
+          "official_target_text": {
+            "title": "Official Target Text",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "run_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Run Ids",
+            "type": "array"
+          },
+          "source_records": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Records",
+            "type": "array"
+          },
+          "status": {
+            "$ref": "#/components/schemas/MetricStatus"
+          },
+          "target_url": {
+            "title": "Target Url",
+            "type": "string"
+          },
+          "values": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Values",
+            "type": "array"
+          }
+        },
+        "required": [
+          "card",
+          "official_target_text",
+          "target_url",
+          "interpretation",
+          "status",
+          "formula",
+          "formulas",
+          "metrics",
+          "values",
+          "limitations",
+          "run_id",
+          "run_ids",
+          "source_records"
+        ],
+        "title": "SdgCard",
+        "type": "object"
+      },
       "Season": {
         "additionalProperties": false,
         "properties": {
@@ -5209,6 +5682,114 @@
           "instance_b"
         ],
         "title": "SynergyRequest",
+        "type": "object"
+      },
+      "Term": {
+        "additionalProperties": false,
+        "properties": {
+          "definition_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Definition Id"
+          },
+          "evidence_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Evidence Ids",
+            "type": "array"
+          },
+          "formula": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Formula"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "metric_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metric Id"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "role": {
+            "enum": [
+              "numerator",
+              "denominator",
+              "difference",
+              "component"
+            ],
+            "title": "Role",
+            "type": "string"
+          },
+          "run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Run Id"
+          },
+          "status": {
+            "$ref": "#/components/schemas/MetricStatus"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "role",
+          "label",
+          "value",
+          "unit",
+          "status"
+        ],
+        "title": "Term",
         "type": "object"
       },
       "Timeline": {
@@ -6989,6 +7570,62 @@
         "summary": "Health"
       }
     },
+    "/api/v2/impact": {
+      "post": {
+        "operationId": "create_impact_api_v2_impact_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImpactRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImpactResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Impact"
+      }
+    },
     "/api/v2/interventions": {
       "get": {
         "operationId": "interventions_api_v2_interventions_get",
@@ -7799,9 +8436,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": true,
-                  "title": "Response Run Impact Api V2 Runs  Run Id  Impact Get",
-                  "type": "object"
+                  "$ref": "#/components/schemas/ImpactResponse"
                 }
               }
             },
