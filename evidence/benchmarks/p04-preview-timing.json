@@ -1,0 +1,82 @@
+{
+  "node": "P04",
+  "model_version": "surrogate-v7-gpu",
+  "training_device_recorded": "gpu",
+  "model_parameter_device_type": "gpu",
+  "gpu_device_present": false,
+  "inference_device_observed": "cpu",
+  "inference_note": "Seeded model file records device_type=gpu from training. This preview ran Booster.predict with no NVIDIA device in the container, so inference was CPU. AquaCrop confirmation is a separate CPU result.",
+  "host": "Linux-7.2.9-1-cachyos-x86_64-with-glibc2.41",
+  "thread_caps": {
+    "OMP_NUM_THREADS": "2",
+    "OPENBLAS_NUM_THREADS": "2",
+    "AABFLOW_SCIENCE_WORKERS": "2"
+  },
+  "preview": {
+    "estimate_kind": "surrogate_preview",
+    "domain_status": "in_domain",
+    "model_version": "surrogate-v7-gpu",
+    "feature_version": "surrogate-features-v2",
+    "evaluation_reference": "data/models/surrogate-v7-gpu/evaluation-wheat.json",
+    "estimated_yield_kg_ha": 8745.989722988996,
+    "preview_id": "pv_a60770272f29484460b471ae",
+    "elapsed_ms_after_load": 6.821983995905612,
+    "within_300_ms": true
+  },
+  "exact_confirmation": {
+    "estimate_kind": "exact_crop_model",
+    "preview_estimate_kind": "surrogate_preview",
+    "distinct_from_preview": true,
+    "exact_yield_kg_ha": 8640.233157836457,
+    "preview_minus_exact_kg_ha": 105.75656515253831,
+    "experiment_hash": "d24ec87a369cd1f885fa1b593ec15556252977319a4b5ac37db49038ac4137b4",
+    "evidence_id": "ev-exp-d24ec87a369cd1f8",
+    "has_finished": true,
+    "executed_at": "2026-10-10T11:35:11.331600+00:00",
+    "engine_name": "aquacrop-ospy",
+    "aquacrop_device": "cpu"
+  },
+  "held_out": {
+    "wheat": {
+      "training_device": "gpu",
+      "passed": true,
+      "gate_results": {
+        "nmae": true,
+        "median_spearman": true,
+        "median_regret": true,
+        "max_regret": true,
+        "fixtures": true,
+        "beats_naive_baseline": true,
+        "all_weather_sources": true
+      },
+      "test_year": "2024-25",
+      "holdout_family": "irregular",
+      "test_nmae": 0.07137503527100231,
+      "model_sha256": "1226cb46ea4846965ea91967b0d0f05a24309c1da57203a7090a1b47164bb6df",
+      "model_sha256_matches_record": true,
+      "training_data_sha256": "3fc7c75b843b4d53a3491e20792302175a4543c62e1631bbb78a64b67377971e",
+      "training_data_sha256_matches_record": true
+    },
+    "cotton": {
+      "training_device": "gpu",
+      "passed": true,
+      "gate_results": {
+        "nmae": true,
+        "median_spearman": true,
+        "median_regret": true,
+        "max_regret": true,
+        "fixtures": true,
+        "beats_naive_baseline": true,
+        "all_weather_sources": true
+      },
+      "test_year": "2025",
+      "holdout_family": "irregular",
+      "test_nmae": 0.07963615371521005,
+      "model_sha256": "21ee006cf5ba16ad98861a6adac26a41930fb036c8904ed6c41dc31887bdd478",
+      "model_sha256_matches_record": true,
+      "training_data_sha256": "db135ee34303146c4b1e49d57b37202c4e57d13f882807d2c3473b11474f0f3f",
+      "training_data_sha256_matches_record": true
+    }
+  },
+  "evaluation_passed": true
+}
