@@ -2332,6 +2332,69 @@ export interface components {
             /** Warnings */
             warnings: components["schemas"]["Issue"][];
         };
+        /** ReportAccepted */
+        ReportAccepted: {
+            job: components["schemas"]["Job"];
+            /** Job Id */
+            job_id: string;
+            /** Report Id */
+            report_id: string;
+        };
+        /**
+         * ReportCreate
+         * @description Body reserved by copilot ``create_report``: run ids, analysis ids, report type.
+         */
+        ReportCreate: {
+            /** Analysis Ids */
+            analysis_ids?: string[];
+            /**
+             * Contract Version
+             * @default 2.0.0
+             * @constant
+             */
+            contract_version: "2.0.0";
+            /**
+             * Report Type
+             * @default one_page_plan
+             * @enum {string}
+             */
+            report_type: "one_page_plan" | "full_report";
+            /** Run Ids */
+            run_ids: string[];
+        };
+        /** ReportView */
+        ReportView: {
+            /** Analysis Ids */
+            analysis_ids: string[];
+            /** Artifact Kind */
+            artifact_kind: string | null;
+            /** Created At */
+            created_at: string;
+            /** Download Url */
+            download_url: string | null;
+            /** Final Self Contained Report */
+            final_self_contained_report: boolean;
+            /** Job Error */
+            job_error: {
+                [key: string]: unknown;
+            } | null;
+            /** Job Id */
+            job_id: string | null;
+            /** Job State */
+            job_state: string | null;
+            /** Report Hash */
+            report_hash: string | null;
+            /** Report Hash Scope */
+            report_hash_scope: string | null;
+            /** Report Id */
+            report_id: string;
+            /** Report Type */
+            report_type: string;
+            /** Run Ids */
+            run_ids: string[];
+            /** Status */
+            status: string;
+        };
         /**
          * ReviewFlags
          * @description Independent flags; never collapse into one 'verified' badge (PRD §2.3).
