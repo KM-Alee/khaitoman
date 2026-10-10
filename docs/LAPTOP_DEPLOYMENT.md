@@ -2,11 +2,12 @@
 
 Activated on 10 October 2026. Production source is latest `main` at
 `3cc65e3`, fast-forwarded onto `codex/laptop-serving`, plus the report contract
-fix at `03f5ecc`. The independent laptop backend runs schema 4. No PR was
+fix at `03f5ecc` and the backend sign-in/connection recovery flow. The independent laptop backend runs schema 4. No PR was
 merged by this deployment session.
 
 Frontend: https://app.khmanan.site
-Backend login/health: https://api.khmanan.site/api/v2/health
+Backend health: https://api.khmanan.site/api/v2/health (Access protected)
+Backend sign-in: use **Sign in to backend** in the frontend connection banner.
 
 The deployed configuration and executed checks are recorded below. Local
 validation logs, account screenshots and backups remain in the ignored `.laptop/`
@@ -200,11 +201,16 @@ The following steps describe how to re-provision the current arrangement.
    The marker records your manual Access setup; it does not verify the account
    policy. The command waits for backend health and a live connector connection.
    Test the public URL before declaring it available.
-7. Open `https://api.khmanan.site/api/v2/health` in your browser and sign in to
-   Access. Then open the frontend in the same browser. Each tester must
-   establish the API hostname's authorization cookie this way. The frontend
-   sends credentials for API, SSE, imagery and map requests. Expired sessions
-   require signing in again; there is no integrated Access login screen yet.
+7. Open `https://app.khmanan.site`. If its backend connection cannot complete,
+   click **Sign in to backend** and complete Access with your approved email.
+   The protected HTML landing `/api/v2/access/ready?return_to=...` returns to the
+   same frontend page, preserving its run and other URL state. Return URLs are
+   restricted to the exact configured CORS origins, escaped and never cached.
+   It supplies no authentication bypass or credential. Each tester needs their
+   own Access session. **Retry connection** refetches API data after connection
+   recovery. The frontend sends credentials for API, SSE, imagery and maps.
+   An expired login or a sleeping/disconnected laptop can both cause a failed
+   browser fetch, so the banner does not claim to distinguish them.
 
 An unauthenticated request must be denied or redirected by Access. Verify an
 allowed browser's health, a rejected origin's preflight, imagery, terrain,
@@ -232,7 +238,10 @@ the dashboard:
 | `VITE_BACKEND_ORIGIN` | `https://api.khmanan.site` (origin only; no `/api/v2`) |
 | Production Git branch | `codex/laptop-serving` |
 
-`web/vercel.json` supplies build settings and the SPA history fallback. API and
+`web/vercel.json` supplies build settings, the SPA history fallback and a temporary
+redirect from this project's `vercel.app` hostnames to `app.khmanan.site`, preserving
+paths and queries. Access cookies and CORS are configured for that canonical domain.
+API and
 `/assets` links resolve to the configured backend; Vite's bundled assets live
 under `/static`. JSON requests, both job/onboarding streams and copilot streams,
 map images/GeoJSON/DEM and report links all use that backend consistently.
@@ -331,9 +340,10 @@ export contract fix `03f5ecc` is deployed as production Vercel deployment
 `dpl_FwyQERRpR2vWazzaKqNn3p1UTfHD` (Ready, build after ArcGIS replacement), with `app.khmanan.site` assigned.
 The public bundle includes `https://api.khmanan.site`.
 
-- Docker `make test DC='docker compose -p aabflow-serving-validation'`: 634 passed.
-- Docker `make web-test web-build` with the same isolated project: 18 files,
-  115 tests passed, TypeScript and Vite production build passed.
+- Docker `make test DC='docker compose -p aabflow-serving-validation'` after
+  connection recovery changes: 645 passed, 8 warnings.
+- Docker `make web-test web-build` after connection recovery changes with the same
+  isolated project: 19 files, 117 tests passed; TypeScript and Vite build passed.
 - Public allowed OPTIONS: HTTP 200, exact frontend origin and credential support;
   unapproved origin: HTTP 400. API health, report files, assets and SSE paths
   without authentication redirect to Access (HTTP 302).

@@ -45,7 +45,7 @@ import { JourneyNav } from "./NavigationRail";
 
 export function ConnectionState({ compact }: { compact?: boolean }) {
   const health = useHealth();
-  const ok = health.data?.status === "ok";
+  const ok = !health.error && health.data?.status === "ok";
   const location = BACKEND_ORIGIN ? "Backend" : "Local";
   const label = health.isLoading ? "Connecting" : ok ? `${location} API online` : `${location} API unreachable`;
   return (

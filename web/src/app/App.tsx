@@ -10,6 +10,7 @@ import { HomeRedirect } from "./HomeRedirect";
 import { WorkspaceScreen } from "@/features/workspace/WorkspaceScreen";
 import { SCREENS, type Screen } from "./selection";
 import { TourHost } from "@/features/tour/TourHost";
+import { BackendConnection } from "@/components/layout/BackendConnection";
 
 const CompareScreen = lazy(() => import("@/features/compare/CompareScreen").then((m) => ({ default: m.CompareScreen })));
 const ReplayScreen = lazy(() => import("@/features/compare/ReplayScreen").then((m) => ({ default: m.ReplayScreen })));
@@ -93,6 +94,7 @@ export function App({ client }: { client?: QueryClient }) {
       <TooltipProvider delayDuration={250}>
         <BrowserRouter>
           <Flags />
+          <BackendConnection />
           <AppRoutes />
           <TourHost />
         </BrowserRouter>

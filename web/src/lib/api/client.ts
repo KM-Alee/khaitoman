@@ -45,7 +45,7 @@ export function describeError(err: unknown): { title: string; detail: string } {
       case "PROVIDER_UNAVAILABLE":
         return { title: "Hosted assistant unavailable", detail: err.message };
       case "NETWORK":
-        return { title: `${BACKEND_ORIGIN ? "Backend" : "Local"} API not reachable`, detail: "The AabFlow service did not respond." };
+        return { title: `${BACKEND_ORIGIN ? "Backend" : "Local"} API not reachable`, detail: BACKEND_ORIGIN ? "The backend connection could not complete. Sign-in may be required, or the serving laptop may be offline." : "The AabFlow service did not respond." };
       default:
         if (err.status >= 500) return { title: `Service error (${err.status})`, detail: err.message };
         return { title: `Request failed (${err.status})`, detail: err.message };
