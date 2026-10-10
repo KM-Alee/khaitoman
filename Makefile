@@ -3,7 +3,7 @@
 .NOTPARALLEL:
 .PHONY: help setup build deps up down logs shell lock doctor provider-check test lint science-smoke \
         contracts web-test web-build ui-checks demo vision-weights vision-shell \
-        water-tests pilot-a pilot-b candidates train-surrogate library-adequacy domain-tests core-acceptance copilot-evals release-check
+        water-tests pilot-a pilot-b candidates analyses-evidence train-surrogate library-adequacy domain-tests core-acceptance copilot-evals release-check
 
 DC   := docker compose
 ifeq ($(GPU),1)
@@ -102,6 +102,9 @@ library-adequacy: ## denser exact libraries and objective/investment stability o
 
 domain-tests:     ## AT02–AT04 crop/ledger gates, water properties, both pilots' published libraries (run candidates first)
 	$(API) pytest -v tests/scientific/test_crop_gates.py tests/scientific/test_published_libraries.py tests/scientific/test_library_adequacy.py tests/unit/test_candidate_publication.py tests/unit/test_candidate_density.py tests/unit/test_water_*.py tests/property
+
+analyses-evidence: ## AT09/AT10: one six-setting frontier and nine-cell stress through the running API (make up first)
+	docker compose exec -T api python scripts/analysis_evidence.py
 
 core-acceptance: ## v1: run each existing AT test once; fail on failures; list AT ids with no test. Not G-CORE.
 	$(API) python scripts/core_acceptance.py

@@ -54,8 +54,8 @@ Status values: `not_started`, `in_progress`, `passed`, `failed`, `blocked`.
 | AT06 | Live budget/deficit change re-solves and changes plan where designed | M3 | passed | `test_at06_binding_change_changes_plan_and_nonbinding_does_not`. core-acceptance v1: 1 passed. |
 | AT07 | Coverage and finite-model optimality visible; no overstated impossibility | M3 | passed | `test_at07_coverage_and_finite_infeasibility`. core-acceptance v1: 1 passed. |
 | AT08 | Matched comparisons share conditions; nonmatched labelled | M3 | passed | `test_at08_matched_share_conditions_nonmatched_labelled`. core-acceptance v1: 1 passed. |
-| AT09 | Six-setting frontier and nine-cell stress map to run records | M5 | not_started | |
-| AT10 | Robust run shares decisions; impossible stress cells have no yield | M5 | not_started | |
+| AT09 | Six-setting frontier and nine-cell stress map to run records | M5 | passed | Live API on real pilot-a wheat 2027-28: six frontier points (5 OPTIMAL nondominated, 1 INFEASIBLE tail-service point), nine stress cells; every point/cell `run_id` resolves via `GET /runs/{id}` with the analysis id. `make analyses-evidence` → `evidence/benchmarks/analyses-20261010T114936Z.json`. |
+| AT10 | Robust run shares decisions; impossible stress cells have no yield | M5 | passed | Robust plan R: 9/9 cells deliverable with the same policy IDs; foregone typical output 27,360 kg vs P. Typical-only plan P: 6/9 cells undeliverable, each with `field_delivery` violations and no yield; worst-tested blocked. `make analyses-evidence` → `evidence/benchmarks/analyses-20261010T114936Z.json`. |
 | AT11 | Surrogate held-out evaluation passes; previews exact-confirmed | M5 | not_started | |
 | AT12 | Shared cost once; pond land removed; pumping on operating budget | M3 | passed | `test_at12_shared_cost_once_pond_land_pumping_budget` and `test_at12_pond_land_removed_once`. core-acceptance v1: 2 passed. |
 | AT13 | Report, UI, chatbot use same metrics, units, run IDs | M4 | not_started | |

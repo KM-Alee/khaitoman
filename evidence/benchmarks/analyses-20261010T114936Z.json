@@ -1,0 +1,2097 @@
+{
+  "generated_at": "20261010T114936Z",
+  "command": "docker compose exec api python scripts/analysis_evidence.py",
+  "api": {
+    "base_url": "http://127.0.0.1:8000",
+    "versions": {
+      "aquacrop": "3.1.0",
+      "ortools": "9.15.6755",
+      "fastapi": "0.141.1",
+      "pydantic": "2.13.5",
+      "lightgbm": "4.7.0"
+    }
+  },
+  "scenario_request": {
+    "pilot_id": "pilot-a",
+    "pilot_version": "reviewed-v1",
+    "season_id": "wheat-rabi-2027-28",
+    "planning_mode": "capital_planning",
+    "decision_at": "2026-10-10T08:00:00+05:00",
+    "weather_scenario_ids": [
+      "dry",
+      "typical",
+      "wet"
+    ],
+    "supply_profile_id": "nominal-roster-v1",
+    "capital_budget_pkr": 3000000,
+    "operating_budget_pkr": 400000,
+    "uncertainty_set_id": "pilot-a:wheat-rabi-2027-28:release-9"
+  },
+  "scenario_revision_id": "rev_a6cb15a05ceb45aca4808fd12ec4dd41",
+  "source_runs": {
+    "P": {
+      "run_id": "run_ff1791df680549ce9b4b2c4d0e306acb",
+      "plan_kind": "P",
+      "outcome": "plan",
+      "solver_status": "OPTIMAL",
+      "production_kg": 154117.87875700262,
+      "worst_tested_production_kg": 154117.87875700262
+    },
+    "R": {
+      "run_id": "run_f1e9f26203ef472fb9ad1397aef9f565",
+      "plan_kind": "R",
+      "outcome": "plan",
+      "solver_status": "OPTIMAL",
+      "production_kg": 126757.48109287504,
+      "worst_tested_production_kg": 55327.03107795803
+    }
+  },
+  "frontier": {
+    "analysis_id": "ana_b735149976e2466eb5e2838a9f4d88e7",
+    "wall_s": 6.05,
+    "counts": {
+      "dominance_unresolved": 0,
+      "dominated": 0,
+      "evaluated": 6,
+      "feasible": 5,
+      "infeasible": 1,
+      "nondominated": 5,
+      "unknown_or_other": 0
+    },
+    "proof_status": "all_points_optimal",
+    "label": "Nondominated among evaluated plans",
+    "points": [
+      {
+        "point_id": "pt01",
+        "setting": {
+          "capital_budget_pkr": 0,
+          "minimum_service_ratio": null,
+          "service_group": null
+        },
+        "run_id": "run_4e048e2a754f47b08a6d83c8c9266430",
+        "run_record_linked": true,
+        "outcome": "plan",
+        "solver_status": "OPTIMAL",
+        "dominance": "nondominated",
+        "production_kg": 140466.54099240943,
+        "capital_commitment_pkr": 0.0,
+        "min_service_ratio": 0.4433268299732641
+      },
+      {
+        "point_id": "pt02",
+        "setting": {
+          "capital_budget_pkr": 500000,
+          "minimum_service_ratio": null,
+          "service_group": null
+        },
+        "run_id": "run_4fd4c8eb7f964af38df90bc5686f66de",
+        "run_record_linked": true,
+        "outcome": "plan",
+        "solver_status": "OPTIMAL",
+        "dominance": "nondominated",
+        "production_kg": 152902.7670820407,
+        "capital_commitment_pkr": 357893.0,
+        "min_service_ratio": 0.5578757790609129
+      },
+      {
+        "point_id": "pt03",
+        "setting": {
+          "capital_budget_pkr": 1500000,
+          "minimum_service_ratio": null,
+          "service_group": null
+        },
+        "run_id": "run_4aaacdc4ccc14091a04798b0e6eb25c3",
+        "run_record_linked": true,
+        "outcome": "plan",
+        "solver_status": "OPTIMAL",
+        "dominance": "nondominated",
+        "production_kg": 153311.90853862604,
+        "capital_commitment_pkr": 767296.0,
+        "min_service_ratio": 0.5578757790609129
+      },
+      {
+        "point_id": "pt04",
+        "setting": {
+          "capital_budget_pkr": 3000000,
+          "minimum_service_ratio": null,
+          "service_group": null
+        },
+        "run_id": "run_5fafb42d5f6948749fe0188f80e1613a",
+        "run_record_linked": true,
+        "outcome": "plan",
+        "solver_status": "OPTIMAL",
+        "dominance": "nondominated",
+        "production_kg": 154117.87875700262,
+        "capital_commitment_pkr": 1953216.0,
+        "min_service_ratio": 0.6095528655821812
+      },
+      {
+        "point_id": "pt05",
+        "setting": {
+          "capital_budget_pkr": 8000000,
+          "minimum_service_ratio": null,
+          "service_group": null
+        },
+        "run_id": "run_09f5d45684da42a098cf73b8581b9333",
+        "run_record_linked": true,
+        "outcome": "plan",
+        "solver_status": "OPTIMAL",
+        "dominance": "nondominated",
+        "production_kg": 154635.41052303856,
+        "capital_commitment_pkr": 7898190.0,
+        "min_service_ratio": 0.6184389380420465
+      },
+      {
+        "point_id": "pt06",
+        "setting": {
+          "capital_budget_pkr": 3000000,
+          "minimum_service_ratio": 0.95,
+          "service_group": "tail"
+        },
+        "run_id": "run_962afdfa609a48bf90163d1da6754c06",
+        "run_record_linked": true,
+        "outcome": "no_plan",
+        "solver_status": "INFEASIBLE",
+        "dominance": "not_applicable",
+        "production_kg": null,
+        "capital_commitment_pkr": null,
+        "min_service_ratio": null
+      }
+    ]
+  },
+  "stress": {
+    "analysis_id": "ana_ec24a82f435b40658159f32ce1f41b86",
+    "wall_s": 3.02,
+    "mode": "fixed_plan",
+    "summary": {
+      "best_tested_production_kg": 175739.18637837074,
+      "conditional_label": null,
+      "conditional_min_over_deliverable_kg": 55327.03107795803,
+      "deliverable": 9,
+      "tested": 9,
+      "typical_production_kg": 126757.48109287504,
+      "undeliverable_state_ids": [],
+      "worst_tested_production_kg": 55327.03107795803
+    },
+    "matrix": {
+      "cells": [
+        [
+          "dry__nominal-roster-v1",
+          "dry__shortage-22pct-v1",
+          "dry__interruption-14d-v1"
+        ],
+        [
+          "typical__nominal-roster-v1",
+          "typical__shortage-22pct-v1",
+          "typical__interruption-14d-v1"
+        ],
+        [
+          "wet__nominal-roster-v1",
+          "wet__shortage-22pct-v1",
+          "wet__interruption-14d-v1"
+        ]
+      ],
+      "columns": [
+        "nominal-roster-v1",
+        "shortage-22pct-v1",
+        "interruption-14d-v1"
+      ],
+      "rows": [
+        "dry",
+        "typical",
+        "wet"
+      ]
+    },
+    "foregone_typical_output": {
+      "foregone_kg": 27360.39766412758,
+      "note": "output given up in the typical state in exchange for deliverability across all tested states",
+      "reference_run_id": "run_ff1791df680549ce9b4b2c4d0e306acb",
+      "reference_typical_production_kg": 154117.87875700262,
+      "this_plan_typical_production_kg": 126757.48109287504,
+      "typical_state": "typical__nominal-roster-v1"
+    },
+    "cells": [
+      {
+        "state_id": "dry__nominal-roster-v1",
+        "run_id": "run_5af06a73d64b4f0bbb6f6b8159da51e8",
+        "run_record_linked": true,
+        "solver_status": "OPTIMAL",
+        "deliverable": true,
+        "production_kg": 55327.03107795803,
+        "shares_robust_decisions": true,
+        "violations": []
+      },
+      {
+        "state_id": "dry__shortage-22pct-v1",
+        "run_id": "run_6f9f0e09aaf34bcab5d54b7b1ee47212",
+        "run_record_linked": true,
+        "solver_status": "OPTIMAL",
+        "deliverable": true,
+        "production_kg": 55327.03107795803,
+        "shares_robust_decisions": true,
+        "violations": []
+      },
+      {
+        "state_id": "dry__interruption-14d-v1",
+        "run_id": "run_874ee9ab174341cc95d14f01f6f9d4ae",
+        "run_record_linked": true,
+        "solver_status": "OPTIMAL",
+        "deliverable": true,
+        "production_kg": 55327.03107795803,
+        "shares_robust_decisions": true,
+        "violations": []
+      },
+      {
+        "state_id": "typical__nominal-roster-v1",
+        "run_id": "run_32028f842a4e4e8fa4e14980c50f7c4f",
+        "run_record_linked": true,
+        "solver_status": "OPTIMAL",
+        "deliverable": true,
+        "production_kg": 126757.48109287504,
+        "shares_robust_decisions": true,
+        "violations": []
+      },
+      {
+        "state_id": "typical__shortage-22pct-v1",
+        "run_id": "run_de3b5880e8db444597e2b5050e7f9b08",
+        "run_record_linked": true,
+        "solver_status": "OPTIMAL",
+        "deliverable": true,
+        "production_kg": 126757.48109287504,
+        "shares_robust_decisions": true,
+        "violations": []
+      },
+      {
+        "state_id": "typical__interruption-14d-v1",
+        "run_id": "run_84697bab1cc0419d830fb8d8e1a0c1c1",
+        "run_record_linked": true,
+        "solver_status": "OPTIMAL",
+        "deliverable": true,
+        "production_kg": 126757.48109287504,
+        "shares_robust_decisions": true,
+        "violations": []
+      },
+      {
+        "state_id": "wet__nominal-roster-v1",
+        "run_id": "run_bd0bbc34444e480683c1eb24c441627c",
+        "run_record_linked": true,
+        "solver_status": "OPTIMAL",
+        "deliverable": true,
+        "production_kg": 175739.18637837074,
+        "shares_robust_decisions": true,
+        "violations": []
+      },
+      {
+        "state_id": "wet__shortage-22pct-v1",
+        "run_id": "run_e3f09e66fae045dfbee06a8f26d79c96",
+        "run_record_linked": true,
+        "solver_status": "OPTIMAL",
+        "deliverable": true,
+        "production_kg": 175739.18637837074,
+        "shares_robust_decisions": true,
+        "violations": []
+      },
+      {
+        "state_id": "wet__interruption-14d-v1",
+        "run_id": "run_ea7de1b308184d0ab58fba1394396e23",
+        "run_record_linked": true,
+        "solver_status": "OPTIMAL",
+        "deliverable": true,
+        "production_kg": 175739.18637837074,
+        "shares_robust_decisions": true,
+        "violations": []
+      }
+    ]
+  },
+  "typical_plan_stress": {
+    "analysis_id": "ana_c26e2f48900a4a24a9ac53db06042c4c",
+    "wall_s": 2.52,
+    "summary": {
+      "best_tested_production_kg": 187492.26240443165,
+      "conditional_label": "minimum over deliverable cells only; not the plan's worst case",
+      "conditional_min_over_deliverable_kg": 79074.04471548487,
+      "deliverable": 3,
+      "tested": 9,
+      "typical_production_kg": 154117.87875700262,
+      "undeliverable_state_ids": [
+        "dry__shortage-22pct-v1",
+        "dry__interruption-14d-v1",
+        "typical__shortage-22pct-v1",
+        "typical__interruption-14d-v1",
+        "wet__shortage-22pct-v1",
+        "wet__interruption-14d-v1"
+      ],
+      "worst_tested_production_kg": null
+    },
+    "cells": [
+      {
+        "state_id": "dry__nominal-roster-v1",
+        "run_id": "run_771edfc02b854a64b3774ccb35958645",
+        "run_record_linked": true,
+        "deliverable": true,
+        "production_kg": 79074.04471548487,
+        "violations": []
+      },
+      {
+        "state_id": "dry__shortage-22pct-v1",
+        "run_id": "run_722e2ebcadfe4215a20e881f6ca4aa67",
+        "run_record_linked": true,
+        "deliverable": false,
+        "production_kg": null,
+        "violations": [
+          {
+            "candidate_policy_id": "cp_b45513025afa96135e7195f4",
+            "detail": "receipt_right: receipt 73.29 m3 exceeds window cap 57.28 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-003",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 73.29 m3 exceeds window cap 57.28 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_795aaaff3d42d746aa64de5c",
+            "detail": "receipt_right: receipt 103.18 m3 exceeds window cap 80.57 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-006",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 103.18 m3 exceeds window cap 80.57 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_de533b1f023b9e13e3588ab3",
+            "detail": "receipt_right: receipt 83.26 m3 exceeds window cap 65.02 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-007",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 83.26 m3 exceeds window cap 65.02 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_451d98790d4fe3af3784ec62",
+            "detail": "receipt_right: receipt 71.89 m3 exceeds window cap 56.22 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-010",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 71.89 m3 exceeds window cap 56.22 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_2228bd9fac59e82733ec3662",
+            "detail": "receipt_right: receipt 77.24 m3 exceeds window cap 60.40 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-011",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 77.24 m3 exceeds window cap 60.40 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_b780db64173a3994c43a2865",
+            "detail": "receipt_right: receipt 68.29 m3 exceeds window cap 53.33 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-012",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 68.29 m3 exceeds window cap 53.33 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_fd1e1bd5b9c7cefa25d67e01",
+            "detail": "receipt_right: receipt 212.40 m3 exceeds window cap 165.86 m3 under shortage-22pct-v1; receipt_right: receipt 7.20 m3 exceeds window cap 6.92 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-013",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 212.40 m3 exceeds window cap 165.86 m3 under shortage-22pct-v1",
+              "receipt_right: receipt 7.20 m3 exceeds window cap 6.92 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_54c97944050ce6daf1915d4b",
+            "detail": "receipt_right: receipt 86.66 m3 exceeds window cap 67.67 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-014",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 86.66 m3 exceeds window cap 67.67 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_7d9ac66b647a2d0de4f59887",
+            "detail": "receipt_right: receipt 86.17 m3 exceeds window cap 67.35 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-015",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 86.17 m3 exceeds window cap 67.35 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_1d2659796a3bee3cb9ac7591",
+            "detail": "receipt_right: receipt 69.79 m3 exceeds window cap 54.57 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-018",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 69.79 m3 exceeds window cap 54.57 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_8182c4efd6c536a3390c21c8",
+            "detail": "receipt_right: receipt 240.78 m3 exceeds window cap 188.86 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-020",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 240.78 m3 exceeds window cap 188.86 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_ca3582a9fbc1958a3881d690",
+            "detail": "receipt_right: receipt 98.17 m3 exceeds window cap 77.01 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-021",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 98.17 m3 exceeds window cap 77.01 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_14a6c4f0e8ecb943aaf32ed6",
+            "detail": "receipt_right: receipt 100.70 m3 exceeds window cap 78.55 m3 under shortage-22pct-v1; receipt_right: receipt 100.05 m3 exceeds window cap 78.55 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-022",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 100.70 m3 exceeds window cap 78.55 m3 under shortage-22pct-v1",
+              "receipt_right: receipt 100.05 m3 exceeds window cap 78.55 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_2f466fd1204277b8e7c2c9df",
+            "detail": "receipt_right: receipt 60.23 m3 exceeds window cap 47.24 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-023",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 60.23 m3 exceeds window cap 47.24 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_859ca5771961dc6c18f9fe76",
+            "detail": "receipt_right: receipt 97.68 m3 exceeds window cap 76.62 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-024",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 97.68 m3 exceeds window cap 76.62 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_7fc8dd61e97b6684a13d69a1",
+            "detail": "receipt_right: receipt 62.63 m3 exceeds window cap 49.12 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-025",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 62.63 m3 exceeds window cap 49.12 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_3033ff2f734e0d35049a7275",
+            "detail": "receipt_right: receipt 66.63 m3 exceeds window cap 52.26 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-026",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 66.63 m3 exceeds window cap 52.26 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_85c70ecc9e1fe8c69116e5e0",
+            "detail": "receipt_right: receipt 155.85 m3 exceeds window cap 122.26 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-027",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 155.85 m3 exceeds window cap 122.26 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_d9f9d155f5dd1ac708b408e8",
+            "detail": "receipt_right: receipt 71.22 m3 exceeds window cap 55.86 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-028",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 71.22 m3 exceeds window cap 55.86 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_694cfd82132ecaaad9b091b9",
+            "detail": "receipt_right: receipt 99.03 m3 exceeds window cap 77.24 m3 under shortage-22pct-v1; receipt_right: receipt 25.71 m3 exceeds window cap 20.12 m3 under shortage-22pct-v1; receipt_right: receipt 98.94 m3 exceeds window cap 77.24 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-029",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 99.03 m3 exceeds window cap 77.24 m3 under shortage-22pct-v1",
+              "receipt_right: receipt 25.71 m3 exceeds window cap 20.12 m3 under shortage-22pct-v1",
+              "receipt_right: receipt 98.94 m3 exceeds window cap 77.24 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_a6f64407c36056c463cc8100",
+            "detail": "receipt_right: receipt 104.86 m3 exceeds window cap 82.24 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-030",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 104.86 m3 exceeds window cap 82.24 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_0f814b8aab433a92a31ae147",
+            "detail": "receipt_right: receipt 53.64 m3 exceeds window cap 41.94 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-032",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 53.64 m3 exceeds window cap 41.94 m3 under shortage-22pct-v1"
+            ]
+          }
+        ]
+      },
+      {
+        "state_id": "dry__interruption-14d-v1",
+        "run_id": "run_901eb008b3464016be0663165f9ce3a5",
+        "run_record_linked": true,
+        "deliverable": false,
+        "production_kg": null,
+        "violations": [
+          {
+            "candidate_policy_id": "cp_2371923d52f824628850d3dd",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0207 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0222 under interruption-14d-v1; field_balance: 2028-02-19: water at field 0.0000 m3 != applied 43.8150 m3; field_balance: 2028-02-26: water at field 0.0000 m3 != applied 43.8150 m3",
+            "field_id": "pilot-a:field-001",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0207 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0222 under interruption-14d-v1",
+              "field_balance: 2028-02-19: water at field 0.0000 m3 != applied 43.8150 m3",
+              "field_balance: 2028-02-26: water at field 0.0000 m3 != applied 43.8150 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_3e4343d9b407401c8eff001b",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0206 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0221 under interruption-14d-v1; field_balance: 2028-02-19: water at field 0.0000 m3 != applied 39.6336 m3; field_balance: 2028-02-26: water at field 0.0000 m3 != applied 39.6336 m3",
+            "field_id": "pilot-a:field-002",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0206 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0221 under interruption-14d-v1",
+              "field_balance: 2028-02-19: water at field 0.0000 m3 != applied 39.6336 m3",
+              "field_balance: 2028-02-26: water at field 0.0000 m3 != applied 39.6336 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_b45513025afa96135e7195f4",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0205 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0220 under interruption-14d-v1; field_balance: 2028-02-18: water at field 261.7600 m3 != applied 335.0528 m3; field_balance: 2028-02-25: water at field 0.0000 m3 != applied 73.2928 m3",
+            "field_id": "pilot-a:field-003",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0205 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0220 under interruption-14d-v1",
+              "field_balance: 2028-02-18: water at field 261.7600 m3 != applied 335.0528 m3",
+              "field_balance: 2028-02-25: water at field 0.0000 m3 != applied 73.2928 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_ab7641fb78df75ca20c7a627",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0201 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0216 under interruption-14d-v1; field_balance: 2028-02-17: water at field 0.0000 m3 != applied 60.9522 m3; field_balance: 2028-02-24: water at field 0.0000 m3 != applied 60.9522 m3",
+            "field_id": "pilot-a:field-004",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0201 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0216 under interruption-14d-v1",
+              "field_balance: 2028-02-17: water at field 0.0000 m3 != applied 60.9522 m3",
+              "field_balance: 2028-02-24: water at field 0.0000 m3 != applied 60.9522 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_bcea9d17e2385bb8d16faa1e",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0203 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0218 under interruption-14d-v1; field_balance: 2028-02-18: water at field 244.7600 m3 != applied 297.9953 m3; field_balance: 2028-02-25: water at field 244.7600 m3 != applied 297.9953 m3",
+            "field_id": "pilot-a:field-005",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0203 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0218 under interruption-14d-v1",
+              "field_balance: 2028-02-18: water at field 244.7600 m3 != applied 297.9953 m3",
+              "field_balance: 2028-02-25: water at field 244.7600 m3 != applied 297.9953 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_795aaaff3d42d746aa64de5c",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0200 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0215 under interruption-14d-v1; field_balance: 2028-02-16: water at field 0.0000 m3 != applied 103.1792 m3; field_balance: 2028-02-23: water at field 0.0000 m3 != applied 103.1792 m3",
+            "field_id": "pilot-a:field-006",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0200 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0215 under interruption-14d-v1",
+              "field_balance: 2028-02-16: water at field 0.0000 m3 != applied 103.1792 m3",
+              "field_balance: 2028-02-23: water at field 0.0000 m3 != applied 103.1792 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_de533b1f023b9e13e3588ab3",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0199 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0214 under interruption-14d-v1; field_balance: 2028-02-16: water at field 0.0000 m3 != applied 83.2608 m3; field_balance: 2028-02-23: water at field 0.0000 m3 != applied 83.2608 m3",
+            "field_id": "pilot-a:field-007",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0199 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0214 under interruption-14d-v1",
+              "field_balance: 2028-02-16: water at field 0.0000 m3 != applied 83.2608 m3",
+              "field_balance: 2028-02-23: water at field 0.0000 m3 != applied 83.2608 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_fa4f824f75bf848e595d3815",
+            "detail": "receipt_right: receipt 64.60 m3 exceeds window cap 62.46 m3 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0208 under interruption-14d-v1; receipt_right: receipt 64.60 m3 exceeds window cap 20.55 m3 under interruption-14d-v1; field_balance: 2028-02-20: water at field 0.0000 m3 != applied 64.5978 m3",
+            "field_id": "pilot-a:field-008",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 64.60 m3 exceeds window cap 62.46 m3 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0208 under interruption-14d-v1",
+              "receipt_right: receipt 64.60 m3 exceeds window cap 20.55 m3 under interruption-14d-v1",
+              "field_balance: 2028-02-20: water at field 0.0000 m3 != applied 64.5978 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_29b60968c11899c7ef2b87d6",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0194 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0209 under interruption-14d-v1; field_balance: 2028-02-13: water at field 0.0000 m3 != applied 55.9797 m3; field_balance: 2028-02-20: water at field 0.0000 m3 != applied 55.9797 m3",
+            "field_id": "pilot-a:field-009",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0194 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0209 under interruption-14d-v1",
+              "field_balance: 2028-02-13: water at field 0.0000 m3 != applied 55.9797 m3",
+              "field_balance: 2028-02-20: water at field 0.0000 m3 != applied 55.9797 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_451d98790d4fe3af3784ec62",
+            "detail": "receipt_right: receipt 71.89 m3 exceeds window cap 30.46 m3 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0208 under interruption-14d-v1; receipt_right: receipt 71.89 m3 exceeds window cap 41.61 m3 under interruption-14d-v1; field_balance: 2028-02-20: water at field 0.0000 m3 != applied 71.8900 m3",
+            "field_id": "pilot-a:field-010",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 71.89 m3 exceeds window cap 30.46 m3 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0208 under interruption-14d-v1",
+              "receipt_right: receipt 71.89 m3 exceeds window cap 41.61 m3 under interruption-14d-v1",
+              "field_balance: 2028-02-20: water at field 0.0000 m3 != applied 71.8900 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_2228bd9fac59e82733ec3662",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0194 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0209 under interruption-14d-v1; field_balance: 2028-02-13: water at field 0.0000 m3 != applied 77.2408 m3; field_balance: 2028-02-20: water at field 0.0000 m3 != applied 77.2408 m3",
+            "field_id": "pilot-a:field-011",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0194 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0209 under interruption-14d-v1",
+              "field_balance: 2028-02-13: water at field 0.0000 m3 != applied 77.2408 m3",
+              "field_balance: 2028-02-20: water at field 0.0000 m3 != applied 77.2408 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_b780db64173a3994c43a2865",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0197 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0212 under interruption-14d-v1; field_balance: 2028-02-15: water at field 0.0000 m3 != applied 68.2866 m3; field_balance: 2028-02-22: water at field 0.0000 m3 != applied 68.2866 m3",
+            "field_id": "pilot-a:field-012",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0197 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0212 under interruption-14d-v1",
+              "field_balance: 2028-02-15: water at field 0.0000 m3 != applied 68.2866 m3",
+              "field_balance: 2028-02-22: water at field 0.0000 m3 != applied 68.2866 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_fd1e1bd5b9c7cefa25d67e01",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0196 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0211 under interruption-14d-v1; field_balance: 2028-02-15: water at field 0.0000 m3 != applied 212.4000 m3; field_balance: 2028-02-22: water at field 0.0000 m3 != applied 212.4000 m3",
+            "field_id": "pilot-a:field-013",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0196 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0211 under interruption-14d-v1",
+              "field_balance: 2028-02-15: water at field 0.0000 m3 != applied 212.4000 m3",
+              "field_balance: 2028-02-22: water at field 0.0000 m3 != applied 212.4000 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_54c97944050ce6daf1915d4b",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0198 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0213 under interruption-14d-v1; field_balance: 2028-02-16: water at field 0.0000 m3 != applied 86.6592 m3; field_balance: 2028-02-23: water at field 0.0000 m3 != applied 86.6592 m3",
+            "field_id": "pilot-a:field-014",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0198 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0213 under interruption-14d-v1",
+              "field_balance: 2028-02-16: water at field 0.0000 m3 != applied 86.6592 m3",
+              "field_balance: 2028-02-23: water at field 0.0000 m3 != applied 86.6592 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_7d9ac66b647a2d0de4f59887",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0204 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0219 under interruption-14d-v1; field_balance: 2028-02-18: water at field 307.7600 m3 != applied 393.9328 m3; field_balance: 2028-02-25: water at field 0.0000 m3 != applied 86.1728 m3",
+            "field_id": "pilot-a:field-015",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0204 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0219 under interruption-14d-v1",
+              "field_balance: 2028-02-18: water at field 307.7600 m3 != applied 393.9328 m3",
+              "field_balance: 2028-02-25: water at field 0.0000 m3 != applied 86.1728 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_1d2659796a3bee3cb9ac7591",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0206 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0221 under interruption-14d-v1; field_balance: 2028-02-19: water at field 0.0000 m3 != applied 69.7879 m3; field_balance: 2028-02-26: water at field 0.0000 m3 != applied 69.7879 m3",
+            "field_id": "pilot-a:field-018",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0206 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0221 under interruption-14d-v1",
+              "field_balance: 2028-02-19: water at field 0.0000 m3 != applied 69.7879 m3",
+              "field_balance: 2028-02-26: water at field 0.0000 m3 != applied 69.7879 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_c4ce8ef4ece2660957045cc7",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0195 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0210 under interruption-14d-v1; field_balance: 2028-02-14: water at field 0.0000 m3 != applied 76.8039 m3; field_balance: 2028-02-21: water at field 0.0000 m3 != applied 76.8039 m3",
+            "field_id": "pilot-a:field-019",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0195 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0210 under interruption-14d-v1",
+              "field_balance: 2028-02-14: water at field 0.0000 m3 != applied 76.8039 m3",
+              "field_balance: 2028-02-21: water at field 0.0000 m3 != applied 76.8039 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_8182c4efd6c536a3390c21c8",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0202 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0217 under interruption-14d-v1; field_balance: 2028-02-17: water at field 0.0000 m3 != applied 240.7752 m3; field_balance: 2028-02-24: water at field 0.0000 m3 != applied 240.7752 m3",
+            "field_id": "pilot-a:field-020",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0202 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0217 under interruption-14d-v1",
+              "field_balance: 2028-02-17: water at field 0.0000 m3 != applied 240.7752 m3",
+              "field_balance: 2028-02-24: water at field 0.0000 m3 != applied 240.7752 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_ca3582a9fbc1958a3881d690",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0196 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0211 under interruption-14d-v1; field_balance: 2028-02-14: water at field 0.0000 m3 != applied 98.1720 m3; field_balance: 2028-02-21: water at field 0.0000 m3 != applied 98.1720 m3",
+            "field_id": "pilot-a:field-021",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0196 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0211 under interruption-14d-v1",
+              "field_balance: 2028-02-14: water at field 0.0000 m3 != applied 98.1720 m3",
+              "field_balance: 2028-02-21: water at field 0.0000 m3 != applied 98.1720 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_14a6c4f0e8ecb943aaf32ed6",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0195 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0210 under interruption-14d-v1; field_balance: 2028-02-14: water at field 0.0000 m3 != applied 100.0458 m3; field_balance: 2028-02-21: water at field 0.0000 m3 != applied 100.0458 m3",
+            "field_id": "pilot-a:field-022",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0195 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0210 under interruption-14d-v1",
+              "field_balance: 2028-02-14: water at field 0.0000 m3 != applied 100.0458 m3",
+              "field_balance: 2028-02-21: water at field 0.0000 m3 != applied 100.0458 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_2f466fd1204277b8e7c2c9df",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0197 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0212 under interruption-14d-v1; field_balance: 2028-02-14: water at field 0.0000 m3 != applied 60.2280 m3; field_balance: 2028-02-21: water at field 0.0000 m3 != applied 60.2280 m3",
+            "field_id": "pilot-a:field-023",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0197 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0212 under interruption-14d-v1",
+              "field_balance: 2028-02-14: water at field 0.0000 m3 != applied 60.2280 m3",
+              "field_balance: 2028-02-21: water at field 0.0000 m3 != applied 60.2280 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_859ca5771961dc6c18f9fe76",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0201 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0216 under interruption-14d-v1; field_balance: 2028-02-16: water at field 0.0000 m3 != applied 97.6752 m3; field_balance: 2028-02-23: water at field 0.0000 m3 != applied 97.6752 m3",
+            "field_id": "pilot-a:field-024",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0201 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0216 under interruption-14d-v1",
+              "field_balance: 2028-02-16: water at field 0.0000 m3 != applied 97.6752 m3",
+              "field_balance: 2028-02-23: water at field 0.0000 m3 != applied 97.6752 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_7fc8dd61e97b6684a13d69a1",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0199 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0214 under interruption-14d-v1; field_balance: 2028-02-15: water at field 0.0000 m3 != applied 62.6280 m3; field_balance: 2028-02-22: water at field 0.0000 m3 != applied 62.6280 m3",
+            "field_id": "pilot-a:field-025",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0199 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0214 under interruption-14d-v1",
+              "field_balance: 2028-02-15: water at field 0.0000 m3 != applied 62.6280 m3",
+              "field_balance: 2028-02-22: water at field 0.0000 m3 != applied 62.6280 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_3033ff2f734e0d35049a7275",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0204 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0219 under interruption-14d-v1; field_balance: 2028-02-18: water at field 0.0000 m3 != applied 66.6252 m3; field_balance: 2028-02-25: water at field 0.0000 m3 != applied 66.6252 m3",
+            "field_id": "pilot-a:field-026",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0204 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0219 under interruption-14d-v1",
+              "field_balance: 2028-02-18: water at field 0.0000 m3 != applied 66.6252 m3",
+              "field_balance: 2028-02-25: water at field 0.0000 m3 != applied 66.6252 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_85c70ecc9e1fe8c69116e5e0",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0205 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0220 under interruption-14d-v1; field_balance: 2028-02-19: water at field 0.0000 m3 != applied 155.8548 m3; field_balance: 2028-02-26: water at field 0.0000 m3 != applied 155.8548 m3",
+            "field_id": "pilot-a:field-027",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0205 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0220 under interruption-14d-v1",
+              "field_balance: 2028-02-19: water at field 0.0000 m3 != applied 155.8548 m3",
+              "field_balance: 2028-02-26: water at field 0.0000 m3 != applied 155.8548 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_d9f9d155f5dd1ac708b408e8",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0203 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0218 under interruption-14d-v1; field_balance: 2028-02-18: water at field 0.0000 m3 != applied 71.2152 m3; field_balance: 2028-02-25: water at field 0.0000 m3 != applied 71.2152 m3",
+            "field_id": "pilot-a:field-028",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0203 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0218 under interruption-14d-v1",
+              "field_balance: 2028-02-18: water at field 0.0000 m3 != applied 71.2152 m3",
+              "field_balance: 2028-02-25: water at field 0.0000 m3 != applied 71.2152 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_694cfd82132ecaaad9b091b9",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0198 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0213 under interruption-14d-v1; field_balance: 2028-02-15: water at field 0.0000 m3 != applied 98.9401 m3; field_balance: 2028-02-22: water at field 0.0000 m3 != applied 98.9401 m3",
+            "field_id": "pilot-a:field-029",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0198 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0213 under interruption-14d-v1",
+              "field_balance: 2028-02-15: water at field 0.0000 m3 != applied 98.9401 m3",
+              "field_balance: 2028-02-22: water at field 0.0000 m3 != applied 98.9401 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_a6f64407c36056c463cc8100",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0200 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0215 under interruption-14d-v1; field_balance: 2028-02-16: water at field 0.0000 m3 != applied 104.8560 m3; field_balance: 2028-02-23: water at field 0.0000 m3 != applied 104.8560 m3",
+            "field_id": "pilot-a:field-030",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0200 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0215 under interruption-14d-v1",
+              "field_balance: 2028-02-16: water at field 0.0000 m3 != applied 104.8560 m3",
+              "field_balance: 2028-02-23: water at field 0.0000 m3 != applied 104.8560 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_a9ed8b9b6244851f16538fa3",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0202 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0217 under interruption-14d-v1; field_balance: 2028-02-17: water at field 0.0000 m3 != applied 50.0250 m3; field_balance: 2028-02-24: water at field 0.0000 m3 != applied 50.0250 m3",
+            "field_id": "pilot-a:field-031",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0202 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0217 under interruption-14d-v1",
+              "field_balance: 2028-02-17: water at field 0.0000 m3 != applied 50.0250 m3",
+              "field_balance: 2028-02-24: water at field 0.0000 m3 != applied 50.0250 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_0f814b8aab433a92a31ae147",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0207 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0222 under interruption-14d-v1; field_balance: 2028-02-19: water at field 0.0000 m3 != applied 53.6354 m3; field_balance: 2028-02-26: water at field 0.0000 m3 != applied 53.6354 m3",
+            "field_id": "pilot-a:field-032",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0207 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0222 under interruption-14d-v1",
+              "field_balance: 2028-02-19: water at field 0.0000 m3 != applied 53.6354 m3",
+              "field_balance: 2028-02-26: water at field 0.0000 m3 != applied 53.6354 m3"
+            ]
+          }
+        ]
+      },
+      {
+        "state_id": "typical__nominal-roster-v1",
+        "run_id": "run_67434ccab938402b8c2509d0c45912c2",
+        "run_record_linked": true,
+        "deliverable": true,
+        "production_kg": 154117.87875700262,
+        "violations": []
+      },
+      {
+        "state_id": "typical__shortage-22pct-v1",
+        "run_id": "run_03ba8d2f64a541adb0e926047e9205b8",
+        "run_record_linked": true,
+        "deliverable": false,
+        "production_kg": null,
+        "violations": [
+          {
+            "candidate_policy_id": "cp_b45513025afa96135e7195f4",
+            "detail": "receipt_right: receipt 73.29 m3 exceeds window cap 57.28 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-003",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 73.29 m3 exceeds window cap 57.28 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_795aaaff3d42d746aa64de5c",
+            "detail": "receipt_right: receipt 103.18 m3 exceeds window cap 80.57 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-006",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 103.18 m3 exceeds window cap 80.57 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_de533b1f023b9e13e3588ab3",
+            "detail": "receipt_right: receipt 83.26 m3 exceeds window cap 65.02 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-007",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 83.26 m3 exceeds window cap 65.02 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_451d98790d4fe3af3784ec62",
+            "detail": "receipt_right: receipt 71.89 m3 exceeds window cap 56.22 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-010",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 71.89 m3 exceeds window cap 56.22 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_2228bd9fac59e82733ec3662",
+            "detail": "receipt_right: receipt 77.24 m3 exceeds window cap 60.40 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-011",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 77.24 m3 exceeds window cap 60.40 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_b780db64173a3994c43a2865",
+            "detail": "receipt_right: receipt 68.29 m3 exceeds window cap 53.33 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-012",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 68.29 m3 exceeds window cap 53.33 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_fd1e1bd5b9c7cefa25d67e01",
+            "detail": "receipt_right: receipt 212.40 m3 exceeds window cap 165.86 m3 under shortage-22pct-v1; receipt_right: receipt 7.20 m3 exceeds window cap 6.92 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-013",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 212.40 m3 exceeds window cap 165.86 m3 under shortage-22pct-v1",
+              "receipt_right: receipt 7.20 m3 exceeds window cap 6.92 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_54c97944050ce6daf1915d4b",
+            "detail": "receipt_right: receipt 86.66 m3 exceeds window cap 67.67 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-014",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 86.66 m3 exceeds window cap 67.67 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_7d9ac66b647a2d0de4f59887",
+            "detail": "receipt_right: receipt 86.17 m3 exceeds window cap 67.35 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-015",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 86.17 m3 exceeds window cap 67.35 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_1d2659796a3bee3cb9ac7591",
+            "detail": "receipt_right: receipt 69.79 m3 exceeds window cap 54.57 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-018",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 69.79 m3 exceeds window cap 54.57 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_8182c4efd6c536a3390c21c8",
+            "detail": "receipt_right: receipt 240.78 m3 exceeds window cap 188.86 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-020",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 240.78 m3 exceeds window cap 188.86 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_ca3582a9fbc1958a3881d690",
+            "detail": "receipt_right: receipt 98.17 m3 exceeds window cap 77.01 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-021",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 98.17 m3 exceeds window cap 77.01 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_14a6c4f0e8ecb943aaf32ed6",
+            "detail": "receipt_right: receipt 100.70 m3 exceeds window cap 78.55 m3 under shortage-22pct-v1; receipt_right: receipt 100.05 m3 exceeds window cap 78.55 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-022",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 100.70 m3 exceeds window cap 78.55 m3 under shortage-22pct-v1",
+              "receipt_right: receipt 100.05 m3 exceeds window cap 78.55 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_2f466fd1204277b8e7c2c9df",
+            "detail": "receipt_right: receipt 60.23 m3 exceeds window cap 47.24 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-023",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 60.23 m3 exceeds window cap 47.24 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_859ca5771961dc6c18f9fe76",
+            "detail": "receipt_right: receipt 97.68 m3 exceeds window cap 76.62 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-024",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 97.68 m3 exceeds window cap 76.62 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_7fc8dd61e97b6684a13d69a1",
+            "detail": "receipt_right: receipt 62.63 m3 exceeds window cap 49.12 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-025",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 62.63 m3 exceeds window cap 49.12 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_3033ff2f734e0d35049a7275",
+            "detail": "receipt_right: receipt 66.63 m3 exceeds window cap 52.26 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-026",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 66.63 m3 exceeds window cap 52.26 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_85c70ecc9e1fe8c69116e5e0",
+            "detail": "receipt_right: receipt 155.85 m3 exceeds window cap 122.26 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-027",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 155.85 m3 exceeds window cap 122.26 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_d9f9d155f5dd1ac708b408e8",
+            "detail": "receipt_right: receipt 71.22 m3 exceeds window cap 55.86 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-028",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 71.22 m3 exceeds window cap 55.86 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_694cfd82132ecaaad9b091b9",
+            "detail": "receipt_right: receipt 99.03 m3 exceeds window cap 77.24 m3 under shortage-22pct-v1; receipt_right: receipt 25.71 m3 exceeds window cap 20.12 m3 under shortage-22pct-v1; receipt_right: receipt 98.94 m3 exceeds window cap 77.24 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-029",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 99.03 m3 exceeds window cap 77.24 m3 under shortage-22pct-v1",
+              "receipt_right: receipt 25.71 m3 exceeds window cap 20.12 m3 under shortage-22pct-v1",
+              "receipt_right: receipt 98.94 m3 exceeds window cap 77.24 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_a6f64407c36056c463cc8100",
+            "detail": "receipt_right: receipt 104.86 m3 exceeds window cap 82.24 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-030",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 104.86 m3 exceeds window cap 82.24 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_0f814b8aab433a92a31ae147",
+            "detail": "receipt_right: receipt 53.64 m3 exceeds window cap 41.94 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-032",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 53.64 m3 exceeds window cap 41.94 m3 under shortage-22pct-v1"
+            ]
+          }
+        ]
+      },
+      {
+        "state_id": "typical__interruption-14d-v1",
+        "run_id": "run_0f939f4af8fa46ee98a0ce87fd4377ca",
+        "run_record_linked": true,
+        "deliverable": false,
+        "production_kg": null,
+        "violations": [
+          {
+            "candidate_policy_id": "cp_2371923d52f824628850d3dd",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0207 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0222 under interruption-14d-v1; field_balance: 2028-02-19: water at field 0.0000 m3 != applied 43.8150 m3; field_balance: 2028-02-26: water at field 0.0000 m3 != applied 43.8150 m3",
+            "field_id": "pilot-a:field-001",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0207 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0222 under interruption-14d-v1",
+              "field_balance: 2028-02-19: water at field 0.0000 m3 != applied 43.8150 m3",
+              "field_balance: 2028-02-26: water at field 0.0000 m3 != applied 43.8150 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_3e4343d9b407401c8eff001b",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0206 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0221 under interruption-14d-v1; field_balance: 2028-02-19: water at field 0.0000 m3 != applied 39.6336 m3; field_balance: 2028-02-26: water at field 0.0000 m3 != applied 39.6336 m3",
+            "field_id": "pilot-a:field-002",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0206 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0221 under interruption-14d-v1",
+              "field_balance: 2028-02-19: water at field 0.0000 m3 != applied 39.6336 m3",
+              "field_balance: 2028-02-26: water at field 0.0000 m3 != applied 39.6336 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_b45513025afa96135e7195f4",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0205 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0220 under interruption-14d-v1; field_balance: 2028-02-18: water at field 261.7600 m3 != applied 335.0528 m3; field_balance: 2028-02-25: water at field 0.0000 m3 != applied 73.2928 m3",
+            "field_id": "pilot-a:field-003",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0205 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0220 under interruption-14d-v1",
+              "field_balance: 2028-02-18: water at field 261.7600 m3 != applied 335.0528 m3",
+              "field_balance: 2028-02-25: water at field 0.0000 m3 != applied 73.2928 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_ab7641fb78df75ca20c7a627",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0201 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0216 under interruption-14d-v1; field_balance: 2028-02-17: water at field 0.0000 m3 != applied 60.9522 m3; field_balance: 2028-02-24: water at field 0.0000 m3 != applied 60.9522 m3",
+            "field_id": "pilot-a:field-004",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0201 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0216 under interruption-14d-v1",
+              "field_balance: 2028-02-17: water at field 0.0000 m3 != applied 60.9522 m3",
+              "field_balance: 2028-02-24: water at field 0.0000 m3 != applied 60.9522 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_bcea9d17e2385bb8d16faa1e",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0203 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0218 under interruption-14d-v1; field_balance: 2028-02-18: water at field 244.7600 m3 != applied 297.9953 m3; field_balance: 2028-02-25: water at field 244.7600 m3 != applied 297.9953 m3",
+            "field_id": "pilot-a:field-005",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0203 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0218 under interruption-14d-v1",
+              "field_balance: 2028-02-18: water at field 244.7600 m3 != applied 297.9953 m3",
+              "field_balance: 2028-02-25: water at field 244.7600 m3 != applied 297.9953 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_795aaaff3d42d746aa64de5c",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0200 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0215 under interruption-14d-v1; field_balance: 2028-02-16: water at field 0.0000 m3 != applied 103.1792 m3; field_balance: 2028-02-23: water at field 0.0000 m3 != applied 103.1792 m3",
+            "field_id": "pilot-a:field-006",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0200 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0215 under interruption-14d-v1",
+              "field_balance: 2028-02-16: water at field 0.0000 m3 != applied 103.1792 m3",
+              "field_balance: 2028-02-23: water at field 0.0000 m3 != applied 103.1792 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_de533b1f023b9e13e3588ab3",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0199 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0214 under interruption-14d-v1; field_balance: 2028-02-16: water at field 0.0000 m3 != applied 83.2608 m3; field_balance: 2028-02-23: water at field 0.0000 m3 != applied 83.2608 m3",
+            "field_id": "pilot-a:field-007",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0199 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0214 under interruption-14d-v1",
+              "field_balance: 2028-02-16: water at field 0.0000 m3 != applied 83.2608 m3",
+              "field_balance: 2028-02-23: water at field 0.0000 m3 != applied 83.2608 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_fa4f824f75bf848e595d3815",
+            "detail": "receipt_right: receipt 64.60 m3 exceeds window cap 62.46 m3 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0208 under interruption-14d-v1; receipt_right: receipt 64.60 m3 exceeds window cap 20.55 m3 under interruption-14d-v1; field_balance: 2028-02-20: water at field 0.0000 m3 != applied 64.5978 m3",
+            "field_id": "pilot-a:field-008",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 64.60 m3 exceeds window cap 62.46 m3 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0208 under interruption-14d-v1",
+              "receipt_right: receipt 64.60 m3 exceeds window cap 20.55 m3 under interruption-14d-v1",
+              "field_balance: 2028-02-20: water at field 0.0000 m3 != applied 64.5978 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_29b60968c11899c7ef2b87d6",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0194 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0209 under interruption-14d-v1; field_balance: 2028-02-13: water at field 0.0000 m3 != applied 55.9797 m3; field_balance: 2028-02-20: water at field 0.0000 m3 != applied 55.9797 m3",
+            "field_id": "pilot-a:field-009",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0194 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0209 under interruption-14d-v1",
+              "field_balance: 2028-02-13: water at field 0.0000 m3 != applied 55.9797 m3",
+              "field_balance: 2028-02-20: water at field 0.0000 m3 != applied 55.9797 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_451d98790d4fe3af3784ec62",
+            "detail": "receipt_right: receipt 71.89 m3 exceeds window cap 30.46 m3 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0208 under interruption-14d-v1; receipt_right: receipt 71.89 m3 exceeds window cap 41.61 m3 under interruption-14d-v1; field_balance: 2028-02-20: water at field 0.0000 m3 != applied 71.8900 m3",
+            "field_id": "pilot-a:field-010",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 71.89 m3 exceeds window cap 30.46 m3 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0208 under interruption-14d-v1",
+              "receipt_right: receipt 71.89 m3 exceeds window cap 41.61 m3 under interruption-14d-v1",
+              "field_balance: 2028-02-20: water at field 0.0000 m3 != applied 71.8900 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_2228bd9fac59e82733ec3662",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0194 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0209 under interruption-14d-v1; field_balance: 2028-02-13: water at field 0.0000 m3 != applied 77.2408 m3; field_balance: 2028-02-20: water at field 0.0000 m3 != applied 77.2408 m3",
+            "field_id": "pilot-a:field-011",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0194 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0209 under interruption-14d-v1",
+              "field_balance: 2028-02-13: water at field 0.0000 m3 != applied 77.2408 m3",
+              "field_balance: 2028-02-20: water at field 0.0000 m3 != applied 77.2408 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_b780db64173a3994c43a2865",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0197 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0212 under interruption-14d-v1; field_balance: 2028-02-15: water at field 0.0000 m3 != applied 68.2866 m3; field_balance: 2028-02-22: water at field 0.0000 m3 != applied 68.2866 m3",
+            "field_id": "pilot-a:field-012",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0197 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0212 under interruption-14d-v1",
+              "field_balance: 2028-02-15: water at field 0.0000 m3 != applied 68.2866 m3",
+              "field_balance: 2028-02-22: water at field 0.0000 m3 != applied 68.2866 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_fd1e1bd5b9c7cefa25d67e01",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0196 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0211 under interruption-14d-v1; field_balance: 2028-02-15: water at field 0.0000 m3 != applied 212.4000 m3; field_balance: 2028-02-22: water at field 0.0000 m3 != applied 212.4000 m3",
+            "field_id": "pilot-a:field-013",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0196 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0211 under interruption-14d-v1",
+              "field_balance: 2028-02-15: water at field 0.0000 m3 != applied 212.4000 m3",
+              "field_balance: 2028-02-22: water at field 0.0000 m3 != applied 212.4000 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_54c97944050ce6daf1915d4b",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0198 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0213 under interruption-14d-v1; field_balance: 2028-02-16: water at field 0.0000 m3 != applied 86.6592 m3; field_balance: 2028-02-23: water at field 0.0000 m3 != applied 86.6592 m3",
+            "field_id": "pilot-a:field-014",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0198 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0213 under interruption-14d-v1",
+              "field_balance: 2028-02-16: water at field 0.0000 m3 != applied 86.6592 m3",
+              "field_balance: 2028-02-23: water at field 0.0000 m3 != applied 86.6592 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_7d9ac66b647a2d0de4f59887",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0204 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0219 under interruption-14d-v1; field_balance: 2028-02-18: water at field 307.7600 m3 != applied 393.9328 m3; field_balance: 2028-02-25: water at field 0.0000 m3 != applied 86.1728 m3",
+            "field_id": "pilot-a:field-015",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0204 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0219 under interruption-14d-v1",
+              "field_balance: 2028-02-18: water at field 307.7600 m3 != applied 393.9328 m3",
+              "field_balance: 2028-02-25: water at field 0.0000 m3 != applied 86.1728 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_1d2659796a3bee3cb9ac7591",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0206 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0221 under interruption-14d-v1; field_balance: 2028-02-19: water at field 0.0000 m3 != applied 69.7879 m3; field_balance: 2028-02-26: water at field 0.0000 m3 != applied 69.7879 m3",
+            "field_id": "pilot-a:field-018",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0206 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0221 under interruption-14d-v1",
+              "field_balance: 2028-02-19: water at field 0.0000 m3 != applied 69.7879 m3",
+              "field_balance: 2028-02-26: water at field 0.0000 m3 != applied 69.7879 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_c4ce8ef4ece2660957045cc7",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0195 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0210 under interruption-14d-v1; field_balance: 2028-02-14: water at field 0.0000 m3 != applied 76.8039 m3; field_balance: 2028-02-21: water at field 0.0000 m3 != applied 76.8039 m3",
+            "field_id": "pilot-a:field-019",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0195 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0210 under interruption-14d-v1",
+              "field_balance: 2028-02-14: water at field 0.0000 m3 != applied 76.8039 m3",
+              "field_balance: 2028-02-21: water at field 0.0000 m3 != applied 76.8039 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_8182c4efd6c536a3390c21c8",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0202 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0217 under interruption-14d-v1; field_balance: 2028-02-17: water at field 0.0000 m3 != applied 240.7752 m3; field_balance: 2028-02-24: water at field 0.0000 m3 != applied 240.7752 m3",
+            "field_id": "pilot-a:field-020",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0202 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0217 under interruption-14d-v1",
+              "field_balance: 2028-02-17: water at field 0.0000 m3 != applied 240.7752 m3",
+              "field_balance: 2028-02-24: water at field 0.0000 m3 != applied 240.7752 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_ca3582a9fbc1958a3881d690",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0196 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0211 under interruption-14d-v1; field_balance: 2028-02-14: water at field 0.0000 m3 != applied 98.1720 m3; field_balance: 2028-02-21: water at field 0.0000 m3 != applied 98.1720 m3",
+            "field_id": "pilot-a:field-021",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0196 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0211 under interruption-14d-v1",
+              "field_balance: 2028-02-14: water at field 0.0000 m3 != applied 98.1720 m3",
+              "field_balance: 2028-02-21: water at field 0.0000 m3 != applied 98.1720 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_14a6c4f0e8ecb943aaf32ed6",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0195 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0210 under interruption-14d-v1; field_balance: 2028-02-14: water at field 0.0000 m3 != applied 100.0458 m3; field_balance: 2028-02-21: water at field 0.0000 m3 != applied 100.0458 m3",
+            "field_id": "pilot-a:field-022",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0195 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0210 under interruption-14d-v1",
+              "field_balance: 2028-02-14: water at field 0.0000 m3 != applied 100.0458 m3",
+              "field_balance: 2028-02-21: water at field 0.0000 m3 != applied 100.0458 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_2f466fd1204277b8e7c2c9df",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0197 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0212 under interruption-14d-v1; field_balance: 2028-02-14: water at field 0.0000 m3 != applied 60.2280 m3; field_balance: 2028-02-21: water at field 0.0000 m3 != applied 60.2280 m3",
+            "field_id": "pilot-a:field-023",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0197 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0212 under interruption-14d-v1",
+              "field_balance: 2028-02-14: water at field 0.0000 m3 != applied 60.2280 m3",
+              "field_balance: 2028-02-21: water at field 0.0000 m3 != applied 60.2280 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_859ca5771961dc6c18f9fe76",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0201 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0216 under interruption-14d-v1; field_balance: 2028-02-16: water at field 0.0000 m3 != applied 97.6752 m3; field_balance: 2028-02-23: water at field 0.0000 m3 != applied 97.6752 m3",
+            "field_id": "pilot-a:field-024",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0201 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0216 under interruption-14d-v1",
+              "field_balance: 2028-02-16: water at field 0.0000 m3 != applied 97.6752 m3",
+              "field_balance: 2028-02-23: water at field 0.0000 m3 != applied 97.6752 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_7fc8dd61e97b6684a13d69a1",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0199 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0214 under interruption-14d-v1; field_balance: 2028-02-15: water at field 0.0000 m3 != applied 62.6280 m3; field_balance: 2028-02-22: water at field 0.0000 m3 != applied 62.6280 m3",
+            "field_id": "pilot-a:field-025",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0199 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0214 under interruption-14d-v1",
+              "field_balance: 2028-02-15: water at field 0.0000 m3 != applied 62.6280 m3",
+              "field_balance: 2028-02-22: water at field 0.0000 m3 != applied 62.6280 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_3033ff2f734e0d35049a7275",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0204 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0219 under interruption-14d-v1; field_balance: 2028-02-18: water at field 0.0000 m3 != applied 66.6252 m3; field_balance: 2028-02-25: water at field 0.0000 m3 != applied 66.6252 m3",
+            "field_id": "pilot-a:field-026",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0204 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0219 under interruption-14d-v1",
+              "field_balance: 2028-02-18: water at field 0.0000 m3 != applied 66.6252 m3",
+              "field_balance: 2028-02-25: water at field 0.0000 m3 != applied 66.6252 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_85c70ecc9e1fe8c69116e5e0",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0205 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0220 under interruption-14d-v1; field_balance: 2028-02-19: water at field 0.0000 m3 != applied 155.8548 m3; field_balance: 2028-02-26: water at field 0.0000 m3 != applied 155.8548 m3",
+            "field_id": "pilot-a:field-027",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0205 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0220 under interruption-14d-v1",
+              "field_balance: 2028-02-19: water at field 0.0000 m3 != applied 155.8548 m3",
+              "field_balance: 2028-02-26: water at field 0.0000 m3 != applied 155.8548 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_d9f9d155f5dd1ac708b408e8",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0203 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0218 under interruption-14d-v1; field_balance: 2028-02-18: water at field 0.0000 m3 != applied 71.2152 m3; field_balance: 2028-02-25: water at field 0.0000 m3 != applied 71.2152 m3",
+            "field_id": "pilot-a:field-028",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0203 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0218 under interruption-14d-v1",
+              "field_balance: 2028-02-18: water at field 0.0000 m3 != applied 71.2152 m3",
+              "field_balance: 2028-02-25: water at field 0.0000 m3 != applied 71.2152 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_694cfd82132ecaaad9b091b9",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0198 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0213 under interruption-14d-v1; field_balance: 2028-02-15: water at field 0.0000 m3 != applied 98.9401 m3; field_balance: 2028-02-22: water at field 0.0000 m3 != applied 98.9401 m3",
+            "field_id": "pilot-a:field-029",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0198 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0213 under interruption-14d-v1",
+              "field_balance: 2028-02-15: water at field 0.0000 m3 != applied 98.9401 m3",
+              "field_balance: 2028-02-22: water at field 0.0000 m3 != applied 98.9401 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_a6f64407c36056c463cc8100",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0200 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0215 under interruption-14d-v1; field_balance: 2028-02-16: water at field 0.0000 m3 != applied 104.8560 m3; field_balance: 2028-02-23: water at field 0.0000 m3 != applied 104.8560 m3",
+            "field_id": "pilot-a:field-030",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0200 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0215 under interruption-14d-v1",
+              "field_balance: 2028-02-16: water at field 0.0000 m3 != applied 104.8560 m3",
+              "field_balance: 2028-02-23: water at field 0.0000 m3 != applied 104.8560 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_a9ed8b9b6244851f16538fa3",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0202 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0217 under interruption-14d-v1; field_balance: 2028-02-17: water at field 0.0000 m3 != applied 50.0250 m3; field_balance: 2028-02-24: water at field 0.0000 m3 != applied 50.0250 m3",
+            "field_id": "pilot-a:field-031",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0202 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0217 under interruption-14d-v1",
+              "field_balance: 2028-02-17: water at field 0.0000 m3 != applied 50.0250 m3",
+              "field_balance: 2028-02-24: water at field 0.0000 m3 != applied 50.0250 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_0f814b8aab433a92a31ae147",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0207 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0222 under interruption-14d-v1; field_balance: 2028-02-19: water at field 0.0000 m3 != applied 53.6354 m3; field_balance: 2028-02-26: water at field 0.0000 m3 != applied 53.6354 m3",
+            "field_id": "pilot-a:field-032",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0207 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0222 under interruption-14d-v1",
+              "field_balance: 2028-02-19: water at field 0.0000 m3 != applied 53.6354 m3",
+              "field_balance: 2028-02-26: water at field 0.0000 m3 != applied 53.6354 m3"
+            ]
+          }
+        ]
+      },
+      {
+        "state_id": "wet__nominal-roster-v1",
+        "run_id": "run_96f06f4025264384a961d3b945a20d52",
+        "run_record_linked": true,
+        "deliverable": true,
+        "production_kg": 187492.26240443165,
+        "violations": []
+      },
+      {
+        "state_id": "wet__shortage-22pct-v1",
+        "run_id": "run_52ee3800e3334fe6b4fc27d7659b787a",
+        "run_record_linked": true,
+        "deliverable": false,
+        "production_kg": null,
+        "violations": [
+          {
+            "candidate_policy_id": "cp_b45513025afa96135e7195f4",
+            "detail": "receipt_right: receipt 73.29 m3 exceeds window cap 57.28 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-003",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 73.29 m3 exceeds window cap 57.28 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_795aaaff3d42d746aa64de5c",
+            "detail": "receipt_right: receipt 103.18 m3 exceeds window cap 80.57 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-006",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 103.18 m3 exceeds window cap 80.57 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_de533b1f023b9e13e3588ab3",
+            "detail": "receipt_right: receipt 83.26 m3 exceeds window cap 65.02 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-007",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 83.26 m3 exceeds window cap 65.02 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_451d98790d4fe3af3784ec62",
+            "detail": "receipt_right: receipt 71.89 m3 exceeds window cap 56.22 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-010",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 71.89 m3 exceeds window cap 56.22 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_2228bd9fac59e82733ec3662",
+            "detail": "receipt_right: receipt 77.24 m3 exceeds window cap 60.40 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-011",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 77.24 m3 exceeds window cap 60.40 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_b780db64173a3994c43a2865",
+            "detail": "receipt_right: receipt 68.29 m3 exceeds window cap 53.33 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-012",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 68.29 m3 exceeds window cap 53.33 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_fd1e1bd5b9c7cefa25d67e01",
+            "detail": "receipt_right: receipt 212.40 m3 exceeds window cap 165.86 m3 under shortage-22pct-v1; receipt_right: receipt 7.20 m3 exceeds window cap 6.92 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-013",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 212.40 m3 exceeds window cap 165.86 m3 under shortage-22pct-v1",
+              "receipt_right: receipt 7.20 m3 exceeds window cap 6.92 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_54c97944050ce6daf1915d4b",
+            "detail": "receipt_right: receipt 86.66 m3 exceeds window cap 67.67 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-014",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 86.66 m3 exceeds window cap 67.67 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_7d9ac66b647a2d0de4f59887",
+            "detail": "receipt_right: receipt 86.17 m3 exceeds window cap 67.35 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-015",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 86.17 m3 exceeds window cap 67.35 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_1d2659796a3bee3cb9ac7591",
+            "detail": "receipt_right: receipt 69.79 m3 exceeds window cap 54.57 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-018",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 69.79 m3 exceeds window cap 54.57 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_8182c4efd6c536a3390c21c8",
+            "detail": "receipt_right: receipt 240.78 m3 exceeds window cap 188.86 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-020",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 240.78 m3 exceeds window cap 188.86 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_ca3582a9fbc1958a3881d690",
+            "detail": "receipt_right: receipt 98.17 m3 exceeds window cap 77.01 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-021",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 98.17 m3 exceeds window cap 77.01 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_14a6c4f0e8ecb943aaf32ed6",
+            "detail": "receipt_right: receipt 100.70 m3 exceeds window cap 78.55 m3 under shortage-22pct-v1; receipt_right: receipt 100.05 m3 exceeds window cap 78.55 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-022",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 100.70 m3 exceeds window cap 78.55 m3 under shortage-22pct-v1",
+              "receipt_right: receipt 100.05 m3 exceeds window cap 78.55 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_2f466fd1204277b8e7c2c9df",
+            "detail": "receipt_right: receipt 60.23 m3 exceeds window cap 47.24 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-023",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 60.23 m3 exceeds window cap 47.24 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_859ca5771961dc6c18f9fe76",
+            "detail": "receipt_right: receipt 97.68 m3 exceeds window cap 76.62 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-024",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 97.68 m3 exceeds window cap 76.62 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_7fc8dd61e97b6684a13d69a1",
+            "detail": "receipt_right: receipt 62.63 m3 exceeds window cap 49.12 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-025",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 62.63 m3 exceeds window cap 49.12 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_3033ff2f734e0d35049a7275",
+            "detail": "receipt_right: receipt 66.63 m3 exceeds window cap 52.26 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-026",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 66.63 m3 exceeds window cap 52.26 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_85c70ecc9e1fe8c69116e5e0",
+            "detail": "receipt_right: receipt 155.85 m3 exceeds window cap 122.26 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-027",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 155.85 m3 exceeds window cap 122.26 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_d9f9d155f5dd1ac708b408e8",
+            "detail": "receipt_right: receipt 71.22 m3 exceeds window cap 55.86 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-028",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 71.22 m3 exceeds window cap 55.86 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_694cfd82132ecaaad9b091b9",
+            "detail": "receipt_right: receipt 99.03 m3 exceeds window cap 77.24 m3 under shortage-22pct-v1; receipt_right: receipt 25.71 m3 exceeds window cap 20.12 m3 under shortage-22pct-v1; receipt_right: receipt 98.94 m3 exceeds window cap 77.24 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-029",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 99.03 m3 exceeds window cap 77.24 m3 under shortage-22pct-v1",
+              "receipt_right: receipt 25.71 m3 exceeds window cap 20.12 m3 under shortage-22pct-v1",
+              "receipt_right: receipt 98.94 m3 exceeds window cap 77.24 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_a6f64407c36056c463cc8100",
+            "detail": "receipt_right: receipt 104.86 m3 exceeds window cap 82.24 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-030",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 104.86 m3 exceeds window cap 82.24 m3 under shortage-22pct-v1"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_0f814b8aab433a92a31ae147",
+            "detail": "receipt_right: receipt 53.64 m3 exceeds window cap 41.94 m3 under shortage-22pct-v1",
+            "field_id": "pilot-a:field-032",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 53.64 m3 exceeds window cap 41.94 m3 under shortage-22pct-v1"
+            ]
+          }
+        ]
+      },
+      {
+        "state_id": "wet__interruption-14d-v1",
+        "run_id": "run_c690186c1c544f298f3586ac2b0d97cf",
+        "run_record_linked": true,
+        "deliverable": false,
+        "production_kg": null,
+        "violations": [
+          {
+            "candidate_policy_id": "cp_2371923d52f824628850d3dd",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0207 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0222 under interruption-14d-v1; field_balance: 2028-02-19: water at field 0.0000 m3 != applied 43.8150 m3; field_balance: 2028-02-26: water at field 0.0000 m3 != applied 43.8150 m3",
+            "field_id": "pilot-a:field-001",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0207 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0222 under interruption-14d-v1",
+              "field_balance: 2028-02-19: water at field 0.0000 m3 != applied 43.8150 m3",
+              "field_balance: 2028-02-26: water at field 0.0000 m3 != applied 43.8150 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_3e4343d9b407401c8eff001b",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0206 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0221 under interruption-14d-v1; field_balance: 2028-02-19: water at field 0.0000 m3 != applied 39.6336 m3; field_balance: 2028-02-26: water at field 0.0000 m3 != applied 39.6336 m3",
+            "field_id": "pilot-a:field-002",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0206 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0221 under interruption-14d-v1",
+              "field_balance: 2028-02-19: water at field 0.0000 m3 != applied 39.6336 m3",
+              "field_balance: 2028-02-26: water at field 0.0000 m3 != applied 39.6336 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_b45513025afa96135e7195f4",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0205 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0220 under interruption-14d-v1; field_balance: 2028-02-18: water at field 261.7600 m3 != applied 335.0528 m3; field_balance: 2028-02-25: water at field 0.0000 m3 != applied 73.2928 m3",
+            "field_id": "pilot-a:field-003",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0205 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0220 under interruption-14d-v1",
+              "field_balance: 2028-02-18: water at field 261.7600 m3 != applied 335.0528 m3",
+              "field_balance: 2028-02-25: water at field 0.0000 m3 != applied 73.2928 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_ab7641fb78df75ca20c7a627",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0201 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0216 under interruption-14d-v1; field_balance: 2028-02-17: water at field 0.0000 m3 != applied 60.9522 m3; field_balance: 2028-02-24: water at field 0.0000 m3 != applied 60.9522 m3",
+            "field_id": "pilot-a:field-004",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0201 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0216 under interruption-14d-v1",
+              "field_balance: 2028-02-17: water at field 0.0000 m3 != applied 60.9522 m3",
+              "field_balance: 2028-02-24: water at field 0.0000 m3 != applied 60.9522 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_bcea9d17e2385bb8d16faa1e",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0203 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0218 under interruption-14d-v1; field_balance: 2028-02-18: water at field 244.7600 m3 != applied 297.9953 m3; field_balance: 2028-02-25: water at field 244.7600 m3 != applied 297.9953 m3",
+            "field_id": "pilot-a:field-005",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0203 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0218 under interruption-14d-v1",
+              "field_balance: 2028-02-18: water at field 244.7600 m3 != applied 297.9953 m3",
+              "field_balance: 2028-02-25: water at field 244.7600 m3 != applied 297.9953 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_795aaaff3d42d746aa64de5c",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0200 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0215 under interruption-14d-v1; field_balance: 2028-02-16: water at field 0.0000 m3 != applied 103.1792 m3; field_balance: 2028-02-23: water at field 0.0000 m3 != applied 103.1792 m3",
+            "field_id": "pilot-a:field-006",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0200 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0215 under interruption-14d-v1",
+              "field_balance: 2028-02-16: water at field 0.0000 m3 != applied 103.1792 m3",
+              "field_balance: 2028-02-23: water at field 0.0000 m3 != applied 103.1792 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_de533b1f023b9e13e3588ab3",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0199 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0214 under interruption-14d-v1; field_balance: 2028-02-16: water at field 0.0000 m3 != applied 83.2608 m3; field_balance: 2028-02-23: water at field 0.0000 m3 != applied 83.2608 m3",
+            "field_id": "pilot-a:field-007",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0199 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0214 under interruption-14d-v1",
+              "field_balance: 2028-02-16: water at field 0.0000 m3 != applied 83.2608 m3",
+              "field_balance: 2028-02-23: water at field 0.0000 m3 != applied 83.2608 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_fa4f824f75bf848e595d3815",
+            "detail": "receipt_right: receipt 64.60 m3 exceeds window cap 62.46 m3 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0208 under interruption-14d-v1; receipt_right: receipt 64.60 m3 exceeds window cap 20.55 m3 under interruption-14d-v1; field_balance: 2028-02-20: water at field 0.0000 m3 != applied 64.5978 m3",
+            "field_id": "pilot-a:field-008",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 64.60 m3 exceeds window cap 62.46 m3 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0208 under interruption-14d-v1",
+              "receipt_right: receipt 64.60 m3 exceeds window cap 20.55 m3 under interruption-14d-v1",
+              "field_balance: 2028-02-20: water at field 0.0000 m3 != applied 64.5978 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_29b60968c11899c7ef2b87d6",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0194 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0209 under interruption-14d-v1; field_balance: 2028-02-13: water at field 0.0000 m3 != applied 55.9797 m3; field_balance: 2028-02-20: water at field 0.0000 m3 != applied 55.9797 m3",
+            "field_id": "pilot-a:field-009",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0194 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0209 under interruption-14d-v1",
+              "field_balance: 2028-02-13: water at field 0.0000 m3 != applied 55.9797 m3",
+              "field_balance: 2028-02-20: water at field 0.0000 m3 != applied 55.9797 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_451d98790d4fe3af3784ec62",
+            "detail": "receipt_right: receipt 71.89 m3 exceeds window cap 30.46 m3 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0208 under interruption-14d-v1; receipt_right: receipt 71.89 m3 exceeds window cap 41.61 m3 under interruption-14d-v1; field_balance: 2028-02-20: water at field 0.0000 m3 != applied 71.8900 m3",
+            "field_id": "pilot-a:field-010",
+            "rule": "field_delivery",
+            "violations": [
+              "receipt_right: receipt 71.89 m3 exceeds window cap 30.46 m3 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0208 under interruption-14d-v1",
+              "receipt_right: receipt 71.89 m3 exceeds window cap 41.61 m3 under interruption-14d-v1",
+              "field_balance: 2028-02-20: water at field 0.0000 m3 != applied 71.8900 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_2228bd9fac59e82733ec3662",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0194 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0209 under interruption-14d-v1; field_balance: 2028-02-13: water at field 0.0000 m3 != applied 77.2408 m3; field_balance: 2028-02-20: water at field 0.0000 m3 != applied 77.2408 m3",
+            "field_id": "pilot-a:field-011",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0194 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0209 under interruption-14d-v1",
+              "field_balance: 2028-02-13: water at field 0.0000 m3 != applied 77.2408 m3",
+              "field_balance: 2028-02-20: water at field 0.0000 m3 != applied 77.2408 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_b780db64173a3994c43a2865",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0197 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0212 under interruption-14d-v1; field_balance: 2028-02-15: water at field 0.0000 m3 != applied 68.2866 m3; field_balance: 2028-02-22: water at field 0.0000 m3 != applied 68.2866 m3",
+            "field_id": "pilot-a:field-012",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0197 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0212 under interruption-14d-v1",
+              "field_balance: 2028-02-15: water at field 0.0000 m3 != applied 68.2866 m3",
+              "field_balance: 2028-02-22: water at field 0.0000 m3 != applied 68.2866 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_fd1e1bd5b9c7cefa25d67e01",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0196 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0211 under interruption-14d-v1; field_balance: 2028-02-15: water at field 0.0000 m3 != applied 212.4000 m3; field_balance: 2028-02-22: water at field 0.0000 m3 != applied 212.4000 m3",
+            "field_id": "pilot-a:field-013",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0196 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0211 under interruption-14d-v1",
+              "field_balance: 2028-02-15: water at field 0.0000 m3 != applied 212.4000 m3",
+              "field_balance: 2028-02-22: water at field 0.0000 m3 != applied 212.4000 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_54c97944050ce6daf1915d4b",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0198 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0213 under interruption-14d-v1; field_balance: 2028-02-16: water at field 0.0000 m3 != applied 86.6592 m3; field_balance: 2028-02-23: water at field 0.0000 m3 != applied 86.6592 m3",
+            "field_id": "pilot-a:field-014",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0198 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0213 under interruption-14d-v1",
+              "field_balance: 2028-02-16: water at field 0.0000 m3 != applied 86.6592 m3",
+              "field_balance: 2028-02-23: water at field 0.0000 m3 != applied 86.6592 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_7d9ac66b647a2d0de4f59887",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0204 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0219 under interruption-14d-v1; field_balance: 2028-02-18: water at field 307.7600 m3 != applied 393.9328 m3; field_balance: 2028-02-25: water at field 0.0000 m3 != applied 86.1728 m3",
+            "field_id": "pilot-a:field-015",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0204 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0219 under interruption-14d-v1",
+              "field_balance: 2028-02-18: water at field 307.7600 m3 != applied 393.9328 m3",
+              "field_balance: 2028-02-25: water at field 0.0000 m3 != applied 86.1728 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_1d2659796a3bee3cb9ac7591",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0206 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0221 under interruption-14d-v1; field_balance: 2028-02-19: water at field 0.0000 m3 != applied 69.7879 m3; field_balance: 2028-02-26: water at field 0.0000 m3 != applied 69.7879 m3",
+            "field_id": "pilot-a:field-018",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0206 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0221 under interruption-14d-v1",
+              "field_balance: 2028-02-19: water at field 0.0000 m3 != applied 69.7879 m3",
+              "field_balance: 2028-02-26: water at field 0.0000 m3 != applied 69.7879 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_c4ce8ef4ece2660957045cc7",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0195 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0210 under interruption-14d-v1; field_balance: 2028-02-14: water at field 0.0000 m3 != applied 76.8039 m3; field_balance: 2028-02-21: water at field 0.0000 m3 != applied 76.8039 m3",
+            "field_id": "pilot-a:field-019",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0195 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0210 under interruption-14d-v1",
+              "field_balance: 2028-02-14: water at field 0.0000 m3 != applied 76.8039 m3",
+              "field_balance: 2028-02-21: water at field 0.0000 m3 != applied 76.8039 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_8182c4efd6c536a3390c21c8",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0202 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0217 under interruption-14d-v1; field_balance: 2028-02-17: water at field 0.0000 m3 != applied 240.7752 m3; field_balance: 2028-02-24: water at field 0.0000 m3 != applied 240.7752 m3",
+            "field_id": "pilot-a:field-020",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0202 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0217 under interruption-14d-v1",
+              "field_balance: 2028-02-17: water at field 0.0000 m3 != applied 240.7752 m3",
+              "field_balance: 2028-02-24: water at field 0.0000 m3 != applied 240.7752 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_ca3582a9fbc1958a3881d690",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0196 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0211 under interruption-14d-v1; field_balance: 2028-02-14: water at field 0.0000 m3 != applied 98.1720 m3; field_balance: 2028-02-21: water at field 0.0000 m3 != applied 98.1720 m3",
+            "field_id": "pilot-a:field-021",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0196 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0211 under interruption-14d-v1",
+              "field_balance: 2028-02-14: water at field 0.0000 m3 != applied 98.1720 m3",
+              "field_balance: 2028-02-21: water at field 0.0000 m3 != applied 98.1720 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_14a6c4f0e8ecb943aaf32ed6",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0195 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0210 under interruption-14d-v1; field_balance: 2028-02-14: water at field 0.0000 m3 != applied 100.0458 m3; field_balance: 2028-02-21: water at field 0.0000 m3 != applied 100.0458 m3",
+            "field_id": "pilot-a:field-022",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0195 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0210 under interruption-14d-v1",
+              "field_balance: 2028-02-14: water at field 0.0000 m3 != applied 100.0458 m3",
+              "field_balance: 2028-02-21: water at field 0.0000 m3 != applied 100.0458 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_2f466fd1204277b8e7c2c9df",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0197 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0212 under interruption-14d-v1; field_balance: 2028-02-14: water at field 0.0000 m3 != applied 60.2280 m3; field_balance: 2028-02-21: water at field 0.0000 m3 != applied 60.2280 m3",
+            "field_id": "pilot-a:field-023",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0197 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0212 under interruption-14d-v1",
+              "field_balance: 2028-02-14: water at field 0.0000 m3 != applied 60.2280 m3",
+              "field_balance: 2028-02-21: water at field 0.0000 m3 != applied 60.2280 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_859ca5771961dc6c18f9fe76",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0201 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0216 under interruption-14d-v1; field_balance: 2028-02-16: water at field 0.0000 m3 != applied 97.6752 m3; field_balance: 2028-02-23: water at field 0.0000 m3 != applied 97.6752 m3",
+            "field_id": "pilot-a:field-024",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0201 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0216 under interruption-14d-v1",
+              "field_balance: 2028-02-16: water at field 0.0000 m3 != applied 97.6752 m3",
+              "field_balance: 2028-02-23: water at field 0.0000 m3 != applied 97.6752 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_7fc8dd61e97b6684a13d69a1",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0199 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0214 under interruption-14d-v1; field_balance: 2028-02-15: water at field 0.0000 m3 != applied 62.6280 m3; field_balance: 2028-02-22: water at field 0.0000 m3 != applied 62.6280 m3",
+            "field_id": "pilot-a:field-025",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0199 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0214 under interruption-14d-v1",
+              "field_balance: 2028-02-15: water at field 0.0000 m3 != applied 62.6280 m3",
+              "field_balance: 2028-02-22: water at field 0.0000 m3 != applied 62.6280 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_3033ff2f734e0d35049a7275",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0204 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0219 under interruption-14d-v1; field_balance: 2028-02-18: water at field 0.0000 m3 != applied 66.6252 m3; field_balance: 2028-02-25: water at field 0.0000 m3 != applied 66.6252 m3",
+            "field_id": "pilot-a:field-026",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0204 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0219 under interruption-14d-v1",
+              "field_balance: 2028-02-18: water at field 0.0000 m3 != applied 66.6252 m3",
+              "field_balance: 2028-02-25: water at field 0.0000 m3 != applied 66.6252 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_85c70ecc9e1fe8c69116e5e0",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0205 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0220 under interruption-14d-v1; field_balance: 2028-02-19: water at field 0.0000 m3 != applied 155.8548 m3; field_balance: 2028-02-26: water at field 0.0000 m3 != applied 155.8548 m3",
+            "field_id": "pilot-a:field-027",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0205 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0220 under interruption-14d-v1",
+              "field_balance: 2028-02-19: water at field 0.0000 m3 != applied 155.8548 m3",
+              "field_balance: 2028-02-26: water at field 0.0000 m3 != applied 155.8548 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_d9f9d155f5dd1ac708b408e8",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0203 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0218 under interruption-14d-v1; field_balance: 2028-02-18: water at field 0.0000 m3 != applied 71.2152 m3; field_balance: 2028-02-25: water at field 0.0000 m3 != applied 71.2152 m3",
+            "field_id": "pilot-a:field-028",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0203 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0218 under interruption-14d-v1",
+              "field_balance: 2028-02-18: water at field 0.0000 m3 != applied 71.2152 m3",
+              "field_balance: 2028-02-25: water at field 0.0000 m3 != applied 71.2152 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_694cfd82132ecaaad9b091b9",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0198 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0213 under interruption-14d-v1; field_balance: 2028-02-15: water at field 0.0000 m3 != applied 98.9401 m3; field_balance: 2028-02-22: water at field 0.0000 m3 != applied 98.9401 m3",
+            "field_id": "pilot-a:field-029",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0198 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0213 under interruption-14d-v1",
+              "field_balance: 2028-02-15: water at field 0.0000 m3 != applied 98.9401 m3",
+              "field_balance: 2028-02-22: water at field 0.0000 m3 != applied 98.9401 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_a6f64407c36056c463cc8100",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0200 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0215 under interruption-14d-v1; field_balance: 2028-02-16: water at field 0.0000 m3 != applied 104.8560 m3; field_balance: 2028-02-23: water at field 0.0000 m3 != applied 104.8560 m3",
+            "field_id": "pilot-a:field-030",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0200 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0215 under interruption-14d-v1",
+              "field_balance: 2028-02-16: water at field 0.0000 m3 != applied 104.8560 m3",
+              "field_balance: 2028-02-23: water at field 0.0000 m3 != applied 104.8560 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_a9ed8b9b6244851f16538fa3",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0202 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0217 under interruption-14d-v1; field_balance: 2028-02-17: water at field 0.0000 m3 != applied 50.0250 m3; field_balance: 2028-02-24: water at field 0.0000 m3 != applied 50.0250 m3",
+            "field_id": "pilot-a:field-031",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0202 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc1:w0217 under interruption-14d-v1",
+              "field_balance: 2028-02-17: water at field 0.0000 m3 != applied 50.0250 m3",
+              "field_balance: 2028-02-24: water at field 0.0000 m3 != applied 50.0250 m3"
+            ]
+          },
+          {
+            "candidate_policy_id": "cp_0f814b8aab433a92a31ae147",
+            "detail": "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0207 under interruption-14d-v1; route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0222 under interruption-14d-v1; field_balance: 2028-02-19: water at field 0.0000 m3 != applied 53.6354 m3; field_balance: 2028-02-26: water at field 0.0000 m3 != applied 53.6354 m3",
+            "field_id": "pilot-a:field-032",
+            "rule": "field_delivery",
+            "violations": [
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0207 under interruption-14d-v1",
+              "route_open: route closed for window pilot-a:wheat-rabi-2027-28:wc2:w0222 under interruption-14d-v1",
+              "field_balance: 2028-02-19: water at field 0.0000 m3 != applied 53.6354 m3",
+              "field_balance: 2028-02-26: water at field 0.0000 m3 != applied 53.6354 m3"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "checks": {
+    "AT09_six_points_each_a_linked_run": true,
+    "AT10_nine_cells_linked_shared_decisions_no_yield_when_undeliverable": true
+  }
+}
