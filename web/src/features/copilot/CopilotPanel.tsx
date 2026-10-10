@@ -1,27 +1,30 @@
 /**
- * Copilot region (F19, T11). Gated on GET /copilot/status: when the provider is not
- * configured (or the API build has no copilot routes) the panel says so with the server's
- * own words and keeps the deterministic "Why this plan" explanation and core tools usable.
- * When connected, each question is sent with the current pilot/revision/run/field context;
- * the server pins it per turn, streams tool activity over SSE and returns a validated,
- * cited answer. Nothing in this panel invents or recomputes a number.
+ * "Ask AabFlow" (F19). Fills the assistant slot (docs/UI_SYSTEM.md §7). Each question is sent
+ * with what the visitor is looking at (pilot, scenario, run, field, date, screen); the server
+ * pins that context, streams plain-language progress and returns a validated answer built
+ * from tool results. Without a configured key the panel says so honestly and keeps the
+ * deterministic "Why this plan" view. Nothing here computes or invents a number.
  */
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { ArrowUp, Bot, Compass, FileText, GitCompareArrows, MessageSquarePlus, PlayCircle, RefreshCw, Sparkles, Telescope, WifiOff } from "lucide-react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { ArrowUp, History, MessageSquarePlus, Square, WifiOff } from "lucide-react";
 import { useSelection } from "@/app/selection";
 import { usePilotData } from "@/app/pilotData";
-import { useCapabilities, useRun } from "@/lib/api/queries";
+import { useUI } from "@/app/store";
+import { useRun } from "@/lib/api/queries";
 import { describeError } from "@/lib/api/client";
 import { Chip, Skeleton, StatePanel } from "@/components/status";
 import { IconButton } from "@/components/ui/Button";
-import { Eyebrow, Segmented } from "@/components/ui/primitives";
-import { shortId } from "@/lib/formatting";
+import { Popover, PopoverContent, PopoverTrigger, Segmented } from "@/components/ui/primitives";
+import { formatDateTime, shortId } from "@/lib/formatting";
 import { cn } from "@/lib/cn";
-import { useCopilotStatus, useRunExplanations, type CopilotLanguage, type UIContext } from "./api";
-import { cancel, loadToolCalls, markIntentsApplied, reset, restore, retry, send, useConversation } from "./conversation";
+import { PLAN_PLAIN } from "./format";
+import { useCopilotSessions, useCopilotStatus } from "./api";
+import { cancel, isBusy, markIntentsApplied, openSession, reset, restore, retry, send, useConversation } from "./conversation";
 import { useCopilotNav } from "./nav";
-import { TurnView } from "./TurnView";
-import { WhyThisPlan, suggestedQuestions } from "./WhyThisPlan";
+import { suggestQuestions } from "./suggestions";
+import { TurnCard } from "./TurnCard";
+import { WhyThisPlan } from "./WhyThisPlan";
+import type { CopilotLanguage, UIContext } from "./types";
 
 const MAX_CHARS = 4000;
 const LANGS: { value: CopilotLanguage; label: string; title: string }[] = [
@@ -39,58 +42,51 @@ function readLang(): CopilotLanguage {
   }
 }
 
-type Gate =
-  | { kind: "loading" }
-  | { kind: "available"; model: string; note: string; versions: string }
-  | { kind: "not_configured"; model: string; note: string; versions: string }
-  | { kind: "not_mounted"; reason: string; detail: string }
-  | { kind: "error"; title: string; detail: string };
+type Gate = { kind: "loading" } | { kind: "ready"; model: string } | { kind: "unavailable"; title: string; detail: string; note?: string };
 
 export function CopilotPanel() {
   const sel = useSelection();
   const { fieldIndex, pilot } = usePilotData();
   const status = useCopilotStatus();
-  const caps = useCapabilities();
   const run = useRun(sel.runId);
+  const active = useUI((s) => s.active[sel.pilotKey]);
   const conv = useConversation(sel.pilotKey);
   const nav = useCopilotNav();
   const [draft, setDraft] = useState("");
   const [lang, setLang] = useState<CopilotLanguage>(readLang);
   const scroller = useRef<HTMLDivElement>(null);
   const input = useRef<HTMLTextAreaElement>(null);
-  const expl = useRunExplanations(sel.runId);
+  const sessions = useCopilotSessions(status.data?.mounted === true && status.data.status.configured);
 
   const gate: Gate = useMemo(() => {
     if (status.isLoading) return { kind: "loading" };
     if (status.error) {
       const e = describeError(status.error);
-      return { kind: "error", title: e.title, detail: e.detail };
+      return { kind: "unavailable", title: e.title, detail: e.detail };
     }
     const d = status.data!;
-    if (!d.mounted) {
-      const f = (caps.data?.features as Record<string, { status?: string; reason?: string | null }> | undefined)?.copilot;
+    if (!d.mounted) return { kind: "unavailable", title: "The assistant is not part of this build", detail: "This API does not expose the copilot routes." };
+    if (!d.status.configured)
       return {
-        kind: "not_mounted",
-        reason: f?.reason ?? "This API build does not expose the copilot routes.",
-        detail: "GET /api/v2/copilot/status returned 404",
+        kind: "unavailable",
+        title: "The assistant is offline",
+        detail: d.status.reason ?? "No hosted-model key is configured on this server.",
+        note: d.status.offline_note,
       };
-    }
-    const versions = `${d.status.prompt_version} · ${d.status.tool_schema_version}`;
-    return d.status.configured
-      ? { kind: "available", model: d.status.model, note: d.status.offline_note, versions }
-      : { kind: "not_configured", model: d.status.model, note: d.status.offline_note, versions };
-  }, [status.isLoading, status.error, status.data, caps.data]);
+    return { kind: "ready", model: d.status.model };
+  }, [status.isLoading, status.error, status.data]);
 
-  const available = gate.kind === "available";
-  const running = conv.turns.some((t) => t.status === "running" || t.status === "sending" || t.status === "cancelling");
+  const ready = gate.kind === "ready";
+  const busy = conv.turns.some(isBusy);
   const runData = run.data;
-  const fieldLabel = sel.fieldId ? fieldIndex.get(sel.fieldId)?.label ?? sel.fieldId.replace(/^[^:]+:/, "") : null;
+  const fieldLabel = sel.fieldId ? (fieldIndex.get(sel.fieldId)?.label ?? sel.fieldId.replace(/^[^:]+:/, "")) : null;
+  const pilotName = (pilot.data as { name?: string } | undefined)?.name ?? sel.pilotId ?? "";
 
   const context: UIContext = useMemo(
     () => ({
       pilot_id: sel.pilotId ?? null,
       pilot_version: sel.version ?? null,
-      scenario_revision_id: runData?.scenario_revision_id ?? null,
+      scenario_revision_id: runData?.scenario_revision_id ?? active?.revisionId ?? null,
       selected_run_id: sel.runId,
       selected_field_id: sel.fieldId,
       timeline_date: sel.date && /^\d{4}-\d{2}-\d{2}$/.test(sel.date) ? sel.date : null,
@@ -98,15 +94,14 @@ export function CopilotPanel() {
       language: lang,
       units: "metric",
     }),
-    [sel.pilotId, sel.version, sel.runId, sel.fieldId, sel.date, sel.screen, runData?.scenario_revision_id, lang],
+    [sel.pilotId, sel.version, sel.runId, sel.fieldId, sel.date, sel.screen, runData?.scenario_revision_id, active?.revisionId, lang],
   );
 
-  // Restore this tab's conversation (session id only is remembered) once the copilot is reachable.
   useEffect(() => {
-    if (available) void restore(sel.pilotKey);
-  }, [available, sel.pilotKey]);
+    if (ready) void restore(sel.pilotKey);
+  }, [ready, sel.pilotKey]);
 
-  // Apply server view intents once, after a live turn finishes (T11.2 navigate_view).
+  // Server view intents apply once, after a live turn finishes (navigate_view, T11.2).
   useEffect(() => {
     for (const t of conv.turns) {
       if (t.live && !t.intentsApplied && t.viewIntents.length && (t.status === "completed" || t.status === "clarification")) {
@@ -116,304 +111,279 @@ export function CopilotPanel() {
     }
   }, [conv.turns, nav, sel.pilotKey]);
 
-  // Keep the newest activity in view while the user is near the bottom.
-  const lastSig = conv.turns.length ? `${conv.turns.length}:${conv.turns[conv.turns.length - 1].status}:${conv.turns[conv.turns.length - 1].activity.length}:${!!conv.turns[conv.turns.length - 1].answer}` : "";
-  // Follow the newest turn after the user asks: keep its question in view (top) while the answer
-  // grows, and stop following as soon as the user scrolls up on their own.
-  const follow = useRef(false);
-  const lastAuto = useRef(0);
+  // Follow the newest content while the reader is near the bottom.
+  const last = conv.turns[conv.turns.length - 1];
+  const sig = last ? `${conv.turns.length}:${last.status}:${last.steps.length}:${last.partial.length}:${!!last.answer}` : "";
   useLayoutEffect(() => {
     const el = scroller.current;
-    if (!el || !follow.current) return;
-    const turns = el.querySelectorAll<HTMLElement>("[data-testid=copilot-turn]");
-    const last = turns[turns.length - 1];
-    const bottom = el.scrollHeight - el.clientHeight;
-    const target = last ? Math.min(bottom, last.offsetTop - 12) : bottom;
-    if (target <= el.scrollTop + 2) return;
-    const reduce = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    lastAuto.current = target;
-    el.scrollTo({ top: target, behavior: target - el.scrollTop > 480 || reduce ? "auto" : "smooth" });
-  }, [lastSig]); // eslint-disable-line react-hooks/exhaustive-deps
-  const onScroll = () => {
-    const el = scroller.current;
-    if (el && follow.current && el.scrollTop < lastAuto.current - 60) follow.current = false;
-  };
+    if (!el) return;
+    if (el.scrollHeight - el.scrollTop - el.clientHeight < 260 || last?.status === "sending") el.scrollTop = el.scrollHeight;
+  }, [sig]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const submit = (text?: string) => {
-    const msg = (text ?? draft).trim();
-    if (!msg || !available || running || msg.length > MAX_CHARS) return;
-    follow.current = true;
-    lastAuto.current = scroller.current?.scrollTop ?? 0;
-    void send(sel.pilotKey, msg, context);
-    if (!text) setDraft("");
-    input.current?.focus();
-  };
+  useEffect(() => {
+    if (ready) input.current?.focus({ preventScroll: true });
+  }, [ready]);
 
-  const setLanguage = (v: CopilotLanguage) => {
-    setLang(v);
+  const ask = (text: string) => {
+    const m = text.trim();
+    if (!m || busy || !ready) return;
+    setDraft("");
+    void send(sel.pilotKey, m.slice(0, MAX_CHARS), context);
+  };
+  const setLanguage = (l: CopilotLanguage) => {
+    setLang(l);
     try {
-      localStorage.setItem("aabflow-copilot-lang", v);
+      localStorage.setItem("aabflow-copilot-lang", l);
     } catch {
-      /* per-viewer convenience only */
+      /* not persisted */
     }
   };
 
-  const suggestions = suggestedQuestions(expl.data, fieldLabel);
-  const runKind = runData?.plan_kind;
+  const suggestions = suggestQuestions({
+    screen: sel.screen,
+    hasRun: !!sel.runId,
+    planKind: runData?.plan_kind,
+    runHasPlan: runData ? runData.outcome === "plan" : undefined,
+    fieldLabel,
+    hasAnalysis: !!sel.analysisId,
+    tab: sel.tab,
+  });
+
+  if (gate.kind === "loading") {
+    return (
+      <div className="flex h-full flex-col gap-3 p-4" aria-busy="true">
+        <Skeleton className="h-6 w-2/3" />
+        <Skeleton className="h-24" />
+        <Skeleton className="h-10" />
+      </div>
+    );
+  }
 
   return (
-    <div className="flex h-full min-h-0 flex-col bg-canvas/40" data-testid="copilot-panel" data-gate={gate.kind}>
-      {/* header */}
-      <div className="flex items-center justify-between gap-2 border-b border-border bg-surface px-4 py-2.5">
-        <div className="flex min-w-0 items-center gap-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-[9px] bg-water-soft text-water-deep" aria-hidden>
-            <Bot size={15} />
-          </span>
-          <div className="min-w-0">
-            <h2 className="text-[13px] font-semibold leading-tight text-ink">Copilot</h2>
-            <div className="truncate text-[11px] leading-tight text-ink-tertiary" title={gate.kind === "available" || gate.kind === "not_configured" ? gate.versions : undefined}>
-              {gate.kind === "available" ? `Connected · ${gate.model}` : gate.kind === "not_configured" ? "Hosted model not configured" : gate.kind === "loading" ? "Checking connection…" : "Not available in this build"}
-            </div>
-          </div>
-        </div>
-        <div className="flex items-center gap-1">
-          <Chip
-            size="sm"
-            tone={available ? "vegetation" : gate.kind === "loading" ? "neutral" : "warning"}
-            icon={available ? <span className="h-1.5 w-1.5 rounded-full bg-vegetation" aria-hidden /> : gate.kind === "loading" ? undefined : <WifiOff size={11} aria-hidden />}
-          >
-            {available ? "Online" : gate.kind === "loading" ? "Checking" : gate.kind === "not_configured" ? "Not configured" : "Unavailable"}
+    <div className="flex h-full min-h-0 flex-col" data-testid="copilot-panel">
+      {/* context strip */}
+      <div className="flex shrink-0 items-center gap-1.5 border-b border-border px-3 py-2">
+        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1" aria-label="What the assistant will look at" data-testid="copilot-context">
+          <Chip size="sm" tone="neutral">
+            {pilotName || "No watercourse"}
           </Chip>
-          {available && conv.turns.length ? (
-            <IconButton label="New conversation" size="sm" onClick={() => reset(sel.pilotKey)} disabled={running}>
-              <MessageSquarePlus size={15} />
-            </IconButton>
+          {runData ? (
+            <Chip size="sm" tone="water" title={runData.run_id}>
+              {PLAN_PLAIN[runData.plan_kind] ?? runData.plan_kind} · {shortId(runData.run_id)}
+            </Chip>
+          ) : null}
+          {fieldLabel ? (
+            <Chip size="sm" tone="wheat">
+              Field {fieldLabel}
+            </Chip>
           ) : null}
         </div>
-      </div>
-
-      {/* context the next question will carry */}
-      <div className="flex flex-wrap items-center gap-1.5 border-b border-border bg-surface px-4 py-2 text-[11px] text-ink-secondary" aria-label="Context sent with your next question">
-        <span className="text-ink-tertiary">Asking about</span>
-        <Chip size="sm" title={pilot.data?.pilot?.name}>
-          {sel.pilotId ?? "no pilot"}
-          {sel.version ? ` · ${sel.version}` : ""}
-        </Chip>
-        {sel.runId ? (
-          <Chip size="sm" tone="water" icon={<PlayCircle size={11} aria-hidden />} title={sel.runId}>
-            {runKind ? `${runKind} · ` : ""}
-            {shortId(sel.runId.replace(/^run_/, ""))}
-          </Chip>
-        ) : (
-          <Chip size="sm" title="No run selected; the copilot will read the pilot and its revisions">
-            no run selected
-          </Chip>
-        )}
-        {fieldLabel ? <Chip size="sm">{fieldLabel}</Chip> : null}
-      </div>
-
-      {/* body */}
-      <div ref={scroller} onScroll={onScroll} className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-3" data-testid="copilot-scroll">
-        {gate.kind === "loading" ? (
-          <div className="flex flex-col gap-2" aria-busy>
-            <Skeleton className="h-20" />
-            <Skeleton className="h-12" />
-          </div>
-        ) : !available ? (
-          <Unavailable gate={gate} onRecheck={() => void status.refetch()} rechecking={status.isFetching} />
+        {ready ? (
+          <>
+            <HistoryMenu
+              sessions={sessions.data?.sessions ?? []}
+              loading={sessions.isFetching}
+              current={conv.sessionId}
+              onOpen={(id) => void openSession(sel.pilotKey, id)}
+              onRefresh={() => void sessions.refetch()}
+            />
+            <IconButton label="New conversation" size="sm" onClick={() => reset(sel.pilotKey)} disabled={busy || !conv.turns.length}>
+              <MessageSquarePlus size={15} />
+            </IconButton>
+          </>
         ) : null}
+      </div>
 
-        {gate.kind !== "loading" ? (
-          <div className={cn("flex flex-col gap-3", !available && "mt-4")}>
-            <WhyThisPlan key={sel.runId ?? "none"} runId={sel.runId} defaultOpen={!conv.turns.length} />
-
-            {available && conv.restoring ? <Skeleton className="h-24" /> : null}
-            {available && conv.restoreNote ? <p className="text-[12px] text-ink-secondary">{conv.restoreNote}</p> : null}
-
-            {available && !conv.turns.length && !conv.restoring ? (
-              <div data-testid="copilot-suggestions">
-                <Eyebrow className="mb-1.5 flex items-center gap-1">
-                  <Sparkles size={11} aria-hidden /> Ask about this plan
-                </Eyebrow>
-                <ul className="flex flex-col gap-1.5">
-                  {suggestions.map((s) => (
-                    <li key={s}>
-                      <button
-                        type="button"
-                        onClick={() => submit(s)}
-                        className="w-full rounded-[10px] border border-border bg-surface px-3 py-2 text-left text-[12.5px] text-ink shadow-1 transition-colors hover:border-water/40 hover:bg-water-soft/50"
-                      >
-                        {s}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-                <p className="mt-2 text-[11.5px] leading-snug text-ink-tertiary">
-                  Answers use the application's own tools on the context above. Explicit what-ifs create reversible branches and jobs; nothing overwrites your active scenario.
-                </p>
-              </div>
-            ) : null}
-
-            {conv.turns.map((t) => (
-              <TurnView
+      <div ref={scroller} className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3.5 py-4" role="log" aria-live="polite" aria-relevant="additions" aria-label="Conversation">
+        {gate.kind === "unavailable" ? (
+          <div className="flex flex-col gap-3">
+            <StatePanel state="blocked" compact title={gate.title} art="trust">
+              <span data-testid="copilot-unavailable">
+                {gate.detail} {gate.note ?? "Saved results, the map, the plan settings and the deterministic explanation below keep working."}
+              </span>
+            </StatePanel>
+            <WhyThisPlan key={sel.runId ?? "none"} runId={sel.runId} defaultOpen />
+          </div>
+        ) : conv.restoring ? (
+          <div className="flex flex-col gap-3" aria-busy="true">
+            <Skeleton className="h-10 w-3/4 self-end" />
+            <Skeleton className="h-32" />
+          </div>
+        ) : conv.turns.length ? (
+          <div className="flex flex-col gap-6">
+            {conv.turns.map((t, i) => (
+              <TurnCard
                 key={t.key}
                 t={t}
-                currentRunId={sel.runId}
-                onRetry={() => {
-                  follow.current = true;
-                  void retry(sel.pilotKey, t, context);
-                }}
-                onCancel={() => void cancel(sel.pilotKey, t)}
-                onLoadTrace={() => void loadToolCalls(sel.pilotKey, t)}
+                latest={i === conv.turns.length - 1}
+                ctx={{ lang, onAsk: ask, busy }}
+                onRetry={() => void retry(sel.pilotKey, t, context)}
+                onStop={() => void cancel(sel.pilotKey, t)}
               />
             ))}
           </div>
-        ) : null}
-
-        {!available && gate.kind !== "loading" ? <CoreTools /> : null}
+        ) : (
+          <Welcome suggestions={suggestions} onAsk={ask} note={conv.restoreNote} />
+        )}
       </div>
 
-      {/* composer */}
-      <div className="border-t border-border bg-surface p-3">
+      {ready ? (
         <form
+          className="shrink-0 border-t border-border bg-surface px-3 pb-3 pt-2.5"
           onSubmit={(e) => {
             e.preventDefault();
-            submit();
+            ask(draft);
           }}
-          className={cn(
-            "rounded-[12px] border bg-surface transition-colors focus-within:border-water focus-within:ring-2 focus-within:ring-water/15",
-            available ? "border-border-strong/60" : "border-border bg-surface-muted",
-          )}
         >
-          <label htmlFor="copilot-input" className="sr-only">
-            Message the copilot
-          </label>
-          <textarea
-            id="copilot-input"
-            ref={input}
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
-                e.preventDefault();
-                submit();
-              }
-            }}
-            disabled={!available}
-            rows={2}
-            maxLength={MAX_CHARS}
-            dir="auto"
-            placeholder={
-              !available
-                ? gate.kind === "not_configured"
-                  ? "Hosted copilot not configured on this server"
-                  : "Copilot unavailable — see status above"
-                : running
-                  ? "Wait for the current answer, or stop it"
-                  : "Ask about this plan, or request a what-if…"
-            }
-            className="block max-h-40 min-h-[44px] w-full resize-none bg-transparent px-3 pt-2.5 text-[13.5px] text-ink outline-none focus-visible:outline-none placeholder:text-ink-tertiary disabled:cursor-not-allowed disabled:text-ink-tertiary"
-            style={{ outline: "none" }} /* the form's focus-within ring is the visible focus indicator */
-            data-testid="copilot-input"
-          />
-          <div className="flex items-center justify-between gap-2 px-2 pb-2">
-            <Segmented size="sm" label="Answer language" value={lang} onChange={setLanguage} options={LANGS.map((l) => ({ ...l, disabled: !available }))} />
-            <div className="flex items-center gap-2">
-              {draft.length > MAX_CHARS * 0.8 ? <span className="num text-[11px] text-ink-tertiary">{draft.length}/{MAX_CHARS}</span> : null}
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <Segmented size="sm" label="Answer language" value={lang} onChange={setLanguage} options={LANGS.map((l) => ({ value: l.value, label: l.label, title: l.title }))} />
+            <span className="truncate text-[11px] text-ink-tertiary">Hosted model · {gate.model}</span>
+          </div>
+          <div className="flex items-end gap-2 rounded-[14px] border border-border bg-surface-raised px-2.5 py-2 shadow-1 focus-within:border-water/60">
+            <textarea
+              ref={input}
+              value={draft}
+              onChange={(e) => setDraft(e.target.value.slice(0, MAX_CHARS))}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
+                  e.preventDefault();
+                  ask(draft);
+                }
+              }}
+              rows={1}
+              dir="auto"
+              placeholder={lang === "ur" ? "اپنا سوال لکھیں…" : "Ask about this plan, a field, money or water…"}
+              aria-label="Your question"
+              className="max-h-40 min-h-[24px] flex-1 resize-none bg-transparent text-[13.5px] leading-relaxed text-ink outline-none placeholder:text-ink-tertiary"
+              style={{ fieldSizing: "content" } as CSSProperties}
+              data-testid="copilot-input"
+            />
+            {busy ? (
+              <IconButton
+                label="Stop"
+                size="sm"
+                type="button"
+                onClick={() => {
+                  const t = conv.turns.find(isBusy);
+                  if (t) void cancel(sel.pilotKey, t);
+                }}
+              >
+                <Square size={14} />
+              </IconButton>
+            ) : (
               <button
                 type="submit"
-                disabled={!available || running || !draft.trim()}
+                disabled={!draft.trim()}
                 aria-label="Send"
-                title={running ? "A turn is still running" : "Send (Enter)"}
-                className="flex h-8 w-8 items-center justify-center rounded-[9px] bg-water text-on-water shadow-1 transition-colors enabled:hover:bg-water-deep disabled:cursor-not-allowed disabled:bg-surface-sunken disabled:text-ink-tertiary disabled:shadow-none"
+                className="grid h-8 w-8 shrink-0 place-items-center rounded-[10px] bg-water text-on-water shadow-1 transition-colors hover:bg-water-deep disabled:opacity-40"
                 data-testid="copilot-send"
               >
                 <ArrowUp size={16} aria-hidden />
               </button>
-            </div>
+            )}
           </div>
+          <p className="mt-1.5 text-[10.5px] leading-snug text-ink-tertiary">Enter to send · Shift+Enter for a new line · answers can be wrong; numbers are checked against the app's results.</p>
         </form>
-        <p className="mt-1.5 px-0.5 text-[10.5px] text-ink-tertiary">
-          {available ? "Enter to send · Shift+Enter for a new line · answers cite the runs and sources they use" : "Saved results, explanations and controls keep working without the copilot."}
+      ) : (
+        <div className="shrink-0 border-t border-border px-3.5 py-2.5 text-[11.5px] text-ink-tertiary">
+          <WifiOff size={11} aria-hidden className="mr-1 inline" /> Conversation needs the hosted model; everything else works offline.
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Welcome({ suggestions, onAsk, note }: { suggestions: ReturnType<typeof suggestQuestions>; onAsk: (q: string) => void; note: string | null }) {
+  return (
+    <div className="flex flex-col gap-4 animate-rise" data-testid="copilot-welcome">
+      <div className="rounded-[18px] bg-dawn p-4">
+        <p className="display text-[20px] leading-tight text-ink">Ask anything about this watercourse.</p>
+        <p className="mt-1.5 text-[13px] leading-relaxed text-ink-secondary">
+          I read the same plans, maps and water books you see, run what-ifs when you ask, and answer with charts. Every number comes from the app's own results.
         </p>
       </div>
-    </div>
-  );
-}
-
-function Unavailable({ gate, onRecheck, rechecking }: { gate: Gate; onRecheck: () => void; rechecking: boolean }) {
-  if (gate.kind === "not_configured")
-    return (
-      <div className="rounded-[14px] border border-border bg-surface p-4 shadow-1" data-testid="copilot-unavailable" role="status">
-        <div className="flex items-start gap-3">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[11px] bg-warning-soft text-warning" aria-hidden>
-            <WifiOff size={17} />
-          </span>
-          <div className="min-w-0">
-            <h3 className="text-[13.5px] font-semibold text-ink">Copilot not configured</h3>
-            <p className="mt-1 text-[12.5px] leading-relaxed text-ink-secondary">{gate.note}</p>
-          </div>
-        </div>
-        <dl className="mt-3 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 rounded-[10px] bg-surface-muted/70 px-3 py-2 text-[11.5px]">
-          <dt className="text-ink-tertiary">Server reports</dt>
-          <dd className="font-mono text-ink">configured: false</dd>
-          <dt className="text-ink-tertiary">Model</dt>
-          <dd className="font-mono text-ink">{gate.model}</dd>
-          <dt className="text-ink-tertiary">Prompt · tools</dt>
-          <dd className="truncate font-mono text-ink" title={gate.versions}>
-            {gate.versions}
-          </dd>
-        </dl>
-        <div className="mt-3 flex items-center gap-2">
+      {note ? <p className="text-[12px] text-ink-secondary">{note}</p> : null}
+      <div className="flex flex-col gap-1.5" aria-label="Suggested questions">
+        {suggestions.map((s) => (
           <button
+            key={s.text}
             type="button"
-            onClick={onRecheck}
-            className="inline-flex h-7 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-[8px] border border-border-strong/60 bg-surface px-2.5 text-[12px] font-medium text-ink shadow-1 hover:bg-surface-muted"
+            onClick={() => onAsk(s.text)}
+            lang={s.lang}
+            dir="auto"
+            className={cn(
+              "group flex items-center gap-2.5 rounded-[12px] border border-border bg-surface px-3 py-2 text-left text-[13px] leading-snug text-ink shadow-1 transition-colors hover:border-water/40 hover:bg-water-soft/50",
+              s.lang === "ur" && "urdu",
+            )}
+            data-testid="copilot-suggestion"
           >
-            <RefreshCw size={12} aria-hidden className={cn(rechecking && "[animation:spin_1s_linear_infinite]")} /> Check again
+            <span className="shrink-0 rounded-full bg-surface-muted px-2 py-0.5 text-[10.5px] font-semibold uppercase tracking-[0.06em] text-ink-tertiary group-hover:bg-water-soft group-hover:text-water-deep">
+              {s.tag}
+            </span>
+            <span className="min-w-0">{s.text}</span>
           </button>
-          <span className="text-[11.5px] text-ink-tertiary">There is no offline generative assistant.</span>
-        </div>
-      </div>
-    );
-  if (gate.kind === "not_mounted")
-    return (
-      <StatePanel state="blocked" title="Copilot is not part of this API build">
-        <span className="block">{gate.reason}</span>
-        <span className="mt-1 block font-mono text-[11px] text-ink-tertiary">{gate.detail}</span>
-      </StatePanel>
-    );
-  if (gate.kind === "error")
-    return (
-      <StatePanel state="error" title={gate.title} action={{ label: "Check again", onClick: onRecheck }}>
-        {gate.detail}
-      </StatePanel>
-    );
-  return null;
-}
-
-function CoreTools() {
-  const sel = useSelection();
-  return (
-    <div className="mt-4">
-      <Eyebrow className="mb-2">Available without the copilot</Eyebrow>
-      <ul className="flex flex-col gap-1.5 text-[13px]">
-        {[
-          { icon: <Compass size={14} />, label: "Explain the selected field", to: () => sel.go("workspace") },
-          { icon: <GitCompareArrows size={14} />, label: "Compare B0 · B1 · P", to: () => sel.go("compare") },
-          { icon: <Telescope size={14} />, label: "Why-not, frontier and stress tests", to: () => sel.go("explore") },
-          { icon: <FileText size={14} />, label: "Action plan and report", to: () => sel.go("report") },
-        ].map((x) => (
-          <li key={x.label}>
-            <button type="button" onClick={x.to} className="flex w-full items-center gap-2 rounded-[10px] border border-border bg-surface px-3 py-2 text-left text-ink hover:bg-surface-muted">
-              <span className="text-water" aria-hidden>
-                {x.icon}
-              </span>
-              {x.label}
-            </button>
-          </li>
         ))}
-      </ul>
+      </div>
     </div>
   );
 }
+
+function HistoryMenu({
+  sessions,
+  loading,
+  current,
+  onOpen,
+  onRefresh,
+}: {
+  sessions: { session_id: string; title?: string | null; turns: number; last_turn_at?: string | null; created_at: string }[];
+  loading: boolean;
+  current: string | null;
+  onOpen: (id: string) => void;
+  onRefresh: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  return (
+    <Popover
+      open={open}
+      onOpenChange={(o) => {
+        setOpen(o);
+        if (o) onRefresh();
+      }}
+    >
+      <PopoverTrigger asChild>
+        <IconButton label="Earlier conversations" size="sm">
+          <History size={15} />
+        </IconButton>
+      </PopoverTrigger>
+      <PopoverContent className="w-[300px] max-w-[90vw] p-1.5" align="end">
+        <p className="px-2 pb-1 pt-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-tertiary">Earlier conversations</p>
+        {loading && !sessions.length ? <Skeleton className="m-2 h-10" /> : null}
+        {!loading && !sessions.filter((s) => s.turns > 0).length ? <p className="px-2 py-2 text-[12.5px] text-ink-secondary">No saved conversations yet.</p> : null}
+        <ul className="max-h-[320px] overflow-y-auto">
+          {sessions
+            .filter((s) => s.turns > 0)
+            .map((s) => (
+              <li key={s.session_id}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onOpen(s.session_id);
+                    setOpen(false);
+                  }}
+                  className={cn("flex w-full flex-col rounded-[10px] px-2 py-1.5 text-left hover:bg-surface-muted", s.session_id === current && "bg-water-soft/60")}
+                >
+                  <span className="line-clamp-1 text-[12.5px] text-ink" dir="auto">
+                    {s.title ?? "Conversation"}
+                  </span>
+                  <span className="text-[11px] text-ink-tertiary">
+                    {s.turns} {s.turns === 1 ? "question" : "questions"} · {formatDateTime(s.last_turn_at ?? s.created_at)}
+                  </span>
+                </button>
+              </li>
+            ))}
+        </ul>
+      </PopoverContent>
+    </Popover>
+  );
+}
+

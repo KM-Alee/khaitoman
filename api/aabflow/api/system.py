@@ -13,6 +13,7 @@ from fastapi import APIRouter, Depends
 from aabflow import config
 from aabflow.api.models import Capabilities, FeatureStatus, Health
 from aabflow.api.state import AppState, get_state
+from aabflow.copilot.provider import configured_model
 
 router = APIRouter()
 State = Annotated[AppState, Depends(get_state)]
@@ -155,10 +156,16 @@ def capabilities(state: State) -> Capabilities:
         pilots=pilots,
         exact_science=_version("aquacrop") is not None,
         surrogate_gate=gate,
+        # Mirrors features.copilot; reachability of the hosted model is only known after a call, so
+        # "connected" is null (not measured) instead of a fixed false.
         chat={
             "key_configured": config.openai_key_configured(),
-            "model": config.OPENAI_MODEL,
-            "connected": False,
+            "model": configured_model(),
+            "available": features["copilot"].status != "not_available",
+            "status": features["copilot"].status,
+            "reason": features["copilot"].reason,
+            "connected": None,
+            "status_url": "/api/v2/copilot/status",
         },
         features=features,
     )

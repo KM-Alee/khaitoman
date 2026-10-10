@@ -1482,6 +1482,15 @@ export interface components {
              */
             unit_column?: string | null;
         };
+        /** ComparedPlan */
+        ComparedPlan: {
+            /** Plan Kind */
+            plan_kind?: string | null;
+            /** Run Id */
+            run_id: string;
+            /** Solver Status */
+            solver_status?: string | null;
+        };
         /** ComparisonBlock */
         ComparisonBlock: {
             /** Comparison Id */
@@ -1494,6 +1503,8 @@ export interface components {
             fields_worse_off?: unknown[];
             /** Label */
             label: string;
+            /** Plans */
+            plans?: components["schemas"]["ComparedPlan"][];
             /** Run Ids */
             run_ids: string[];
             /**
@@ -1620,8 +1631,15 @@ export interface components {
         Delta: {
             /** A */
             a?: number | null;
+            /**
+             * A Run Id
+             * @description Run of the 'a' value (multi-run comparisons are pairwise)
+             */
+            a_run_id?: string | null;
             /** B */
             b?: number | null;
+            /** B Run Id */
+            b_run_id?: string | null;
             /** Delta */
             delta?: number | null;
             /** Metric Id */

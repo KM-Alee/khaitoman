@@ -749,6 +749,42 @@
         "title": "Column",
         "type": "object"
       },
+      "ComparedPlan": {
+        "additionalProperties": false,
+        "properties": {
+          "plan_kind": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Kind"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "solver_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Solver Status"
+          }
+        },
+        "required": [
+          "run_id"
+        ],
+        "title": "ComparedPlan",
+        "type": "object"
+      },
       "ComparisonBlock": {
         "additionalProperties": false,
         "properties": {
@@ -775,6 +811,13 @@
           "label": {
             "title": "Label",
             "type": "string"
+          },
+          "plans": {
+            "items": {
+              "$ref": "#/components/schemas/ComparedPlan"
+            },
+            "title": "Plans",
+            "type": "array"
           },
           "run_ids": {
             "items": {
@@ -1144,6 +1187,18 @@
             ],
             "title": "A"
           },
+          "a_run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Run of the 'a' value (multi-run comparisons are pairwise)",
+            "title": "A Run Id"
+          },
           "b": {
             "anyOf": [
               {
@@ -1154,6 +1209,17 @@
               }
             ],
             "title": "B"
+          },
+          "b_run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "B Run Id"
           },
           "delta": {
             "anyOf": [
