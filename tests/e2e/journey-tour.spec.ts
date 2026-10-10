@@ -39,7 +39,22 @@ test("guided tour over the saved session", async ({ page }, info) => {
   expect((await session.json()).complete).toBe(true);
   const problems = watch(page);
 
-  await page.addInitScript(() => localStorage.setItem("aabflow-ui", JSON.stringify({ state: { tourSeen: true, motion: "reduced" }, version: 1 })));
+  const recording = process.env.AAB_RECORD === "1";
+  await page.addInitScript((rec) => {
+    localStorage.setItem("aabflow-ui", JSON.stringify({ state: { tourSeen: true, motion: rec ? "full" : "reduced", theme: "dark" }, version: 1 }));
+    if (!rec) return;
+    // The fallback video must never pass as a live demo.
+    const badge = () => {
+      if (document.getElementById("aab-recorded")) return;
+      const d = document.createElement("div");
+      d.id = "aab-recorded";
+      d.textContent = "● RECORDED";
+      d.style.cssText =
+        "position:fixed;left:50%;top:10px;transform:translateX(-50%);z-index:2147483647;padding:4px 14px;border-radius:999px;background:#A63E32;color:#fff;font:600 14px/1.4 Inter,system-ui,sans-serif;letter-spacing:.12em;pointer-events:none";
+      document.body.appendChild(d);
+    };
+    document.addEventListener("DOMContentLoaded", badge);
+  }, recording);
   await page.goto("/");
   await expect(page.getByTestId("headline-insight")).toBeVisible();
   await expect(page.getByTestId("ai-stack")).toBeVisible();
@@ -70,7 +85,7 @@ test("guided tour over the saved session", async ({ page }, info) => {
     if (title.toLowerCase().includes("reveal")) {
       await expect(page.getByTestId("ai-reveal")).toHaveAttribute("data-phase", "reviewed", { timeout: 20_000 });
     }
-    await page.waitForTimeout(1200);
+    await page.waitForTimeout(recording ? 6000 : 1200);
     await shot(page, info, `${String(i).padStart(2, "0")}-${slug(title)}`, "tour");
     await page.getByTestId("tour-next").click();
     await expect(page.getByTestId("tour-title")).not.toHaveText(title);

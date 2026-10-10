@@ -89,6 +89,15 @@ function WelcomeBody({ s }: { s: DemoSession }) {
   const pilot = usePilot(s.pilot_id, s.pilot_version);
   const field = useSessionFieldLabel(s, s.focus_field_id);
   const h = useHeadline();
+  // A slow cinematic orbit of the 3D watercourse while the story is read (MapBinder skips it under reduced motion).
+  const setUI = useUI((st) => st.set);
+  useEffect(() => {
+    const t = window.setTimeout(() => setUI({ orbiting: true }), 1200);
+    return () => {
+      window.clearTimeout(t);
+      setUI({ orbiting: false });
+    };
+  }, [setUI]);
   return (
     <>
       {h.data ? (
