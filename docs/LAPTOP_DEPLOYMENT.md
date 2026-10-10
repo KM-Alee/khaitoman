@@ -276,15 +276,20 @@ copy the matching `backup-<timestamp>` to `.laptop/data`, and the matching
 Do not restore while either API/vision is writing. Backups omit secrets. Schema
 migration plus full rollback has not been exercised by this deployment task.
 
-## ArcGIS replacement pending
+## ArcGIS HD imagery
 
-The owner reported the ArcGIS API key expired and is obtaining a replacement.
-Optional HD imagery uses public build variable `VITE_ARCGIS_KEY`; its replacement
-has not been installed or tested. Restrict its permitted referrers to the frontend
-hostname before setting it in Vercel Production and rebuilding. No provider key
-was read from a runtime environment file. The tested satellite imagery, GeoJSON
-and terrain are already served locally from the laptop and work independently
-of this optional key.
+The owner-provided replacement is configured as encrypted Vercel Production
+variable `VITE_ARCGIS_KEY`. It was included by a fresh production build and the
+Esri HD layer rendered in the authenticated frontend: enabled switch, Esri
+attribution, 19 observed tile assets and no browser console errors. Screenshot:
+`evidence/screenshots/laptop-public-hd-20261010.png`. The key itself is not in Git,
+a runtime environment file, screenshots or validation logs.
+
+This is a browser display key: Vite includes it in its public bundle. Account-side
+referrer restrictions were not independently inspected; limit permitted referrers
+to `app.khmanan.site` in the ArcGIS account. HD tiles are online display only;
+analysis remains on the locally stored Sentinel-2 scene. Local imagery, GeoJSON
+and terrain remain available without this optional basemap.
 
 ## Vision and remaining development limits
 
@@ -323,7 +328,7 @@ EventSource, map assets and the rendered workspace. It writes
 
 Latest `main` at `3cc65e3` was fast-forwarded into the serving branch. The report
 export contract fix `03f5ecc` is deployed as production Vercel deployment
-`dpl_8afDzrt36drc7uJT257Lc7ajBfFp` (Ready), with `app.khmanan.site` assigned.
+`dpl_FwyQERRpR2vWazzaKqNn3p1UTfHD` (Ready, build after ArcGIS replacement), with `app.khmanan.site` assigned.
 The public bundle includes `https://api.khmanan.site`.
 
 - Docker `make test DC='docker compose -p aabflow-serving-validation'`: 634 passed.

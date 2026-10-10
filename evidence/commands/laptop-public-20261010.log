@@ -1,7 +1,7 @@
 AabFlow public activation — 2026-10-10 UTC
 Source: origin/main 3cc65e3; deployment branch codex/laptop-serving
 Frontend code commit: 03f5ecc5b0d1c73cd8628a36eb822511c14c0aab
-Vercel: dpl_8afDzrt36drc7uJT257Lc7ajBfFp READY production app.khmanan.site
+Vercel: dpl_FwyQERRpR2vWazzaKqNn3p1UTfHD READY production app.khmanan.site; code 18ad06c
 Backend: aabflow-laptop-backend-1 healthy, schema 4, database ok, dispatcher running
 Cloudflare tunnel: aabflow-laptop 92f3c888-5097-48a7-8726-06ce5b485dc1 Healthy; /ready passed
 All backend paths protected by owner-email Access; OPTIONS-only bypass
@@ -17,7 +17,7 @@ Sleep/idle/lid inhibitor: AabFlow block active
 Full data/vision/image backup: .laptop/backup-20261010T175626Z; SQLite integrity ok
 make contracts (isolated Docker project): passed, clean generated diff
 Self-review: canonical report request/response types, idempotency retained, no domain/science scope changes
-Unverified: physical laptop reboot, deliberately unhealthy guard recovery, long SSE reconnect/session expiry, full database rollback, new uncached vision, replacement ArcGIS key
+Unverified: physical laptop reboot, deliberately unhealthy guard recovery, long SSE reconnect/session expiry, full database rollback, new uncached vision, ArcGIS account referrer restrictions
 
 Executed validation final result lines:
 634 passed, 8 warnings in 75.34s (0:01:15)
@@ -42,3 +42,7 @@ INFO:     172.30.0.3:45316 - "POST /api/v2/reports HTTP/1.1" 202 Accepted
 INFO:     172.30.0.3:45332 - "GET /api/v2/jobs/job_ae6181584975488e8b7bcdbf1ebbcdbc/events HTTP/1.1" 200 OK
 INFO:     172.30.0.3:45334 - "GET /api/v2/reports/rpt_84f5b4b695644d38a3d2110d87b1dccc HTTP/1.1" 200 OK
 INFO:     172.30.0.3:35452 - "GET /api/v2/reports/rpt_84f5b4b695644d38a3d2110d87b1dccc/files/report.html HTTP/1.1" 200 OK
+
+ArcGIS replacement: encrypted Vercel production VITE_ARCGIS_KEY saved; production rebuilt.
+Browser HD layer enabled, Esri attribution visible, 19 tile assets observed, no console errors.
+Screenshot: evidence/screenshots/laptop-public-hd-20261010.png
