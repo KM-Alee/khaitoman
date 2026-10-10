@@ -59,14 +59,14 @@ def main() -> int:
     args = ap.parse_args()
 
     meta = PILOTS.get(args.pilot)
-    bundle = (args.bundle if args.bundle else latest_bundle(args.data_dir, args.pilot)).resolve()
     wd = args.workdir or args.data_dir / "pilots" / ".intake" / f"{args.pilot}-{args.version}"
-    rel_bundle = str(bundle.relative_to(ROOT.resolve()))
 
     def progress(stage, frac, detail):
         print(f"[{stage}]{'' if frac is None else f' {frac:4.0%}'} {detail}", flush=True)
 
     if not (wd / "intake.json").exists():
+        bundle = (args.bundle if args.bundle else latest_bundle(args.data_dir, args.pilot)).resolve()
+        rel_bundle = str(bundle.relative_to(ROOT.resolve()))
         aoi = json.loads((bundle / "aoi.geojson").read_text())
         st = pipeline.create_intake(
             f"{args.pilot}-{args.version}", aoi, "raw_package", rel_bundle, wd,
