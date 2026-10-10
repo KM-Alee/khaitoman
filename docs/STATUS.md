@@ -14,7 +14,7 @@ Status values: `not_started`, `in_progress`, `passed`, `failed`, `blocked`.
 | M4 | Polished decision loop: workspace/compare, replay, report, visual system, error/stale | in_progress | MapLibre workspace 3D, DEM decoding, optional Esri World Imagery with offline Sentinel-2 fallback (`web/src/components/map/engine.ts`, `tests/e2e/offline-imagery.spec.ts`). Vitest 49/49 passes. |
 | M5 | Expanded intelligence: frontier, stress/robust, surrogate, why-not/synergy | in_progress | Frontier/stress routes mounted under `/api/v2/analyses/`. P01 `surrogate-v7-gpu`: both crops and all three sources pass release gates; 52 default preview requests cover both pilots/all published scenarios. `data/models/surrogate-v7-gpu/evaluation.json`; `evidence/commands/p01-complete-20261010T075535Z.log`. Full M5 acceptance remains P04. |
 | M6 | Complete core: impact/SDG, onboarding UI, evidence, export, offline/restart | not_started | |
-| M7 | Copilot (last): tool registry, provider loop, cards, bilingual, 30×3 eval | not_started | |
+| M7 | Copilot (last): tool registry, provider loop, cards, bilingual, 30×3 eval | not_started | User decision 2026-10-10: the 30×3 live eval will not be run. AT17 stays unpassed. Existing copilot unit tests remain the check. |
 | M8 | Release: regression, cold launch, rehearsals, release report | not_started | |
 
 ## Features (PRD §3)
@@ -72,3 +72,4 @@ Status values: `not_started`, `in_progress`, `passed`, `failed`, `blocked`.
 - Default yields from uncalibrated AquaCrop parameters look high (wheat ~7.6 t/ha rainfed at 30.8N 72.5E); `crop_calibration=uncalibrated` stays visible until a plausibility check against Punjab district estimates.
 - Copilot provider: strict function calling with `gpt-6-luna` verified through the Responses API (tool call + function_call_output follow-up; `evidence/environment/provider-tools-*.json`). Measured ~14 s per model call, so the 90 s turn budget (T11.4) allows ~5 rounds; M7 must stream tool-state feedback and keep rounds low.
 - Overnight streams run in parallel per `docs/STREAMS.md`; the integrator commits.
+- 2026-10-10, user: do not run the 30×3 copilot evaluation. AT17 stays unpassed. Every other required check runs once; reuse libraries, the surrogate, and cached inference.

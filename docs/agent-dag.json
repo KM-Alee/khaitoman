@@ -834,7 +834,7 @@
     {
       "id": "P10",
       "chunk": "P10",
-      "title": "Copilot integration, bilingual fixes and 90 evaluations",
+      "title": "Copilot wiring without the 90-run evaluation",
       "role": "api",
       "needs": [
         "G-CORE",
@@ -854,14 +854,11 @@
         "T11.1–T11.8/T13.4"
       ],
       "requirements": [
-        "After G-CORE, integrate existing tools against complete real non-chat services; actual live smoke then 30 cases ×3 runs with schema/narrative/tool traces and versioned IDs.",
-        "Fix all critical failures and achieve at least 90% overall; English, Urdu and Roman Urdu workflows/cards preserve numbers/units, with local Urdu font/direction checks; malformed tools, errors, unavailable network and grounding boundaries checked; no invented metrics.",
-        "Implement make copilot-evals; any core fixes invalidate gate/evals for affected snapshots and require rerun."
+        "User decision 2026-10-10: do not run the 30 cases × 3 live evaluation. AT17 stays not passed. Do not delete or weaken the case file to fake a pass.",
+        "Keep the existing copilot unit tests green. One provider smoke is already recorded. No further live copilot suite."
       ],
       "checks": [
-        "make test",
-        "make core-acceptance",
-        "make copilot-evals"
+        "make test"
       ]
     },
     {

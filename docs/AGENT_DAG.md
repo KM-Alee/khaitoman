@@ -70,7 +70,7 @@ flowchart TD
   P11_core --> G_CORE
   G_CONNECT["G-CONNECT: Provider connectivity preparation only"]
   G_CONTRACT --> G_CONNECT
-  P10["P10: Copilot integration, bilingual fixes and 90 evaluations"]
+  P10["P10: Copilot wiring without the 90-run evaluation"]
   G_CORE --> P10
   G_CONNECT --> P10
   P11_final["P11-final: Full three-surface consistency and six-screen UI gate"]
