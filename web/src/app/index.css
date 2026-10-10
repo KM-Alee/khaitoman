@@ -144,7 +144,7 @@
   --shadow-1: 0 1px 2px rgb(19 41 42 / 0.05), 0 1px 1px rgb(19 41 42 / 0.03);
   --shadow-2: 0 6px 18px -8px rgb(19 41 42 / 0.18), 0 2px 4px rgb(19 41 42 / 0.04);
   --shadow-3: 0 24px 60px -18px rgb(19 41 42 / 0.36), 0 6px 14px rgb(19 41 42 / 0.07);
-  --shadow-glow: 0 0 0 1px rgb(8 127 140 / 0.25), 0 10px 32px -10px rgb(8 127 140 / 0.45);
+  --shadow-glow: 0 1px 2px rgb(19 41 42 / 0.08), 0 10px 28px -14px rgb(19 41 42 / 0.35);
 
   /* motion: 120–180 control, 180–240 panel, 300–450 camera (PRD §9.5) */
   --dur-instant: 90ms;
@@ -157,7 +157,7 @@
   --ease-spring: cubic-bezier(0.34, 1.3, 0.64, 1);
 
   /* gradients and textures */
-  --grad-water: linear-gradient(135deg, #12a4b2 0%, #087f8c 45%, #065d67 100%);
+  --grad-water: linear-gradient(var(--water), var(--water));
   --grad-dawn: radial-gradient(120% 90% at 85% -10%, rgb(47 182 193 / 0.16), transparent 60%),
     radial-gradient(90% 70% at -10% 110%, rgb(176 125 28 / 0.12), transparent 60%);
   --furrow-line: rgb(19 41 42 / 0.055);
@@ -173,20 +173,20 @@
 /* "system" theme is resolved in JS (app/environment) to data-theme="light" | "dark" */
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --canvas: #0b1514;
-  --canvas-deep: #081010;
-  --surface: #111e1d;
-  --surface-muted: #172826;
-  --surface-sunken: #0a1312;
-  --surface-raised: #152523;
-  --ink: #e8efeb;
-  --ink-secondary: #a9bcb8;
-  --ink-tertiary: #93a8a4;
-  --water: #3fb3bf;
-  --water-deep: #5cc3ce;
-  --water-soft: #123a3d;
-  --water-glow: #6fd6df;
-  --wheat: #e0b154;
+  --canvas: #0f110f;
+  --canvas-deep: #0a0b0a;
+  --surface: #161916;
+  --surface-muted: #1c201c;
+  --surface-sunken: #0c0e0c;
+  --surface-raised: #1d211d;
+  --ink: #ecede7;
+  --ink-secondary: #b0b4a9;
+  --ink-tertiary: #929789;
+  --water: #5fb3b6;
+  --water-deep: #84c8ca;
+  --water-soft: #1b2c2c;
+  --water-glow: #94d0d2;
+  --wheat: #d9ae5a;
   --wheat-ink: #f0cf86;
   --wheat-soft: #362a10;
   --vegetation: #86b996;
@@ -195,12 +195,12 @@
   --warning-soft: #3a2a14;
   --danger: #ec8a7c;
   --danger-soft: #3d1f1b;
-  --border: #253836;
-  --border-strong: #5f7975;
+  --border: #2a2e29;
+  --border-strong: #6b7267;
   --focus: #86adf5;
-  --on-water: #06201f;
+  --on-water: #0b1a1a;
   --scrim: rgb(0 0 0 / 0.6);
-  --map-bg: #1a2321;
+  --map-bg: #1a1d19;
   /* Wheat gold → mint: every step stays brighter than the dark imagery so blocks read. */
   --seq-0: #c99a2e;
   --seq-1: #d2b44c;
@@ -209,7 +209,7 @@
   --seq-4: #74cf9c;
   --seq-5: #b4efcb;
   --svc-0: #3d3020;
-  --svc-1: #234240;
+  --svc-1: #243a38;
   --svc-2: #26636a;
   --svc-3: #2f8f9a;
   --svc-4: #4fbcc6;
@@ -219,7 +219,7 @@
   --div-zero: #3a3d37;
   --div-pos-1: #3f7f84;
   --div-pos-2: #8fd6db;
-  --series-1: #3fb3bf;
+  --series-1: #5fb3b6;
   --series-2: #e3a453;
   --series-3: #86b996;
   --series-4: #ad97de;
@@ -227,16 +227,16 @@
   --series-6: #e27fa3;
   --plan-b0: #b8ab92;
   --plan-b1: #6fb5c0;
-  --plan-p: #3fb3bf;
+  --plan-p: #5fb3b6;
   --plan-r: #ad97de;
   --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4);
   --shadow-2: 0 6px 18px -8px rgb(0 0 0 / 0.6);
   --shadow-3: 0 24px 60px -18px rgb(0 0 0 / 0.75);
-  --shadow-glow: 0 0 0 1px rgb(63 179 191 / 0.35), 0 10px 32px -10px rgb(63 179 191 / 0.5);
-  --grad-water: linear-gradient(135deg, #3fb3bf 0%, #1f8f9b 55%, #106a74 100%);
-  --grad-dawn: radial-gradient(120% 90% at 85% -10%, rgb(63 179 191 / 0.14), transparent 60%),
-    radial-gradient(90% 70% at -10% 110%, rgb(224 177 84 / 0.08), transparent 60%);
-  --furrow-line: rgb(232 239 235 / 0.045);
+  --shadow-glow: 0 1px 2px rgb(0 0 0 / 0.5), 0 8px 24px -12px rgb(0 0 0 / 0.7);
+  --grad-water: linear-gradient(var(--water), var(--water));
+  --grad-dawn: radial-gradient(120% 90% at 85% -10%, rgb(217 174 90 / 0.06), transparent 60%),
+    radial-gradient(90% 70% at -10% 110%, rgb(95 179 182 / 0.04), transparent 60%);
+  --furrow-line: rgb(236 237 231 / 0.03);
 }
 
 /* Tailwind 4 theme bridge: utilities resolve to the live tokens */
@@ -350,6 +350,12 @@ p {
   outline-offset: 2px;
   border-radius: 6px;
 }
+/* Headings focused programmatically (tabindex=-1) move the screen reader, not a visible ring. */
+[tabindex="-1"]:focus-visible,
+:is(input, textarea).outline-none:focus-visible {
+  /* Components that opt out draw their own focus state (e.g. a focus-within ring on the wrapper). */
+  outline: none;
+}
 ::selection {
   background: var(--water-soft);
   color: var(--ink);
@@ -370,9 +376,9 @@ p {
   background-image: var(--grad-water);
 }
 .glass {
-  background: color-mix(in srgb, var(--surface) 88%, transparent);
-  backdrop-filter: blur(14px) saturate(1.1);
-  -webkit-backdrop-filter: blur(14px) saturate(1.1);
+  background: color-mix(in srgb, var(--surface) 95%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 /* A term with a plain label and a precise definition behind it (components/ui/Term) */
 .term {

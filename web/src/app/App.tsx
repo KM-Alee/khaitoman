@@ -17,6 +17,7 @@ const ExploreScreen = lazy(() => import("@/features/explore/ExploreScreen").then
 const ImpactScreen = lazy(() => import("@/features/impact/ImpactScreen").then((m) => ({ default: m.ImpactScreen })));
 const ReportScreen = lazy(() => import("@/features/impact/ReportScreen").then((m) => ({ default: m.ReportScreen })));
 const EvidenceScreen = lazy(() => import("@/features/evidence/EvidenceScreen").then((m) => ({ default: m.EvidenceScreen })));
+const PlanSeasonScreen = lazy(() => import("@/features/planner/PlanSeasonScreen").then((m) => ({ default: m.PlanSeasonScreen })));
 const OnboardingScreen = lazy(() => import("@/features/onboarding/OnboardingScreen").then((m) => ({ default: m.OnboardingScreen })));
 
 export function makeQueryClient() {
@@ -63,6 +64,14 @@ export function AppRoutes() {
     <Routes>
       <Route path="/" element={<HomeRedirect />} />
       <Route path="/p/:pilotId/:version" element={<Navigate to="workspace" replace />} />
+      <Route
+        path="/p/:pilotId/:version/plan-season"
+        element={
+          <Suspense fallback={<ScreenFallback />}>
+            <PlanSeasonScreen />
+          </Suspense>
+        }
+      />
       <Route path="/p/:pilotId/:version/:screen" element={<PilotRoute />} />
       <Route
         path="/onboarding/:intakeId?"

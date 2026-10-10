@@ -21,8 +21,8 @@ from aabflow.api.errors import DomainError, not_found
 from aabflow.api.state import AppState, get_state
 from aabflow.copilot import store
 from aabflow.copilot.context import UIContext, resolve
-from aabflow.copilot.contract import CopilotEvent, SessionList, TurnView
-from aabflow.copilot.orchestrator import Turn, TurnLimits, memory_from
+from aabflow.copilot.contract import CopilotEvent, PlanStep, SessionList, TurnMode, TurnView
+from aabflow.copilot.orchestrator import PLAN_LIMITS, Turn, TurnLimits, memory_from
 from aabflow.copilot.prompts import PROMPT_VERSION
 from aabflow.copilot.provider import (
     ProviderError,
@@ -59,6 +59,11 @@ class MessageIn(StrictModel):
     contract_version: Literal["2.0.0"] = "2.0.0"
     message: str = Field(min_length=1, max_length=4000)
     context: UIContext
+    mode: TurnMode = Field(
+        "chat",
+        description="chat = answer a question; plan = run a full 'Plan my season' investigation (bigger "
+        "limits, the planner recipe and the brief layout check; emits plan_step events)",
+    )
 
 
 class TurnAccepted(StrictModel):
@@ -142,6 +147,7 @@ def get_session(session_id: str, state: State) -> dict[str, Any]:
                 for k in (
                     "turn_id",
                     "seq",
+                    "mode",
                     "status",
                     "user_message",
                     "language",
@@ -187,7 +193,7 @@ def _provider(state: AppState, session_id: str):
 async def post_message(
     session_id: str, body: MessageIn, request: Request, state: State
 ) -> TurnAccepted:
-    return await _start_turn(session_id, body.message, body.context, request, state)
+    return await _start_turn(session_id, body.message, body.context, request, state, mode=body.mode)
 
 
 @router.post("/turns/{turn_id}/retry", status_code=202, response_model=TurnAccepted)
@@ -223,6 +229,7 @@ async def retry_turn(turn_id: str, request: Request, state: State) -> TurnAccept
         request,
         state,
         idem_namespace=t.get("idem_namespace") or turn_id,
+        mode=t.get("mode") or "chat",
     )
 
 
@@ -233,6 +240,7 @@ async def _start_turn(
     request: Request,
     state: AppState,
     idem_namespace: str | None = None,
+    mode: str = "chat",
 ) -> TurnAccepted:
     c = _conn(state)
     try:
@@ -267,7 +275,10 @@ async def _start_turn(
         await backend.aclose()
         raise DomainError(ErrorCode.ASSET_UNAVAILABLE, exc.detail) from exc
     turn_id = new_id("turn")
-    limits = state.extras.get("copilot_limits") or TurnLimits()
+    if mode == "plan":
+        limits = state.extras.get("copilot_plan_limits") or PLAN_LIMITS
+    else:
+        limits = state.extras.get("copilot_limits") or TurnLimits()
     turn = Turn(
         provider=provider,
         backend=backend,
@@ -280,6 +291,7 @@ async def _start_turn(
         memory=memory_from(prior),
         known_ids=known,
         idem_namespace=idem_namespace,
+        mode=mode,
     )
     hub = _hub(state)
     hub["turns"][turn_id] = turn
@@ -361,6 +373,18 @@ def turn_event_log(
         if store.get_turn(c, turn_id) is None:
             raise not_found("turn_id", turn_id)
         return store.events_after(c, turn_id, after)
+    finally:
+        c.close()
+
+
+@router.get("/turns/{turn_id}/plan-steps", response_model=list[PlanStep])
+def turn_plan_steps(turn_id: str, state: State) -> list[dict[str, Any]]:
+    """The ``plan_step`` payloads of a plan-mode turn, in order (empty for chat turns)."""
+    c = _conn(state)
+    try:
+        if store.get_turn(c, turn_id) is None:
+            raise not_found("turn_id", turn_id)
+        return [e["payload"] for e in store.events_after(c, turn_id, 0) if e["type"] == "plan_step"]
     finally:
         c.close()
 

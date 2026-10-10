@@ -247,7 +247,7 @@ describe("SDG cards", () => {
     expect(screen.getByText(TARGET_24)).toBeInTheDocument();
     expect(screen.getByText(TARGET_64)).toBeInTheDocument();
     expect(screen.getByText(TARGET_131)).toBeInTheDocument();
-    expect(screen.getAllByText("official_indicator = false").length).toBeGreaterThanOrEqual(4);
+    expect(screen.getAllByText("Project proxy, not an official SDG indicator").length).toBeGreaterThanOrEqual(4);
     expect(screen.getAllByText(NO_SCORE)).toHaveLength(3);
     expect(screen.getByText("Unit fraction")).toBeInTheDocument();
     expect(screen.getAllByText("Unit kg").length).toBeGreaterThan(0);
@@ -263,7 +263,7 @@ describe("SDG cards", () => {
     expect(screen.getByRole("link", { name: /UN target for SDG 2.4/ })).toHaveAttribute("href", "https://sdgs.un.org/goals/goal2");
     expect(screen.getByTestId("co2")).toHaveAttribute("data-status", "not_estimated");
     expect(screen.getByTestId("co2-status")).toHaveTextContent("Not estimated");
-    expect(screen.getByText(CO2_REASON)).toBeInTheDocument();
+    expect(screen.getByText(CO2_REASON.replace("not_estimated", "not estimated"))).toBeInTheDocument();
     expect(screen.getByTestId("co2-value")).toHaveTextContent("No CO₂ value is shown.");
     expect(screen.queryByText("42")).not.toBeInTheDocument();
     expect(screen.queryByText("77")).not.toBeInTheDocument();

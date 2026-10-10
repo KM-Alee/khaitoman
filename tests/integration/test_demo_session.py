@@ -411,3 +411,67 @@ def test_seed_rejected_request_and_atomic_write(tmp_path):
     seed.write_atomic(out, fixture_manifest())
     assert DemoManifest.model_validate(json.loads(out.read_text())).scenario_id == "scn_fixture"
     assert [p.name for p in out.parent.iterdir()] == ["session.json"]
+
+
+def _plan_routes(status: str) -> dict:
+    """TEST FIXTURE copilot responses for one plan-mode turn."""
+    return {
+        ("POST", "/api/v2/copilot/sessions"): (201, {"session_id": "cps_fx"}),
+        ("POST", "/api/v2/copilot/sessions/cps_fx/messages"): (202, {"turn_id": "turn_fx"}),
+        ("GET", "/api/v2/copilot/turns/turn_fx"): (
+            200,
+            {
+                "turn_id": "turn_fx",
+                "status": status,
+                "error": None if status == "completed" else {"code": "TURN_TIMEOUT"},
+                "finished_at": "2026-10-10T08:03:00Z",
+                "latency_ms": 1,
+                "rounds": 3,
+            },
+        ),
+    }
+
+
+def test_seed_plan_only_adds_the_plan_turn_without_resolving(tmp_path, app_dir):
+    out = tmp_path / "demo" / "session.json"
+    seed.write_atomic(out, fixture_manifest())
+    posted: list[dict] = []
+    routes = _plan_routes("completed")
+
+    def handler(req: httpx.Request) -> httpx.Response:
+        if req.method == "POST":
+            posted.append({"path": req.url.path, **json.loads(req.content)})
+        status, body = routes[(req.method, req.url.path)]
+        return httpx.Response(status, json=body)
+
+    c = httpx.Client(base_url="http://fixture", transport=httpx.MockTransport(handler))
+    goal = "We have 10 lakh. Protect the tail."
+    doc = seed.add_plan(c, out, goal)
+    assert [p["path"] for p in posted] == [  # no solve, no analysis: only the copilot turn
+        "/api/v2/copilot/sessions",
+        "/api/v2/copilot/sessions/cps_fx/messages",
+    ]
+    msg = posted[1]
+    assert msg["mode"] == "plan" and msg["message"] == goal
+    assert msg["context"]["scenario_revision_id"] == "rev_fixture_base"
+    assert msg["context"]["selected_run_id"] == "run_fx_p"
+    saved = json.loads(out.read_text())
+    assert saved == doc and saved["scenario_id"] == "scn_fixture"
+    assert (saved["plan_turn_id"], saved["plan_goal"], saved["plan_computed_at"]) == (
+        "turn_fx",
+        goal,
+        "2026-10-10T08:03:00Z",
+    )
+    # GET /demo/session exposes the plan fields
+    client, tmp = app_dir
+    write_manifest(tmp, out.read_text())
+    body = client.get("/api/v2/demo/session").json()
+    assert body["plan_turn_id"] == "turn_fx" and body["plan_goal"] == goal
+
+
+def test_seed_plan_turn_must_complete(tmp_path):
+    c = mock_client(_plan_routes("budget_exhausted"))
+    with pytest.raises(SystemExit, match="ended budget_exhausted"):
+        seed.plan_turn(c, fixture_manifest(), "goal")
+    with pytest.raises(SystemExit, match="no manifest"):
+        seed.add_plan(c, tmp_path / "missing.json", "goal")

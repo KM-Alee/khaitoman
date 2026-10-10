@@ -4,3 +4,5 @@
  */
 export { CopilotPanel } from "./CopilotPanel";
 export { CopilotLauncher } from "./CopilotLauncher";
+// The validated-answer renderer, shared with the "Plan my season" brief (features/planner).
+export { AnswerView, type BlockContext } from "./blocks";

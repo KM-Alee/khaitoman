@@ -337,6 +337,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v2/copilot/turns/{turn_id}/plan-steps": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Turn Plan Steps
+         * @description The ``plan_step`` payloads of a plan-mode turn, in order (empty for chat turns).
+         */
+        get: operations["turn_plan_steps_api_v2_copilot_turns__turn_id__plan_steps_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v2/copilot/turns/{turn_id}/retry": {
         parameters: {
             query?: never;
@@ -1680,7 +1700,7 @@ export interface components {
              * Type
              * @enum {string}
              */
-            type: "turn_started" | "thinking" | "tool_started" | "tool_finished" | "dataset_ready" | "answer_block" | "answer" | "view_intents" | "error" | "turn_finished" | "job_update" | "jobs_settled" | "jobs_cancelled";
+            type: "turn_started" | "thinking" | "tool_started" | "tool_finished" | "dataset_ready" | "answer_block" | "answer" | "view_intents" | "error" | "turn_finished" | "job_update" | "jobs_settled" | "jobs_cancelled" | "plan_step";
         };
         /** CreatedRef */
         CreatedRef: {
@@ -1917,6 +1937,21 @@ export interface components {
             pilot_id: string;
             /** Pilot Version */
             pilot_version: string;
+            /**
+             * Plan Computed At
+             * @description When the server finished the saved plan turn (its finished_at)
+             */
+            plan_computed_at?: string | null;
+            /**
+             * Plan Goal
+             * @description The goal sentence of the saved plan turn
+             */
+            plan_goal?: string | null;
+            /**
+             * Plan Turn Id
+             * @description Saved 'Plan my season' copilot turn (plan mode) run by the seed with --plan-goal; replayed from GET /copilot/turns/{id}/event-log
+             */
+            plan_turn_id?: string | null;
             /**
              * Run Details
              * @description run_id -> details at seed time
@@ -2726,6 +2761,13 @@ export interface components {
             contract_version: "2.0.0";
             /** Message */
             message: string;
+            /**
+             * Mode
+             * @description chat = answer a question; plan = run a full 'Plan my season' investigation (bigger limits, the planner recipe and the brief layout check; emits plan_step events)
+             * @default chat
+             * @enum {string}
+             */
+            mode: "chat" | "plan";
         };
         /**
          * MetricBlock
@@ -3138,6 +3180,47 @@ export interface components {
             trajectory_bundle_ref: string;
             /** Warnings */
             warnings?: string[];
+        };
+        /**
+         * PlanStep
+         * @description Payload of a ``plan_step`` event (plan mode only), emitted right after each ``tool_finished`` so the
+         *     UI can group the investigation and move the map while the turn runs. IDs are objects this step made or
+         *     fields its result names (equity losers, lowest-service fields, an intervention's targets).
+         */
+        PlanStep: {
+            /** Analysis Id */
+            analysis_id?: string | null;
+            /** Call Id */
+            call_id: string;
+            /** Field Ids */
+            field_ids?: string[];
+            /**
+             * Label
+             * @description Plain activity label of the tool call
+             */
+            label: string;
+            /** Ok */
+            ok: boolean;
+            /**
+             * Phase
+             * @description understand = goal and baseline; test = frontier/stress/why-not/equity; decide = write-up
+             * @enum {string}
+             */
+            phase: "understand" | "test" | "decide";
+            /** Report Id */
+            report_id?: string | null;
+            /**
+             * Run Id
+             * @description A run created by this step (newest first)
+             */
+            run_id?: string | null;
+            /**
+             * Step
+             * @description 1-based order of finished tool calls in this turn
+             */
+            step: number;
+            /** Tool */
+            tool: string;
         };
         /**
          * PlanningMode
@@ -4168,6 +4251,13 @@ export interface components {
             language?: ("en" | "ur" | "roman_ur") | null;
             /** Latency Ms */
             latency_ms?: number | null;
+            /**
+             * Mode
+             * @description chat = a question; plan = a 'Plan my season' planning investigation
+             * @default chat
+             * @enum {string}
+             */
+            mode: "chat" | "plan";
             /** Model */
             model?: string | null;
             /** Prompt Version */
@@ -5110,6 +5200,37 @@ export interface operations {
                 };
                 content: {
                     "text/event-stream": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    turn_plan_steps_api_v2_copilot_turns__turn_id__plan_steps_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                turn_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanStep"][];
                 };
             };
             /** @description Validation Error */

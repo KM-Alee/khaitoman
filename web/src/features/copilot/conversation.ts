@@ -228,6 +228,8 @@ export function applyEvent(t: LiveTurn, ev: CopilotEventEnvelope): LiveTurn {
       return { ...n, jobsSettled: true, pendingJobIds: ev.payload.pending_job_ids ?? [] };
     case "jobs_cancelled":
       return { ...n, jobsSettled: true, pendingJobIds: [] };
+    case "plan_step": // plan-mode grouping/map hints; the planner screen reads them (features/planner)
+      return n;
     default: {
       const never: never = ev;
       return never;

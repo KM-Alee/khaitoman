@@ -122,7 +122,7 @@ export function Frontier({ base, onHighlight }: { base: ExploreBase; onHighlight
           {rows.map((r, i) => (
             <li key={`${i}-${rows.length}-${preset}`} className="flex min-w-0 items-center gap-1.5">
               <span className="num w-5 shrink-0 text-right text-[11px] text-ink-tertiary">{i + 1}</span>
-              <span className="flex h-8 w-[92px] shrink-0 items-center rounded-[8px] border border-border-strong/60 bg-surface pl-2 text-[12px] text-ink sm:w-[132px]">
+              <span className="flex h-8 w-[92px] shrink-0 items-center rounded-[8px] border border-border-strong/60 bg-surface pl-2 text-[12px] text-ink sm:w-[132px] focus-within:border-water focus-within:ring-2 focus-within:ring-focus/40">
                 <span className="hidden text-[11px] text-ink-tertiary sm:inline">PKR</span>
                 <input
                   aria-label={`Setting ${i + 1} capital budget (PKR)`}

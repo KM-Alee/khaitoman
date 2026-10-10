@@ -10,7 +10,7 @@ def test_health_and_json_404(tmp_path):
         assert r.status_code == 200
         body = r.json()
         assert body["contract_version"] == "2.0.0"
-        assert body["schema_version"] == "3"
+        assert body["schema_version"] == "4"
         assert body["database"] == "ok"
         assert body["pilots_published"] == 0
         missing = client.get("/api/v2/does-not-exist")

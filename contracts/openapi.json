@@ -1230,7 +1230,8 @@
               "turn_finished",
               "job_update",
               "jobs_settled",
-              "jobs_cancelled"
+              "jobs_cancelled",
+              "plan_step"
             ],
             "title": "Type",
             "type": "string"
@@ -1816,6 +1817,42 @@
           "pilot_version": {
             "title": "Pilot Version",
             "type": "string"
+          },
+          "plan_computed_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "When the server finished the saved plan turn (its finished_at)",
+            "title": "Plan Computed At"
+          },
+          "plan_goal": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The goal sentence of the saved plan turn",
+            "title": "Plan Goal"
+          },
+          "plan_turn_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Saved 'Plan my season' copilot turn (plan mode) run by the seed with --plan-goal; replayed from GET /copilot/turns/{id}/event-log",
+            "title": "Plan Turn Id"
           },
           "run_details": {
             "additionalProperties": {
@@ -4216,6 +4253,16 @@
             "minLength": 1,
             "title": "Message",
             "type": "string"
+          },
+          "mode": {
+            "default": "chat",
+            "description": "chat = answer a question; plan = run a full 'Plan my season' investigation (bigger limits, the planner recipe and the brief layout check; emits plan_step events)",
+            "enum": [
+              "chat",
+              "plan"
+            ],
+            "title": "Mode",
+            "type": "string"
           }
         },
         "required": [
@@ -5351,6 +5398,95 @@
           "comparison_compatibility_key"
         ],
         "title": "PlanRun",
+        "type": "object"
+      },
+      "PlanStep": {
+        "additionalProperties": false,
+        "description": "Payload of a ``plan_step`` event (plan mode only), emitted right after each ``tool_finished`` so the\nUI can group the investigation and move the map while the turn runs. IDs are objects this step made or\nfields its result names (equity losers, lowest-service fields, an intervention's targets).",
+        "properties": {
+          "analysis_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Analysis Id"
+          },
+          "call_id": {
+            "title": "Call Id",
+            "type": "string"
+          },
+          "field_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Field Ids",
+            "type": "array"
+          },
+          "label": {
+            "description": "Plain activity label of the tool call",
+            "title": "Label",
+            "type": "string"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          },
+          "phase": {
+            "description": "understand = goal and baseline; test = frontier/stress/why-not/equity; decide = write-up",
+            "enum": [
+              "understand",
+              "test",
+              "decide"
+            ],
+            "title": "Phase",
+            "type": "string"
+          },
+          "report_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Report Id"
+          },
+          "run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "A run created by this step (newest first)",
+            "title": "Run Id"
+          },
+          "step": {
+            "description": "1-based order of finished tool calls in this turn",
+            "title": "Step",
+            "type": "integer"
+          },
+          "tool": {
+            "title": "Tool",
+            "type": "string"
+          }
+        },
+        "required": [
+          "step",
+          "phase",
+          "label",
+          "tool",
+          "call_id",
+          "ok"
+        ],
+        "title": "PlanStep",
         "type": "object"
       },
       "PlanningMode": {
@@ -8366,6 +8502,16 @@
             ],
             "title": "Latency Ms"
           },
+          "mode": {
+            "default": "chat",
+            "description": "chat = a question; plan = a 'Plan my season' planning investigation",
+            "enum": [
+              "chat",
+              "plan"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
           "model": {
             "anyOf": [
               {
@@ -10206,6 +10352,53 @@
           }
         },
         "summary": "Turn Events",
+        "tags": [
+          "copilot"
+        ]
+      }
+    },
+    "/api/v2/copilot/turns/{turn_id}/plan-steps": {
+      "get": {
+        "description": "The ``plan_step`` payloads of a plan-mode turn, in order (empty for chat turns).",
+        "operationId": "turn_plan_steps_api_v2_copilot_turns__turn_id__plan_steps_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "turn_id",
+            "required": true,
+            "schema": {
+              "title": "Turn Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PlanStep"
+                  },
+                  "title": "Response Turn Plan Steps Api V2 Copilot Turns  Turn Id  Plan Steps Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Turn Plan Steps",
         "tags": [
           "copilot"
         ]

@@ -64,7 +64,7 @@ test("multi-run comparisons are shown one before/after pair at a time", async ()
 });
 
 test("every contract event type is handled by the reducer", () => {
-  expect(COPILOT_EVENT_TYPES).toHaveLength(13);
+  expect(COPILOT_EVENT_TYPES).toHaveLength(14);
 });
 
 test("a stored session restores turns with their answers and language", () => {

@@ -47,3 +47,4 @@ data/onboarding/
 # Guided-demo manifest (`make demo-seed`); names records in the local app.sqlite and data/runs
 data/demo/
 evidence/playwright-output/
+evidence/rehearsal/*.webm

@@ -194,11 +194,17 @@ class ViewIntent(_Out):
     target: str
 
 
+TurnMode = Literal["chat", "plan"]
+
+
 class TurnView(_Out):
     turn_id: str
     session_id: str
     seq: int
     status: TurnStatus
+    mode: TurnMode = Field(
+        "chat", description="chat = a question; plan = a 'Plan my season' planning investigation"
+    )
     user_message: str
     language: Language | None = None
     context: dict[str, Any]
@@ -250,7 +256,29 @@ EventType = Literal[
     "job_update",
     "jobs_settled",
     "jobs_cancelled",
+    "plan_step",
 ]
+
+PlanPhase = Literal["understand", "test", "decide"]
+
+
+class PlanStep(_Out):
+    """Payload of a ``plan_step`` event (plan mode only), emitted right after each ``tool_finished`` so the
+    UI can group the investigation and move the map while the turn runs. IDs are objects this step made or
+    fields its result names (equity losers, lowest-service fields, an intervention's targets)."""
+
+    step: int = Field(description="1-based order of finished tool calls in this turn")
+    phase: PlanPhase = Field(
+        description="understand = goal and baseline; test = frontier/stress/why-not/equity; decide = write-up"
+    )
+    label: str = Field(description="Plain activity label of the tool call")
+    tool: str
+    call_id: str
+    ok: bool
+    run_id: str | None = Field(None, description="A run created by this step (newest first)")
+    analysis_id: str | None = None
+    report_id: str | None = None
+    field_ids: list[str] = Field(default_factory=list)
 
 
 class CopilotEvent(_Out):
@@ -269,3 +297,4 @@ class ContractExample(_Out):
     answer: CopilotAnswer
     event: CopilotEvent
     turn: TurnView
+    plan_step: PlanStep | None = None

@@ -34,6 +34,7 @@ import { formatDate, titleCase } from "@/lib/formatting";
 import { Button, IconButton } from "@/components/ui/Button";
 import { Dialog, DialogContent, Tooltip } from "@/components/ui/primitives";
 import { AiStackStrip } from "./AiStackStrip";
+import { planSeasonHref } from "@/features/planner";
 import { Wordmark, BrandMark } from "@/components/ui/Art";
 import { useScenario } from "@/features/workspace/useScenario";
 import { useRunContext } from "@/features/workspace/useRunContext";
@@ -230,6 +231,7 @@ function MoreMenu() {
   const presentation = useUI((s) => s.presentation);
   const navigate = useNavigate();
   const [aiOpen, setAiOpen] = useState(false);
+  const { sel } = usePilotData();
   const item = "flex cursor-pointer items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-[13px] text-ink outline-none data-[highlighted]:bg-surface-muted";
   return (
     <>
@@ -246,6 +248,11 @@ function MoreMenu() {
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
         <DropdownMenu.Content sideOffset={6} align="end" className="z-[70] min-w-[240px] animate-pop rounded-[16px] border border-border bg-surface-raised p-1.5 shadow-3">
+          {sel.pilotId && sel.version ? (
+            <DropdownMenu.Item className={item} onSelect={() => navigate(planSeasonHref(sel.pilotId!, sel.version!, {}))} data-testid="menu-plan-season">
+              <Wand2 size={15} aria-hidden /> Plan my season
+            </DropdownMenu.Item>
+          ) : null}
           <DropdownMenu.Item className={item} onSelect={() => setAiOpen(true)} data-testid="menu-ai-stack">
             <Sparkles size={15} aria-hidden /> How the AI works
           </DropdownMenu.Item>

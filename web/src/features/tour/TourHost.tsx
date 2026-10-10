@@ -184,6 +184,8 @@ function TourRunner() {
             onClose={exit}
             progress={autoplay && !last ? elapsed / seconds : null}
           >
+            {/* Only the story scrolls on short screens; the controls below stay visible. */}
+            <div className="-mr-3 flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto pr-3" data-testid="tour-body">
             <div className="flex flex-col gap-2.5 text-[14px] leading-relaxed text-ink-secondary">
               <cur.Body s={state.session} />
             </div>
@@ -195,20 +197,21 @@ function TourRunner() {
               </p>
             ) : null}
             {missing ? <p className="text-[12px] text-warning">This part of the page did not appear; the step text still applies. Use Next to continue.</p> : null}
+            </div>
             {last ? (
               <FinishActions ctx={ctx} />
             ) : (
               <>
-                <div className="mt-1 flex items-center gap-2">
-                  <Button variant="ghost" size="sm" icon={<ArrowLeft size={14} />} onClick={back} disabled={i === 0} aria-label="Previous step" className="-ml-2">
+                <div className="mt-1 flex shrink-0 items-center gap-2">
+                  <Button variant="ghost" size="sm" icon={<ArrowLeft size={14} />} onClick={back} disabled={i === 0} aria-label="Previous step" className="-ml-2 shrink-0">
                     Back
                   </Button>
-                  <Stepper className="mx-auto" steps={steps.map((st) => ({ id: st.id, label: st.title }))} current={i} onSelect={go} label="Tour progress" />
-                  <Button variant="primary" size="sm" trailing={<ArrowRight size={14} />} onClick={next} data-testid="tour-next">
+                  <Stepper compact className="mx-auto min-w-0 flex-1 justify-center overflow-hidden" steps={steps.map((st) => ({ id: st.id, label: st.title }))} current={i} onSelect={go} label="Tour progress" />
+                  <Button variant="primary" size="sm" trailing={<ArrowRight size={14} />} onClick={next} data-testid="tour-next" className="shrink-0">
                     Next
                   </Button>
                 </div>
-                <div className="-mx-5 -mb-5 flex flex-wrap items-center gap-x-1 gap-y-1 rounded-b-[22px] border-t border-border bg-surface-muted/60 px-3 py-2">
+                <div className="-mx-5 -mb-5 flex shrink-0 flex-wrap items-center gap-x-1 gap-y-1 rounded-b-[22px] border-t border-border bg-surface-muted/60 px-3 py-2">
                   {cur.tryIt ? (
                     <Button variant="ghost" size="sm" icon={<Sparkles size={14} className="text-water" />} onClick={() => cur.tryIt!.run(ctx)} data-testid="tour-try" className="text-ink" title="Leave the tour and do this yourself">
                       Try it: {cur.tryIt.label}
@@ -378,7 +381,7 @@ function CoachCard({
       aria-modal="false"
       aria-label="Guided tour"
       className={cn(
-        "fixed z-[95] flex max-h-[calc(100dvh-24px)] flex-col overflow-y-auto rounded-[22px] border border-border bg-surface-raised p-5 shadow-3 animate-[pop_320ms_var(--ease-out)_both]",
+        "fixed z-[95] flex max-h-[calc(100dvh-24px)] flex-col overflow-hidden rounded-[22px] border border-border bg-surface-raised p-5 shadow-3 animate-[pop_320ms_var(--ease-out)_both]",
         mobile && "max-h-[58dvh] rounded-[20px] p-4",
       )}
       style={style}
@@ -413,7 +416,7 @@ function CardChrome({
 }) {
   const id = useId();
   return (
-    <section aria-labelledby={id} className="flex flex-col gap-3">
+    <section aria-labelledby={id} className="flex min-h-0 flex-1 flex-col gap-3">
       {progress !== null ? (
         <div className="-mx-5 -mt-5 mb-1 h-1 overflow-hidden rounded-t-[22px] bg-surface-sunken" aria-hidden>
           <div className="h-full bg-water-grad" style={{ width: `${Math.min(100, progress * 100)}%` }} />
@@ -431,7 +434,7 @@ function CardChrome({
           <X size={16} />
         </IconButton>
       </div>
-      <h2 id={id} tabIndex={-1} data-tour-title className="display -mt-1 text-[23px] leading-tight text-ink outline-none" data-testid="tour-title">
+      <h2 id={id} tabIndex={-1} data-tour-title className="display -mt-1 text-[23px] leading-tight text-ink outline-none focus:outline-none focus-visible:shadow-none focus-visible:outline-none" data-testid="tour-title">
         {title}
       </h2>
       {children}
@@ -440,9 +443,22 @@ function CardChrome({
 }
 
 /** "Saved result · run … · computed <server time>": the honest label on every step. */
-function SavedLabel({ runId, analysisId }: { runId?: string | null; analysisId?: string | null }) {
+function SavedLabel({ runId, analysisId, turnId, turnAt }: { runId?: string | null; analysisId?: string | null; turnId?: string | null; turnAt?: string | null }) {
   const run = useRun(runId ?? null);
   const ana = useAnalysis(analysisId ?? null);
+  if (turnId) {
+    return (
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px] text-ink-tertiary" data-testid="tour-saved" data-id={turnId}>
+        <Chip size="sm" tone="wheat" icon={<History size={11} aria-hidden />}>
+          Saved investigation
+        </Chip>
+        <span className="font-mono" title={turnId}>
+          turn {shortId(turnId)}
+        </span>
+        <span>· computed {turnAt ? formatDateTime(turnAt) : "…"}</span>
+      </div>
+    );
+  }
   const id = runId ?? analysisId ?? null;
   const at = run.data?.created_at ?? (ana.data?.created_at as string | undefined) ?? null;
   if (!id) return null;

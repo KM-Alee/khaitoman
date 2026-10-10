@@ -3,7 +3,7 @@
 .NOTPARALLEL:
 .PHONY: help setup build deps up down logs shell lock doctor provider-check test lint science-smoke \
         contracts web-test web-build ui-checks demo vision-weights vision-shell \
-        water-tests pilot-a pilot-b candidates analyses-evidence demo-seed train-surrogate library-adequacy domain-tests core-acceptance evidence-pack print-brief copilot-evals release-check
+        water-tests pilot-a pilot-b candidates analyses-evidence demo-seed train-surrogate library-adequacy domain-tests core-acceptance evidence-pack print-brief record-tour cold-demo copilot-evals release-check
 
 DC   := docker compose
 ifeq ($(GPU),1)
@@ -117,6 +117,16 @@ evidence-pack:    ## PRD §13.3 proof package -> evidence/pack/<UTC ts>/ (manife
 
 print-brief:      ## W6: PDF of the seeded plan's action-plan report -> evidence/print/brief-<UTC>.pdf (make up + make demo-seed first)
 	$(DC) --profile test run --rm --no-deps -e BASE_URL=$${BASE_URL:-http://web:5173} e2e node ../scripts/print_brief.mjs
+
+record-tour:      ## W8: RECORDED fallback video of the guided tour -> evidence/rehearsal/tour-<UTC>.webm (BASE_URL defaults to the dev web)
+	rm -rf evidence/playwright-record
+	$(DC) --profile test run --rm --no-deps -e PLAYWRIGHT_BASE_URL=$${BASE_URL:-http://web:5173} -e AAB_RECORD=1 e2e npx playwright test -c playwright.record.config.ts
+	mkdir -p evidence/rehearsal
+	f=$$(find evidence/playwright-record -name '*.webm' | head -1); test -n "$$f" && cp "$$f" evidence/rehearsal/tour-$$(date -u +%Y%m%dT%H%M%SZ).webm && ls -la evidence/rehearsal
+
+cold-demo:        ## W8: make down, then time make demo to first healthy response and first tour step -> evidence/benchmarks/cold-demo-<UTC>.json
+	$(MAKE) down
+	t0=$$(date +%s%3N); $(MAKE) demo && $(DC) --profile test run --rm --no-deps -e T0_MS=$$t0 e2e node ../scripts/cold_demo_probe.mjs
 
 copilot-evals release-check:
 	@echo "make $@: not implemented yet" >&2; exit 1

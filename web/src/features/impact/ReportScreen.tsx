@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router";
 import { Download, FileJson, FileText, Printer } from "lucide-react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
@@ -56,6 +57,18 @@ export function ReportScreen() {
   }, [run.data, sel.pilotId]);
 
   const r = run.data;
+  // "Print brief" links arrive with ?print=1: print the one-page brief once the plan has rendered.
+  const [printParams, setPrintParams] = useSearchParams();
+  useEffect(() => {
+    if (!r || printParams.get("print") !== "1") return;
+    const t = window.setTimeout(() => {
+      const next = new URLSearchParams(printParams);
+      next.delete("print");
+      setPrintParams(next, { replace: true });
+      printBrief();
+    }, 800);
+    return () => window.clearTimeout(t);
+  }, [r, printParams, setPrintParams]);
   const ladderKinds = (["B0", "B1", "P", "R"] as PlanKind[]).filter((k) => ladder.byKind.has(k));
 
   const exportReport = async () => {
