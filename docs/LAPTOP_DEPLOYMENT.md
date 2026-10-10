@@ -1,16 +1,22 @@
-# Laptop backend and future Vercel frontend
+# Vercel frontend and laptop backend
 
-Prepared on 10 October 2026. No Vercel project, deployment, domain, Cloudflare
-Tunnel or Access policy was created. The laptop backend is running locally; public
-HTTPS activation still requires your Cloudflare account, domain and Tunnel token.
-Executed checks and runtime details are recorded in
-`evidence/commands/laptop-deployment-20261010.log`.
+Activated on 10 October 2026. Production source is latest `main` at
+`3cc65e3`, fast-forwarded onto `codex/laptop-serving`, plus the report contract
+fix at `03f5ecc`. The independent laptop backend runs schema 4. No PR was
+merged by this deployment session.
+
+Frontend: https://app.khmanan.site
+Backend login/health: https://api.khmanan.site/api/v2/health
+
+The deployed configuration and executed checks are recorded below. Local
+validation logs, account screenshots and backups remain in the ignored `.laptop/`
+directory; the sanitized public activation record is under `evidence/commands/`.
 
 ## Topology
 
 ```text
-Browser -> app.YOUR-DOMAIN (static React build hosted on Vercel)
-        -> api.YOUR-DOMAIN (Cloudflare Access + named Tunnel, HTTPS)
+Browser -> app.khmanan.site (static React build hosted on Vercel)
+        -> api.khmanan.site (Cloudflare Access + named Tunnel, HTTPS)
                             -> backend:8000 in Docker on this laptop
                                -> SQLite, data files and CPU job dispatcher
                                -> separate vision container when needed
@@ -121,20 +127,54 @@ port and exact allowed browser origins. The data directory is fixed at
 Never commit `.laptop/` or a Tunnel token. Docker build context excludes
 `.env`, `.env.*`, `.laptop`, worker scratch and other worktrees.
 
-## Activate public HTTPS later
+## Saved Cloudflare configuration
 
-1. Choose two hostnames in a Cloudflare-managed domain, for example
-   `app.example.com` and `api.example.com`. The former will be connected to
-   Vercel later; the latter routes to this laptop.
+- Cloudflare account: `632f75dd46f2ae7d046c1a236e88f409`; Zero Trust team `khmanan`.
+- DNS: `app` CNAME `cname.vercel-dns.com`, DNS only, TTL Auto. This is Vercel's
+  exact recommended record from the domain-configuration tool; Vercel verified
+  domain ownership. `api` is a proxied tunnel CNAME to
+  `92f3c888-5097-48a7-8726-06ce5b485dc1.cfargotunnel.com`, created by the route.
+- Remotely managed tunnel `aabflow-laptop`, ID
+  `92f3c888-5097-48a7-8726-06ce5b485dc1`; published route `api.khmanan.site`, all
+  paths, service `http://backend:8000`, catch-all HTTP 404. Dashboard status Healthy.
+- Access app `AabFlow laptop API`, ID `06429ebd-2d6e-4ad5-9b96-5517f9114a6d`,
+  covers the whole API hostname. `AabFlow owner only` Allow policy
+  `df134ae8-8de6-4fc2-9666-8fad09dc5232` includes only
+  `Kali.bscs24seecs@seecs.edu.pk`; no testers. Session 24 hours, HTTP Only cookie.
+- Access bypasses OPTIONS to the origin; actual requests require login. API CORS
+  permits `https://app.khmanan.site` and the two local preview origins.
+- Active cache rule `AabFlow backend bypass cache`, ID
+  `9573d3a3665a4c92ad4f87576acc0121`, expression
+  `(http.host eq "api.khmanan.site")`; cache and browser-TTL bypass.
+- Connector token is only `.laptop/cloudflared-token`, user-owned mode 600 and
+  ignored by Git. Docker reads the mounted secret file. Never print or commit it.
+  `.laptop/access-ready` records that the account policy was configured.
+
+After a stopped stack, restart with:
+
+```bash
+cd /home/kali/.codex/worktrees/laptop-serving/khaitoman
+./scripts/laptop.sh up
+./scripts/laptop.sh tunnel-up
+systemctl --user start aabflow-laptop-guard.service
+./scripts/laptop.sh check
+```
+
+The following steps describe how to re-provision the current arrangement.
+
+## Public HTTPS configuration and re-provisioning
+
+1. Use the two hostnames in the Cloudflare-managed `khmanan.site` zone.
+   Preserve every unrelated DNS record.
 2. Create a Cloudflare Access self-hosted application protecting **all paths**
-   on `api.example.com`. Allow only your email or explicit trusted testers.
+   on `api.khmanan.site`. Allow only your email or explicit trusted testers.
    Set a session lifetime that covers your demonstration. Do not create a
    permanent bypass policy. Configure Access to bypass **OPTIONS preflights**
    to the origin, allowing the API to enforce its CORS allowlist. GET/POST and
    other actual requests must still require authentication.
    [Access CORS setup](https://developers.cloudflare.com/cloudflare-one/access-controls/applications/http-apps/authorization-cookie/cors/).
 3. Create a remotely managed named Tunnel in Cloudflare and route
-   `api.example.com` to **HTTP `backend:8000`**, not `localhost:8000`.
+   `api.khmanan.site` to **HTTP `backend:8000`**, not `localhost:8000`.
    The connector lives in Docker and shares the backend's network. Localhost
    inside that connector would refer to the connector itself.
    [Named Tunnel setup](https://developers.cloudflare.com/tunnel/get-started/).
@@ -144,7 +184,7 @@ Never commit `.laptop/` or a Tunnel token. Docker build context excludes
    through a mounted secret file with `--token-file`.
    [Cloudflare token-file option](https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/configure-tunnels/run-parameters/).
 5. Change `AABFLOW_CORS_ORIGINS` in `.laptop/settings` to
-   `https://app.example.com` (comma-separated exact origins only if needed).
+   `https://app.khmanan.site` (comma-separated exact origins only if needed).
    Run `./scripts/laptop.sh up` to recreate the backend with that setting.
    Add a Cloudflare cache bypass rule covering this backend hostname, especially
    API responses and SSE. Apply rate limits for expensive mutation endpoints
@@ -160,8 +200,8 @@ Never commit `.laptop/` or a Tunnel token. Docker build context excludes
    The marker records your manual Access setup; it does not verify the account
    policy. The command waits for backend health and a live connector connection.
    Test the public URL before declaring it available.
-7. Open `https://api.example.com/api/v2/health` in your browser and sign in to
-   Access. Then open the future frontend in the same browser. Each tester must
+7. Open `https://api.khmanan.site/api/v2/health` in your browser and sign in to
+   Access. Then open the frontend in the same browser. Each tester must
    establish the API hostname's authorization cookie this way. The frontend
    sends credentials for API, SSE, imagery and map requests. Expired sessions
    require signing in again; there is no integrated Access login screen yet.
@@ -171,9 +211,14 @@ allowed browser's health, a rejected origin's preflight, imagery, terrain,
 report downloads and a job SSE stream. Do not expose the bare unauthenticated
 FastAPI service just to make a `vercel.app` preview work.
 
-## Vercel configuration when you are ready
+## Saved Vercel configuration
 
-No Vercel CLI or deployment command has been run. These are future settings:
+Project `khaitoman` (`prj_wS9TQ4dmPKL6Cn786kAN51tcrRGB`) belongs to
+`khmanans-projects` (`team_74W0csQAeV4Xw6lkyMLsvXrM`). Actual default-scope
+connector access and the signed-in dashboard were verified. The production Git
+branch is `codex/laptop-serving`, with custom-domain auto-assignment enabled.
+Build settings were saved through the connector and independently checked in
+the dashboard:
 
 | Setting | Value |
 | --- | --- |
@@ -183,9 +228,9 @@ No Vercel CLI or deployment command has been run. These are future settings:
 | Install | `npm ci` |
 | Build | `npm run build` |
 | Output | `dist` |
-| Public frontend domain | `app.example.com` |
-| `VITE_BACKEND_ORIGIN` | `https://api.example.com` (origin only; no `/api/v2`) |
-| Optional display basemap key | `VITE_ARCGIS_KEY`, restricted to the frontend domain |
+| Public frontend domain | `app.khmanan.site` |
+| `VITE_BACKEND_ORIGIN` | `https://api.khmanan.site` (origin only; no `/api/v2`) |
+| Production Git branch | `codex/laptop-serving` |
 
 `web/vercel.json` supplies build settings and the SPA history fallback. API and
 `/assets` links resolve to the configured backend; Vite's bundled assets live
@@ -231,6 +276,16 @@ copy the matching `backup-<timestamp>` to `.laptop/data`, and the matching
 Do not restore while either API/vision is writing. Backups omit secrets. Schema
 migration plus full rollback has not been exercised by this deployment task.
 
+## ArcGIS replacement pending
+
+The owner reported the ArcGIS API key expired and is obtaining a replacement.
+Optional HD imagery uses public build variable `VITE_ARCGIS_KEY`; its replacement
+has not been installed or tested. Restrict its permitted referrers to the frontend
+hostname before setting it in Vercel Production and rebuilding. No provider key
+was read from a runtime environment file. The tested satellite imagery, GeoJSON
+and terrain are already served locally from the laptop and work independently
+of this optional key.
+
 ## Vision and remaining development limits
 
 Existing published pilots and inference caches are ready locally. For a new
@@ -247,9 +302,10 @@ network access. New uncached vision inference was not executed in this deploymen
 task. CPU-only Torch was detected; no GPU inference or training is claimed.
 
 This work does not advance feature/acceptance rows to complete. Features still
-under development retain their existing capabilities and limitations. Public
-Tunnel/Access behavior, Vercel behavior and an actual machine reboot remain
-unverified until those external steps are performed.
+under development retain their existing capabilities and limitations. An actual machine reboot, deliberate unhealthy-container recovery, full
+database rollback, session-expiry behavior and new uncached vision inference
+remain unverified. Container recreation and schema migration to 4 were executed
+and returned healthy; the tunnel also recovered after a connector restart.
 
 To repeat the local browser smoke with the preview on 5180 and backend on 8010:
 
@@ -262,6 +318,48 @@ docker run --rm --network host --user "$(id -u):$(id -g)" \
 It uses the real seeded demo and verifies browser API/preflight requests, native
 EventSource, map assets and the rendered workspace. It writes
 `evidence/screenshots/laptop-split-origin.png` and fails on unexpected request failures.
+
+## Executed public validation
+
+Latest `main` at `3cc65e3` was fast-forwarded into the serving branch. The report
+export contract fix `03f5ecc` is deployed as production Vercel deployment
+`dpl_8afDzrt36drc7uJT257Lc7ajBfFp` (Ready), with `app.khmanan.site` assigned.
+The public bundle includes `https://api.khmanan.site`.
+
+- Docker `make test DC='docker compose -p aabflow-serving-validation'`: 634 passed.
+- Docker `make web-test web-build` with the same isolated project: 18 files,
+  115 tests passed, TypeScript and Vite production build passed.
+- Public allowed OPTIONS: HTTP 200, exact frontend origin and credential support;
+  unapproved origin: HTTP 400. API health, report files, assets and SSE paths
+  without authentication redirect to Access (HTTP 302).
+- Owner email OTP login was executed. The frontend reports Backend API online;
+  real pilot-a workspace displays satellite imagery, 30 fields and canals.
+  Origin logs record HTTP 200 for GeoJSON, imagery and terrain requests through
+  the tunnel. No browser console errors were observed in these tested views.
+- Public UI created report `rpt_84f5b4b695644d38a3d2110d87b1dccc` from real saved
+  run `run_5f2a5629def1436c8f8181f34188d783`; POST returned 202, the authenticated
+  job SSE connection returned 200, and the UI reached succeeded. Downloaded
+  report HTML: 150,622 bytes, includes the real run ID. Schedule CSV: 22,288
+  bytes, 395 irrigation events. Long-lived SSE reconnect/session expiry is untested.
+- A real new planner investigation `turn_afc2c16f135542f2923560621c2bef0c`
+  completed in 90,748 ms / five rounds, was added to the serving demo manifest,
+  and rendered publicly with 12 recorded tool steps and its actual recommendation.
+  Existing seeded base runs were preserved. No development data was overwritten.
+- `./scripts/laptop.sh update` built both frozen images, made full backup
+  `.laptop/backup-20261010T175626Z` with `.vision` and `.image`, migrated SQLite
+  to schema 4 and returned healthy. The previous images remain tagged `previous`.
+- Backend and tunnel are running with `unless-stopped`; Docker is enabled at boot.
+  Guard service is enabled/active, Linger=yes, and AabFlow's sleep/idle/lid
+  inhibitor is active. The named connector's `/ready` check passed and Cloudflare
+  shows Healthy. These are executed configuration checks, not a physical reboot test.
+
+The initial report export failed HTTP 422 because the UI sent `action_plan` and
+expected `downloads`, while the canonical API accepts `one_page_plan`/`full_report`
+and returns `download_url`. The frontend now uses generated request/response
+schemas and the canonical values. A regression test rejects unsupported report
+kinds and checks the rendered server download link. No backend validation was
+weakened. Earlier Vercel build failure from missing generated report schemas was
+also repaired and is present in main.
 
 ## Stop serving
 

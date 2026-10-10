@@ -1,0 +1,44 @@
+AabFlow public activation — 2026-10-10 UTC
+Source: origin/main 3cc65e3; deployment branch codex/laptop-serving
+Frontend code commit: 03f5ecc5b0d1c73cd8628a36eb822511c14c0aab
+Vercel: dpl_8afDzrt36drc7uJT257Lc7ajBfFp READY production app.khmanan.site
+Backend: aabflow-laptop-backend-1 healthy, schema 4, database ok, dispatcher running
+Cloudflare tunnel: aabflow-laptop 92f3c888-5097-48a7-8726-06ce5b485dc1 Healthy; /ready passed
+All backend paths protected by owner-email Access; OPTIONS-only bypass
+Public allowed preflight 200; unapproved origin preflight 400
+Unauthenticated health/report/asset/SSE: 302 Access redirects
+Public compiled frontend origin: https://api.khmanan.site
+Owner email OTP authenticated; frontend Backend API online; real satellite map rendered
+Downloaded report HTML: 150622 bytes; run_5f2a5629def1436c8f8181f34188d783 present
+Downloaded schedule CSV: 22288 bytes; 395 irrigation events
+New planner turn: turn_afc2c16f135542f2923560621c2bef0c; completed in 90748 ms, 5 rounds; rendered 12 steps
+Docker boot enabled; backend/tunnel unless-stopped; user guard enabled and active; Linger=yes
+Sleep/idle/lid inhibitor: AabFlow block active
+Full data/vision/image backup: .laptop/backup-20261010T175626Z; SQLite integrity ok
+make contracts (isolated Docker project): passed, clean generated diff
+Self-review: canonical report request/response types, idempotency retained, no domain/science scope changes
+Unverified: physical laptop reboot, deliberately unhealthy guard recovery, long SSE reconnect/session expiry, full database rollback, new uncached vision, replacement ArcGIS key
+
+Executed validation final result lines:
+634 passed, 8 warnings in 75.34s (0:01:15)
+      Tests  115 passed (115)
+✓ built in 5.63s
+
+Public browser requests (origin access log; credentials not logged):
+INFO:     172.30.0.3:57494 - "GET /assets/pilots/pilot-a/reviewed-v1/canals.geojson HTTP/1.1" 200 OK
+INFO:     172.30.0.3:57498 - "GET /assets/pilots/pilot-b/reviewed-v2/fields.geojson HTTP/1.1" 200 OK
+INFO:     172.30.0.3:57516 - "GET /assets/pilots/pilot-a/reviewed-v1/fields.geojson HTTP/1.1" 200 OK
+INFO:     172.30.0.3:39126 - "GET /assets/pilots/pilot-b/reviewed-v1/canals.geojson HTTP/1.1" 200 OK
+INFO:     172.30.0.3:57540 - "GET /assets/pilots/pilot-b/reviewed-v2/canals.geojson HTTP/1.1" 200 OK
+INFO:     172.30.0.3:57526 - "GET /assets/pilots/pilot-b/reviewed-v1/fields.geojson HTTP/1.1" 200 OK
+INFO:     172.30.0.3:57494 - "GET /assets/pilots/pilot-a/reviewed-v1/aoi.geojson HTTP/1.1" 200 OK
+INFO:     172.30.0.3:57516 - "GET /assets/pilots/pilot-a/reviewed-v1/fields_raw.geojson HTTP/1.1" 200 OK
+INFO:     172.30.0.3:39126 - "GET /assets/pilots/pilot-a/reviewed-v1/imagery/S2C_43RBQ_20250223_0_L2A.webp HTTP/1.1" 200 OK
+INFO:     172.30.0.3:57514 - "GET /assets/pilots/pilot-a/reviewed-v1/terrain/dem.png HTTP/1.1" 200 OK
+INFO:     172.30.0.3:38780 - "GET /assets/pilots/pilot-a/reviewed-v1/fields_raw.geojson HTTP/1.1" 200 OK
+INFO:     172.30.0.3:37196 - "OPTIONS /api/v2/reports HTTP/1.1" 200 OK
+INFO:     172.30.0.3:37196 - "POST /api/v2/reports HTTP/1.1" 422 Unprocessable Entity
+INFO:     172.30.0.3:45316 - "POST /api/v2/reports HTTP/1.1" 202 Accepted
+INFO:     172.30.0.3:45332 - "GET /api/v2/jobs/job_ae6181584975488e8b7bcdbf1ebbcdbc/events HTTP/1.1" 200 OK
+INFO:     172.30.0.3:45334 - "GET /api/v2/reports/rpt_84f5b4b695644d38a3d2110d87b1dccc HTTP/1.1" 200 OK
+INFO:     172.30.0.3:35452 - "GET /api/v2/reports/rpt_84f5b4b695644d38a3d2110d87b1dccc/files/report.html HTTP/1.1" 200 OK
