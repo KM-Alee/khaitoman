@@ -12,6 +12,8 @@ export function parseBackendOrigin(raw: string | undefined): string {
 }
 
 export const BACKEND_ORIGIN = parseBackendOrigin(import.meta.env.VITE_BACKEND_ORIGIN as string | undefined);
+/** Public deployments omit the Access login UI; protected deployments default to it. */
+export const BACKEND_ACCESS_REQUIRED = import.meta.env.VITE_BACKEND_ACCESS_REQUIRED !== "false";
 export const API_BASE = `${BACKEND_ORIGIN}/api/v2`;
 
 /** Resolve server-returned map, report and API links without rewriting unrelated URLs. */
