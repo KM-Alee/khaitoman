@@ -105,6 +105,21 @@ def main() -> int:
             return 2
     if args.until == "review":
         return 0
+    if pipeline.status(wd)["state"] == "published":
+        try:
+            manifest, _replaced = pipeline.reproduce_published(
+                wd, args.pilot, args.version, data_dir=args.data_dir
+            )
+        except pipeline.ReproductionError as exc:
+            print(str(exc), file=sys.stderr)
+            return 2
+        pilot_doc = read_json(args.data_dir / "pilots" / args.pilot / args.version / "pilot.json")
+        print(
+            f"reproduced {args.pilot}/{args.version}: {len(manifest.files)} files, "
+            f"{len(manifest.source_ids)} source ids, "
+            f"package_sha256 {pilot_doc['package_sha256']}"
+        )
+        return 0
     m = pipeline.publish(wd, args.pilot, args.version, data_dir=args.data_dir)
     print(
         f"published {args.pilot}/{args.version}: {len(m.files)} files, {len(m.source_ids)} source ids"
