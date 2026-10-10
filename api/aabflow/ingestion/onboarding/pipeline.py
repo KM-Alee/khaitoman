@@ -419,6 +419,7 @@ def _build_validated_stage(
     pilot_version: str,
     repo_root: Path,
     created_at: datetime | None,
+    warabandi: str = "declared_cca",
 ) -> None:
     """Write one validated package into an empty staging directory."""
     rs = read_json(workdir / "review" / "state.json")
@@ -438,6 +439,7 @@ def _build_validated_stage(
         review_state=rs,
         parent_canal_id=st["parent_canal_feature_id"],
         created_at=created_at,
+        warabandi=warabandi,
     )
     errors = validate_package(stage)
     if errors:
@@ -501,8 +503,9 @@ def reproduce_published(
     """Rebuild a published package and confirm every file hash.
 
     The published clock (``pilot.json`` ``created_at``) is reused so a second run is
-    byte-stable. A mismatch raises ``ReproductionError`` and leaves the published
-    directory untouched. Returns ``(manifest, False)`` when every file matches.
+    byte-stable. Pilot-b matches the declared 120 ha warabandi. Pilot-a matches the
+    earlier selected-area rule. A mismatch of both raises ``ReproductionError`` and
+    leaves the published directory untouched.
     """
     workdir = Path(workdir)
     repo_root = Path(repo_root or config.ROOT)
@@ -516,26 +519,42 @@ def reproduce_published(
     if not final.is_dir():
         raise StageError(f"published package missing: {final}")
     created_at = _parse_utc(read_json(final / "pilot.json")["created_at"])
-    stage = final.with_name(pilot_version + ".partial")
-    if stage.exists():
+    published = _package_hashes(final)
+    differed: list[str] = []
+    for warabandi in ("declared_cca", "selected_area"):
+        stage = final.with_name(pilot_version + ".partial")
+        if stage.exists():
+            shutil.rmtree(stage)
+        try:
+            _build_validated_stage(
+                workdir,
+                stage,
+                st,
+                pilot_id,
+                pilot_version,
+                repo_root,
+                created_at=created_at,
+                warabandi=warabandi,
+            )
+            rebuilt = _package_hashes(stage)
+            matched = rebuilt == published
+            if not matched:
+                differed = sorted(
+                    k for k in set(rebuilt) | set(published) if rebuilt.get(k) != published.get(k)
+                )
+        except Exception:
+            shutil.rmtree(stage, ignore_errors=True)
+            raise
         shutil.rmtree(stage)
-    try:
-        _build_validated_stage(
-            workdir, stage, st, pilot_id, pilot_version, repo_root, created_at=created_at
-        )
-        matched = _package_hashes(stage) == _package_hashes(final)
-    except Exception:
-        shutil.rmtree(stage, ignore_errors=True)
-        raise
-    shutil.rmtree(stage)
-    if not matched:
-        raise ReproductionError(
-            f"{pilot_id}/{pilot_version} does not match the current builder; "
-            "the published version is immutable and was left unchanged"
-        )
-    return (
-        PilotManifest.model_validate(json.loads((final / "manifest.json").read_text())),
-        False,
+        if matched:
+            return (
+                PilotManifest.model_validate(json.loads((final / "manifest.json").read_text())),
+                False,
+            )
+    raise ReproductionError(
+        f"{pilot_id}/{pilot_version} does not match the declared-CCA or selected-area "
+        f"builder; the published version is immutable and was left unchanged. "
+        f"Differing files: {', '.join(differed[:8])}"
     )
 
 
