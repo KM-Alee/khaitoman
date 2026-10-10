@@ -1,5 +1,5 @@
-# Optional: `docker compose -f compose.yaml -f compose.gpu.yaml --profile vision ...`
-# Needs a working NVIDIA driver and nvidia-container-toolkit on the host.
+# Opt-in GPU execution: make train-surrogate GPU=1. Docker must support --gpus all.
+# The locked LightGBM Linux wheel supports OpenCL GPU training; no host project deps.
 services:
   vision:
     build:
@@ -8,3 +8,8 @@ services:
       resources:
         reservations:
           devices: [{ driver: nvidia, count: all, capabilities: [gpu] }]
+  api:
+    gpus: all
+    environment:
+      NVIDIA_DRIVER_CAPABILITIES: compute,utility
+      AABFLOW_SURROGATE_DEVICE: gpu

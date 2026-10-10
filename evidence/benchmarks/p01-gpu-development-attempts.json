@@ -1,0 +1,1298 @@
+{
+ "note": "Executed development attempts, including failed per-pilot gates. Failed GPU models are not the release pointer. A first failed run using the old unconditional publication code briefly updated latest; it was restored and publication now requires every crop/source gate to pass. Final weather years have been reused across release checks; new schedule designs do not create independent weather holdouts. Gates were not weakened.",
+ "attempts": [
+  {
+   "model_version": "surrogate-v3",
+   "created_at": "2026-10-10T07:04:17.041213+00:00",
+   "adapter_version": "aabflow-aquacrop-adapter-1.0.0",
+   "crops": {
+    "wheat": {
+     "test": {
+      "n": 330,
+      "mae_kg_ha": 504.11140003233976,
+      "rmse_kg_ha": 570.2827315297282,
+      "bias_kg_ha": -329.1330705583441,
+      "nmae": 0.06327630552488367,
+      "reference_yield_kg_ha": 7966.827327396601
+     },
+     "test_ranking": {
+      "contexts": 18,
+      "median_spearman": 0.9909090909090907,
+      "min_spearman": 0.9636363636363637
+     },
+     "decision_regret_summary": {
+      "n": 36,
+      "median": 0.00232924515564328,
+      "max": 0.09318853242762797,
+      "median_kg": 229.70053602261032
+     },
+     "baseline_test": {
+      "n": 330,
+      "mae_kg_ha": 952.5901738890478,
+      "rmse_kg_ha": 1217.7944157942377,
+      "bias_kg_ha": -176.44159416877105,
+      "nmae": 0.11956957704019112,
+      "reference_yield_kg_ha": 7966.827327396601
+     },
+     "gate_results": {
+      "nmae": true,
+      "median_spearman": true,
+      "median_regret": true,
+      "max_regret": true,
+      "fixtures": true,
+      "beats_naive_baseline": true,
+      "all_weather_sources": true
+     },
+     "passed": true,
+     "loyo_cv": {
+      "nmae_mean": 0.05181647754791893,
+      "nmae_max": 0.11821096568352384,
+      "nmae_std": 0.02135846082460283
+     },
+     "samples": {
+      "total": 4886,
+      "fit_pool": 4082,
+      "test": 330,
+      "holdout_family_test": 30,
+      "years": 26
+     }
+    },
+    "cotton": {
+     "test": {
+      "n": 198,
+      "mae_kg_ha": 290.07003532715237,
+      "rmse_kg_ha": 363.8545174336139,
+      "bias_kg_ha": -266.04614505823326,
+      "nmae": 0.08910142994584262,
+      "reference_yield_kg_ha": 3255.503705198243
+     },
+     "test_ranking": {
+      "contexts": 18,
+      "median_spearman": 0.9818181818181818,
+      "min_spearman": 0.9545454545454546
+     },
+     "decision_regret_summary": {
+      "n": 36,
+      "median": 0.000556739245749563,
+      "max": 0.012646940347686335,
+      "median_kg": 27.764459488054854
+     },
+     "baseline_test": {
+      "n": 198,
+      "mae_kg_ha": 496.6353352540029,
+      "rmse_kg_ha": 702.3487537855481,
+      "bias_kg_ha": -237.20522606221905,
+      "nmae": 0.15255253264218308,
+      "reference_yield_kg_ha": 3255.503705198243
+     },
+     "gate_results": {
+      "nmae": true,
+      "median_spearman": true,
+      "median_regret": true,
+      "max_regret": true,
+      "fixtures": true,
+      "beats_naive_baseline": true,
+      "all_weather_sources": true
+     },
+     "passed": true,
+     "loyo_cv": {
+      "nmae_mean": 0.07432107439430176,
+      "nmae_max": 0.14550879982171155,
+      "nmae_std": 0.024399792202081338
+     },
+     "samples": {
+      "total": 4031,
+      "fit_pool": 3497,
+      "test": 198,
+      "holdout_family_test": 18,
+      "years": 26
+     }
+    }
+   },
+   "weather_sources": [
+    "science-discovery",
+    "pilot-a",
+    "pilot-b"
+   ],
+   "passed": true,
+   "wall_s": 67.7,
+   "sources": {
+    "wheat": {
+     "pilot-a": {
+      "test": {
+       "n": 132,
+       "mae_kg_ha": 511.97585077518613,
+       "rmse_kg_ha": 569.6427516391223,
+       "bias_kg_ha": -313.7931753240719,
+       "nmae": 0.0642634551667244,
+       "reference_yield_kg_ha": 7966.827327396601
+      },
+      "gates": {
+       "nmae": true,
+       "median_spearman": true,
+       "median_regret": true,
+       "max_regret": true,
+       "fixtures": true,
+       "beats_naive_baseline": true
+      }
+     },
+     "pilot-b": {
+      "test": {
+       "n": 132,
+       "mae_kg_ha": 545.981968715214,
+       "rmse_kg_ha": 608.0594429289656,
+       "bias_kg_ha": -341.95437110676346,
+       "nmae": 0.06853191945527329,
+       "reference_yield_kg_ha": 7966.827327396601
+      },
+      "gates": {
+       "nmae": true,
+       "median_spearman": true,
+       "median_regret": true,
+       "max_regret": true,
+       "fixtures": true,
+       "beats_naive_baseline": true
+      }
+     },
+     "science-discovery": {
+      "test": {
+       "n": 66,
+       "mae_kg_ha": 404.64136118089874,
+       "rmse_kg_ha": 487.4973519362854,
+       "bias_kg_ha": -334.1702599300498,
+       "nmae": 0.05079077838042304,
+       "reference_yield_kg_ha": 7966.827327396601
+      },
+      "gates": {
+       "nmae": true,
+       "median_spearman": true,
+       "median_regret": true,
+       "max_regret": true,
+       "fixtures": true,
+       "beats_naive_baseline": true
+      }
+     }
+    },
+    "cotton": {
+     "pilot-a": {
+      "test": {
+       "n": 66,
+       "mae_kg_ha": 302.4845624487476,
+       "rmse_kg_ha": 374.28142110007076,
+       "bias_kg_ha": -279.92291922741344,
+       "nmae": 0.09291482665670255,
+       "reference_yield_kg_ha": 3255.503705198243
+      },
+      "gates": {
+       "nmae": true,
+       "median_spearman": true,
+       "median_regret": true,
+       "max_regret": true,
+       "fixtures": true,
+       "beats_naive_baseline": true
+      }
+     },
+     "pilot-b": {
+      "test": {
+       "n": 66,
+       "mae_kg_ha": 313.81754172838873,
+       "rmse_kg_ha": 393.01293289134657,
+       "bias_kg_ha": -289.3288196637074,
+       "nmae": 0.09639600201569389,
+       "reference_yield_kg_ha": 3255.503705198243
+      },
+      "gates": {
+       "nmae": true,
+       "median_spearman": true,
+       "median_regret": true,
+       "max_regret": true,
+       "fixtures": true,
+       "beats_naive_baseline": true
+      }
+     },
+     "science-discovery": {
+      "test": {
+       "n": 66,
+       "mae_kg_ha": 253.90800180432063,
+       "rmse_kg_ha": 320.3507171366995,
+       "bias_kg_ha": -228.8866962835789,
+       "nmae": 0.07799346116513142,
+       "reference_yield_kg_ha": 3255.503705198243
+      },
+      "gates": {
+       "nmae": true,
+       "median_spearman": true,
+       "median_regret": true,
+       "max_regret": true,
+       "fixtures": true,
+       "beats_naive_baseline": true
+      }
+     }
+    }
+   },
+   "architecture": {
+    "wheat": null,
+    "cotton": null
+   },
+   "split_manifest": {
+    "wheat": {
+     "rule": "latest complete year shared by all sources = untouched test year; earlier years = LOYO development pool; newer source-only years excluded from fitting; family 'irregular' held out from fitting",
+     "test_year": "2024-25",
+     "development_years": [
+      "2000-01",
+      "2001-02",
+      "2002-03",
+      "2003-04",
+      "2004-05",
+      "2005-06",
+      "2006-07",
+      "2007-08",
+      "2008-09",
+      "2009-10",
+      "2010-11",
+      "2011-12",
+      "2012-13",
+      "2013-14",
+      "2014-15",
+      "2015-16",
+      "2016-17",
+      "2017-18",
+      "2018-19",
+      "2019-20",
+      "2020-21",
+      "2021-22",
+      "2022-23",
+      "2023-24"
+     ],
+     "excluded_newer_years": [
+      "2025-26"
+     ],
+     "test_weather_sources": [
+      "pilot-a",
+      "pilot-b",
+      "science-discovery"
+     ],
+     "holdout_family": "irregular",
+     "fixed_before_fitting": true,
+     "crop": "wheat"
+    },
+    "cotton": {
+     "rule": "latest complete year shared by all sources = untouched test year; earlier years = LOYO development pool; newer source-only years excluded from fitting; family 'irregular' held out from fitting",
+     "test_year": "2025",
+     "development_years": [
+      "2000",
+      "2001",
+      "2002",
+      "2003",
+      "2004",
+      "2005",
+      "2006",
+      "2007",
+      "2008",
+      "2009",
+      "2010",
+      "2011",
+      "2012",
+      "2013",
+      "2014",
+      "2015",
+      "2016",
+      "2017",
+      "2018",
+      "2019",
+      "2020",
+      "2021",
+      "2022",
+      "2023",
+      "2024"
+     ],
+     "excluded_newer_years": [],
+     "test_weather_sources": [
+      "pilot-a",
+      "pilot-b",
+      "science-discovery"
+     ],
+     "holdout_family": "irregular",
+     "fixed_before_fitting": true,
+     "crop": "cotton"
+    }
+   }
+  },
+  {
+   "model_version": "surrogate-v4-gpu",
+   "training_device": "gpu",
+   "created_at": "2026-10-10T07:12:19.071929+00:00",
+   "adapter_version": "aabflow-aquacrop-adapter-1.0.0",
+   "crops": {
+    "wheat": {
+     "test": {
+      "n": 330,
+      "mae_kg_ha": 494.59486839823455,
+      "rmse_kg_ha": 562.2653647421382,
+      "bias_kg_ha": -315.1274843053047,
+      "nmae": 0.06208178589454357,
+      "reference_yield_kg_ha": 7966.827327396601
+     },
+     "test_ranking": {
+      "contexts": 18,
+      "median_spearman": 0.9909090909090907,
+      "min_spearman": 0.9636363636363637
+     },
+     "decision_regret_summary": {
+      "n": 36,
+      "median": 0.0028666020139021023,
+      "max": 0.09318853242762797,
+      "median_kg": 256.6786896563717
+     },
+     "baseline_test": {
+      "n": 330,
+      "mae_kg_ha": 952.5901738890478,
+      "rmse_kg_ha": 1217.7944157942377,
+      "bias_kg_ha": -176.44159416877105,
+      "nmae": 0.11956957704019112,
+      "reference_yield_kg_ha": 7966.827327396601
+     },
+     "gate_results": {
+      "nmae": true,
+      "median_spearman": true,
+      "median_regret": true,
+      "max_regret": true,
+      "fixtures": true,
+      "beats_naive_baseline": true,
+      "all_weather_sources": true
+     },
+     "passed": true,
+     "loyo_cv": {
+      "nmae_mean": 0.05201168259838357,
+      "nmae_max": 0.11803281543892816,
+      "nmae_std": 0.02124954763110183
+     },
+     "samples": {
+      "total": 4886,
+      "fit_pool": 4082,
+      "test": 330,
+      "holdout_family_test": 30,
+      "years": 26
+     }
+    },
+    "cotton": {
+     "test": {
+      "n": 198,
+      "mae_kg_ha": 307.70718467708775,
+      "rmse_kg_ha": 384.86076215067953,
+      "bias_kg_ha": -284.25684743802736,
+      "nmae": 0.09451907063897812,
+      "reference_yield_kg_ha": 3255.503705198243
+     },
+     "test_ranking": {
+      "contexts": 18,
+      "median_spearman": 0.9727272727272729,
+      "min_spearman": 0.9545454545454546
+     },
+     "decision_regret_summary": {
+      "n": 36,
+      "median": 0.0020838728477159205,
+      "max": 0.012646940347686335,
+      "median_kg": 102.26034956096555
+     },
+     "baseline_test": {
+      "n": 198,
+      "mae_kg_ha": 496.6353352540029,
+      "rmse_kg_ha": 702.3487537855481,
+      "bias_kg_ha": -237.20522606221905,
+      "nmae": 0.15255253264218308,
+      "reference_yield_kg_ha": 3255.503705198243
+     },
+     "gate_results": {
+      "nmae": true,
+      "median_spearman": true,
+      "median_regret": true,
+      "max_regret": true,
+      "fixtures": true,
+      "beats_naive_baseline": true,
+      "all_weather_sources": false
+     },
+     "passed": false,
+     "loyo_cv": {
+      "nmae_mean": 0.07410462991579433,
+      "nmae_max": 0.1455421896179234,
+      "nmae_std": 0.024355175464432728
+     },
+     "samples": {
+      "total": 4031,
+      "fit_pool": 3497,
+      "test": 198,
+      "holdout_family_test": 18,
+      "years": 26
+     }
+    }
+   },
+   "weather_sources": [
+    "science-discovery",
+    "pilot-a",
+    "pilot-b"
+   ],
+   "passed": false,
+   "wall_s": 179.2,
+   "sources": {
+    "wheat": {
+     "pilot-a": {
+      "test": {
+       "n": 132,
+       "mae_kg_ha": 497.7723809443183,
+       "rmse_kg_ha": 558.8501709121058,
+       "bias_kg_ha": -292.6596586941981,
+       "nmae": 0.06248062879843792,
+       "reference_yield_kg_ha": 7966.827327396601
+      },
+      "gates": {
+       "nmae": true,
+       "median_spearman": true,
+       "median_regret": true,
+       "max_regret": true,
+       "fixtures": true,
+       "beats_naive_baseline": true
+      }
+     },
+     "pilot-b": {
+      "test": {
+       "n": 132,
+       "mae_kg_ha": 534.448543921834,
+       "rmse_kg_ha": 599.0026287514908,
+       "bias_kg_ha": -327.57761100707353,
+       "nmae": 0.06708423842499434,
+       "reference_yield_kg_ha": 7966.827327396601
+      },
+      "gates": {
+       "nmae": true,
+       "median_spearman": true,
+       "median_regret": true,
+       "max_regret": true,
+       "fixtures": true,
+       "beats_naive_baseline": true
+      }
+     },
+     "science-discovery": {
+      "test": {
+       "n": 66,
+       "mae_kg_ha": 408.5324922588682,
+       "rmse_kg_ha": 488.3404308304569,
+       "bias_kg_ha": -335.1628821239804,
+       "nmae": 0.05127919502585334,
+       "reference_yield_kg_ha": 7966.827327396601
+      },
+      "gates": {
+       "nmae": true,
+       "median_spearman": true,
+       "median_regret": true,
+       "max_regret": true,
+       "fixtures": true,
+       "beats_naive_baseline": true
+      }
+     }
+    },
+    "cotton": {
+     "pilot-a": {
+      "test": {
+       "n": 66,
+       "mae_kg_ha": 321.1604250576588,
+       "rmse_kg_ha": 394.6001110272902,
+       "bias_kg_ha": -297.4365577400779,
+       "nmae": 0.0986515311117122,
+       "reference_yield_kg_ha": 3255.503705198243
+      },
+      "gates": {
+       "nmae": true,
+       "median_spearman": true,
+       "median_regret": true,
+       "max_regret": true,
+       "fixtures": true,
+       "beats_naive_baseline": true
+      }
+     },
+     "pilot-b": {
+      "test": {
+       "n": 66,
+       "mae_kg_ha": 329.04336254465215,
+       "rmse_kg_ha": 413.2501995487905,
+       "bias_kg_ha": -306.27251939485814,
+       "nmae": 0.10107294979245467,
+       "reference_yield_kg_ha": 3255.503705198243
+      },
+      "gates": {
+       "nmae": false,
+       "median_spearman": true,
+       "median_regret": true,
+       "max_regret": true,
+       "fixtures": true,
+       "beats_naive_baseline": true
+      }
+     },
+     "science-discovery": {
+      "test": {
+       "n": 66,
+       "mae_kg_ha": 272.9177664289524,
+       "rmse_kg_ha": 343.3197397175712,
+       "bias_kg_ha": -249.06146517914615,
+       "nmae": 0.08383273101276754,
+       "reference_yield_kg_ha": 3255.503705198243
+      },
+      "gates": {
+       "nmae": true,
+       "median_spearman": true,
+       "median_regret": true,
+       "max_regret": true,
+       "fixtures": true,
+       "beats_naive_baseline": true
+      }
+     }
+    }
+   },
+   "architecture": {
+    "wheat": null,
+    "cotton": null
+   },
+   "split_manifest": {
+    "wheat": {
+     "rule": "latest complete year shared by all sources = untouched test year; earlier years = LOYO development pool; newer source-only years excluded from fitting; family 'irregular' held out from fitting",
+     "test_year": "2024-25",
+     "development_years": [
+      "2000-01",
+      "2001-02",
+      "2002-03",
+      "2003-04",
+      "2004-05",
+      "2005-06",
+      "2006-07",
+      "2007-08",
+      "2008-09",
+      "2009-10",
+      "2010-11",
+      "2011-12",
+      "2012-13",
+      "2013-14",
+      "2014-15",
+      "2015-16",
+      "2016-17",
+      "2017-18",
+      "2018-19",
+      "2019-20",
+      "2020-21",
+      "2021-22",
+      "2022-23",
+      "2023-24"
+     ],
+     "excluded_newer_years": [
+      "2025-26"
+     ],
+     "test_weather_sources": [
+      "pilot-a",
+      "pilot-b",
+      "science-discovery"
+     ],
+     "holdout_family": "irregular",
+     "fixed_before_fitting": true,
+     "crop": "wheat"
+    },
+    "cotton": {
+     "rule": "latest complete year shared by all sources = untouched test year; earlier years = LOYO development pool; newer source-only years excluded from fitting; family 'irregular' held out from fitting",
+     "test_year": "2025",
+     "development_years": [
+      "2000",
+      "2001",
+      "2002",
+      "2003",
+      "2004",
+      "2005",
+      "2006",
+      "2007",
+      "2008",
+      "2009",
+      "2010",
+      "2011",
+      "2012",
+      "2013",
+      "2014",
+      "2015",
+      "2016",
+      "2017",
+      "2018",
+      "2019",
+      "2020",
+      "2021",
+      "2022",
+      "2023",
+      "2024"
+     ],
+     "excluded_newer_years": [],
+     "test_weather_sources": [
+      "pilot-a",
+      "pilot-b",
+      "science-discovery"
+     ],
+     "holdout_family": "irregular",
+     "fixed_before_fitting": true,
+     "crop": "cotton"
+    }
+   }
+  },
+  {
+   "model_version": "surrogate-v5-gpu",
+   "training_device": "gpu",
+   "created_at": "2026-10-10T07:19:40.730193+00:00",
+   "adapter_version": "aabflow-aquacrop-adapter-1.0.0",
+   "crops": {
+    "wheat": {
+     "test": {
+      "n": 330,
+      "mae_kg_ha": 384.0067125849469,
+      "rmse_kg_ha": 479.4609923322104,
+      "bias_kg_ha": -135.33404654537702,
+      "nmae": 0.04820070735867607,
+      "reference_yield_kg_ha": 7966.827327396601
+     },
+     "test_ranking": {
+      "contexts": 18,
+      "median_spearman": 0.9727272727272728,
+      "min_spearman": 0.9272727272727272
+     },
+     "decision_regret_summary": {
+      "n": 36,
+      "median": 0.006889762548162555,
+      "max": 0.05115935050007707,
+      "median_kg": 630.7384350991997
+     },
+     "baseline_test": {
+      "n": 330,
+      "mae_kg_ha": 963.4878705080137,
+      "rmse_kg_ha": 1224.6133104726484,
+      "bias_kg_ha": -196.98995493392187,
+      "nmae": 0.12093746116408703,
+      "reference_yield_kg_ha": 7966.827327396601
+     },
+     "gate_results": {
+      "nmae": true,
+      "median_spearman": true,
+      "median_regret": true,
+      "max_regret": true,
+      "fixtures": true,
+      "beats_naive_baseline": true,
+      "all_weather_sources": true
+     },
+     "passed": true,
+     "loyo_cv": {
+      "nmae_mean": 0.05201168259838357,
+      "nmae_max": 0.11803281543892816,
+      "nmae_std": 0.02124954763110183
+     },
+     "samples": {
+      "total": 4886,
+      "fit_pool": 4082,
+      "test": 330,
+      "holdout_family_test": 30,
+      "years": 26
+     }
+    },
+    "cotton": {
+     "test": {
+      "n": 198,
+      "mae_kg_ha": 298.34685449644434,
+      "rmse_kg_ha": 377.9745869972334,
+      "bias_kg_ha": -284.888533855769,
+      "nmae": 0.09164383810101565,
+      "reference_yield_kg_ha": 3255.503705198243
+     },
+     "test_ranking": {
+      "contexts": 18,
+      "median_spearman": 0.9636363636363637,
+      "min_spearman": 0.9272727272727275
+     },
+     "decision_regret_summary": {
+      "n": 36,
+      "median": 0.0,
+      "max": 0.031336632382496524,
+      "median_kg": 0.0
+     },
+     "baseline_test": {
+      "n": 198,
+      "mae_kg_ha": 514.0310466292254,
+      "rmse_kg_ha": 754.1015970255888,
+      "bias_kg_ha": -275.02392414899606,
+      "nmae": 0.15789601031890813,
+      "reference_yield_kg_ha": 3255.503705198243
+     },
+     "gate_results": {
+      "nmae": true,
+      "median_spearman": true,
+      "median_regret": true,
+      "max_regret": true,
+      "fixtures": true,
+      "beats_naive_baseline": true,
+      "all_weather_sources": false
+     },
+     "passed": false,
+     "loyo_cv": {
+      "nmae_mean": 0.07410462991579433,
+      "nmae_max": 0.1455421896179234,
+      "nmae_std": 0.024355175464432728
+     },
+     "samples": {
+      "total": 4031,
+      "fit_pool": 3497,
+      "test": 198,
+      "holdout_family_test": 18,
+      "years": 26
+     }
+    }
+   },
+   "weather_sources": [
+    "science-discovery",
+    "pilot-a",
+    "pilot-b"
+   ],
+   "passed": false,
+   "wall_s": 213.7,
+   "sources": {
+    "wheat": {
+     "pilot-a": {
+      "test": {
+       "n": 132,
+       "mae_kg_ha": 401.09061615563934,
+       "rmse_kg_ha": 490.8940706103308,
+       "bias_kg_ha": -129.57265831533763,
+       "nmae": 0.050345087156132416,
+       "reference_yield_kg_ha": 7966.827327396601
+      },
+      "gates": {
+       "nmae": true,
+       "median_spearman": true,
+       "median_regret": true,
+       "max_regret": true,
+       "fixtures": true,
+       "beats_naive_baseline": true
+      }
+     },
+     "pilot-b": {
+      "test": {
+       "n": 132,
+       "mae_kg_ha": 427.1330391005849,
+       "rmse_kg_ha": 512.802522937395,
+       "bias_kg_ha": -144.4571344249795,
+       "nmae": 0.053613944616540773,
+       "reference_yield_kg_ha": 7966.827327396601
+      },
+      "gates": {
+       "nmae": true,
+       "median_spearman": true,
+       "median_regret": true,
+       "max_regret": true,
+       "fixtures": true,
+       "beats_naive_baseline": true
+      }
+     },
+     "science-discovery": {
+      "test": {
+       "n": 66,
+       "mae_kg_ha": 263.586252412286,
+       "rmse_kg_ha": 376.2012541954955,
+       "bias_kg_ha": -128.61064724625092,
+       "nmae": 0.033085473248033945,
+       "reference_yield_kg_ha": 7966.827327396601
+      },
+      "gates": {
+       "nmae": true,
+       "median_spearman": true,
+       "median_regret": true,
+       "max_regret": true,
+       "fixtures": true,
+       "beats_naive_baseline": true
+      }
+     }
+    },
+    "cotton": {
+     "pilot-a": {
+      "test": {
+       "n": 66,
+       "mae_kg_ha": 315.4402439125797,
+       "rmse_kg_ha": 391.03343654768145,
+       "bias_kg_ha": -306.2677788558859,
+       "nmae": 0.09689445089830456,
+       "reference_yield_kg_ha": 3255.503705198243
+      },
+      "gates": {
+       "nmae": true,
+       "median_spearman": true,
+       "median_regret": true,
+       "max_regret": true,
+       "fixtures": true,
+       "beats_naive_baseline": true
+      }
+     },
+     "pilot-b": {
+      "test": {
+       "n": 66,
+       "mae_kg_ha": 331.79688067993317,
+       "rmse_kg_ha": 416.77518844068965,
+       "bias_kg_ha": -321.0726261615555,
+       "nmae": 0.10191875381684705,
+       "reference_yield_kg_ha": 3255.503705198243
+      },
+      "gates": {
+       "nmae": false,
+       "median_spearman": true,
+       "median_regret": true,
+       "max_regret": true,
+       "fixtures": true,
+       "beats_naive_baseline": true
+      }
+     },
+     "science-discovery": {
+      "test": {
+       "n": 66,
+       "mae_kg_ha": 247.8034388968201,
+       "rmse_kg_ha": 319.3519360347226,
+       "bias_kg_ha": -227.32519654986586,
+       "nmae": 0.0761183095878953,
+       "reference_yield_kg_ha": 3255.503705198243
+      },
+      "gates": {
+       "nmae": true,
+       "median_spearman": true,
+       "median_regret": true,
+       "max_regret": true,
+       "fixtures": true,
+       "beats_naive_baseline": true
+      }
+     }
+    }
+   },
+   "architecture": {
+    "wheat": null,
+    "cotton": null
+   },
+   "split_manifest": {
+    "wheat": {
+     "rule": "latest complete year shared by all sources = untouched test year; earlier years = LOYO development pool; newer source-only years excluded from fitting; family 'irregular' held out from fitting",
+     "test_year": "2024-25",
+     "development_years": [
+      "2000-01",
+      "2001-02",
+      "2002-03",
+      "2003-04",
+      "2004-05",
+      "2005-06",
+      "2006-07",
+      "2007-08",
+      "2008-09",
+      "2009-10",
+      "2010-11",
+      "2011-12",
+      "2012-13",
+      "2013-14",
+      "2014-15",
+      "2015-16",
+      "2016-17",
+      "2017-18",
+      "2018-19",
+      "2019-20",
+      "2020-21",
+      "2021-22",
+      "2022-23",
+      "2023-24"
+     ],
+     "excluded_newer_years": [
+      "2025-26"
+     ],
+     "test_weather_sources": [
+      "pilot-a",
+      "pilot-b",
+      "science-discovery"
+     ],
+     "holdout_family": "irregular",
+     "fixed_before_fitting": true,
+     "crop": "wheat",
+     "test_schedule_design_seed": "release-audit-v5",
+     "test_weather_note": "Weather years match prior release checks; this release uses newly executed schedules, never fitted. No parameters are selected from final-year or held-out-family results."
+    },
+    "cotton": {
+     "rule": "latest complete year shared by all sources = untouched test year; earlier years = LOYO development pool; newer source-only years excluded from fitting; family 'irregular' held out from fitting",
+     "test_year": "2025",
+     "development_years": [
+      "2000",
+      "2001",
+      "2002",
+      "2003",
+      "2004",
+      "2005",
+      "2006",
+      "2007",
+      "2008",
+      "2009",
+      "2010",
+      "2011",
+      "2012",
+      "2013",
+      "2014",
+      "2015",
+      "2016",
+      "2017",
+      "2018",
+      "2019",
+      "2020",
+      "2021",
+      "2022",
+      "2023",
+      "2024"
+     ],
+     "excluded_newer_years": [],
+     "test_weather_sources": [
+      "pilot-a",
+      "pilot-b",
+      "science-discovery"
+     ],
+     "holdout_family": "irregular",
+     "fixed_before_fitting": true,
+     "crop": "cotton",
+     "test_schedule_design_seed": "release-audit-v5",
+     "test_weather_note": "Weather years match prior release checks; this release uses newly executed schedules, never fitted. No parameters are selected from final-year or held-out-family results."
+    }
+   }
+  },
+  {
+   "model_version": "surrogate-v6-gpu",
+   "training_device": "gpu",
+   "created_at": "2026-10-10T07:29:39.885406+00:00",
+   "adapter_version": "aabflow-aquacrop-adapter-1.0.0",
+   "crops": {
+    "wheat": {
+     "test": {
+      "n": 330,
+      "mae_kg_ha": 355.58756198932196,
+      "rmse_kg_ha": 461.4857343716386,
+      "bias_kg_ha": -66.58194179753801,
+      "nmae": 0.04463352189980511,
+      "reference_yield_kg_ha": 7966.827327396601
+     },
+     "test_ranking": {
+      "contexts": 18,
+      "median_spearman": 0.9909090909090907,
+      "min_spearman": 0.9636363636363637
+     },
+     "decision_regret_summary": {
+      "n": 36,
+      "median": 0.0027203784191067214,
+      "max": 0.03758107372265495,
+      "median_kg": 244.31521937934303
+     },
+     "baseline_test": {
+      "n": 330,
+      "mae_kg_ha": 993.521140046364,
+      "rmse_kg_ha": 1273.2610705443087,
+      "bias_kg_ha": 20.460781840843048,
+      "nmae": 0.1247072516094091,
+      "reference_yield_kg_ha": 7966.827327396601
+     },
+     "gate_results": {
+      "nmae": true,
+      "median_spearman": true,
+      "median_regret": true,
+      "max_regret": true,
+      "fixtures": true,
+      "beats_naive_baseline": true,
+      "all_weather_sources": true
+     },
+     "passed": true,
+     "loyo_cv": {
+      "nmae_mean": 0.05201168259838357,
+      "nmae_max": 0.11803281543892816,
+      "nmae_std": 0.02124954763110183
+     },
+     "samples": {
+      "total": 4886,
+      "fit_pool": 4082,
+      "test": 330,
+      "holdout_family_test": 30,
+      "years": 26
+     }
+    },
+    "cotton": {
+     "test": {
+      "n": 195,
+      "mae_kg_ha": 325.90430115208727,
+      "rmse_kg_ha": 421.54898794393785,
+      "bias_kg_ha": -289.7231992174093,
+      "nmae": 0.10010871762538553,
+      "reference_yield_kg_ha": 3255.503705198243
+     },
+     "test_ranking": {
+      "contexts": 18,
+      "median_spearman": 0.9681818181818183,
+      "min_spearman": 0.9090909090909091
+     },
+     "decision_regret_summary": {
+      "n": 36,
+      "median": 0.0,
+      "max": 0.014262863498937515,
+      "median_kg": 0.0
+     },
+     "baseline_test": {
+      "n": 195,
+      "mae_kg_ha": 554.5672828178522,
+      "rmse_kg_ha": 800.4014891455442,
+      "bias_kg_ha": -172.8151607194963,
+      "nmae": 0.1703476122396494,
+      "reference_yield_kg_ha": 3255.503705198243
+     },
+     "gate_results": {
+      "nmae": false,
+      "median_spearman": true,
+      "median_regret": true,
+      "max_regret": true,
+      "fixtures": true,
+      "beats_naive_baseline": true,
+      "all_weather_sources": false
+     },
+     "passed": false,
+     "loyo_cv": {
+      "nmae_mean": 0.0736948808483381,
+      "nmae_max": 0.12181816132364574,
+      "nmae_std": 0.022555340073331178
+     },
+     "samples": {
+      "total": 4028,
+      "fit_pool": 3497,
+      "test": 195,
+      "holdout_family_test": 18,
+      "years": 26
+     }
+    }
+   },
+   "weather_sources": [
+    "science-discovery",
+    "pilot-a",
+    "pilot-b"
+   ],
+   "passed": false,
+   "wall_s": 350.7,
+   "sources": {
+    "wheat": {
+     "pilot-a": {
+      "test": {
+       "n": 132,
+       "mae_kg_ha": 372.11311675198266,
+       "rmse_kg_ha": 478.1797410573052,
+       "bias_kg_ha": -41.47101478047725,
+       "nmae": 0.0467078174861839,
+       "reference_yield_kg_ha": 7966.827327396601
+      },
+      "gates": {
+       "nmae": true,
+       "median_spearman": true,
+       "median_regret": true,
+       "max_regret": true,
+       "fixtures": true,
+       "beats_naive_baseline": true
+      }
+     },
+     "pilot-b": {
+      "test": {
+       "n": 132,
+       "mae_kg_ha": 405.4774467297369,
+       "rmse_kg_ha": 503.7765118950969,
+       "bias_kg_ha": -73.07668017242906,
+       "nmae": 0.050895724240861494,
+       "reference_yield_kg_ha": 7966.827327396601
+      },
+      "gates": {
+       "nmae": true,
+       "median_spearman": true,
+       "median_regret": true,
+       "max_regret": true,
+       "fixtures": true,
+       "beats_naive_baseline": true
+      }
+     },
+     "science-discovery": {
+      "test": {
+       "n": 66,
+       "mae_kg_ha": 222.75668298317066,
+       "rmse_kg_ha": 316.15208010229605,
+       "bias_kg_ha": -103.81431908187739,
+       "nmae": 0.027960526044934764,
+       "reference_yield_kg_ha": 7966.827327396601
+      },
+      "gates": {
+       "nmae": true,
+       "median_spearman": true,
+       "median_regret": true,
+       "max_regret": true,
+       "fixtures": true,
+       "beats_naive_baseline": true
+      }
+     }
+    },
+    "cotton": {
+     "pilot-a": {
+      "test": {
+       "n": 65,
+       "mae_kg_ha": 360.862095451788,
+       "rmse_kg_ha": 454.51830837504036,
+       "bias_kg_ha": -339.4659319624784,
+       "nmae": 0.11084677768161635,
+       "reference_yield_kg_ha": 3255.503705198243
+      },
+      "gates": {
+       "nmae": false,
+       "median_spearman": true,
+       "median_regret": true,
+       "max_regret": true,
+       "fixtures": true,
+       "beats_naive_baseline": true
+      }
+     },
+     "pilot-b": {
+      "test": {
+       "n": 65,
+       "mae_kg_ha": 374.0747389771211,
+       "rmse_kg_ha": 479.5949741476515,
+       "bias_kg_ha": -351.9899706337215,
+       "nmae": 0.1149053335063988,
+       "reference_yield_kg_ha": 3255.503705198243
+      },
+      "gates": {
+       "nmae": false,
+       "median_spearman": true,
+       "median_regret": true,
+       "max_regret": true,
+       "fixtures": true,
+       "beats_naive_baseline": true
+      }
+     },
+     "science-discovery": {
+      "test": {
+       "n": 65,
+       "mae_kg_ha": 242.77606902735275,
+       "rmse_kg_ha": 310.6644746891412,
+       "bias_kg_ha": -177.71369505602812,
+       "nmae": 0.07457404168814145,
+       "reference_yield_kg_ha": 3255.503705198243
+      },
+      "gates": {
+       "nmae": true,
+       "median_spearman": true,
+       "median_regret": true,
+       "max_regret": true,
+       "fixtures": true,
+       "beats_naive_baseline": true
+      }
+     }
+    }
+   },
+   "architecture": {
+    "wheat": {
+     "candidates": {
+      "direct": 0.05201168259838357,
+      "residual": 0.052616511074253976
+     },
+     "selected": "direct",
+     "selection_basis": "Development-year LOYO mean nMAE only; selection frozen before final-year predictions"
+    },
+    "cotton": {
+     "candidates": {
+      "direct": 0.07410462991579433,
+      "residual": 0.0736948808483381
+     },
+     "selected": "residual",
+     "selection_basis": "Development-year LOYO mean nMAE only; selection frozen before final-year predictions"
+    }
+   },
+   "split_manifest": {
+    "wheat": {
+     "rule": "latest complete year shared by all sources = untouched test year; earlier years = LOYO development pool; newer source-only years excluded from fitting; family 'irregular' held out from fitting",
+     "test_year": "2024-25",
+     "development_years": [
+      "2000-01",
+      "2001-02",
+      "2002-03",
+      "2003-04",
+      "2004-05",
+      "2005-06",
+      "2006-07",
+      "2007-08",
+      "2008-09",
+      "2009-10",
+      "2010-11",
+      "2011-12",
+      "2012-13",
+      "2013-14",
+      "2014-15",
+      "2015-16",
+      "2016-17",
+      "2017-18",
+      "2018-19",
+      "2019-20",
+      "2020-21",
+      "2021-22",
+      "2022-23",
+      "2023-24"
+     ],
+     "excluded_newer_years": [
+      "2025-26"
+     ],
+     "test_weather_sources": [
+      "pilot-a",
+      "pilot-b",
+      "science-discovery"
+     ],
+     "holdout_family": "irregular",
+     "fixed_before_fitting": true,
+     "crop": "wheat",
+     "test_schedule_design_seed": "release-audit-v6",
+     "test_weather_note": "Weather years match prior release checks; this release uses newly executed schedules, never fitted. No parameters are selected from final-year or held-out-family results."
+    },
+    "cotton": {
+     "rule": "latest complete year shared by all sources = untouched test year; earlier years = LOYO development pool; newer source-only years excluded from fitting; family 'irregular' held out from fitting",
+     "test_year": "2025",
+     "development_years": [
+      "2000",
+      "2001",
+      "2002",
+      "2003",
+      "2004",
+      "2005",
+      "2006",
+      "2007",
+      "2008",
+      "2009",
+      "2010",
+      "2011",
+      "2012",
+      "2013",
+      "2014",
+      "2015",
+      "2016",
+      "2017",
+      "2018",
+      "2019",
+      "2020",
+      "2021",
+      "2022",
+      "2023",
+      "2024"
+     ],
+     "excluded_newer_years": [],
+     "test_weather_sources": [
+      "pilot-a",
+      "pilot-b",
+      "science-discovery"
+     ],
+     "holdout_family": "irregular",
+     "fixed_before_fitting": true,
+     "crop": "cotton",
+     "test_schedule_design_seed": "release-audit-v6",
+     "test_weather_note": "Weather years match prior release checks; this release uses newly executed schedules, never fitted. No parameters are selected from final-year or held-out-family results."
+    }
+   }
+  }
+ ]
+}

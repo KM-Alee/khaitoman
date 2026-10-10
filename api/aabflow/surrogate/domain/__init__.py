@@ -41,6 +41,7 @@ def check(
     max_daily_depth_mm: float,
     feature_version: str = FEATURE_VERSION,
     version: str | None = None,
+    weather_sha256: str | None = None,
 ) -> DomainResult:
     version = version or latest_version()
     try:
@@ -70,6 +71,11 @@ def check(
         reasons.append(
             f"extreme irrigation depth {max_daily_depth_mm} mm > {dom['max_daily_depth_mm']} mm"
         )
+    validated = dom.get("validated_weather", {}).get(weather_sha256, {})
+    weather_matches = bool(validated) and all(
+        name in features and abs(features[name] - value) <= 1e-8
+        for name, value in validated.items()
+    )
     for name, (lo, hi) in dom["feature_ranges"].items():
         v = features.get(name)
         if v is None:
@@ -77,5 +83,26 @@ def check(
             continue
         pad = (hi - lo) * RANGE_MARGIN
         if v < lo - pad - 1e-9 or v > hi + pad + 1e-9:
+            if weather_matches and name in validated:
+                continue
+            # Balance is a derived input. For independently validated weather,
+            # compare its water-input components against the fitted ranges,
+            # rather than refusing an exact P/ET0 offset already validated.
+            if weather_matches and name.endswith("balance_mm"):
+                prefix = name.removesuffix("balance_mm")
+                p, et0 = validated.get(f"{prefix}p_mm"), validated.get(f"{prefix}et0_mm")
+                if prefix == "season_":
+                    inputs = ("irr_total_mm", "app_eff")
+                    net = features.get(inputs[0], 0) * features.get(inputs[1], 0)
+                else:
+                    inputs = (f"{prefix}net_mm",)
+                    net = features.get(inputs[0], 0)
+                if (
+                    p is not None
+                    and et0 is not None
+                    and all(key in dom["feature_ranges"] and key in features for key in inputs)
+                    and abs(v - (p + net - et0)) <= 1e-8
+                ):
+                    continue
             reasons.append(f"{name}={v:.3g} outside trained range [{lo:.3g}, {hi:.3g}]")
     return DomainResult(not reasons, reasons)

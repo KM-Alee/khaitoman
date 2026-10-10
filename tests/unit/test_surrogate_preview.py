@@ -7,6 +7,8 @@ import json
 import time
 from datetime import date, timedelta
 
+import numpy as np
+import pandas as pd
 import pytest
 
 from aabflow.config import DATA_DIR
@@ -59,6 +61,33 @@ def test_evaluation_used_whole_year_holdout_and_passed():
         assert len(ev["decision_regret"]) >= 10
         assert ev["test"]["mae_kg_ha"] < ev["baseline_test"]["mae_kg_ha"]
         assert ev["passed"] is True and all(ev["gate_results"].values())
+        folds = ev["loyo_cv"]["folds"]
+        assert ev["prediction_bias_correction_kg_ha"] == pytest.approx(
+            -np.average([f["bias_kg_ha"] for f in folds], weights=[f["n"] for f in folds])
+        )
+        assert ev["split_manifest"]["test_schedule_design_seed"] == "release-audit-v7"
+        choice = ev["architecture_development_comparison"]
+        assert choice["selected"] == min(choice["candidates"], key=choice["candidates"].get)
+        frame = pd.read_parquet(MODEL / ev["artifacts"]["training_data"])
+        fitting = frame[
+            frame.year.isin(man["development_years"]) & (frame.family != man["holdout_family"])
+        ]
+        test = frame[frame.year == man["test_year"]]
+        assert not set(fitting.experiment_hash) & set(test.experiment_hash)
+        assert len(fitting) == ev["samples"]["fit_pool"]
+        assert set(test.weather_source) == set(man["test_weather_sources"])
+        assert max(fitting.year) < man["test_year"]
+        assert {"pilot-a", "pilot-b"} <= set(ev["test_by_source"])
+        for source, metrics in ev["test_by_source"].items():
+            assert metrics["year"] == ev["split_manifest"]["test_year"]
+            assert metrics["test"]["n"] > 0
+            assert len(metrics["test_by_soil"]) == 3
+            assert metrics["test_holdout_family"]["n"] > 0
+            assert metrics["dev_holdout_family"]["n"] > 0
+            assert metrics["test_ranking"]["contexts"] >= 6
+            assert len(metrics["decision_regret"]) >= 10
+            assert all(f["weather_source"] == source for f in metrics["decision_regret"])
+            assert all(metrics["gate_results"].values())
 
 
 def test_preview_typed_in_domain_and_fast():

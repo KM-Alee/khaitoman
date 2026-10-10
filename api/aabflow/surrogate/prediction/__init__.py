@@ -24,7 +24,12 @@ from aabflow.science.experiments import make_experiment, run_experiment
 from aabflow.science.paths import models_dir
 from aabflow.science.weather import load_weather
 from aabflow.surrogate import domain as sdomain
-from aabflow.surrogate.features import FEATURE_VERSION, compute_features, feature_names
+from aabflow.surrogate.features import (
+    FEATURE_VERSION,
+    compute_features,
+    feature_names,
+    linear_component_prediction,
+)
 
 OUT_OF_DOMAIN_MESSAGE = "Outside validated preview range—run crop model."
 
@@ -96,6 +101,7 @@ def preview(policy_inputs: PreviewRequest | dict[str, Any]) -> SurrogatePreview:
         planting_month_day=cp.planting_date.strftime("%m-%d"),
         max_daily_depth_mm=max_depth,
         version=version,
+        weather_sha256=sha,
     )
     ev = sdomain.load_evaluation(version, cp.crop.value)
     phash = content_hash(
@@ -108,7 +114,12 @@ def preview(policy_inputs: PreviewRequest | dict[str, Any]) -> SurrogatePreview:
         x = pd.DataFrame(
             [[feats[n] for n in feature_names(cp.crop)]], columns=feature_names(cp.crop)
         )
-        est = max(0.0, float(_booster(version, cp.crop.value).predict(x)[0]))
+        est = max(
+            0.0,
+            float(_booster(version, cp.crop.value).predict(x)[0])
+            + float(linear_component_prediction(x, ev)[0])
+            + ev.get("prediction_bias_correction_kg_ha", 0.0),
+        )
     band = ev.get("residual_band_kg_ha")
     return SurrogatePreview(
         preview_id=f"pv_{content_hash([phash, version])[:24]}",

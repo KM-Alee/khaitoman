@@ -1,0 +1,59 @@
+{
+ "model_version": "surrogate-v7-gpu",
+ "pilot_id": "pilot-a",
+ "created_at": "2026-10-10T07:51:46.068670+00:00",
+ "crops": {
+  "wheat": {
+   "samples": 72,
+   "years": [
+    "2024-25"
+   ],
+   "all": {
+    "n": 72,
+    "mae_kg_ha": 590.8578225791755,
+    "rmse_kg_ha": 703.670275351735,
+    "bias_kg_ha": -393.4690360684665,
+    "nmae": 0.07416475822782216,
+    "reference_yield_kg_ha": 7966.827327396601
+   },
+   "ranking": {
+    "contexts": 6,
+    "median_spearman": 0.9790209790209792,
+    "min_spearman": 0.8881118881118882
+   },
+   "decision_regret_year": "2024-25",
+   "decision_regret": {
+    "n": 12,
+    "median": 0.008131884232394582,
+    "max": 0.06865649089882063
+   }
+  },
+  "cotton": {
+   "samples": 72,
+   "years": [
+    "2025"
+   ],
+   "all": {
+    "n": 72,
+    "mae_kg_ha": 239.560526588744,
+    "rmse_kg_ha": 316.1975842742006,
+    "bias_kg_ha": -210.34259532664584,
+    "nmae": 0.07358631667542705,
+    "reference_yield_kg_ha": 3255.503705198243
+   },
+   "ranking": {
+    "contexts": 6,
+    "median_spearman": 0.9720279720279721,
+    "min_spearman": 0.9090909090909092
+   },
+   "decision_regret_year": "2025",
+   "decision_regret": {
+    "n": 12,
+    "median": 0.005540039827495111,
+    "max": 0.01292185441017943
+   }
+  }
+ },
+ "weather_origin": "pilot-package:pilot-a/reviewed-v1",
+ "series_id": "openmeteo-archive-30.8000N-72.3000E-20140101-20251231"
+}

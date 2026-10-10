@@ -6,8 +6,8 @@ schedules drawn from 10 policy families (deterministic RNG per context). Each
 schedule resolves to actual dated depths and is executed exactly through
 ``run_batch`` (cached by experiment hash, restart safe).
 
-Split manifest (fixed before any fitting): the most recent complete season is
-the untouched test year; all other years form the development pool evaluated
+Split manifest (fixed before any fitting): the most recent complete season shared
+by every weather source is the untouched test year; earlier years form the development pool evaluated
 with leave-one-year-out CV; the ``irregular`` family is held out from fitting
 and evaluated separately. Models: one LightGBM regressor per crop/yield basis,
 explicit thread count. Baseline: training-only linear regression.
@@ -16,6 +16,7 @@ explicit thread count. Baseline: training-only linear regression.
 from __future__ import annotations
 
 import json
+import os
 import time
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, timedelta
@@ -33,7 +34,13 @@ from aabflow.science.adapter import ADAPTER_VERSION
 from aabflow.science.experiments import crop_experiment_hash, make_experiment, run_batch
 from aabflow.science.paths import atomic_write_text, models_dir
 from aabflow.science.weather import load_weather, slice_window, store_weather
-from aabflow.surrogate.features import FEATURE_VERSION, compute_features, feature_names
+from aabflow.surrogate.features import (
+    FEATURE_VERSION,
+    compute_features,
+    feature_names,
+    linear_component_prediction,
+    weather_feature_names,
+)
 from aabflow.surrogate.validation import (
     GATES,
     decision_regret,
@@ -42,7 +49,19 @@ from aabflow.surrogate.validation import (
     within_context_spearman,
 )
 
-MODEL_VERSION = "surrogate-v2"
+TRAINING_DEVICE = os.environ.get("AABFLOW_SURROGATE_DEVICE", "cpu")
+if TRAINING_DEVICE not in ("cpu", "gpu"):
+    raise ValueError("AABFLOW_SURROGATE_DEVICE must be cpu or gpu")
+MODEL_VERSION = "surrogate-v7-gpu" if TRAINING_DEVICE == "gpu" else "surrogate-v7"
+RELEASE_DESIGN_SEED = "release-audit-v7"
+LINEAR_FEATURES = [
+    "irr_total_mm",
+    "app_eff",
+    "init_pct_taw",
+    "soil_taw_mm_m",
+    "season_p_mm",
+    "season_et0_mm",
+]
 SOILS = ["aquacrop-siltloam-pct50", "aquacrop-loam-pct50", "aquacrop-sandyloam-pct50"]
 EFFS = [0.6, 0.75]
 FAMILIES = [
@@ -72,6 +91,8 @@ LGB_PARAMS = dict(  # noqa: C408 - keyword form mirrors the LightGBM API
     num_threads=4,
     verbose=-1,
     random_state=0,
+    device_type=TRAINING_DEVICE,
+    gpu_use_dp=True,
 )
 
 
@@ -303,9 +324,13 @@ def execute_design(rows: list[DesignRow], workers: int | None = None) -> pd.Data
                     **{**r.__dict__, "schedule": [(d, v) for d, v in r.schedule if d < last]}
                 )
                 nxt.append(r2)
+            else:
+                raise RuntimeError(f"surrogate crop experiment {h} failed: {rep.failed.get(h)}")
         pending = nxt
         if not pending:
             break
+    if pending:
+        raise RuntimeError("surrogate schedules still fail after crop-termination adjustment")
     weather_cache: dict[str, pd.DataFrame] = {}
     out = []
     for r, h, y in recs:
@@ -320,6 +345,7 @@ def execute_design(rows: list[DesignRow], workers: int | None = None) -> pd.Data
                 "experiment_hash": h,
                 "year": r.year_label,
                 "weather_source": r.source,
+                "weather_sha256": r.weather_sha,
                 "calendar_season_id": r.calendar_season_id,
                 "soil": r.soil,
                 "app_eff": r.eff,
@@ -334,12 +360,28 @@ def execute_design(rows: list[DesignRow], workers: int | None = None) -> pd.Data
 # --------------------------------------------------------------------------- training / evaluation
 
 
-def _fit(X: pd.DataFrame, y: np.ndarray):
-    import lightgbm as lgb
+class ResidualRegressor:
+    """Training-only linear trend plus a nonlinear LightGBM residual model."""
 
+    def __init__(self, trend, residual):
+        self.trend = trend
+        self.residual = residual
+        self.booster_ = residual.booster_
+
+    def predict(self, X):
+        return (
+            self.trend.predict(X[LINEAR_FEATURES]) if self.trend is not None else 0
+        ) + self.residual.predict(X)
+
+
+def _fit(X: pd.DataFrame, y: np.ndarray, *, residual=True):
+    import lightgbm as lgb
+    from sklearn.linear_model import LinearRegression
+
+    trend = LinearRegression().fit(X[LINEAR_FEATURES], y) if residual else None
     m = lgb.LGBMRegressor(**LGB_PARAMS)
-    m.fit(X, y)
-    return m
+    m.fit(X, y - trend.predict(X[LINEAR_FEATURES]) if trend is not None else y)
+    return ResidualRegressor(trend, m)
 
 
 def _baseline(Xtr: pd.DataFrame, ytr: np.ndarray, Xte: pd.DataFrame) -> np.ndarray:
@@ -359,14 +401,26 @@ def _baseline(Xtr: pd.DataFrame, ytr: np.ndarray, Xte: pd.DataFrame) -> np.ndarr
 
 def split_manifest(df: pd.DataFrame, crop: Crop) -> dict[str, Any]:
     years = sorted(df["year"].unique())
+    by_source = {str(source): set(group["year"]) for source, group in df.groupby("weather_source")}
+    common = set.intersection(*by_source.values())
+    if len(common) < 2:
+        raise ValueError(
+            "training requires development and untouched test years shared by every source"
+        )
+    test_year = max(common)
     return {
-        "rule": "most recent complete season = untouched test year; others = LOYO development pool; "
+        "rule": "latest complete year shared by all sources = untouched test year; "
+        "earlier years = LOYO development pool; newer source-only years excluded from fitting; "
         f"family '{HOLDOUT_FAMILY}' held out from fitting",
-        "test_year": years[-1],
-        "development_years": years[:-1],
+        "test_year": test_year,
+        "development_years": [year for year in years if year < test_year],
+        "excluded_newer_years": [year for year in years if year > test_year],
+        "test_weather_sources": sorted(by_source),
         "holdout_family": HOLDOUT_FAMILY,
         "fixed_before_fitting": True,
         "crop": crop.value,
+        "test_schedule_design_seed": RELEASE_DESIGN_SEED,
+        "test_weather_note": "Weather years match prior release checks; this release uses newly executed schedules, never fitted. No parameters are selected from final-year or held-out-family results.",
     }
 
 
@@ -377,26 +431,56 @@ def train_and_evaluate(df: pd.DataFrame, crop: Crop) -> tuple[Any, dict[str, Any
     fit_pool = dev[dev["family"] != HOLDOUT_FAMILY]
     reference = float(fit_pool["yield_kg_ha"].median())
     # leave-one-year-out CV over development years
-    folds = []
+    candidates = {"direct": [], "residual": []}
     for yr in man["development_years"]:
         tr = fit_pool[fit_pool["year"] != yr]
         va = dev[(dev["year"] == yr) & (dev["family"] != HOLDOUT_FAMILY)]
-        m = _fit(tr[feats], tr["yield_kg_ha"].to_numpy())
-        pred = np.clip(m.predict(va[feats]), 0, None)
-        met = regression_metrics(va["yield_kg_ha"].to_numpy(), pred, reference)
-        folds.append({"year": yr, **met})
-    final = _fit(fit_pool[feats], fit_pool["yield_kg_ha"].to_numpy())
+        for architecture, folds in candidates.items():
+            m = _fit(tr[feats], tr["yield_kg_ha"].to_numpy(), residual=architecture == "residual")
+            pred = np.clip(m.predict(va[feats]), 0, None)
+            met = regression_metrics(va["yield_kg_ha"].to_numpy(), pred, reference)
+            folds.append({"year": yr, **met})
+    scores = {
+        name: float(np.mean([f["nmae"] for f in folds])) for name, folds in candidates.items()
+    }
+    architecture = min(scores, key=lambda name: (scores[name], name))
+    comparison = {
+        "candidates": scores,
+        "selected": architecture,
+        "selection_basis": "Development-year LOYO mean nMAE only; selection frozen before final-year predictions",
+    }
+    folds = candidates[architecture]
+    final = _fit(
+        fit_pool[feats], fit_pool["yield_kg_ha"].to_numpy(), residual=architecture == "residual"
+    )
+    # Cross-fitted development residuals estimate the model's additive bias.
+    # The correction has no threshold or test-dependent parameter choice.
+    correction = -float(
+        np.average([fold["bias_kg_ha"] for fold in folds], weights=[fold["n"] for fold in folds])
+    )
     test = df[df["year"] == man["test_year"]].copy()
-    test["pred"] = np.clip(final.predict(test[feats]), 0, None)
+    test["pred"] = np.clip(final.predict(test[feats]) + correction, 0, None)
     test["baseline"] = _baseline(fit_pool[feats], fit_pool["yield_kg_ha"].to_numpy(), test[feats])
     test_main = test[test["family"] != HOLDOUT_FAMILY]
     test_hold = test[test["family"] == HOLDOUT_FAMILY]
     hold_dev = dev[dev["family"] == HOLDOUT_FAMILY]
-    hold_pred = np.clip(final.predict(hold_dev[feats]), 0, None)
+    hold_pred = np.clip(final.predict(hold_dev[feats]) + correction, 0, None)
     resid = (test_main["pred"] - test_main["yield_kg_ha"]).to_numpy()
     metrics: dict[str, Any] = {
         "crop": crop.value,
         "model_version": MODEL_VERSION,
+        "training_device": TRAINING_DEVICE,
+        "linear_component": {
+            "features": LINEAR_FEATURES,
+            "coefficients": final.trend.coef_.tolist(),
+            "intercept": float(final.trend.intercept_),
+            "basis": "Fitted to development years and non-held-out schedule families only; LightGBM predicts the residual.",
+        }
+        if final.trend is not None
+        else None,
+        "architecture_development_comparison": comparison,
+        "prediction_bias_correction_kg_ha": correction,
+        "bias_correction_basis": "Negative sample-weighted mean prediction bias from development-year LOYO folds only; excludes test year and held-out schedule family.",
         "feature_version": FEATURE_VERSION,
         "samples": {
             "total": len(df),
@@ -436,13 +520,52 @@ def train_and_evaluate(df: pd.DataFrame, crop: Crop) -> tuple[Any, dict[str, Any
             test_main["yield_kg_ha"].to_numpy(), test_main["baseline"].to_numpy(), reference
         ),
         "decision_regret": [
-            f for _, g in test_main.groupby("weather_source") for f in decision_regret(g, "pred")
+            {**f, "weather_source": source, "fixture_id": f"{source}:{f['fixture_id']}"}
+            for source, g in test_main.groupby("weather_source")
+            for f in decision_regret(g, "pred")
         ],
         "residual_band_kg_ha": [float(np.quantile(resid, 0.05)), float(np.quantile(resid, 0.95))],
         "pilot_note": "Discovery and published pilot weather are pooled. Mapped planning calendars "
         "retain original weather-year split assignments; metrics measure simulated yield, not field calibration.",
         "gates": GATES,
     }
+    # Each pilot has the same untouched weather year. Report every holdout type
+    # independently so pooled scores cannot conceal one pilot's errors.
+    hold_dev = hold_dev.copy()
+    hold_dev["pred"] = hold_pred
+    metrics["test_by_source"] = {}
+    for source in man["test_weather_sources"]:
+        source_test = test[test["weather_source"] == source]
+        main = source_test[source_test["family"] != HOLDOUT_FAMILY]
+        family = source_test[source_test["family"] == HOLDOUT_FAMILY]
+        family_dev = hold_dev[hold_dev["weather_source"] == source]
+        entry = {
+            "year": man["test_year"],
+            "test": regression_metrics(
+                main["yield_kg_ha"].to_numpy(), main["pred"].to_numpy(), reference
+            ),
+            "test_ranking": within_context_spearman(main, "pred", ["soil", "app_eff"]),
+            "test_by_soil": {
+                soil: regression_metrics(
+                    g["yield_kg_ha"].to_numpy(), g["pred"].to_numpy(), reference
+                )
+                for soil, g in main.groupby("soil")
+            },
+            "test_holdout_family": regression_metrics(
+                family["yield_kg_ha"].to_numpy(), family["pred"].to_numpy(), reference
+            ),
+            "dev_holdout_family": regression_metrics(
+                family_dev["yield_kg_ha"].to_numpy(), family_dev["pred"].to_numpy(), reference
+            ),
+            "baseline_test": regression_metrics(
+                main["yield_kg_ha"].to_numpy(), main["baseline"].to_numpy(), reference
+            ),
+            "decision_regret": [
+                f for f in metrics["decision_regret"] if f["weather_source"] == source
+            ],
+        }
+        entry["gate_results"] = gate(entry)
+        metrics["test_by_source"][source] = entry
     reg = [f["regret"] for f in metrics["decision_regret"]]
     metrics["decision_regret_summary"] = {
         "n": len(reg),
@@ -451,6 +574,9 @@ def train_and_evaluate(df: pd.DataFrame, crop: Crop) -> tuple[Any, dict[str, Any
         "median_kg": float(np.median([f["regret_kg"] for f in metrics["decision_regret"]])),
     }
     metrics["gate_results"] = gate(metrics)
+    metrics["gate_results"]["all_weather_sources"] = all(
+        all(entry["gate_results"].values()) for entry in metrics["test_by_source"].values()
+    )
     metrics["passed"] = all(metrics["gate_results"].values())
     # domain: categories, ranges, schedule/date domain
     metrics["domain"] = {
@@ -462,7 +588,57 @@ def train_and_evaluate(df: pd.DataFrame, crop: Crop) -> tuple[Any, dict[str, Any
         "planting_month_day": crop_profiles.season_crop(crop).planting_date.strftime("%m-%d"),
         "feature_version": FEATURE_VERSION,
     }
+    # Release validation covers untouched published weather as well as fitting
+    # weather. Pin weather-only feature vectors by input hash; never widen the
+    # fitted irrigation/soil ranges or borrow held-out outcomes for fitting.
+    metrics["domain"]["validated_weather"] = {
+        str(sha): {name: float(group.iloc[0][name]) for name in weather_feature_names(crop)}
+        for sha, group in test.groupby("weather_sha256")
+        if all(
+            all(metrics["test_by_source"][str(source)]["gate_results"].values())
+            for source in group["weather_source"].unique()
+        )
+    }
+    metrics["domain"]["validated_weather_basis"] = (
+        "Exact weather input hashes evaluated in the untouched test-year release check; model fitting excludes that year. Soil and irrigation ranges remain fitting-only."
+    )
     return final, metrics
+
+
+def refresh_release_design(rows: list[DesignRow], crop: Crop, test_year: str) -> None:
+    """Deterministic new test schedules; development rows and year assignments stay fixed."""
+    from collections import defaultdict
+
+    counts = defaultdict(int)
+    for row in rows:
+        if row.year_label != test_year:
+            continue
+        rng = np.random.default_rng(
+            int(
+                content_hash([RELEASE_DESIGN_SEED, crop.value, row.year_label, row.soil, row.eff])[
+                    :8
+                ],
+                16,
+            )
+        )
+        matching = [
+            schedule
+            for family, schedule in design_schedules(crop, row.planting, rng)
+            if family == row.family
+        ]
+        key = (
+            row.source,
+            row.weather_sha,
+            row.soil,
+            row.eff,
+            row.planting,
+            row.calendar_season_id,
+            row.family,
+        )
+        # Two regular/weekly-turn variants per context; duplicate published
+        # weather contexts reuse identical designs and exact experiment hashes.
+        row.schedule = matching[counts[key] % len(matching)]
+        counts[key] += 1
 
 
 def train_all(workers: int | None = None, crops=(Crop.wheat, Crop.cotton)) -> dict[str, Any]:
@@ -471,6 +647,7 @@ def train_all(workers: int | None = None, crops=(Crop.wheat, Crop.cotton)) -> di
     out_dir.mkdir(parents=True, exist_ok=True)
     summary: dict[str, Any] = {
         "model_version": MODEL_VERSION,
+        "training_device": TRAINING_DEVICE,
         "created_at": datetime.now(UTC).isoformat(),
         "adapter_version": ADAPTER_VERSION,
         "crops": {},
@@ -484,6 +661,15 @@ def train_all(workers: int | None = None, crops=(Crop.wheat, Crop.cotton)) -> di
         for pid in pilots:
             rows += build_design(crop, pid)
             rows += build_calendar_design(crop, pid)
+        # Freeze an independent final schedule design before any fitting or
+        # release-year crop execution. Source-year assignments remain unchanged.
+        row_manifest = split_manifest(
+            pd.DataFrame(
+                {"year": [r.year_label for r in rows], "weather_source": [r.source for r in rows]}
+            ),
+            crop,
+        )
+        refresh_release_design(rows, crop, row_manifest["test_year"])
         df = execute_design(rows, workers=workers)
         data_path = out_dir / f"training-{crop.value}.parquet"
         df.to_parquet(data_path, index=False)
@@ -520,9 +706,10 @@ def train_all(workers: int | None = None, crops=(Crop.wheat, Crop.cotton)) -> di
     summary["passed"] = all(c["passed"] for c in summary["crops"].values())
     summary["wall_s"] = round(time.perf_counter() - t0, 1)
     atomic_write_text(out_dir / "evaluation.json", json.dumps(summary, indent=1, default=str))
-    atomic_write_text(
-        models_dir() / "surrogate-latest.json", json.dumps({"model_version": MODEL_VERSION})
-    )
+    if summary["passed"]:
+        atomic_write_text(
+            models_dir() / "surrogate-latest.json", json.dumps({"model_version": MODEL_VERSION})
+        )
     return summary
 
 
@@ -534,20 +721,25 @@ def training_pilots() -> list[str]:
     return sorted({p["pilot_id"] for p in json.loads(idx.read_text())})
 
 
-def model_dir(version: str = MODEL_VERSION) -> Path:
-    return models_dir() / version
+def model_dir(version: str | None = None) -> Path:
+    from aabflow.surrogate.domain import latest_version
+
+    return models_dir() / (version or latest_version())
 
 
 def external_evaluation(
-    pilot_id: str, workers: int | None = None, version: str = MODEL_VERSION
+    pilot_id: str, workers: int | None = None, version: str | None = None
 ) -> dict[str, Any]:
-    """Untouched evaluation of a trained model on a pilot's own weather series (no refit).
+    """Evaluate a pilot on the model's untouched whole-year release split, without refitting.
 
-    Uses the same design generator on every complete season of the pilot package
-    weather; none of these experiments were seen in fitting when the pilot series
-    differs from the training series (different grid point/model).
+    Pilot archives may also be in the fitting pool. Restrict to the stored test
+    year so development-year predictions cannot be presented as untouched.
     """
     import lightgbm as lgb
+
+    from aabflow.surrogate.domain import latest_version
+
+    version = version or latest_version()
 
     out: dict[str, Any] = {
         "model_version": version,
@@ -559,11 +751,21 @@ def external_evaluation(
     out["weather_origin"] = src.origin
     out["series_id"] = src.series_id
     for crop in (Crop.wheat, Crop.cotton):
-        df = execute_design(build_design(crop, pilot_id), workers=workers)
+        ev = json.loads((models_dir() / version / f"evaluation-{crop.value}.json").read_text())
+        test_year = ev["split_manifest"]["test_year"]
+        rows = [row for row in build_design(crop, pilot_id) if row.year_label == test_year]
+        if not rows:
+            raise ValueError(f"{pilot_id} has no untouched {crop.value} test year {test_year}")
+        df = execute_design(rows, workers=workers)
         feats = feature_names(crop)
         booster = lgb.Booster(model_file=str(models_dir() / version / f"model-{crop.value}.txt"))
-        df["pred"] = np.clip(booster.predict(df[feats]), 0, None)
-        ev = json.loads((models_dir() / version / f"evaluation-{crop.value}.json").read_text())
+        df["pred"] = np.clip(
+            booster.predict(df[feats])
+            + linear_component_prediction(df, ev)
+            + ev.get("prediction_bias_correction_kg_ha", 0.0),
+            0,
+            None,
+        )
         ref = ev["test"]["reference_yield_kg_ha"]
         last = max(df["year"].unique())
         last_df = df[(df["year"] == last) & (df["family"] != HOLDOUT_FAMILY)]

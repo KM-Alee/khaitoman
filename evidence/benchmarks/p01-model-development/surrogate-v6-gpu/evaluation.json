@@ -1,0 +1,117 @@
+{
+ "model_version": "surrogate-v6-gpu",
+ "training_device": "gpu",
+ "created_at": "2026-10-10T07:29:39.885406+00:00",
+ "adapter_version": "aabflow-aquacrop-adapter-1.0.0",
+ "crops": {
+  "wheat": {
+   "test": {
+    "n": 330,
+    "mae_kg_ha": 355.58756198932196,
+    "rmse_kg_ha": 461.4857343716386,
+    "bias_kg_ha": -66.58194179753801,
+    "nmae": 0.04463352189980511,
+    "reference_yield_kg_ha": 7966.827327396601
+   },
+   "test_ranking": {
+    "contexts": 18,
+    "median_spearman": 0.9909090909090907,
+    "min_spearman": 0.9636363636363637
+   },
+   "decision_regret_summary": {
+    "n": 36,
+    "median": 0.0027203784191067214,
+    "max": 0.03758107372265495,
+    "median_kg": 244.31521937934303
+   },
+   "baseline_test": {
+    "n": 330,
+    "mae_kg_ha": 993.521140046364,
+    "rmse_kg_ha": 1273.2610705443087,
+    "bias_kg_ha": 20.460781840843048,
+    "nmae": 0.1247072516094091,
+    "reference_yield_kg_ha": 7966.827327396601
+   },
+   "gate_results": {
+    "nmae": true,
+    "median_spearman": true,
+    "median_regret": true,
+    "max_regret": true,
+    "fixtures": true,
+    "beats_naive_baseline": true,
+    "all_weather_sources": true
+   },
+   "passed": true,
+   "loyo_cv": {
+    "nmae_mean": 0.05201168259838357,
+    "nmae_max": 0.11803281543892816,
+    "nmae_std": 0.02124954763110183
+   },
+   "samples": {
+    "total": 4886,
+    "fit_pool": 4082,
+    "test": 330,
+    "holdout_family_test": 30,
+    "years": 26
+   }
+  },
+  "cotton": {
+   "test": {
+    "n": 195,
+    "mae_kg_ha": 325.90430115208727,
+    "rmse_kg_ha": 421.54898794393785,
+    "bias_kg_ha": -289.7231992174093,
+    "nmae": 0.10010871762538553,
+    "reference_yield_kg_ha": 3255.503705198243
+   },
+   "test_ranking": {
+    "contexts": 18,
+    "median_spearman": 0.9681818181818183,
+    "min_spearman": 0.9090909090909091
+   },
+   "decision_regret_summary": {
+    "n": 36,
+    "median": 0.0,
+    "max": 0.014262863498937515,
+    "median_kg": 0.0
+   },
+   "baseline_test": {
+    "n": 195,
+    "mae_kg_ha": 554.5672828178522,
+    "rmse_kg_ha": 800.4014891455442,
+    "bias_kg_ha": -172.8151607194963,
+    "nmae": 0.1703476122396494,
+    "reference_yield_kg_ha": 3255.503705198243
+   },
+   "gate_results": {
+    "nmae": false,
+    "median_spearman": true,
+    "median_regret": true,
+    "max_regret": true,
+    "fixtures": true,
+    "beats_naive_baseline": true,
+    "all_weather_sources": false
+   },
+   "passed": false,
+   "loyo_cv": {
+    "nmae_mean": 0.0736948808483381,
+    "nmae_max": 0.12181816132364574,
+    "nmae_std": 0.022555340073331178
+   },
+   "samples": {
+    "total": 4028,
+    "fit_pool": 3497,
+    "test": 195,
+    "holdout_family_test": 18,
+    "years": 26
+   }
+  }
+ },
+ "weather_sources": [
+  "science-discovery",
+  "pilot-a",
+  "pilot-b"
+ ],
+ "passed": false,
+ "wall_s": 350.7
+}
