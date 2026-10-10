@@ -443,8 +443,24 @@ async def validate_answer(answer: FinalAnswer, facts: Facts, tctx: Any) -> Valid
                     "run_ids": cmp["run_ids"],
                     "compatible": cmp["compatible"],
                     "label": cmp["labels"]["comparison"],
+                    "plans": [
+                        {k: p.get(k) for k in ("run_id", "plan_kind", "solver_status")}
+                        for p in cmp.get("plans", [])
+                    ],
                     "deltas": [
-                        {k: d[k] for k in ("metric_id", "unit", "a", "b", "delta", "status")}
+                        {
+                            k: d.get(k)
+                            for k in (
+                                "metric_id",
+                                "unit",
+                                "a",
+                                "b",
+                                "delta",
+                                "status",
+                                "a_run_id",
+                                "b_run_id",
+                            )
+                        }
                         for d in cmp["deltas"]
                         if d["field_id"] is None
                     ],

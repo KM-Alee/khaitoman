@@ -749,6 +749,42 @@
         "title": "Column",
         "type": "object"
       },
+      "ComparedPlan": {
+        "additionalProperties": false,
+        "properties": {
+          "plan_kind": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Kind"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "solver_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Solver Status"
+          }
+        },
+        "required": [
+          "run_id"
+        ],
+        "title": "ComparedPlan",
+        "type": "object"
+      },
       "ComparisonBlock": {
         "additionalProperties": false,
         "properties": {
@@ -775,6 +811,13 @@
           "label": {
             "title": "Label",
             "type": "string"
+          },
+          "plans": {
+            "items": {
+              "$ref": "#/components/schemas/ComparedPlan"
+            },
+            "title": "Plans",
+            "type": "array"
           },
           "run_ids": {
             "items": {
@@ -1144,6 +1187,18 @@
             ],
             "title": "A"
           },
+          "a_run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Run of the 'a' value (multi-run comparisons are pairwise)",
+            "title": "A Run Id"
+          },
           "b": {
             "anyOf": [
               {
@@ -1154,6 +1209,17 @@
               }
             ],
             "title": "B"
+          },
+          "b_run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "B Run Id"
           },
           "delta": {
             "anyOf": [
@@ -1197,6 +1263,338 @@
           "metric_id"
         ],
         "title": "Delta",
+        "type": "object"
+      },
+      "DemoAnalyses": {
+        "additionalProperties": false,
+        "properties": {
+          "frontier": {
+            "title": "Frontier",
+            "type": "string"
+          },
+          "stress": {
+            "title": "Stress",
+            "type": "string"
+          }
+        },
+        "required": [
+          "frontier",
+          "stress"
+        ],
+        "title": "DemoAnalyses",
+        "type": "object"
+      },
+      "DemoApi": {
+        "additionalProperties": false,
+        "properties": {
+          "base_url": {
+            "title": "Base Url",
+            "type": "string"
+          },
+          "contract_version": {
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "versions": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "title": "Versions",
+            "type": "object"
+          }
+        },
+        "required": [
+          "base_url",
+          "contract_version",
+          "versions"
+        ],
+        "title": "DemoApi",
+        "type": "object"
+      },
+      "DemoBudgetChange": {
+        "additionalProperties": false,
+        "properties": {
+          "changes": {
+            "additionalProperties": true,
+            "description": "RevisionChange body used to derive the child",
+            "title": "Changes",
+            "type": "object"
+          },
+          "parent_revision_id": {
+            "title": "Parent Revision Id",
+            "type": "string"
+          },
+          "revision_id": {
+            "title": "Revision Id",
+            "type": "string"
+          },
+          "runs": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "plan kind (B0, B1, P, R) -> run_id",
+            "title": "Runs",
+            "type": "object"
+          },
+          "selection_reason": {
+            "description": "Why this budget was used (it changed the selected P portfolio)",
+            "title": "Selection Reason",
+            "type": "string"
+          },
+          "tried_capital_budgets_pkr": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Tried Capital Budgets Pkr",
+            "type": "array"
+          }
+        },
+        "required": [
+          "revision_id",
+          "runs",
+          "parent_revision_id",
+          "changes",
+          "selection_reason"
+        ],
+        "title": "DemoBudgetChange",
+        "type": "object"
+      },
+      "DemoRevision": {
+        "additionalProperties": false,
+        "properties": {
+          "revision_id": {
+            "title": "Revision Id",
+            "type": "string"
+          },
+          "runs": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "plan kind (B0, B1, P, R) -> run_id",
+            "title": "Runs",
+            "type": "object"
+          }
+        },
+        "required": [
+          "revision_id",
+          "runs"
+        ],
+        "title": "DemoRevision",
+        "type": "object"
+      },
+      "DemoRunDetail": {
+        "additionalProperties": false,
+        "description": "As returned by ``GET /runs/{id}`` when the seed ran; the run record stays authoritative.",
+        "properties": {
+          "capital_commitment_pkr": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capital Commitment Pkr"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "outcome": {
+            "title": "Outcome",
+            "type": "string"
+          },
+          "plan_kind": {
+            "title": "Plan Kind",
+            "type": "string"
+          },
+          "production_kg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Production Kg"
+          },
+          "selected_intervention_instance_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Selected Intervention Instance Ids",
+            "type": "array"
+          },
+          "solver_status": {
+            "title": "Solver Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "plan_kind",
+          "outcome",
+          "solver_status",
+          "created_at"
+        ],
+        "title": "DemoRunDetail",
+        "type": "object"
+      },
+      "DemoSession": {
+        "additionalProperties": false,
+        "description": "The seeded manifest plus a read-only availability check against this server's database.",
+        "properties": {
+          "analyses": {
+            "$ref": "#/components/schemas/DemoAnalyses"
+          },
+          "api": {
+            "$ref": "#/components/schemas/DemoApi"
+          },
+          "available": {
+            "additionalProperties": {
+              "type": "boolean"
+            },
+            "description": "referenced ID -> present in this database",
+            "title": "Available",
+            "type": "object"
+          },
+          "base": {
+            "$ref": "#/components/schemas/DemoRevision"
+          },
+          "budget_change": {
+            "$ref": "#/components/schemas/DemoBudgetChange"
+          },
+          "comparison_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comparison Id"
+          },
+          "complete": {
+            "title": "Complete",
+            "type": "boolean"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "decisive_date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decisive Date"
+          },
+          "decisive_date_reason": {
+            "title": "Decisive Date Reason",
+            "type": "string"
+          },
+          "focus_field_id": {
+            "title": "Focus Field Id",
+            "type": "string"
+          },
+          "focus_field_reason": {
+            "title": "Focus Field Reason",
+            "type": "string"
+          },
+          "manifest_version": {
+            "const": 1,
+            "default": 1,
+            "title": "Manifest Version",
+            "type": "integer"
+          },
+          "missing_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Missing Ids",
+            "type": "array"
+          },
+          "notes": {
+            "description": "Seed-time events, e.g. jobs resubmitted after a restart",
+            "items": {
+              "type": "string"
+            },
+            "title": "Notes",
+            "type": "array"
+          },
+          "pilot_id": {
+            "title": "Pilot Id",
+            "type": "string"
+          },
+          "pilot_version": {
+            "title": "Pilot Version",
+            "type": "string"
+          },
+          "run_details": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/DemoRunDetail"
+            },
+            "description": "run_id -> details at seed time",
+            "title": "Run Details",
+            "type": "object"
+          },
+          "scenario_id": {
+            "title": "Scenario Id",
+            "type": "string"
+          },
+          "scenario_request": {
+            "additionalProperties": true,
+            "title": "Scenario Request",
+            "type": "object"
+          },
+          "season_id": {
+            "title": "Season Id",
+            "type": "string"
+          },
+          "timings_s": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Timings S",
+            "type": "object"
+          }
+        },
+        "required": [
+          "created_at",
+          "api",
+          "pilot_id",
+          "pilot_version",
+          "season_id",
+          "scenario_request",
+          "scenario_id",
+          "base",
+          "budget_change",
+          "analyses",
+          "focus_field_id",
+          "focus_field_reason",
+          "decisive_date",
+          "decisive_date_reason",
+          "run_details",
+          "timings_s",
+          "available",
+          "missing_ids",
+          "complete"
+        ],
+        "title": "DemoSession",
         "type": "object"
       },
       "Edge": {
@@ -9474,6 +9872,24 @@
         "tags": [
           "copilot"
         ]
+      }
+    },
+    "/api/v2/demo/session": {
+      "get": {
+        "operationId": "demo_session_api_v2_demo_session_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemoSession"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Demo Session"
       }
     },
     "/api/v2/evidence/search": {

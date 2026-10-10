@@ -1,71 +1,75 @@
 /**
- * Copilot conversation state. One conversation per pilot key; turns stream over SSE
- * (`/copilot/turns/{id}/events`, resumable with ?after=<event_id>) with a GET poll fallback,
- * and the authoritative turn row is re-read when a turn finishes. Kept outside React so a
- * running turn survives inspector tab switches; the session id (never the transcript) is
- * remembered per tab in sessionStorage so a reload restores the conversation from the API.
+ * Conversation state (one conversation per pilot key). Turns stream over SSE (stream.ts);
+ * the authoritative turn row is re-read when a turn ends. State lives outside React so a
+ * running turn survives the panel closing. Only the session id is remembered in
+ * sessionStorage; the transcript is restored from the API.
  */
 import { create } from "zustand";
 import { ApiError, describeError } from "@/lib/api/client";
+import { copilotApi, type SessionDetail, type TurnAccepted } from "./api";
+import { openTurnStream, type StreamState, type TurnStream } from "./stream";
 import {
-  COPILOT_EVENT_TYPES,
-  copilotApi,
   isTerminalTurn,
+  type AnswerBlock,
   type CopilotAnswer,
   type CopilotEventEnvelope,
+  type CopilotLanguage,
   type CreatedRef,
+  type DatasetDescriptor,
   type JobUpdatePayload,
   type PinnedContextView,
-  type SessionTurnRow,
-  type ToolCallRow,
-  type TurnAccepted,
-  type TurnDetail,
   type TurnError,
   type TurnStatus,
+  type TurnViewRow,
   type UIContext,
   type ViewIntent,
-} from "./api";
+} from "./types";
 
-export interface ToolActivity {
+export interface Step {
   callId: string;
   tool: string;
-  activity: string;
+  label: string;
   semantics: string | null;
   state: "running" | "ok" | "failed";
   error: TurnError | null;
+  durationMs: number | null;
+  datasets: number;
   reused: boolean;
 }
+
+export type LiveStatus = TurnStatus | "sending" | "rejected" | "cancelling";
 
 export interface LiveTurn {
   /** Local key; equals turnId once the server accepted the message. */
   key: string;
   turnId: string | null;
   message: string;
-  /** "sending" until 202; "rejected" when the POST itself failed. */
-  status: TurnStatus | "sending" | "rejected" | "cancelling";
+  status: LiveStatus;
+  language: CopilotLanguage | null;
   context: PinnedContextView | null;
-  activity: ToolActivity[];
+  thinking: { round: number; label: string } | null;
+  steps: Step[];
+  datasets: DatasetDescriptor[];
+  /** Validated blocks as they arrive (answer_block); replaced by the full answer. */
+  partial: AnswerBlock[];
   answer: CopilotAnswer | null;
   viewIntents: ViewIntent[];
   created: CreatedRef[];
-  jobIds: string[];
+  error: TurnError | null;
+  requestError: { title: string; detail: string } | null;
+  rounds: number | null;
+  latencyMs: number | null;
+  providerMs: number | null;
   pendingJobIds: string[];
   jobUpdates: JobUpdatePayload[];
   jobsSettled: boolean;
-  error: TurnError | null;
-  /** Error from a request the client made (POST/cancel/retry), with friendly copy. */
-  requestError: { title: string; detail: string } | null;
-  rounds: number | null;
-  toolCallCount: number | null;
-  latencyMs: number | null;
-  model: string | null;
-  toolCalls: ToolCallRow[] | null;
   lastEventId: number;
-  /** Streamed in this tab (view intents apply once); false for turns restored from the API. */
+  stream: StreamState | null;
+  /** Streamed in this tab (view intents apply once); false for restored turns. */
   live: boolean;
   intentsApplied: boolean;
   retryOf: string | null;
-  createdAt: number;
+  startedAt: number;
 }
 
 export interface Conversation {
@@ -80,13 +84,13 @@ interface ConvStore {
 }
 
 const empty = (): Conversation => ({ sessionId: null, turns: [], restoring: false, restoreNote: null });
+const EMPTY = empty();
 
 export const useConversationStore = create<ConvStore>(() => ({ byPilot: {} }));
 
 export function useConversation(pilotKey: string): Conversation {
   return useConversationStore((s) => s.byPilot[pilotKey]) ?? EMPTY;
 }
-const EMPTY = empty();
 
 function getConv(pilotKey: string): Conversation {
   return useConversationStore.getState().byPilot[pilotKey] ?? empty();
@@ -109,88 +113,111 @@ export function newTurn(message: string, p: Partial<LiveTurn> = {}): LiveTurn {
     turnId: null,
     message,
     status: "sending",
+    language: null,
     context: null,
-    activity: [],
+    thinking: null,
+    steps: [],
+    datasets: [],
+    partial: [],
     answer: null,
     viewIntents: [],
     created: [],
-    jobIds: [],
-    pendingJobIds: [],
-    jobUpdates: [],
-    jobsSettled: false,
     error: null,
     requestError: null,
     rounds: null,
-    toolCallCount: null,
     latencyMs: null,
-    model: null,
-    toolCalls: null,
+    providerMs: null,
+    pendingJobIds: [],
+    jobUpdates: [],
+    jobsSettled: false,
     lastEventId: 0,
+    stream: null,
     live: true,
     intentsApplied: false,
     retryOf: null,
-    createdAt: Date.now(),
+    startedAt: Date.now(),
     ...p,
   };
 }
 
-/* ------------------------------------------------------------------ pure event reducer (tested) */
+export const isBusy = (t: LiveTurn) => t.status === "sending" || t.status === "running" || t.status === "cancelling";
+
+/* ------------------------------------------------------------------ pure reducer */
 
 export function applyEvent(t: LiveTurn, ev: CopilotEventEnvelope): LiveTurn {
-  if (ev.event_id && ev.event_id <= t.lastEventId) return t; // replayed after reconnect
+  if (ev.event_id && ev.event_id <= t.lastEventId) return t; // replayed after a reconnect
   const n: LiveTurn = { ...t, lastEventId: Math.max(t.lastEventId, ev.event_id ?? 0) };
   switch (ev.type) {
     case "turn_started":
-      return { ...n, context: ev.payload.context ?? n.context, status: n.status === "cancelling" ? n.status : "running" };
+      return {
+        ...n,
+        context: ev.payload.context ?? n.context,
+        language: ev.payload.language ?? ev.payload.context?.language ?? n.language,
+        status: n.status === "cancelling" ? n.status : "running",
+      };
+    case "thinking":
+      return { ...n, thinking: { round: ev.payload.round, label: ev.payload.label } };
     case "tool_started": {
-      const a: ToolActivity = {
+      const s: Step = {
         callId: ev.payload.call_id,
         tool: ev.payload.tool,
-        activity: ev.payload.activity,
+        label: ev.payload.activity,
         semantics: ev.payload.semantics ?? null,
         state: "running",
         error: null,
+        durationMs: null,
+        datasets: 0,
         reused: false,
       };
-      return { ...n, activity: [...n.activity.filter((x) => x.callId !== a.callId), a] };
+      return { ...n, steps: [...n.steps.filter((x) => x.callId !== s.callId), s] };
     }
+    case "dataset_ready":
+      return { ...n, datasets: [...n.datasets.filter((d) => d.dataset_id !== ev.payload.dataset_id), ev.payload] };
     case "tool_finished": {
       const p = ev.payload;
-      const prev = n.activity.find((x) => x.callId === p.call_id);
-      const a: ToolActivity = {
+      const prev = n.steps.find((x) => x.callId === p.call_id);
+      const s: Step = {
         callId: p.call_id,
         tool: p.tool,
-        activity: p.activity ?? prev?.activity ?? p.tool,
+        label: p.activity ?? prev?.label ?? p.tool,
         semantics: prev?.semantics ?? null,
         state: p.ok ? "ok" : "failed",
         error: p.error ?? null,
+        durationMs: p.duration_ms ?? null,
+        datasets: p.datasets?.length ?? 0,
         reused: !!p.reused,
       };
       return {
         ...n,
-        activity: prev ? n.activity.map((x) => (x.callId === p.call_id ? a : x)) : [...n.activity, a],
-        jobIds: p.job_ids ?? n.jobIds,
+        steps: prev ? n.steps.map((x) => (x.callId === p.call_id ? s : x)) : [...n.steps, s],
         created: p.created ?? n.created,
       };
     }
+    case "answer_block": {
+      const blocks = [...n.partial];
+      blocks[ev.payload.index] = ev.payload.block;
+      return { ...n, partial: blocks, thinking: null };
+    }
     case "answer":
-      return { ...n, answer: ev.payload };
+      return { ...n, answer: ev.payload, partial: [], thinking: null, language: ev.payload.language };
     case "view_intents":
       return { ...n, viewIntents: ev.payload.intents ?? [] };
     case "error":
       return { ...n, error: ev.payload };
     case "turn_finished": {
       const p = ev.payload;
+      const pending = p.pending_job_ids ?? [];
       return {
         ...n,
         status: p.status,
+        thinking: null,
         rounds: p.rounds ?? n.rounds,
-        toolCallCount: p.tool_calls ?? n.toolCallCount,
         latencyMs: p.latency_ms ?? n.latencyMs,
-        pendingJobIds: p.pending_job_ids ?? [],
-        jobsSettled: !(p.pending_job_ids ?? []).length,
+        providerMs: p.provider_ms ?? n.providerMs,
+        pendingJobIds: pending,
+        jobsSettled: !pending.length,
         error: p.error ?? n.error,
-        activity: n.activity.map((a) => (a.state === "running" ? { ...a, state: "failed" as const } : a)),
+        steps: n.steps.map((s) => (s.state === "running" ? { ...s, state: "failed" as const } : s)),
       };
     }
     case "job_update": {
@@ -201,79 +228,37 @@ export function applyEvent(t: LiveTurn, ev: CopilotEventEnvelope): LiveTurn {
       return { ...n, jobsSettled: true, pendingJobIds: ev.payload.pending_job_ids ?? [] };
     case "jobs_cancelled":
       return { ...n, jobsSettled: true, pendingJobIds: [] };
-    default:
-      return n;
+    default: {
+      const never: never = ev;
+      return never;
+    }
   }
 }
 
-/** Merge the authoritative turn row (GET /turns/{id}) into a live turn. */
-export function mergeDetail(t: LiveTurn, d: TurnDetail | SessionTurnRow): LiveTurn {
-  const full = d as TurnDetail;
-  let next: LiveTurn = {
+type RowLike = Partial<TurnViewRow> & Pick<TurnViewRow, "turn_id" | "status" | "user_message">;
+
+/** Merge the authoritative turn row (GET /turns/{id} or a session row) into a turn. */
+export function mergeRow(t: LiveTurn, d: RowLike): LiveTurn {
+  return {
     ...t,
     turnId: d.turn_id,
     message: d.user_message ?? t.message,
     status: t.status === "cancelling" && d.status === "running" ? "cancelling" : d.status,
+    language: (d.language as CopilotLanguage | null | undefined) ?? d.answer?.language ?? t.language,
     answer: d.answer ?? t.answer,
-    viewIntents: d.view_intents?.length ? d.view_intents : t.viewIntents,
+    partial: d.answer ? [] : t.partial,
+    viewIntents: d.view_intents?.length ? (d.view_intents as unknown as ViewIntent[]) : t.viewIntents,
     created: d.created_refs?.length ? d.created_refs : t.created,
-    jobIds: d.job_ids?.length ? d.job_ids : t.jobIds,
-    error: d.error ?? t.error,
+    error: (d.error as TurnError | null | undefined) ?? t.error,
+    rounds: typeof d.rounds === "number" ? d.rounds : t.rounds,
+    latencyMs: typeof d.latency_ms === "number" ? d.latency_ms : t.latencyMs,
+    context: d.context ? ({ ...(t.context ?? {}), ...(d.context as unknown as PinnedContextView) } as PinnedContextView) : t.context,
   };
-  if (full.context) next.context = { ...(next.context ?? {}), ...pickContext(full.context) } as PinnedContextView;
-  if (typeof full.rounds === "number") next.rounds = full.rounds;
-  if (typeof full.latency_ms === "number") next.latencyMs = full.latency_ms;
-  if (full.model) next.model = full.model;
-  if (full.tool_calls) {
-    next.toolCalls = full.tool_calls;
-    next.toolCallCount = next.toolCallCount ?? full.tool_calls.length;
-  }
-  // Rebuild activity / job events that were missed (e.g. restored turns).
-  if (full.events?.length) for (const ev of full.events) next = applyEvent(next, ev);
-  return next;
-}
-
-function pickContext(c: TurnDetail["context"]): PinnedContextView {
-  const keys = [
-    "pilot_id",
-    "pilot_version",
-    "pilot_name",
-    "season_id",
-    "crop",
-    "scenario_id",
-    "scenario_revision_id",
-    "selected_run_id",
-    "selected_run_plan_kind",
-    "selected_run_outcome",
-    "selected_field_id",
-    "timeline_date",
-    "view",
-    "language",
-    "role",
-    "notes",
-  ] as const;
-  const out: Record<string, unknown> = {};
-  for (const k of keys) if (c[k as keyof typeof c] !== null && c[k as keyof typeof c] !== undefined) out[k] = c[k as keyof typeof c];
-  return out as unknown as PinnedContextView;
 }
 
 /* ------------------------------------------------------------------ streaming */
 
-interface Stream {
-  es: EventSource | null;
-  timer: ReturnType<typeof setTimeout> | null;
-  closed: boolean;
-}
-const streams = new Map<string, Stream>();
-
-function stopStream(turnId: string) {
-  const s = streams.get(turnId);
-  if (!s) return;
-  s.closed = true;
-  s.es?.close();
-  if (s.timer) clearTimeout(s.timer);
-  streams.delete(turnId);
-}
+const streams = new Map<string, TurnStream>();
 
 function findTurn(pilotKey: string, turnId: string): LiveTurn | undefined {
   return getConv(pilotKey).turns.find((t) => t.turnId === turnId);
@@ -281,100 +266,48 @@ function findTurn(pilotKey: string, turnId: string): LiveTurn | undefined {
 
 async function refreshTurn(pilotKey: string, turnId: string) {
   try {
-    const d = await copilotApi.getTurn(turnId, true);
+    const d = await copilotApi.getTurn(turnId);
     const t = findTurn(pilotKey, turnId);
-    if (t) patchTurn(pilotKey, t.key, (x) => mergeDetail(x, d));
-    return d;
+    if (t) patchTurn(pilotKey, t.key, (x) => mergeRow(x, d));
   } catch {
-    return null;
+    /* keep the streamed state */
   }
 }
 
-/** Follow a turn: SSE first, GET poll as a fallback; stops after the turn and its jobs settle. */
-export function follow(pilotKey: string, turnId: string, eventsUrl?: string) {
+export function follow(pilotKey: string, turnId: string, after = 0) {
   if (streams.has(turnId)) return;
-  const s: Stream = { es: null, timer: null, closed: false };
+  const s = openTurnStream({
+    turnId,
+    after,
+    onEvent: (ev) => {
+      const t = findTurn(pilotKey, turnId);
+      if (!t) return;
+      patchTurn(pilotKey, t.key, (x) => applyEvent(x, ev));
+      if (ev.type === "turn_finished") void refreshTurn(pilotKey, turnId);
+    },
+    onState: (state) => {
+      const t = findTurn(pilotKey, turnId);
+      if (t) patchTurn(pilotKey, t.key, (x) => ({ ...x, stream: state }));
+      if (state === "closed") streams.delete(turnId);
+    },
+  });
   streams.set(turnId, s);
-
-  const finishIfDone = (t: LiveTurn | undefined) => {
-    if (!t) return;
-    if (isTerminalTurn(t.status) && (t.jobsSettled || !t.pendingJobIds.length)) {
-      stopStream(turnId);
-      void refreshTurn(pilotKey, turnId);
-    }
-  };
-
-  const onEvent = (raw: MessageEvent) => {
-    if (s.closed) return;
-    let ev: CopilotEventEnvelope;
-    try {
-      ev = JSON.parse(raw.data) as CopilotEventEnvelope;
-    } catch {
-      return;
-    }
-    const t = findTurn(pilotKey, turnId);
-    if (!t) return;
-    patchTurn(pilotKey, t.key, (x) => applyEvent(x, ev));
-    if (ev.type === "turn_finished") void refreshTurn(pilotKey, turnId); // tool trace + authoritative row
-    finishIfDone(findTurn(pilotKey, turnId));
-  };
-
-  // Poll fallback: also the safety net if SSE is buffered by a proxy.
-  let delay = 1500;
-  const poll = async () => {
-    if (s.closed) return;
-    try {
-      const d = await copilotApi.getTurn(turnId, true);
-      const t = findTurn(pilotKey, turnId);
-      if (t) patchTurn(pilotKey, t.key, (x) => mergeDetail(x, d));
-      const after = findTurn(pilotKey, turnId);
-      if (after && isTerminalTurn(after.status) && !after.pendingJobIds.length) {
-        stopStream(turnId);
-        return;
-      }
-      if (after && isTerminalTurn(after.status) && after.jobsSettled) {
-        stopStream(turnId);
-        return;
-      }
-    } catch (e) {
-      if (e instanceof ApiError && e.status === 404) {
-        const t = findTurn(pilotKey, turnId);
-        if (t) patchTurn(pilotKey, t.key, (x) => ({ ...x, status: "failed", error: { code: "NOT_FOUND", detail: "The API no longer knows this turn." } }));
-        stopStream(turnId);
-        return;
-      }
-    }
-    delay = s.es && s.es.readyState === 1 ? 4000 : 1500; // SSE healthy → poll rarely
-    s.timer = setTimeout(poll, delay);
-  };
-
-  try {
-    if (typeof EventSource !== "undefined") {
-      const t = findTurn(pilotKey, turnId);
-      const url = copilotApi.eventsUrl({ turn_id: turnId, events_url: eventsUrl ?? "" }, t?.lastEventId ?? 0);
-      const es = new EventSource(url);
-      s.es = es;
-      for (const type of COPILOT_EVENT_TYPES) es.addEventListener(type, onEvent as EventListener);
-      es.onmessage = onEvent;
-      // EventSource reconnects with Last-Event-ID by itself; the poll keeps state fresh meanwhile.
-    }
-  } catch {
-    s.es = null;
-  }
-  s.timer = setTimeout(poll, 1500);
 }
 
-/* ------------------------------------------------------------------ actions */
-
-function storageKey(pilotKey: string) {
-  return `aabflow-copilot-session:${pilotKey}`;
+function stopStream(turnId: string) {
+  streams.get(turnId)?.close();
+  streams.delete(turnId);
 }
+
+/* ------------------------------------------------------------------ sessions */
+
+const storageKey = (pilotKey: string) => `aabflow-copilot-session:${pilotKey}`;
 function rememberSession(pilotKey: string, id: string | null) {
   try {
     if (id) sessionStorage.setItem(storageKey(pilotKey), id);
     else sessionStorage.removeItem(storageKey(pilotKey));
   } catch {
-    /* storage unavailable: conversation simply won't survive reload */
+    /* storage unavailable: the conversation won't survive a reload */
   }
 }
 function recallSession(pilotKey: string): string | null {
@@ -385,27 +318,40 @@ function recallSession(pilotKey: string): string | null {
   }
 }
 
-/** Restore this tab's conversation for the pilot from the API (once). */
-export async function restore(pilotKey: string) {
-  const conv = getConv(pilotKey);
-  if (conv.sessionId || conv.restoring || conv.turns.length) return;
-  const id = recallSession(pilotKey);
-  if (!id) return;
-  patchConv(pilotKey, { restoring: true });
+export function turnsFromSession(s: SessionDetail): LiveTurn[] {
+  return s.turns.map((row) =>
+    mergeRow(newTurn(row.user_message, { turnId: row.turn_id, key: row.turn_id, live: false, intentsApplied: true, status: row.status }), row as RowLike),
+  );
+}
+
+/** Load a stored conversation (history menu or this tab's last session). */
+export async function openSession(pilotKey: string, sessionId: string) {
+  for (const t of getConv(pilotKey).turns) if (t.turnId) stopStream(t.turnId);
+  patchConv(pilotKey, { restoring: true, restoreNote: null });
   try {
-    const s = await copilotApi.getSession(id);
-    const turns = s.turns.map((row) => mergeDetail(newTurn(row.user_message, { turnId: row.turn_id, key: row.turn_id, live: false, intentsApplied: true }), row));
-    patchConv(pilotKey, { sessionId: s.session_id, turns, restoring: false, restoreNote: null });
+    const s = await copilotApi.getSession(sessionId);
+    const turns = turnsFromSession(s);
+    patchConv(pilotKey, { sessionId: s.session_id, turns, restoring: false });
+    rememberSession(pilotKey, s.session_id);
     for (const t of turns) if (t.status === "running" && t.turnId) follow(pilotKey, t.turnId);
-    // Session rows omit the pinned context and run stats; fill them for recent turns in the background.
-    for (const t of turns.slice(-8)) if (t.turnId && t.status !== "running") void refreshTurn(pilotKey, t.turnId);
   } catch (e) {
     rememberSession(pilotKey, null);
     patchConv(pilotKey, {
-      restoring: false,
-      restoreNote: e instanceof ApiError && e.status === 404 ? "The previous conversation is no longer on the server; a new one starts with your next question." : null,
+      ...empty(),
+      restoreNote:
+        e instanceof ApiError && e.status === 404
+          ? "That conversation is no longer on the server. Ask a new question to start again."
+          : describeError(e).detail,
     });
   }
+}
+
+/** Restore this tab's conversation for the pilot (once). */
+export async function restore(pilotKey: string) {
+  const c = getConv(pilotKey);
+  if (c.sessionId || c.restoring || c.turns.length) return;
+  const id = recallSession(pilotKey);
+  if (id) await openSession(pilotKey, id);
 }
 
 async function ensureSession(pilotKey: string, context: UIContext, force = false): Promise<string> {
@@ -421,11 +367,16 @@ function accept(pilotKey: string, key: string, a: TurnAccepted) {
   patchConv(pilotKey, (c) => ({
     turns: c.turns.map((t) => (t.key === key ? { ...t, turnId: a.turn_id, status: "running" as const, context: a.context } : t)),
   }));
-  follow(pilotKey, a.turn_id, a.events_url);
+  follow(pilotKey, a.turn_id);
+}
+
+function errorOf(e: unknown): TurnError | null {
+  if (e instanceof ApiError) return { code: e.code, detail: e.message, retryable: e.status >= 500 || e.status === 0 || e.status === 409 };
+  return null;
 }
 
 export async function send(pilotKey: string, message: string, context: UIContext) {
-  const t = newTurn(message);
+  const t = newTurn(message, { language: context.language ?? null });
   patchConv(pilotKey, (c) => ({ turns: [...c.turns, t], restoreNote: null }));
   try {
     let sid = await ensureSession(pilotKey, context);
@@ -433,9 +384,8 @@ export async function send(pilotKey: string, message: string, context: UIContext
     try {
       a = await copilotApi.postMessage(sid, message, context);
     } catch (e) {
-      // The session vanished (server DB reset): start a fresh one once.
       if (e instanceof ApiError && e.status === 404) {
-        sid = await ensureSession(pilotKey, context, true);
+        sid = await ensureSession(pilotKey, context, true); // the server lost the session (DB reset)
         a = await copilotApi.postMessage(sid, message, context);
       } else throw e;
     }
@@ -446,12 +396,11 @@ export async function send(pilotKey: string, message: string, context: UIContext
 }
 
 export async function retry(pilotKey: string, turn: LiveTurn, context: UIContext) {
-  // A rejected POST never reached the server: send it again as a new message.
   if (!turn.turnId) {
     patchConv(pilotKey, (c) => ({ turns: c.turns.filter((x) => x.key !== turn.key) }));
     return send(pilotKey, turn.message, context);
   }
-  const t = newTurn(turn.message, { retryOf: turn.turnId });
+  const t = newTurn(turn.message, { retryOf: turn.turnId, language: turn.language });
   patchConv(pilotKey, (c) => ({ turns: [...c.turns, t] }));
   try {
     accept(pilotKey, t.key, await copilotApi.retryTurn(turn.turnId));
@@ -465,10 +414,7 @@ export async function cancel(pilotKey: string, turn: LiveTurn) {
   patchTurn(pilotKey, turn.key, (x) => ({ ...x, status: "cancelling" }));
   try {
     const r = await copilotApi.cancelTurn(turn.turnId);
-    if (!r.cancel_requested) {
-      // The server no longer runs this turn; adopt its recorded status.
-      await refreshTurn(pilotKey, turn.turnId);
-    }
+    if (!r.cancel_requested) await refreshTurn(pilotKey, turn.turnId);
   } catch (e) {
     patchTurn(pilotKey, turn.key, (x) => ({ ...x, status: x.status === "cancelling" ? "running" : x.status, requestError: describeError(e) }));
   }
@@ -478,25 +424,14 @@ export function markIntentsApplied(pilotKey: string, key: string) {
   patchTurn(pilotKey, key, (x) => ({ ...x, intentsApplied: true }));
 }
 
-export async function loadToolCalls(pilotKey: string, turn: LiveTurn) {
-  if (!turn.turnId || turn.toolCalls) return;
-  await refreshTurn(pilotKey, turn.turnId);
-}
-
-/** Start over: forget the session (the server keeps it for audit) and stop following turns. */
+/** Start a new conversation (the server keeps the old one; it stays in History). */
 export function reset(pilotKey: string) {
   for (const t of getConv(pilotKey).turns) if (t.turnId) stopStream(t.turnId);
   rememberSession(pilotKey, null);
   patchConv(pilotKey, empty());
 }
 
-function errorOf(e: unknown): TurnError | null {
-  if (e instanceof ApiError) {
-    const b = (e.body ?? {}) as Record<string, unknown>;
-    return { code: e.code, detail: e.message, retryable: e.status >= 500 || e.status === 0 || undefined, ...(b.provider_code ? { provider_code: b.provider_code } : {}) } as TurnError;
-  }
-  return null;
-}
+export const isFinished = (t: LiveTurn) => isTerminalTurn(t.status);
 
 /** Test hook. */
 export function __resetConversations() {

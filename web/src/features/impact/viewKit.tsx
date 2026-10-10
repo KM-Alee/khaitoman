@@ -77,7 +77,7 @@ export function StatusReasonView({ v, className }: { v: StatusReason | null | un
 
 export function Panel({ title, children, className, aside }: { title: ReactNode; children: ReactNode; className?: string; aside?: ReactNode }) {
   return (
-    <section className={cn("min-w-0 rounded-[14px] border border-border bg-surface p-4 shadow-1", className)}>
+    <section className={cn("min-w-0 rounded-[18px] border border-border bg-surface p-5 shadow-1", className)}>
       <div className="mb-2 flex items-center justify-between gap-2">
         <Eyebrow>{title}</Eyebrow>
         {aside}

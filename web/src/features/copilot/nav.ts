@@ -1,117 +1,140 @@
 /**
- * Copilot → UI navigation: citation clicks, action cards and server view intents. Only
- * IDs the server returned are used; the UI never retargets beyond the current pilot.
+ * Copilot → app navigation. Citation chips, action buttons, chart clicks and server view
+ * intents all go through `useAppActions` (docs/UI_SYSTEM.md §7), so the copilot moves the app
+ * exactly like the rest of the UI. Only IDs the server returned are used.
  */
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useNavigate } from "react-router";
+import { useAppActions } from "@/app/actions";
 import { SCREENS, useSelection, type Screen } from "@/app/selection";
-import { useUI } from "@/app/store";
-import type { ActionKind, ViewIntent } from "./api";
+import type { ActionKind, ViewIntent } from "./types";
 
-export type RefKind = "run" | "field" | "evidence" | "comparison" | "analysis" | "report" | "branch" | "revision" | "job" | "other";
+export type RefKind = "run" | "field" | "evidence" | "comparison" | "analysis" | "report" | "revision" | "job" | "instance" | "other";
 
-/** Normalise a citation/created-ref kind from the server into a navigable kind. */
-export function refKind(kind: string | undefined, id: string): RefKind {
+/** Normalise a citation / created-ref / column kind into something the app can open. */
+export function refKind(kind: string | null | undefined, id: string): RefKind {
   const k = (kind ?? "").toLowerCase();
-  if (k === "run" || k.endsWith("run") || id.startsWith("run_")) return "run";
+  if (k === "run" || id.startsWith("run_")) return "run";
   if (k === "field" || /:field-\d+/.test(id)) return "field";
   if (k === "comparison" || id.startsWith("cmp_")) return "comparison";
   if (k === "analysis" || id.startsWith("ana_")) return "analysis";
-  if (k === "report" || id.startsWith("rep_")) return "report";
+  if (k === "report" || id.startsWith("rpt_")) return "report";
   if (k === "branch" || k === "scenario_revision" || k === "revision" || id.startsWith("rev_")) return "revision";
   if (k === "job" || id.startsWith("job_")) return "job";
-  if (k.includes("evidence") || k === "source" || /^[a-z]+:/.test(id)) return "evidence";
+  if (k === "instance") return "instance";
+  if (k.includes("evidence") || /^(ev|asm|metric|src):/.test(id)) return "evidence";
   return "other";
 }
 
-export function actionKind(a: ActionKind): RefKind {
-  return (
-    { open_run: "run", open_branch: "revision", open_field: "field", open_report: "report", open_analysis: "analysis", open_comparison: "comparison" } as const
-  )[a];
+export function actionRef(a: ActionKind): RefKind {
+  const m: Record<ActionKind, RefKind> = {
+    open_run: "run",
+    open_branch: "revision",
+    open_field: "field",
+    open_report: "report",
+    open_analysis: "analysis",
+    open_comparison: "comparison",
+  };
+  return m[a];
 }
 
-export function useCopilotNav() {
+export interface CopilotNav {
+  /** Open an entity; returns a short description of what happened, or null when the UI has no view for it. */
+  open: (kind: RefKind, id: string, extra?: { runIds?: string[] }) => string | null;
+  applyIntent: (i: ViewIntent) => { applied: boolean; label: string };
+  showFields: (ids: string[]) => void;
+  clearHighlight: () => void;
+}
+
+export function useCopilotNav(): CopilotNav {
+  const actions = useAppActions();
   const sel = useSelection();
   const navigate = useNavigate();
-  const setUI = useUI((s) => s.set);
 
-  /** Returns false when the ref has no view in this UI (e.g. a job or branch). */
-  const open = useCallback(
-    (kind: RefKind, id: string, extra?: { runIds?: string[] }): boolean => {
-      switch (kind) {
-        case "run":
-          sel.setParams({ run: id }, false);
-          return true;
-        case "field":
-          sel.setParams({ field: id }, false);
-          return true;
-        case "evidence":
-          sel.go("evidence", { ev: id });
-          return true;
-        case "analysis":
-          sel.go("explore", { analysis: id });
-          return true;
-        case "comparison":
-          sel.go("compare", extra?.runIds?.length ? { runs: extra.runIds.join(",") } : {});
-          return true;
-        case "report":
-          sel.go("report");
-          return true;
-        default:
-          return false;
-      }
+  const showFields = useCallback(
+    (ids: string[]) => {
+      actions.highlightFields(ids);
+      if (sel.screen !== "workspace") actions.openScreen("workspace");
     },
-    [sel],
+    [actions, sel.screen],
   );
 
-  /** Apply a server view intent; returns a short human description of what changed (or why not). */
+  const open = useCallback(
+    (kind: RefKind, id: string, extra?: { runIds?: string[] }): string | null => {
+      switch (kind) {
+        case "run":
+          actions.openRun(id);
+          return "Opened the run";
+        case "field":
+          actions.selectField(id);
+          actions.highlightFields([id]);
+          return "Selected the field on the map";
+        case "evidence":
+          actions.openScreen("evidence", { ev: id });
+          return "Opened the source";
+        case "analysis":
+          actions.openAnalysis(id);
+          return "Opened the analysis";
+        case "comparison":
+          actions.openScreen("compare", extra?.runIds?.length ? { runs: extra.runIds.join(","), run: extra.runIds[extra.runIds.length - 1] } : {});
+          return "Opened Compare";
+        case "report":
+          actions.openScreen("report");
+          return "Opened the report";
+        default:
+          return null;
+      }
+    },
+    [actions],
+  );
+
   const applyIntent = useCallback(
     (i: ViewIntent): { applied: boolean; label: string } => {
       switch (i.target) {
         case "run":
-          if (i.run_id) sel.setParams({ run: i.run_id }, false);
-          if (i.tab && SCREENS.includes(i.tab as Screen)) sel.go(i.tab as Screen, i.run_id ? { run: i.run_id } : {});
-          return { applied: !!i.run_id, label: `Selected run ${i.run_id ?? ""}` };
+          if (!i.run_id) return { applied: false, label: "No run given" };
+          if (i.tab && SCREENS.includes(i.tab as Screen)) actions.openRun(i.run_id, i.tab as Screen);
+          else actions.openRun(i.run_id);
+          return { applied: true, label: "Opened the run" };
         case "field":
-          if (i.field_id) {
-            sel.setParams({ field: i.field_id }, false);
-          }
-          return { applied: !!i.field_id, label: `Selected field ${i.field_id ?? ""}` };
+          if (!i.field_id) return { applied: false, label: "No field given" };
+          actions.selectField(i.field_id);
+          actions.highlightFields([i.field_id]);
+          return { applied: true, label: "Selected the field" };
         case "date":
-          if (i.date) sel.setParams({ date: i.date }, false);
-          return { applied: !!i.date, label: `Timeline date ${i.date ?? ""}` };
+          if (!i.date) return { applied: false, label: "No date given" };
+          actions.setDate(i.date);
+          return { applied: true, label: `Moved the timeline to ${i.date}` };
         case "tab":
           if (i.tab && SCREENS.includes(i.tab as Screen)) {
-            sel.go(i.tab as Screen);
+            actions.openScreen(i.tab as Screen);
             return { applied: true, label: `Opened ${i.tab}` };
           }
           if (i.tab === "onboarding") {
             navigate("/onboarding");
-            return { applied: true, label: "Opened onboarding" };
+            return { applied: true, label: "Opened “Add a new region”" };
           }
-          return { applied: false, label: `No ${i.tab ?? "unknown"} view in this build` };
+          return { applied: false, label: `No ${i.tab ?? "unknown"} view` };
         case "analysis":
-          if (i.analysis_id) sel.go("explore", { analysis: i.analysis_id });
-          return { applied: !!i.analysis_id, label: `Opened analysis ${i.analysis_id ?? ""}` };
+          if (!i.analysis_id) return { applied: false, label: "No analysis given" };
+          actions.openAnalysis(i.analysis_id);
+          return { applied: true, label: "Opened the analysis" };
         case "comparison":
-          sel.go("compare");
+          actions.openScreen("compare");
           return { applied: true, label: "Opened Compare" };
         case "report":
-          sel.go("report");
-          return { applied: true, label: "Opened the report view" };
+          actions.openScreen("report");
+          return { applied: true, label: "Opened the report" };
         case "pilot":
-          if (i.pilot_id && i.pilot_id !== sel.pilotId)
-            return { applied: false, label: `Pilot ${i.pilot_id} requested; switch pilots from the context bar (the next question uses it)` };
-          return { applied: false, label: `Already on pilot ${i.pilot_id ?? ""}` };
+          return { applied: false, label: `Switch to ${i.pilot_id ?? "that watercourse"} from the top bar; the next question will use it` };
         case "branch":
-          setUI({ scenarioOpen: true });
-          return { applied: false, label: `Branch ${i.scenario_revision_id ?? ""} is ready in the API; select it from the Scenario panel` };
+          return { applied: false, label: "The new scenario is saved; open its run from the answer" };
         default:
-          return { applied: false, label: "Unsupported view intent" };
+          return { applied: false, label: "Unsupported view" };
       }
     },
-    [sel, navigate, setUI],
+    [actions, navigate],
   );
 
-  return { open, applyIntent };
+  return useMemo(() => ({ open, applyIntent, showFields, clearHighlight: () => actions.highlightFields(null) }), [open, applyIntent, showFields, actions]);
 }

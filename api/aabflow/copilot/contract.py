@@ -77,6 +77,16 @@ class Delta(_Out):
     b: float | None = None
     delta: float | None = None
     status: str | None = None
+    a_run_id: str | None = Field(
+        None, description="Run of the 'a' value (multi-run comparisons are pairwise)"
+    )
+    b_run_id: str | None = None
+
+
+class ComparedPlan(_Out):
+    run_id: str
+    plan_kind: str | None = None
+    solver_status: str | None = None
 
 
 class ComparisonBlock(_Out):
@@ -85,6 +95,7 @@ class ComparisonBlock(_Out):
     run_ids: list[str]
     compatible: bool
     label: str
+    plans: list[ComparedPlan] = Field(default_factory=list)
     deltas: list[Delta]
     fields_worse_off: list[Any] = Field(default_factory=list)
 

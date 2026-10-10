@@ -80,7 +80,7 @@ export function IntakeWorkspace({ view, context }: { view: IntakeView; context: 
 
   return (
     <div className="mx-auto flex w-full max-w-[1180px] flex-col gap-3" data-testid="intake" data-state={state}>
-      <section id="intake-summary" className="scroll-mt-4 rounded-[14px] border border-border bg-surface p-4 shadow-1" aria-labelledby="intake-h">
+      <section id="intake-summary" className="scroll-mt-4 rounded-[18px] border border-border bg-surface p-4 shadow-1" aria-labelledby="intake-h">
         <div className="flex flex-wrap items-center gap-2">
           <h2 id="intake-h" className="text-[15px] font-semibold text-ink">
             {view.name ?? "Unnamed region"}

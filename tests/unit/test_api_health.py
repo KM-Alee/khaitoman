@@ -27,4 +27,6 @@ def test_capabilities_are_honest_without_data(tmp_path, monkeypatch):
         assert caps["pilots"] == []
         assert caps["features"]["F07"]["status"] == "not_available"
         assert caps["features"]["copilot"]["status"] == "not_available"
+        assert caps["chat"]["available"] is False and caps["chat"]["status"] == "not_available"
+        assert caps["chat"]["reason"] and caps["chat"]["connected"] is None
         assert caps["surrogate_gate"] == "not_run"

@@ -290,7 +290,12 @@ def materialize(spec: VisualSpec, store: DatasetStore, visual_id: str) -> Materi
     if spec.x is not None:
         enc.x = spec.x
     if spec.y:
-        enc.y = list(dict.fromkeys(spec.y))
+        ys = list(dict.fromkeys(spec.y))
+        yc = ds.col(ys[0]) if len(ys) == 1 else None
+        if spec.chart in ("heatmap", "map") and yc is not None and yc.kind == "number":
+            enc.value = ys[0]  # "y" naming the measured value means the cell/field colour
+        else:
+            enc.y = ys
     if spec.series is not None:
         enc.series = spec.series
     ch = spec.chart

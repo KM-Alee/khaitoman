@@ -107,6 +107,10 @@ FLOW_NAMES = {
     "field_application": "Applied on fields",
     "ponds": "Ponds",
     "fields": "Fields",
+    "pond_storage": "Stored in ponds",
+    "direct_field_application": "Watered fields directly",
+    "field_application_from_pond": "Watered fields from ponds",
+    "field_application_from_pump": "Watered fields from wells",
 }
 
 
@@ -196,7 +200,7 @@ def run_metrics(
         )
     return ctx.datasets.add(
         kind="run_metrics",
-        title=f"Key results of {PLAN_NAMES.get(run['plan_kind'], run['plan_kind'])} ({rid})",
+        title=f"Key results of {PLAN_NAMES.get(run['plan_kind'], run['plan_kind'])}",
         columns=[
             col("metric", "category"),
             col("metric_id", "id"),
@@ -268,7 +272,7 @@ def field_outcomes(
     cols.append(col("run_id", "id", ref="run"))
     return ctx.datasets.add(
         kind="field_outcomes",
-        title=f"Field-by-field results of {PLAN_NAMES.get(run['plan_kind'], run['plan_kind'])} ({rid})",
+        title=f"Field-by-field results of {PLAN_NAMES.get(run['plan_kind'], run['plan_kind'])}",
         columns=cols,
         rows=rows,
         charts=["bar", "map", "scatter"],
@@ -400,6 +404,7 @@ def field_deltas(
     tool: str,
     metric_id: str = "field_production_kg",
     pair: tuple[str, str] | None = None,
+    labels: dict[str, str] | None = None,
 ) -> Dataset | None:
     """Per-field server-computed deltas between two compared runs (default: first and last)."""
     a_id, b_id = pair or (cmp["run_ids"][0], cmp["run_ids"][-1])
@@ -429,7 +434,9 @@ def field_deltas(
         return None
     rows.sort(key=lambda r: field_label(roster, r["field_id"]))
     plans = {p["run_id"]: p.get("plan_kind") for p in cmp["plans"]}
-    an, bn = PLAN_NAMES.get(plans.get(a_id), a_id), PLAN_NAMES.get(plans.get(b_id), b_id)
+    lab = labels or {}
+    an = lab.get(a_id) or PLAN_NAMES.get(plans.get(a_id), a_id)
+    bn = lab.get(b_id) or PLAN_NAMES.get(plans.get(b_id), b_id)
     return ctx.datasets.add(
         kind="field_deltas",
         title=f"Change per field: {bn} versus {an}",
@@ -769,7 +776,7 @@ def water_flows(
         out.append(
             ctx.datasets.add(
                 kind="water_flows",
-                title=f"Where the water goes (run {rid})",
+                title="Where the water goes",
                 columns=[col("from", "category"), col("to", "category"), col("m3", "number", "m3")],
                 rows=flows,
                 charts=["sankey"],
@@ -799,7 +806,7 @@ def water_flows(
         out.append(
             ctx.datasets.add(
                 kind="water_by_field",
-                title=f"Water sources per field (run {rid})",
+                title="Water sources per field",
                 columns=[
                     col("field", "category"),
                     col("field_id", "id", ref="field"),
@@ -852,7 +859,7 @@ def economics(ctx: Any, eco: dict[str, Any], call_id: str | None, tool: str) -> 
     out.append(
         ctx.datasets.add(
             kind="money_cards",
-            title=f"Money summary (run {rid})",
+            title="Money summary",
             columns=[
                 col("metric", "category"),
                 col("value", "number", unit_column="unit"),
@@ -883,7 +890,7 @@ def economics(ctx: Any, eco: dict[str, Any], call_id: str | None, tool: str) -> 
         out.append(
             ctx.datasets.add(
                 kind="cost_by_category",
-                title=f"Where the capital goes (run {rid})",
+                title="Where the capital goes",
                 columns=[
                     col("category", "category"),
                     col("count", "number", "count"),
@@ -927,7 +934,7 @@ def equity(
     out = [
         ctx.datasets.add(
             kind="equity_fields",
-            title=f"Who gets what (run {rid}{f' vs {bid}' if bid else ''})",
+            title="Who gets what, field by field" + (" (against today's routine)" if bid else ""),
             columns=[
                 col("field", "category"),
                 col("field_id", "id", ref="field"),
@@ -967,7 +974,7 @@ def equity(
         out.append(
             ctx.datasets.add(
                 kind="equity_groups",
-                title=f"Head, middle and tail fields (run {rid})",
+                title="Head, middle and tail fields",
                 columns=[
                     col("group", "category"),
                     col("fields", "number", "count", label="Fields"),
@@ -1016,7 +1023,7 @@ def impact_cards(ctx: Any, imp: dict[str, Any], call_id: str | None, tool: str) 
     out = [
         ctx.datasets.add(
             kind="sdg_cards",
-            title=f"Sustainable Development Goal proxies (run {rid})",
+            title="Sustainable Development Goal proxies",
             columns=[
                 col("card", "category", label="SDG card"),
                 col("interpretation", "text", label="What it means"),
@@ -1097,7 +1104,7 @@ def action_steps(ctx: Any, ap: dict[str, Any], call_id: str | None, tool: str) -
     out = [
         ctx.datasets.add(
             kind="action_steps",
-            title=f"What to do, in order (run {rid})",
+            title="What to do, in order",
             columns=[
                 col("title", "text"),
                 col("category", "category"),
@@ -1173,7 +1180,7 @@ def timeline(
     return ctx.datasets.add(
         kind="timeline",
         title=f"Season timeline for {field_label(roster, fid) if fid else 'the network'} "
-        f"({tl.get('resolution')}, run {tl['run_id']})",
+        f"({tl.get('resolution')})",
         columns=cols,
         rows=rows,
         charts=["line", "area", "bar"],
@@ -1215,7 +1222,7 @@ def decisions(ctx: Any, ex: dict[str, Any], call_id: str | None, tool: str) -> D
     rid = ex.get("run_id")
     return ctx.datasets.add(
         kind="decisions",
-        title=f"Which investments were chosen and why (run {rid})",
+        title="Which investments were chosen and why",
         columns=[
             col("instance_id", "id", ref="instance", label="Investment"),
             col("category", "category"),

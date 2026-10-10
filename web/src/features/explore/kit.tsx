@@ -16,7 +16,7 @@ import { isLive, useAnalysisJob, type AnalysisRow, type AnalysisView, type Objec
 /* ---------------------------------------------------------------- card shell */
 export function Card({ children, className, testId, labelledBy }: { children: ReactNode; className?: string; testId?: string; labelledBy?: string }) {
   return (
-    <section className={cn("min-w-0 rounded-[14px] border border-border bg-surface p-4 shadow-1", className)} data-testid={testId} aria-labelledby={labelledBy}>
+    <section className={cn("min-w-0 rounded-[18px] border border-border bg-surface p-5 shadow-1", className)} data-testid={testId} aria-labelledby={labelledBy}>
       {children}
     </section>
   );
@@ -26,11 +26,11 @@ export function CardHeader({ icon, title, children, aside, id }: { icon?: ReactN
   return (
     <div className="flex flex-wrap items-start justify-between gap-3">
       <div className="min-w-[min(100%,300px)] flex-1">
-        <h2 id={id} className="flex items-center gap-2 text-[15px] font-semibold text-ink">
+        <h2 id={id} className="flex items-center gap-2 text-[16px] font-semibold tracking-[-0.012em] text-ink">
           {icon}
           {title}
         </h2>
-        {children ? <p className="mt-0.5 max-w-[72ch] text-[12px] leading-relaxed text-ink-secondary">{children}</p> : null}
+        {children ? <p className="mt-1 max-w-[76ch] text-[12.5px] leading-relaxed text-ink-secondary">{children}</p> : null}
       </div>
       {aside ? <div className="flex flex-wrap items-center gap-2">{aside}</div> : null}
     </div>
@@ -56,7 +56,7 @@ export function AnalysisStatusBar({ a, history, onPick, unitLabel = "solves" }: 
   const j = job.data;
   const progress = j?.progress ?? null;
   return (
-    <div className="flex flex-col gap-2 rounded-[12px] border border-border bg-surface-muted/50 px-3 py-2.5" data-testid="analysis-status" data-status={a.status}>
+    <div className="flex flex-col gap-2 rounded-[18px] border border-border bg-surface-muted/50 px-3.5 py-3" data-testid="analysis-status" data-status={a.status}>
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[12px] text-ink-secondary">
         {statusChip(a.status, a.job_state)}
         <span className="font-mono text-[11px] text-ink-tertiary" title={a.analysis_id}>
@@ -192,9 +192,9 @@ export function DifferenceChip({ d }: { d: ObjectiveDifference | null | undefine
 /** Large stat tile. */
 export function Stat({ label, value, sub, className, testId }: { label: ReactNode; value: ReactNode; sub?: ReactNode; className?: string; testId?: string }) {
   return (
-    <div className={cn("min-w-0 rounded-[12px] bg-surface-muted p-3", className)} data-testid={testId}>
-      <div className="text-[11px] font-medium text-ink-secondary">{label}</div>
-      <div className="num mt-0.5 text-[17px] font-semibold tracking-[-0.01em] text-ink">{value}</div>
+    <div className={cn("min-w-0 rounded-[14px] border border-border/70 bg-surface-muted/60 p-3.5", className)} data-testid={testId}>
+      <div className="text-[12px] font-medium text-ink-secondary">{label}</div>
+      <div className="num mt-1 text-[20px] font-semibold tracking-[-0.015em] text-ink">{value}</div>
       {sub ? <div className="mt-0.5 text-[11px] leading-snug text-ink-tertiary">{sub}</div> : null}
     </div>
   );
@@ -223,7 +223,7 @@ export function NumInput({
   return (
     <label className={cn("flex flex-col gap-1 text-[12px] font-medium text-ink-secondary", className)}>
       {label}
-      <span className="flex h-8 items-center rounded-[8px] border border-border-strong/60 bg-surface pr-2 shadow-1">
+      <span className="flex h-9 items-center rounded-[9px] border border-border-strong/55 bg-surface-raised pr-2 shadow-1">
         <input
           type="number"
           className="num h-full w-full min-w-0 bg-transparent px-2 text-right text-[13px] text-ink outline-none"

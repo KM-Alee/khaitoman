@@ -26,6 +26,7 @@ from aabflow.services.pilots import PilotRepository
 def _routers() -> list[APIRouter]:
     from aabflow.api import (
         analyses,
+        demo,
         impact,
         jobs,
         onboarding,
@@ -50,6 +51,7 @@ def _routers() -> list[APIRouter]:
         runs.router,
         analyses.router,
         surrogate.router,
+        demo.router,
         reports.router,
         copilot_router,
     ]

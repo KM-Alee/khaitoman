@@ -43,7 +43,7 @@ export function ToastRegion() {
           <ToastP.Root
             key={t.id}
             onOpenChange={(o) => !o && remove(t.id)}
-            className="pointer-events-auto flex w-[min(380px,calc(100vw-24px))] items-start gap-3 rounded-[14px] border border-border bg-surface p-3.5 shadow-3"
+            className="pointer-events-auto flex w-[min(380px,calc(100vw-24px))] items-start gap-3 rounded-[18px] border border-border bg-surface p-3.5 shadow-3"
           >
             <Icon size={18} className={cn("mt-0.5 shrink-0", tones[t.tone])} aria-hidden />
             <div className="min-w-0 flex-1">

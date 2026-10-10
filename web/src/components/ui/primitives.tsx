@@ -32,8 +32,8 @@ export function TabsTrigger({ className, ...p }: TabsP.TabsTriggerProps) {
   return (
     <TabsP.Trigger
       className={cn(
-        "relative -mb-px inline-flex h-10 items-center gap-1.5 px-3 text-[13px] font-medium text-ink-secondary transition-colors hover:text-ink",
-        "data-[state=active]:text-ink after:absolute after:inset-x-2 after:-bottom-px after:h-[2px] after:rounded-full after:bg-transparent data-[state=active]:after:bg-water",
+        "relative -mb-px inline-flex h-10 items-center gap-1.5 px-3 text-[13px] font-medium text-ink-secondary transition-colors duration-150 hover:text-ink",
+        "data-[state=active]:text-ink data-[state=active]:font-semibold after:absolute after:inset-x-2 after:-bottom-px after:h-[2.5px] after:rounded-full after:bg-transparent after:transition-colors data-[state=active]:after:bg-water",
         className,
       )}
       {...p}
@@ -70,7 +70,7 @@ export function Segmented<T extends string>({
       value={value}
       onValueChange={(v) => v && onChange(v as T)}
       aria-label={label}
-      className={cn("inline-flex rounded-[10px] bg-surface-muted p-0.5", className)}
+      className={cn("inline-flex rounded-[11px] border border-border/70 bg-surface-muted p-0.5", className)}
     >
       {options.map((o) => (
         <ToggleGroupP.Item
@@ -81,7 +81,7 @@ export function Segmented<T extends string>({
           className={cn(
             "inline-flex items-center justify-center gap-1.5 rounded-[8px] font-medium text-ink-secondary transition-colors",
             size === "sm" ? "h-7 px-2.5 text-[12px]" : "h-8 px-3 text-[13px]",
-            "hover:text-ink data-[state=on]:bg-surface data-[state=on]:text-ink data-[state=on]:shadow-1 disabled:opacity-50",
+            "transition-[background-color,color,box-shadow] duration-150 hover:text-ink data-[state=on]:bg-surface-raised data-[state=on]:text-ink data-[state=on]:shadow-2 disabled:opacity-50",
           )}
         >
           {o.label}
@@ -101,7 +101,7 @@ export function Tooltip({ content, children, side = "top" }: { content: ReactNod
         <TooltipP.Content
           side={side}
           sideOffset={6}
-          className="z-[80] max-w-[280px] rounded-[8px] bg-ink px-2.5 py-1.5 text-[12px] leading-snug text-canvas shadow-3"
+          className="z-[80] max-w-[300px] rounded-[10px] bg-ink px-3 py-2 text-[12px] leading-snug text-canvas shadow-3 data-[state=delayed-open]:animate-fadein"
         >
           {content}
           <TooltipP.Arrow className="fill-ink" />
@@ -119,7 +119,7 @@ export function PopoverContent({ className, children, ...p }: PopoverP.PopoverCo
     <PopoverP.Portal>
       <PopoverP.Content
         sideOffset={8}
-        className={cn("z-[70] rounded-[14px] border border-border bg-surface p-3 shadow-3 outline-none", className)}
+        className={cn("z-[70] rounded-[16px] border border-border bg-surface-raised p-3 shadow-3 outline-none animate-pop", className)}
         {...p}
       >
         {children}
@@ -150,24 +150,25 @@ export function DialogContent({
 }) {
   return (
     <DialogP.Portal>
-      <DialogP.Overlay className="fixed inset-0 z-[60] bg-[var(--scrim)] backdrop-blur-[2px] data-[state=open]:animate-[fadein_200ms_ease-out]" />
+      <DialogP.Overlay className="fixed inset-0 z-[60] bg-[var(--scrim)] backdrop-blur-[3px] data-[state=open]:animate-fadein" />
       <DialogP.Content
         className={cn(
           "fixed z-[61] flex flex-col bg-surface shadow-3 outline-none",
-          side === "right" && "inset-y-0 right-0 w-[min(440px,100vw)] border-l border-border",
-          side === "left" && "inset-y-0 left-0 w-[min(360px,100vw)] border-r border-border",
-          side === "bottom" && "inset-x-0 bottom-0 max-h-[92vh] rounded-t-[16px] border-t border-border",
+          side === "right" && "inset-y-0 right-0 w-[min(440px,100vw)] border-l border-border data-[state=open]:animate-[sheet-r_240ms_var(--ease-out)_both]",
+          side === "left" && "inset-y-0 left-0 w-[min(360px,100vw)] border-r border-border data-[state=open]:animate-[sheet-l_240ms_var(--ease-out)_both]",
+          side === "bottom" && "inset-x-0 bottom-0 max-h-[92vh] rounded-t-[22px] border-t border-border pb-[env(safe-area-inset-bottom)] data-[state=open]:animate-[sheet-b_260ms_var(--ease-out)_both]",
           !side &&
             cn(
-              "left-1/2 top-1/2 max-h-[88vh] -translate-x-1/2 -translate-y-1/2 rounded-[16px] border border-border",
+              "left-1/2 top-1/2 max-h-[88vh] -translate-x-1/2 -translate-y-1/2 rounded-[20px] border border-border data-[state=open]:animate-fadein",
               wide ? "w-[min(960px,94vw)]" : "w-[min(560px,94vw)]",
             ),
           className,
         )}
       >
+        {side === "bottom" ? <div className="mx-auto mt-2 h-1.5 w-10 shrink-0 rounded-full bg-border-strong/40" aria-hidden /> : null}
         <div className="flex items-start justify-between gap-4 border-b border-border px-5 py-4">
           <div className="min-w-0">
-            <DialogP.Title className="text-[15px] font-semibold text-ink">{title}</DialogP.Title>
+            <DialogP.Title className="text-[16px] font-semibold tracking-[-0.01em] text-ink">{title}</DialogP.Title>
             {description ? (
               <DialogP.Description className="mt-0.5 text-[13px] text-ink-secondary">{description}</DialogP.Description>
             ) : (
@@ -207,7 +208,7 @@ export function Switch({
   return (
     <div className="flex items-start justify-between gap-3">
       <label htmlFor={sid} className="min-w-0 cursor-pointer">
-        <span className="block text-[13px] font-medium text-ink">{label}</span>
+        <span className="block text-[13px] font-semibold text-ink">{label}</span>
         {description ? <span className="block text-[12px] text-ink-secondary">{description}</span> : null}
       </label>
       <SwitchP.Root
@@ -215,9 +216,9 @@ export function Switch({
         checked={checked}
         disabled={disabled}
         onCheckedChange={onChange}
-        className="relative mt-0.5 h-5 w-9 shrink-0 rounded-full border border-border-strong bg-surface-sunken transition-colors data-[state=checked]:border-water data-[state=checked]:bg-water disabled:opacity-50"
+        className="relative mt-0.5 h-6 w-11 shrink-0 rounded-full border border-border-strong bg-surface-sunken transition-colors duration-150 data-[state=checked]:border-water data-[state=checked]:bg-water disabled:opacity-50"
       >
-        <SwitchP.Thumb className="block h-4 w-4 translate-x-0.5 rounded-full bg-surface shadow-1 transition-transform data-[state=checked]:translate-x-[17px]" />
+        <SwitchP.Thumb className="block h-[18px] w-[18px] translate-x-[2px] rounded-full bg-surface-raised shadow-2 transition-transform duration-200 ease-[var(--ease-spring)] data-[state=checked]:translate-x-[22px]" />
       </SwitchP.Root>
     </div>
   );
@@ -226,24 +227,27 @@ export function Switch({
 /* ---------------------------------------------------------------- Select (native for a11y + mobile) */
 export const Select = forwardRef<
   HTMLSelectElement,
-  SelectHTMLAttributes<HTMLSelectElement> & { label?: ReactNode; hint?: ReactNode; compact?: boolean }
->(function Select({ label, hint, className, children, id, compact, ...p }, ref) {
+  SelectHTMLAttributes<HTMLSelectElement> & { label?: ReactNode; hint?: ReactNode; compact?: boolean; help?: ReactNode }
+>(function Select({ label, hint, className, children, id, compact, help, ...p }, ref) {
   const auto = useId();
   const sid = id ?? auto;
   return (
     <div className={cn("flex flex-col gap-1", className)}>
       {label ? (
-        <label htmlFor={sid} className="text-[12px] font-medium text-ink-secondary">
-          {label}
-        </label>
+        <div className="flex items-center gap-1">
+          <label htmlFor={sid} className="text-[12.5px] font-medium text-ink-secondary">
+            {label}
+          </label>
+          {help}
+        </div>
       ) : null}
       <div className="relative">
         <select
           ref={ref}
           id={sid}
           className={cn(
-            "w-full appearance-none rounded-[10px] border border-border-strong/70 bg-surface pl-3 pr-8 text-[13px] text-ink shadow-1 transition-colors hover:border-border-strong disabled:opacity-60",
-            compact ? "h-8" : "h-9",
+            "w-full appearance-none rounded-[10px] border border-border-strong/55 bg-surface-raised pl-3 pr-8 text-[13px] text-ink shadow-1 transition-colors hover:border-border-strong disabled:opacity-60",
+            compact ? "h-8" : "h-10",
           )}
           {...p}
         >
@@ -272,8 +276,11 @@ export function SliderField({
   warning,
   disabled,
   inputWidth = "w-[118px]",
+  help,
 }: {
   label: ReactNode;
+  /** A <TermHint> (or similar) shown after the label, outside it. */
+  help?: ReactNode;
   value: number;
   onChange: (v: number) => void;
   /** Called on release / blur — validation, never a solve per pixel. */
@@ -309,9 +316,12 @@ export function SliderField({
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between gap-2">
-        <label htmlFor={id} className="text-[12px] font-medium text-ink-secondary">
-          {label}
-        </label>
+        <div className="flex min-w-0 items-center gap-1">
+          <label htmlFor={id} className="text-[12.5px] font-medium text-ink-secondary">
+            {label}
+          </label>
+          {help}
+        </div>
         <div className="relative">
           <input
             id={id}
@@ -320,8 +330,8 @@ export function SliderField({
             aria-invalid={invalid || undefined}
             aria-describedby={invalid ? `${id}-err` : undefined}
             className={cn(
-              "num h-8 rounded-[8px] border bg-surface px-2 text-right text-[13px] font-medium text-ink",
-              invalid ? "border-danger" : "border-border-strong/70",
+              "num h-9 rounded-[9px] border bg-surface-raised px-2.5 text-right text-[14px] font-semibold text-ink shadow-1",
+              invalid ? "border-danger" : "border-border-strong/55",
               unit ? "pr-9" : "",
               inputWidth,
             )}
@@ -359,12 +369,12 @@ export function SliderField({
         onValueCommit={([v]) => onCommit?.(v)}
         aria-label={typeof label === "string" ? label : undefined}
       >
-        <SliderP.Track className="relative h-1.5 grow overflow-hidden rounded-full bg-surface-sunken">
-          <SliderP.Range className="absolute h-full rounded-full bg-water" />
+        <SliderP.Track className="relative h-2 grow overflow-hidden rounded-full bg-surface-sunken">
+          <SliderP.Range className="absolute h-full rounded-full bg-water-grad" />
         </SliderP.Track>
         <SliderP.Thumb
           aria-label={typeof label === "string" ? label : "Value"}
-          className="block h-[18px] w-[18px] rounded-full border-2 border-water bg-surface shadow-2 transition-transform hover:scale-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+          className="block h-5 w-5 rounded-full border-[2.5px] border-water bg-surface-raised shadow-2 transition-transform duration-150 hover:scale-110 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
         />
       </SliderP.Root>
       {invalid ? (
@@ -397,11 +407,11 @@ export function Section({
   description?: ReactNode;
 }) {
   return (
-    <section id={id} className={cn("rounded-[14px] border border-border bg-surface shadow-1", className)} aria-labelledby={title && id ? `${id}-h` : undefined}>
+    <section id={id} className={cn("rounded-[16px] border border-border bg-surface shadow-1", className)} aria-labelledby={title && id ? `${id}-h` : undefined}>
       {title ? (
         <header className="flex items-start justify-between gap-3 px-4 pb-2 pt-3.5">
           <div className="min-w-0">
-            <h2 id={id ? `${id}-h` : undefined} className="text-[13px] font-semibold tracking-[-0.005em] text-ink">
+            <h2 id={id ? `${id}-h` : undefined} className="text-[14px] font-semibold tracking-[-0.01em] text-ink">
               {title}
             </h2>
             {description ? <p className="mt-0.5 text-[12px] text-ink-secondary">{description}</p> : null}
@@ -415,7 +425,7 @@ export function Section({
 }
 
 export function Eyebrow({ children, className }: { children: ReactNode; className?: string }) {
-  return <div className={cn("text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-tertiary", className)}>{children}</div>;
+  return <div className={cn("eyebrow", className)}>{children}</div>;
 }
 
 export function Kbd({ children }: { children: ReactNode }) {

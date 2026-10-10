@@ -81,7 +81,7 @@ function SdgCardView({ card }: { card: CanonicalSdgCard }) {
   const title = TITLES[card.card] ?? card.card;
   const headingId = `sdg-${card.card.replace(/[^a-z0-9]+/gi, "-")}`;
   return (
-    <article className="flex min-w-0 flex-col rounded-[14px] border border-border bg-surface p-4 shadow-1" data-testid="sdg-card" data-card={card.card} data-status={card.missing ? "missing" : (card.status ?? "unknown")} aria-labelledby={headingId}>
+    <article className="flex min-w-0 flex-col rounded-[18px] border border-border bg-surface p-4 shadow-1" data-testid="sdg-card" data-card={card.card} data-status={card.missing ? "missing" : (card.status ?? "unknown")} aria-labelledby={headingId}>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="text-[12px] font-semibold text-water">{card.card}</div>
         <Chip size="sm" tone={card.official_indicator === true ? "danger" : "warning"}>
@@ -220,7 +220,7 @@ function TermSlot({ label, term }: { label: string; term: SdgTerm | null }) {
 function Co2Panel({ co2 }: { co2: CanonicalImpact["co2"] }) {
   const status = co2.status;
   return (
-    <section className="min-w-0 self-start rounded-[14px] border border-border bg-surface p-4 shadow-1" data-testid="co2" data-status={status ?? "missing"}>
+    <section className="min-w-0 self-start rounded-[18px] border border-border bg-surface p-4 shadow-1" data-testid="co2" data-status={status ?? "missing"}>
       <Eyebrow>CO₂ estimate</Eyebrow>
       <p className="mt-2 text-[13px] font-medium text-ink" data-testid="co2-status">
         {status === "not_estimated" ? "Not estimated" : status ? statusLabel(status) : "CO₂ status was not returned."}
