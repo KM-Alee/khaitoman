@@ -40,7 +40,9 @@ export function Timeline({ groups, thinking, active }: { groups: TimelineGroup[]
                     <RowIcon s={r.state} />
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className={r.state === "failed" ? "text-danger" : "text-ink"}>{r.label}</span>
+                    <span className={r.state === "failed" ? "text-danger" : "text-ink"} title={r.label}>
+                      {plainLabel(r.label)}
+                    </span>
                     {r.reused ? <span className="ml-1 text-[11px] text-ink-tertiary">(reused)</span> : null}
                     {r.state === "failed" && r.error ? <span className="block text-[11.5px] text-ink-secondary">{plainToolError(r.error.code, r.error.detail)}</span> : null}
                   </span>
@@ -67,4 +69,9 @@ export function Timeline({ groups, thinking, active }: { groups: TimelineGroup[]
       ) : null}
     </ol>
   );
+}
+
+/** Long record IDs read as noise in a plain sentence: "Reading run run_1bfb…" → "Reading run …c3841c". */
+export function plainLabel(label: string): string {
+  return label.replace(/\b(?:run|ana|rev|rep|cmp|turn)_[0-9a-f]{12,}\b/g, (id) => `…${id.slice(-6)}`);
 }

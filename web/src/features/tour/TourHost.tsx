@@ -440,9 +440,22 @@ function CardChrome({
 }
 
 /** "Saved result · run … · computed <server time>": the honest label on every step. */
-function SavedLabel({ runId, analysisId }: { runId?: string | null; analysisId?: string | null }) {
+function SavedLabel({ runId, analysisId, turnId, turnAt }: { runId?: string | null; analysisId?: string | null; turnId?: string | null; turnAt?: string | null }) {
   const run = useRun(runId ?? null);
   const ana = useAnalysis(analysisId ?? null);
+  if (turnId) {
+    return (
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px] text-ink-tertiary" data-testid="tour-saved" data-id={turnId}>
+        <Chip size="sm" tone="wheat" icon={<History size={11} aria-hidden />}>
+          Saved investigation
+        </Chip>
+        <span className="font-mono" title={turnId}>
+          turn {shortId(turnId)}
+        </span>
+        <span>· computed {turnAt ? formatDateTime(turnAt) : "…"}</span>
+      </div>
+    );
+  }
   const id = runId ?? analysisId ?? null;
   const at = run.data?.created_at ?? (ana.data?.created_at as string | undefined) ?? null;
   if (!id) return null;

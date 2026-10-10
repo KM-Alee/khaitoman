@@ -48,7 +48,7 @@ export interface TourStep {
   target?: string;
   placement?: Placement;
   /** The stored run or analysis this step shows (for the "Saved result" label). */
-  saved?: (s: DemoSession) => { runId?: string | null; analysisId?: string | null };
+  saved?: (s: DemoSession) => { runId?: string | null; analysisId?: string | null; turnId?: string | null; turnAt?: string | null };
   onEnter?: (c: TourCtx) => void;
   tryIt?: { label: string; run: (c: TourCtx) => void };
   /** Offer "Re-run live" (solves these saved settings again, as a new scenario). */
@@ -373,6 +373,18 @@ function InstantCropBody() {
   );
 }
 
+function PlanSeasonBody({ s }: { s: DemoSession }) {
+  return (
+    <>
+      <p>
+        Now the AI does the whole investigation from one sentence{s.plan_goal ? <>: <Num>“{s.plan_goal}”</Num></> : null}. It solves the plans, tests budgets and bad years, checks
+        who goes short, and writes a one-page brief.
+      </p>
+      <p>This is the saved investigation replayed from its stored steps. Every number in the brief comes from a run it really solved. Press “Run it live” to do it again now.</p>
+    </>
+  );
+}
+
 /* ------------------------------------------------------------------ the route */
 export const TOUR_STEPS: TourStep[] = [
   {
@@ -484,6 +496,24 @@ export const TOUR_STEPS: TourStep[] = [
     saved: (s) => ({ analysisId: s.analyses.stress }),
     tryIt: { label: "Test another plan", run: (c) => c.focus('[data-testid="run-stress"]') },
     seconds: 12,
+  },
+  {
+    id: "plan-season",
+    chapter: "The AI planner",
+    title: "Plan my season, in one sentence",
+    Body: PlanSeasonBody,
+    route: (s) => `${base(s)}/plan-season${q({ turn: s.plan_turn_id ?? null })}`,
+    target: '[data-testid="plan-timeline"], [data-testid="plan-season-card"]',
+    saved: (s) => ({ turnId: s.plan_turn_id ?? null, turnAt: s.plan_computed_at ?? null }),
+    tryIt: {
+      label: "Try your own goal",
+      run: (c) => {
+        c.exit();
+        c.navigate(`${base(c.session)}/plan-season`);
+        c.focus('[data-testid="plan-goal-input"]');
+      },
+    },
+    seconds: 16,
   },
   {
     id: "impact",

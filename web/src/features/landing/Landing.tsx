@@ -20,6 +20,7 @@ import { AiStackStrip } from "@/components/layout/AiStackStrip";
 import { PilotPortrait } from "./PilotPortrait";
 import { HeadlineInsight } from "./HeadlineInsight";
 import { AskBox } from "./AskBox";
+import { PlanSeasonSection } from "./PlanSeasonSection";
 
 const pilotHref = (p: PilotSummary, screen = "workspace") => `/p/${encodeURIComponent(p.pilot_id)}/${encodeURIComponent(p.pilot_version)}/${screen}`;
 
@@ -131,6 +132,7 @@ export function Landing({ pilots, notFound }: { pilots: ReturnType<typeof usePil
             </h2>
             <AiStackStrip />
           </div>
+          {first ? <PlanSeasonSection pilotId={first.pilot_id} version={first.pilot_version} /> : null}
         </section>
 
         {notFound ? (

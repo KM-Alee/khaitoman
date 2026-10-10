@@ -78,6 +78,7 @@ test("guided tour over the saved session", async ({ page }, info) => {
       const id = await saved.getAttribute("data-id");
       if (id?.startsWith("run_")) expect((await page.request.get(`/api/v2/runs/${id}`)).ok()).toBe(true);
       if (id?.startsWith("ana_")) expect((await page.request.get(`/api/v2/analyses/${id}`)).ok()).toBe(true);
+      if (id?.startsWith("turn_")) expect((await page.request.get(`/api/v2/copilot/turns/${id}`)).ok()).toBe(true);
     } else {
       await expect(page.getByTestId("tour-live")).toBeVisible();
     }

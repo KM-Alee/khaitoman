@@ -125,3 +125,11 @@ test("planner links", () => {
   expect(new URL(href, "http://x").searchParams.get("goal")).toBe(EXAMPLE_GOALS[2].goal);
   expect(EXAMPLE_GOALS.map((g) => g.id)).toEqual(["budget", "fairness", "dry"]);
 });
+
+describe("plainLabel", () => {
+  it("shortens long record IDs inside activity labels", async () => {
+    const { plainLabel } = await import("./Timeline");
+    expect(plainLabel("Reading run run_1bfb48ecb7404e1e9d9733f92ce3841c")).toBe("Reading run …e3841c");
+    expect(plainLabel("Running a stress test")).toBe("Running a stress test");
+  });
+});
