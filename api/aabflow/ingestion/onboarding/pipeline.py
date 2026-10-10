@@ -9,7 +9,8 @@ A *workdir* holds one intake::
     <workdir>/review/          review_log.json, state.json, edits_v<N>.json
 
 Entry points used by the API (POST /onboarding …) and the CLI scripts:
-``validate_aoi``, ``create_intake``, ``process``, ``apply_review``, ``publish``.
+``validate_aoi``, ``create_intake``, ``process``, ``apply_review``, ``publish``,
+``reproduce_published``.
 """
 
 from __future__ import annotations
@@ -17,12 +18,14 @@ from __future__ import annotations
 import json
 import shutil
 from collections.abc import Callable
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Literal
 
 from shapely.geometry import shape
 
 from aabflow import config
+from aabflow.domain.hashes import file_sha256
 from aabflow.domain.schemas import PilotManifest
 
 from ..aoi import MAX_AOI_AREA_M2, Aoi, AoiError
@@ -45,6 +48,10 @@ class VersionConflict(ValueError):
 
 class StageError(IngestionError):
     pass
+
+
+class ReproductionError(StageError):
+    """A rebuild did not match the published bytes. The published tree is unchanged."""
 
 
 def _noop(stage: str, frac: float | None, detail: str) -> None:
@@ -404,6 +411,49 @@ def update_index(data_dir: Path, pilot_id: str, pilot_version: str, name: str) -
     return write_json(idx_p, idx)
 
 
+def _build_validated_stage(
+    workdir: Path,
+    stage: Path,
+    st: dict,
+    pilot_id: str,
+    pilot_version: str,
+    repo_root: Path,
+    created_at: datetime | None,
+    warabandi: str = "declared_cca",
+) -> None:
+    """Write one validated package into an empty staging directory."""
+    rs = read_json(workdir / "review" / "state.json")
+    bundle = validate_bundle(repo_root / st["bundle_ref"])
+    fields = [ReviewedField(**f) for f in rs["fields"]]
+    build_package(
+        stage_dir=stage,
+        processed=workdir / "processed",
+        bundle_manifest=bundle.manifest,
+        bundle_ref=st["bundle_ref"],
+        aoi=Aoi.from_geojson(st["aoi"]),
+        pilot_id=pilot_id,
+        pilot_version=pilot_version,
+        name=st.get("name") or pilot_id,
+        geographic_name_basis=st.get("geographic_name_basis") or "user-supplied AOI",
+        fields=fields,
+        review_state=rs,
+        parent_canal_id=st["parent_canal_feature_id"],
+        created_at=created_at,
+        warabandi=warabandi,
+    )
+    errors = validate_package(stage)
+    if errors:
+        raise PackageValidationError(errors)
+
+
+def _package_hashes(root: Path) -> dict[str, str]:
+    return {p.relative_to(root).as_posix(): file_sha256(p) for p in root.rglob("*") if p.is_file()}
+
+
+def _parse_utc(value: str) -> datetime:
+    return datetime.fromisoformat(value)
+
+
 def publish(
     workdir: Path,
     pilot_id: str,
@@ -423,30 +473,13 @@ def publish(
     final = data_dir / "pilots" / pilot_id / pilot_version
     if final.exists():
         raise FileExistsError(f"{final} already published (immutable)")
-    rs = read_json(workdir / "review" / "state.json")
-    bundle = validate_bundle(repo_root / st["bundle_ref"])
     stage = final.with_name(pilot_version + ".partial")
     if stage.exists():
         shutil.rmtree(stage)
-    fields = [ReviewedField(**f) for f in rs["fields"]]
     try:
-        build_package(
-            stage_dir=stage,
-            processed=workdir / "processed",
-            bundle_manifest=bundle.manifest,
-            bundle_ref=st["bundle_ref"],
-            aoi=Aoi.from_geojson(st["aoi"]),
-            pilot_id=pilot_id,
-            pilot_version=pilot_version,
-            name=st.get("name") or pilot_id,
-            geographic_name_basis=st.get("geographic_name_basis") or "user-supplied AOI",
-            fields=fields,
-            review_state=rs,
-            parent_canal_id=st["parent_canal_feature_id"],
+        _build_validated_stage(
+            workdir, stage, st, pilot_id, pilot_version, repo_root, created_at=None
         )
-        errors = validate_package(stage)
-        if errors:
-            raise PackageValidationError(errors)
     except Exception:
         shutil.rmtree(stage, ignore_errors=True)
         raise
@@ -458,6 +491,71 @@ def publish(
     st["published_ref"] = str(final.relative_to(data_dir.parent))
     _save(workdir, st)
     return PilotManifest.model_validate(json.loads((final / "manifest.json").read_text()))
+
+
+def reproduce_published(
+    workdir: Path,
+    pilot_id: str,
+    pilot_version: str,
+    data_dir: Path | None = None,
+    repo_root: Path | None = None,
+) -> tuple[PilotManifest, bool]:
+    """Rebuild a published package and confirm every file hash.
+
+    The published clock (``pilot.json`` ``created_at``) is reused so a second run is
+    byte-stable. Pilot-b matches the declared 120 ha warabandi. Pilot-a matches the
+    earlier selected-area rule. A mismatch of both raises ``ReproductionError`` and
+    leaves the published directory untouched.
+    """
+    workdir = Path(workdir)
+    repo_root = Path(repo_root or config.ROOT)
+    data_dir = Path(data_dir or config.DATA_DIR)
+    st = _load(workdir)
+    if st["state"] != "published":
+        raise StageError(f"cannot reproduce from state {st['state']}")
+    if st.get("pilot_id") and st["pilot_id"] != pilot_id:
+        raise StageError(f"intake belongs to {st['pilot_id']}, not {pilot_id}")
+    final = data_dir / "pilots" / pilot_id / pilot_version
+    if not final.is_dir():
+        raise StageError(f"published package missing: {final}")
+    created_at = _parse_utc(read_json(final / "pilot.json")["created_at"])
+    published = _package_hashes(final)
+    differed: list[str] = []
+    for warabandi in ("declared_cca", "selected_area"):
+        stage = final.with_name(pilot_version + ".partial")
+        if stage.exists():
+            shutil.rmtree(stage)
+        try:
+            _build_validated_stage(
+                workdir,
+                stage,
+                st,
+                pilot_id,
+                pilot_version,
+                repo_root,
+                created_at=created_at,
+                warabandi=warabandi,
+            )
+            rebuilt = _package_hashes(stage)
+            matched = rebuilt == published
+            if not matched:
+                differed = sorted(
+                    k for k in set(rebuilt) | set(published) if rebuilt.get(k) != published.get(k)
+                )
+        except Exception:
+            shutil.rmtree(stage, ignore_errors=True)
+            raise
+        shutil.rmtree(stage)
+        if matched:
+            return (
+                PilotManifest.model_validate(json.loads((final / "manifest.json").read_text())),
+                False,
+            )
+    raise ReproductionError(
+        f"{pilot_id}/{pilot_version} does not match the declared-CCA or selected-area "
+        f"builder; the published version is immutable and was left unchanged. "
+        f"Differing files: {', '.join(differed[:8])}"
+    )
 
 
 def status(workdir: Path) -> dict:

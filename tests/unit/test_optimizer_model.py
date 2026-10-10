@@ -4,6 +4,7 @@ import itertools
 import random
 
 from aabflow.domain.schemas import SolverStatus
+from aabflow.jobs.cancellation import CancelToken
 from aabflow.optimizer.configurations import ConfigResult, global_status, solve_problem
 from aabflow.optimizer.model import ConfigSpec, InstanceSpec, Option, Problem
 
@@ -202,6 +203,17 @@ def test_robust_maximizes_worst_state():
     assert solve_problem(typical, workers=1).selection == {"f": "risky"}
     out = solve_problem(robust, workers=1)
     assert out.selection == {"f": "safe"} and out.best.primary == 400
+
+
+def test_cancelled_solve_is_unknown_not_infeasible():
+    token = CancelToken()
+    token.cancel()
+    out = solve_problem(t122(60), workers=1, time_limit_s=1, token=token)
+    assert out.cancelled is True
+    assert out.best is None
+    assert out.status is SolverStatus.UNKNOWN
+    assert all(row.status is SolverStatus.UNKNOWN for row in out.configs)
+    assert out.status is not SolverStatus.INFEASIBLE
 
 
 def test_empty_option_set_is_infeasible_with_reason():

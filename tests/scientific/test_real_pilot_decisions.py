@@ -1,6 +1,7 @@
 """M3/M5 acceptance on the REAL published pilot-a libraries (AT05-AT10, AT12). Slow: real candidate
 libraries with exact AquaCrop outcomes; skipped when the pilot or the 2027-28 library is absent."""
 
+import json
 from pathlib import Path
 
 import pytest
@@ -31,6 +32,12 @@ REQ = {
 def env(tmp_path_factory):
     if not LIB.exists():
         pytest.skip("pilot-a wheat-rabi-2027-28 library not published")
+    lib_data = json.loads(LIB.read_text())
+    policies_file = LIB.parent / lib_data["candidate_library_hash"] / "policies.jsonl"
+    if not policies_file.exists():
+        pytest.skip(
+            "pilot-a wheat-rabi-2027-28 policies.jsonl not generated (run make candidates PILOT=pilot-a)"
+        )
     tmp = tmp_path_factory.mktemp("real")
     data = tmp / "data"  # read-only links to the published data; this test's runs stay in tmp
     data.mkdir()
