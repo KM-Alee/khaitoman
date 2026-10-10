@@ -19,7 +19,7 @@ Routers mounted, in order: system, pilots, onboarding, packages, jobs, scenarios
 ## Implement next, in this order
 
 1. Frontier and stress on one real request. Undeliverable cells already drop yield when the frozen plan is not shared (`api/aabflow/services/analyses/jobs.py`). One in-domain preview after load was 6.822 ms, with a separate AquaCrop confirmation (`evidence/benchmarks/p04-preview-timing.json`). Do not retrain. Still run one six-setting frontier and one nine-cell stress if those saved results are not already linked to run records.
-2. Impact screen. Show the three cards, units, limitations, blocked and missing states, and `official_indicator=false`. Do not recompute metrics in the browser.
+2. Impact screen is implemented. Vitest passed (59 tests) and typecheck passed. The live Playwright file `tests/e2e/impact.spec.ts` is written and was not executed. Run that one spec once when the demo is up. Do not recompute metrics in the browser.
 3. Onboarding review and publish. Stale review returns 409. Publish pilot-b `reviewed-v2` from the real raw bundle. Do not overwrite `reviewed-v1`. Reuse the Delineate cache.
 4. Onboarding wizard screen wired to those routes.
 5. Evidence pack from `scripts/build_evidence_pack.py`.
