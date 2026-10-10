@@ -298,8 +298,8 @@ describe("impact screen states", () => {
   it("shows an accessible empty state when no run is selected", () => {
     renderScreen("/p/pilot-a/v1/impact?tab=sdg");
     const empty = screen.getByTestId("impact-empty");
-    expect(empty).toHaveTextContent("Impact needs a run");
-    expect(screen.getByRole("button", { name: "Go to Workspace" })).toBeInTheDocument();
+    expect(empty).toHaveTextContent("Impact needs a plan");
+    expect(screen.getByRole("button", { name: "Go to Plan" })).toBeInTheDocument();
     expect(screen.queryByTestId("sdg-card")).not.toBeInTheDocument();
   });
 

@@ -8,7 +8,7 @@ import { NavLink } from "react-router";
 import { useSelection } from "@/app/selection";
 import { cn } from "@/lib/cn";
 
-const rail = "no-print flex h-14 shrink-0 items-center gap-1 overflow-x-auto border-b border-border bg-surface/80 px-3 backdrop-blur md:px-6";
+const rail = "no-print flex h-14 shrink-0 items-center gap-1 overflow-x-auto border-b border-border bg-surface px-3 md:px-6";
 const pill = (on: boolean) =>
   cn(
     "relative inline-flex h-9 shrink-0 items-center gap-1.5 rounded-[10px] px-3.5 text-[13.5px] font-medium transition-[background-color,color,box-shadow] duration-150",

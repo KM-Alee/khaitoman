@@ -266,8 +266,8 @@ function ImpactBody() {
   return (
     <>
       <p>
-        What it means beyond the harvest: water accounts, money, fairness between head-end and tail-end fields, and indicators linked to UN goals for food, water and climate
-        resilience.
+        Beyond the harvest: for the bad-year-proof plan, three indicators linked to UN goals for <Num>food</Num> (harvest kept in the worst tested year), <Num>water</Num> (crop per cubic
+        metre) and <Num>climate resilience</Num>. Water accounts, money and fairness between head-end and tail-end fields are one tab away.
       </p>
       <p className="text-ink-tertiary">Each card opens its formula and sources. There is no made-up 0–100 score.</p>
     </>
@@ -403,9 +403,9 @@ export const TOUR_STEPS: TourStep[] = [
     chapter: "Impact",
     title: "Who benefits, beyond the harvest",
     Body: ImpactBody,
-    route: (s) => `${base(s)}/impact${q({ tab: "sdg", run: s.base.runs.P })}`,
-    target: '[data-testid="sdg"]',
-    saved: (s) => ({ runId: s.base.runs.P }),
+    route: (s) => `${base(s)}/impact${q({ tab: "sdg", run: s.base.runs.R })}`,
+    target: '[aria-label="SDG proxy cards"]',
+    saved: (s) => ({ runId: s.base.runs.R }),
     tryIt: { label: "Open the fairness view", run: (c) => c.focus('[data-tab="equity"]') },
     seconds: 11,
   },

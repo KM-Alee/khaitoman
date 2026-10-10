@@ -4,7 +4,8 @@ import { Search } from "lucide-react";
 import { useUI } from "@/app/store";
 import { useSelection } from "@/app/selection";
 import { usePilotData } from "@/app/pilotData";
-import { NAV } from "./NavigationRail";
+import { JOURNEY } from "@/app/journey";
+import { useTour } from "@/features/tour/store";
 import { cn } from "@/lib/cn";
 
 interface Cmd {
@@ -27,16 +28,17 @@ export function CommandMenu() {
   const cmds = useMemo<Cmd[]>(() => {
     const st = useUI.getState();
     const out: Cmd[] = [
-      ...NAV.map((n) => ({ id: `go-${n.screen}`, group: "Go to", label: n.label, hint: n.shortcut, run: () => sel.go(n.screen) })),
+      ...JOURNEY.map((n) => ({ id: `go-${n.screen}`, group: "Go to", label: `${n.label}: ${n.question}`, hint: n.shortcut, run: () => sel.go(n.screen) })),
       { id: "go-replay", group: "Go to", label: "Season replay", run: () => sel.go("replay") },
       { id: "go-report", group: "Go to", label: "Action plan and report", run: () => sel.go("report") },
-      { id: "onboard", group: "Go to", label: "Add region (onboarding)", run: () => (window.location.href = "/onboarding") },
+      { id: "onboard", group: "Go to", label: "Add a new region (onboarding)", run: () => (window.location.href = "/onboarding") },
+      { id: "tour", group: "Help", label: "Take the guided tour", run: () => useTour.getState().start(0) },
       { id: "present", group: "View", label: st.presentation ? "Exit presentation mode" : "Enter presentation mode", hint: "⇧P", run: () => set({ presentation: !st.presentation }) },
       { id: "mode", group: "View", label: st.mapMode === "3d" ? "Flat 2D map" : "3D map", run: () => set({ mapMode: st.mapMode === "3d" ? "2d" : "3d" }) },
       { id: "theme-l", group: "View", label: "Light theme", run: () => set({ theme: "light" }) },
       { id: "theme-d", group: "View", label: "Dark theme", run: () => set({ theme: "dark" }) },
       { id: "units", group: "View", label: st.areaUnit === "ha" ? "Show areas in acres" : "Show areas in hectares", run: () => set({ areaUnit: st.areaUnit === "ha" ? "acre" : "ha" }) },
-      { id: "copilot", group: "View", label: "Open copilot panel", run: () => set({ inspectorTab: "copilot", inspectorOpen: true }) },
+      { id: "copilot", group: "Help", label: "Ask AabFlow (assistant)", run: () => set({ assistantOpen: true }) },
       ...sortedFields.map((f) => ({ id: `field-${f.id}`, group: "Fields", label: f.label, hint: f.group ?? undefined, run: () => sel.setParams({ field: f.id }, false) })),
     ];
     return out;
@@ -69,7 +71,7 @@ export function CommandMenu() {
     <DialogP.Root open={open} onOpenChange={(o) => set({ commandOpen: o })}>
       <DialogP.Portal>
         <DialogP.Overlay className="fixed inset-0 z-[80] bg-[var(--scrim)]" />
-        <DialogP.Content className="fixed left-1/2 top-[12vh] z-[81] w-[min(560px,94vw)] -translate-x-1/2 overflow-hidden rounded-[16px] border border-border bg-surface shadow-3 outline-none" aria-describedby={undefined}>
+        <DialogP.Content className="fixed left-1/2 top-[12vh] z-[81] w-[min(600px,94vw)] -translate-x-1/2 overflow-hidden rounded-[20px] border border-border bg-surface-raised shadow-3 outline-none animate-pop" aria-describedby={undefined}>
           <DialogP.Title className="sr-only">Command menu</DialogP.Title>
           <div className="flex items-center gap-2 border-b border-border px-4">
             <Search size={16} className="text-ink-tertiary" aria-hidden />

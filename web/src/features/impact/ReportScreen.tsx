@@ -97,7 +97,7 @@ export function ReportScreen() {
                 <Eyebrow>Decision package · action plan</Eyebrow>
                 <h1 className="mt-1 font-display text-[30px] font-[560] leading-tight tracking-[-0.015em] text-ink">{pilot.data?.pilot?.name ?? sel.pilotId}</h1>
                 <p className="num mt-1 text-[13px] text-ink-secondary">
-                  {sel.pilotId} · {sel.version} · {titleCase(rc.request?.season_id ?? s.draft?.season_id ?? "")} · run <span className="font-mono">{r.run_id}</span> · generated {formatDateTime(new Date())}
+                  {sel.pilotId} · {sel.version} · {(() => { const id = rc.request?.season_id ?? s.draft?.season_id ?? ""; return s.catalog.seasons.data?.find((x) => x.season_id === id)?.label ?? titleCase(id); })()} · run <span className="font-mono">{r.run_id}</span> · generated {formatDateTime(new Date())}
                 </p>
                 <ReviewFlagChips flags={pilot.data?.pilot?.review_flags} className="mt-3" />
               </div>

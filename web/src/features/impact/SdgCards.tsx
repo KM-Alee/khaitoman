@@ -81,14 +81,14 @@ function SdgCardView({ card }: { card: CanonicalSdgCard }) {
   const title = TITLES[card.card] ?? card.card;
   const headingId = `sdg-${card.card.replace(/[^a-z0-9]+/gi, "-")}`;
   return (
-    <article className="flex min-w-0 flex-col rounded-[18px] border border-border bg-surface p-4 shadow-1" data-testid="sdg-card" data-card={card.card} data-status={card.missing ? "missing" : (card.status ?? "unknown")} aria-labelledby={headingId}>
+    <article className="flex min-w-0 flex-col rounded-[18px] border border-border bg-surface p-5 shadow-1" data-testid="sdg-card" data-card={card.card} data-status={card.missing ? "missing" : (card.status ?? "unknown")} aria-labelledby={headingId}>
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="text-[12px] font-semibold text-water">{card.card}</div>
+        <div className="text-[12px] font-semibold text-water-deep">{card.card}</div>
         <Chip size="sm" tone={card.official_indicator === true ? "danger" : "warning"}>
           {card.official_indicator === false ? "Project proxy · not official" : card.official_indicator === true ? "Official indicator flag is true" : "official_indicator not returned"}
         </Chip>
       </div>
-      <h3 id={headingId} className="mt-0.5 text-[14px] font-semibold leading-snug text-ink">
+      <h3 id={headingId} className="mt-1 text-[16px] font-semibold leading-snug tracking-[-0.01em] text-ink">
         {title}
       </h3>
       {card.missing ? (
@@ -102,90 +102,110 @@ function SdgCardView({ card }: { card: CanonicalSdgCard }) {
   );
 }
 
+const PLAIN: Record<string, string> = {
+  "SDG 2.4": "Food: how much harvest holds up in the worst tested year",
+  "SDG 6.4/6.5": "Water: crop per cubic metre, pumping and fair shares",
+  "SDG 13.1": "Climate: the worst tested year against a typical one",
+};
+
 function SdgCardBody({ card }: { card: CanonicalSdgCard }) {
   const expectsDenominator = card.card !== "SDG 13.1";
   const expectsDifference = card.card === "SDG 13.1" || card.difference_from_typical !== null;
+  const headline = card.values.find((m) => m.status === "available" && typeof m.value === "number") ?? null;
   return (
     <>
-      <p className="mt-2 text-[13px] leading-relaxed text-ink" data-testid="official-target">
-        {card.official_target_text ?? "Official target text was not returned."}
-      </p>
-      {card.target_url ? (
-        <a href={card.target_url} target="_blank" rel="noreferrer" className="no-print mt-1 inline-flex items-center gap-1 text-[12px] text-water hover:underline">
-          UN target for {card.card}
-          <ExternalLink size={11} aria-hidden />
-          <span className="sr-only"> (opens in a new tab)</span>
-        </a>
-      ) : (
-        <p className="mt-1 text-[12px] text-ink-tertiary">Target URL was not returned.</p>
-      )}
-      {card.interpretation ? <p className="mt-2 text-[12px] leading-snug text-ink-secondary">{card.interpretation}</p> : null}
+      <p className="mt-1 text-[13px] leading-snug text-ink-secondary">{PLAIN[card.card] ?? card.interpretation}</p>
+      {headline ? (
+        <div className="mt-3">
+          <div className="text-[12px] text-ink-tertiary">{metricLabel(headline)}</div>
+          <MetricValueView metric={headline} size="lg" showReason={false} />
+        </div>
+      ) : null}
       <div className="mt-3" data-testid="card-status">
         <StatusReasonView v={card.status ? { status: card.status, reason: card.reason } : null} />
       </div>
-      {card.crop ? (
-        <p className="mt-2 text-[12px] text-ink-secondary">
-          Crop <span className="font-medium text-ink">{card.crop}</span>
+      {card.interpretation ? <p className="mt-2 text-[12px] leading-snug text-ink-tertiary">{card.interpretation}</p> : null}
+      <details className="group mt-3 rounded-[12px] border border-border bg-surface-muted/40 px-3 py-2" open={!headline}>
+        <summary className="cursor-pointer select-none text-[12.5px] font-medium text-water-deep">How it is calculated</summary>
+        <p className="mt-2 text-[12.5px] leading-relaxed text-ink" data-testid="official-target">
+          {card.official_target_text ?? "Official target text was not returned."}
         </p>
-      ) : null}
-      {card.formula ? (
-        <p className="mt-3 text-[12px]">
-          <span className="text-ink-secondary">Formula </span>
-          <code className="break-words font-mono text-[11px] text-ink">{card.formula}</code>
-        </p>
-      ) : (
-        <p className="mt-3 text-[12px] text-ink-tertiary">Formula was not returned.</p>
-      )}
-      <div className="mt-3 flex flex-col gap-2">
-        <TermSlot label="Numerator" term={card.numerator} />
-        {expectsDenominator ? <TermSlot label="Denominator" term={card.denominator} /> : null}
-        {expectsDifference ? <TermSlot label="Difference from typical" term={card.difference_from_typical} /> : null}
-      </div>
-      <ul className="mt-3 flex flex-col divide-y divide-border border-y border-border">
-        {card.values.length ? (
-          card.values.map((metric) => (
-            <li key={metric.metric_id} className="py-2.5" data-metric-id={metric.metric_id}>
-              <div className="flex items-baseline justify-between gap-3">
-                <span className="text-[12px] text-ink-secondary" title={metric.definition_id || metric.metric_id}>
-                  {metricLabel(metric)}
-                </span>
-                <span className="shrink-0 text-right">
-                  <MetricValueView metric={metric} size="sm" showReason={false} />
-                  <span className="mt-0.5 block text-[11px] text-ink-tertiary">Unit {unitLabel(metric.unit)}</span>
-                </span>
-              </div>
-              {metric.reason ? <div className="mt-0.5 text-[11px] text-ink-tertiary">{metric.reason}</div> : null}
-              {card.formulas[metric.metric_id] ? <code className="mt-1 block break-words font-mono text-[11px] leading-snug text-ink">{card.formulas[metric.metric_id]}</code> : null}
-            </li>
-          ))
+        {card.target_url ? (
+          <a href={card.target_url} target="_blank" rel="noreferrer" className="no-print mt-1 inline-flex items-center gap-1 text-[12px] text-water-deep hover:underline">
+            UN target for {card.card}
+            <ExternalLink size={11} aria-hidden />
+            <span className="sr-only"> (opens in a new tab)</span>
+          </a>
         ) : (
-          <li className="py-2.5 text-[12px] text-ink-tertiary">No metric values were returned.</li>
+          <p className="mt-1 text-[12px] text-ink-tertiary">Target URL was not returned.</p>
         )}
-      </ul>
-      <div className="mt-3" data-testid="limitations">
-        <Eyebrow>Limitations</Eyebrow>
-        {card.limitations.length ? (
-          <ul className="mt-1 list-disc pl-4 text-[12px] leading-snug text-ink-secondary">
-            {card.limitations.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
+        {card.crop ? (
+          <p className="mt-2 text-[12px] text-ink-secondary">
+            Crop <span className="font-medium text-ink">{card.crop}</span>
+          </p>
+        ) : null}
+        {card.formula ? (
+          <p className="mt-3 text-[12px]">
+            <span className="text-ink-secondary">Formula </span>
+            <code className="break-words font-mono text-[11px] text-ink">{card.formula}</code>
+          </p>
         ) : (
-          <p className="mt-1 text-[12px] text-ink-tertiary">No limitations were returned.</p>
+          <p className="mt-3 text-[12px] text-ink-tertiary">Formula was not returned.</p>
         )}
-      </div>
-      <div className="mt-3" data-testid="source-records">
-        <Eyebrow>Source records</Eyebrow>
-        {card.source_records.length ? (
-          <ul className="mt-1 break-all font-mono text-[11px] text-ink-secondary">
-            {card.source_records.map((id) => (
-              <li key={id}>{id}</li>
-            ))}
-          </ul>
-        ) : (
-          <p className="mt-1 text-[12px] text-ink-tertiary">No source records were returned.</p>
-        )}
-      </div>
+        <div className="mt-3 flex flex-col gap-2">
+          <TermSlot label="Numerator" term={card.numerator} />
+          {expectsDenominator ? <TermSlot label="Denominator" term={card.denominator} /> : null}
+          {expectsDifference ? <TermSlot label="Difference from typical" term={card.difference_from_typical} /> : null}
+        </div>
+        <ul className="mt-3 flex flex-col divide-y divide-border border-y border-border">
+          {card.values.length ? (
+            card.values.map((metric) => (
+              <li key={metric.metric_id} className="py-2.5" data-metric-id={metric.metric_id}>
+                <div className="flex items-baseline justify-between gap-3">
+                  <span className="text-[12px] text-ink-secondary" title={metric.definition_id || metric.metric_id}>
+                    {metricLabel(metric)}
+                  </span>
+                  <span className="shrink-0 text-right">
+                    <MetricValueView metric={metric} size="sm" showReason={false} />
+                    <span className="mt-0.5 block text-[11px] text-ink-tertiary">Unit {unitLabel(metric.unit)}</span>
+                  </span>
+                </div>
+                {metric.reason ? <div className="mt-0.5 text-[11px] text-ink-tertiary">{metric.reason}</div> : null}
+                {card.formulas[metric.metric_id] ? <code className="mt-1 block break-words font-mono text-[11px] leading-snug text-ink">{card.formulas[metric.metric_id]}</code> : null}
+              </li>
+            ))
+          ) : (
+            <li className="py-2.5 text-[12px] text-ink-tertiary">No metric values were returned.</li>
+          )}
+        </ul>
+      </details>
+      <details className="mt-2 rounded-[12px] border border-border px-3 py-2">
+        <summary className="cursor-pointer select-none text-[12.5px] font-medium text-ink-secondary">Limits and sources</summary>
+        <div className="mt-2" data-testid="limitations">
+          <Eyebrow>Limitations</Eyebrow>
+          {card.limitations.length ? (
+            <ul className="mt-1 list-disc pl-4 text-[12px] leading-snug text-ink-secondary">
+              {card.limitations.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-1 text-[12px] text-ink-tertiary">No limitations were returned.</p>
+          )}
+        </div>
+        <div className="mt-3" data-testid="source-records">
+          <Eyebrow>Source records</Eyebrow>
+          {card.source_records.length ? (
+            <ul className="mt-1 break-all font-mono text-[11px] text-ink-secondary">
+              {card.source_records.map((id) => (
+                <li key={id}>{id}</li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-1 text-[12px] text-ink-tertiary">No source records were returned.</p>
+          )}
+        </div>
+      </details>
       <div className="mt-auto flex flex-col gap-1 pt-3 text-[11px] text-ink-tertiary">
         <p>
           Runs <span className="font-mono text-ink">{card.run_ids.length ? card.run_ids.map((id) => shortId(id)).join(", ") : "not returned"}</span>

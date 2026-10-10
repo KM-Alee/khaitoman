@@ -135,7 +135,7 @@ function shortPilotName(name: string) {
 function usePrimaryCta(onOpenScenario?: () => void) {
   const { sel } = usePilotData();
   const scenario = useScenario();
-  const onLater = sel.screen === "compare" || sel.screen === "replay" || sel.screen === "explore" || sel.screen === "impact" || sel.screen === "evidence";
+  const onLater = sel.screen === "compare" || sel.screen === "replay" || sel.screen === "explore" || sel.screen === "impact" || sel.screen === "report" || sel.screen === "evidence";
   if (scenario.phase === "loading" || scenario.phase === "unavailable")
     return { label: "Review inputs", icon: <SlidersHorizontal size={15} />, onClick: () => { sel.go("workspace"); onOpenScenario?.(); }, testid: "cta-review" };
   if (scenario.phase === "running") return { label: "Finding the best plan…", icon: null, onClick: () => {}, disabled: true, busy: true, testid: "cta-running" };

@@ -8,7 +8,8 @@ mkdirSync(SHOTS, { recursive: true });
 /** Save a full-viewport screenshot to evidence/screenshots/<prefix>-<project>-<name>.png */
 export async function shot(page: Page, info: TestInfo, name: string, prefix = "real") {
   const file = resolve(SHOTS, `${prefix}-${info.project.name}-${name}.png`);
-  await page.screenshot({ path: file, fullPage: false, animations: "disabled" });
+  // Software WebGL (swiftshader) can take tens of seconds to rasterise a full 1920×1200 frame.
+  await page.screenshot({ path: file, fullPage: false, animations: "disabled", timeout: 120_000 });
   return file;
 }
 
