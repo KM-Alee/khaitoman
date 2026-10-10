@@ -6,14 +6,18 @@
  * through the normal hooks (never from the manifest's notes, never invented). Each step has
  * a "Try it yourself" action that leaves the tour and focuses the matching live control.
  */
-import { useMemo, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useReducedMotion } from "@/app/environment";
+import { useUI } from "@/app/store";
+import { getEngine, useMapRuntime } from "@/components/map/runtime";
+import { useAiStack, useHeadline } from "@/lib/api/showcase";
+import { HeadlineSentence } from "@/features/landing/HeadlineInsight";
 import { useAnalysis, useComparison, useGeoJSON, useMapBundle, usePilot, useRun, useRuns } from "@/lib/api/queries";
 import type { RunResult } from "@/lib/api/types";
 import { findMetric, runMetrics } from "@/lib/api/adapters";
 import { formatDate, formatDelta, formatPKRCompact, formatWithUnit } from "@/lib/formatting";
 import { planName } from "@/lib/glossary";
 import { comparisonDeltas } from "@/features/workspace/ResultStrip";
-import { FLAG_PLAIN } from "@/components/status";
 import type { DemoSession } from "./api";
 
 export type Placement = "auto" | "center";
@@ -84,8 +88,15 @@ function useSessionFieldLabel(s: DemoSession, fieldId: string | null | undefined
 function WelcomeBody({ s }: { s: DemoSession }) {
   const pilot = usePilot(s.pilot_id, s.pilot_version);
   const field = useSessionFieldLabel(s, s.focus_field_id);
+  const h = useHeadline();
   return (
     <>
+      {h.data ? (
+        <div className="rounded-[14px] border border-wheat/40 bg-wheat-soft/50 px-3.5 py-3 text-ink" data-testid="tour-headline">
+          <p className="eyebrow mb-1 text-wheat-ink">What the AI found</p>
+          <HeadlineSentence h={h.data} />
+        </div>
+      ) : null}
       <p>
         This is <Num>{pilot.data?.pilot?.name ?? s.pilot_id}</Num>: real fields and mapped canals in Punjab's Lower Chenab irrigation area. Its committee can fund only some of the
         improvements farmers ask for: land levelling, a farm pond, a canal repair, extra pumping.
@@ -97,16 +108,43 @@ function WelcomeBody({ s }: { s: DemoSession }) {
   );
 }
 
+/** W3 "AI reveal": raw AI outlines first, then they recede behind the reviewed fields. */
+export function useRawReveal(enabled = true, holdMs = 2500) {
+  const reduced = useReducedMotion();
+  const setUI = useUI((st) => st.set);
+  const mapReady = useMapRuntime((st) => st.ready);
+  const [phase, setPhase] = useState<"raw" | "reviewed">("raw");
+  useEffect(() => {
+    if (!enabled || !mapReady) return;
+    setUI({ showRawFields: true });
+    getEngine()?.setRawOpacity(1, 0);
+    setPhase("raw");
+    const t = window.setTimeout(() => {
+      setPhase("reviewed");
+      getEngine()?.setRawOpacity(0.15, reduced ? 0 : 1400);
+    }, holdMs);
+    return () => {
+      window.clearTimeout(t);
+      getEngine()?.setRawOpacity(1, 0);
+      setUI({ showRawFields: false });
+    };
+  }, [enabled, mapReady, holdMs, reduced, setUI]);
+  return phase;
+}
+
 function FieldsBody({ s }: { s: DemoSession }) {
   const pilot = usePilot(s.pilot_id, s.pilot_version);
-  const field = useSessionFieldLabel(s, s.focus_field_id);
+  const stack = useAiStack();
+  const sees = stack.data?.engines.find((e) => e.id === "sees");
+  const counts = sees?.status === "available" ? sees.by_pilot?.[s.pilot_id] : undefined;
+  const phase = useRawReveal();
   const p = pilot.data?.pilot;
   const im = p?.imagery?.[0];
   const f = p?.review_flags;
   const assumed = f
     ? (
         [
-          f.rights_verification !== "verified" ? "water turns" : null,
+          f.rights_verification !== "verified" ? "rights" : null,
           f.cost_evidence !== "quoted" ? "costs" : null,
           f.crop_calibration !== "calibrated" ? "crop-model calibration" : null,
         ] as (string | null)[]
@@ -114,15 +152,32 @@ function FieldsBody({ s }: { s: DemoSession }) {
     : [];
   return (
     <>
-      <p>
-        The background is a real Sentinel-2 satellite image{im ? <> from <Num>{formatDate(im.acquired_at)}</Num></> : null}. Each field outline was drawn by an AI model and then checked by a
-        person. Field <Num>{field}</Num> sits at the tail end, where water arrives last.
-      </p>
-      {assumed.length ? (
-        <p>
-          Still assumed until checked locally: <Num>{assumed.join(", ")}</Num>. {f && f.rights_verification !== "verified" ? FLAG_PLAIN.rights_verification.not : ""}
-        </p>
+      {counts ? (
+        <div className="flex items-end gap-3" data-testid="ai-reveal" data-phase={phase} aria-live="polite">
+          <span className={phase === "raw" ? "text-warning" : "text-ink-tertiary line-through decoration-1"}>
+            <span className="display-num block text-[34px] leading-none">{formatWithUnit(counts.raw_polygons, "count")}</span>
+            <span className="text-[12px]">outlines the AI found</span>
+          </span>
+          <span className="pb-4 text-ink-tertiary" aria-hidden>
+            →
+          </span>
+          <span className={phase === "reviewed" ? "text-water-deep" : "text-ink-tertiary"}>
+            <span className="display-num block text-[34px] leading-none">{formatWithUnit(counts.selected, "count")}</span>
+            <span className="text-[12px]">fields kept and checked</span>
+          </span>
+        </div>
       ) : null}
+      <p>
+        {counts ? (
+          <>
+            AI found <Num>{formatWithUnit(counts.raw_polygons, "count")}</Num> possible fields in this satellite image{im ? <> from <Num>{formatDate(im.acquired_at)}</Num></> : null}. Our
+            review rules kept the <Num>{formatWithUnit(counts.selected, "count")}</Num> clearest, and a person checked them.
+          </>
+        ) : (
+          <>Each field outline on this real Sentinel-2 image was drawn by an AI model and then checked by a person.</>
+        )}{" "}
+        {assumed.length ? <>Water {assumed.join(", ")} are still assumptions, and they're labelled.</> : null}
+      </p>
     </>
   );
 }
@@ -317,13 +372,14 @@ export const TOUR_STEPS: TourStep[] = [
   {
     id: "fields",
     chapter: "Real geography",
-    title: "Real imagery, AI-drawn fields",
+    title: "The AI reveal: every field, from space",
     Body: FieldsBody,
-    route: (s) => `${base(s)}/workspace${q({ run: s.base.runs.P, field: s.focus_field_id })}`,
+    route: (s) => `${base(s)}/workspace${q({ run: s.base.runs.P })}`,
     target: '[data-testid="map-slot"]',
     saved: (s) => ({ runId: s.base.runs.P }),
     onEnter: (c) => {
       c.setMapMetric("group");
+      c.overview();
     },
     tryIt: { label: "Pick any field", run: (c) => c.focus("#field-search") },
     seconds: 12,
