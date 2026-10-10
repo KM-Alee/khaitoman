@@ -15,7 +15,19 @@ def solve_job(ctx, payload: dict) -> str:
         seed=int(payload.get("seed", 0)),
         job_id=ctx.job_id,
     )
-    ctx.stage("started", {"plan_kind": opts.plan_kind.value, "scenario_revision_id": payload["scenario_revision_id"]})
-    run_id = execute(rc, ctx.conn, payload["scenario_revision_id"], opts, token=ctx.token,
-                     progress=lambda stage: ctx.stage(stage))
+    ctx.stage(
+        "started",
+        {
+            "plan_kind": opts.plan_kind.value,
+            "scenario_revision_id": payload["scenario_revision_id"],
+        },
+    )
+    run_id = execute(
+        rc,
+        ctx.conn,
+        payload["scenario_revision_id"],
+        opts,
+        token=ctx.token,
+        progress=lambda stage: ctx.stage(stage),
+    )
     return run_id

@@ -55,7 +55,9 @@ def test_pilot_aois_disjoint_inside_extent_and_small():
     assert "Mungi" not in PILOT_A.name and "Mungi" not in PILOT_B.name
 
 
-@pytest.mark.parametrize("bad", ["/etc/passwd", "../x.json", "a/../../b.json", "a\\b.json", "", "./a.json", "~/a"])
+@pytest.mark.parametrize(
+    "bad", ["/etc/passwd", "../x.json", "a/../../b.json", "a\\b.json", "", "./a.json", "~/a"]
+)
 def test_safe_relpath_rejects_traversal(bad):
     with pytest.raises(BundleError):
         safe_relpath(bad)

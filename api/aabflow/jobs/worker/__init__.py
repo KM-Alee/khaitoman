@@ -131,7 +131,11 @@ def run_job(settings: Settings, job_id: str, owner: str) -> str:
             handler = _resolve(row["operation"])
             ctx.check_cancel()
             result = handler(ctx, loads(row["payload"]) or {})
-            result_ref = result if isinstance(result, str) else (dumps(result) if result is not None else None)
+            result_ref = (
+                result
+                if isinstance(result, str)
+                else (dumps(result) if result is not None else None)
+            )
             if ctx.cancelled:
                 queue.finish(
                     conn,
@@ -266,7 +270,9 @@ class Dispatcher:
                     if jid is None:
                         break
                     try:
-                        fut = loop.run_in_executor(self._pool, run_job, self.settings, jid, self.owner)
+                        fut = loop.run_in_executor(
+                            self._pool, run_job, self.settings, jid, self.owner
+                        )
                     except Exception as exc:  # noqa: BLE001 - submission failure must not strand the job
                         await asyncio.to_thread(self._submit_failed, jid, exc)
                         continue
@@ -295,8 +301,12 @@ class Dispatcher:
     def _submit_failed(self, job_id: str, exc: Exception) -> None:
         conn = connect(self.settings.db_path)
         try:
-            queue.finish(conn, job_id, JobState.interrupted,
-                         error={"code": "INTERRUPTED", "detail": f"could not start worker: {exc!r}"})
+            queue.finish(
+                conn,
+                job_id,
+                JobState.interrupted,
+                error={"code": "INTERRUPTED", "detail": f"could not start worker: {exc!r}"},
+            )
         finally:
             conn.close()
 

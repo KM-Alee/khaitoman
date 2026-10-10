@@ -20,17 +20,26 @@ PRE_PLANT = {ActionCategory.pond, ActionCategory.leveling, ActionCategory.shared
 
 
 def commissioned_on(inst: InterventionInstance, decision_at: datetime) -> date:
-    return local_crop_date(decision_at) + timedelta(days=inst.procurement_delay_days + inst.lead_time_days)
+    return local_crop_date(decision_at) + timedelta(
+        days=inst.procurement_delay_days + inst.lead_time_days
+    )
 
 
 def missing_cost(inst: InterventionInstance) -> str | None:
-    if inst.category in PRE_PLANT and inst.capex_pkr <= 0 and not inst.parameters.get("zero_cost_reviewed"):
+    if (
+        inst.category in PRE_PLANT
+        and inst.capex_pkr <= 0
+        and not inst.parameters.get("zero_cost_reviewed")
+    ):
         return "capex missing (0 PKR without a reviewed zero-cost record); a missing cost is unavailable, not free"
     return None
 
 
 def eligibility(
-    pkg: PilotPackage, inst: InterventionInstance, decision_at: datetime | None, planting: date | None
+    pkg: PilotPackage,
+    inst: InterventionInstance,
+    decision_at: datetime | None,
+    planting: date | None,
 ) -> tuple[date | None, list[str]]:
     reasons: list[str] = []
     mc = missing_cost(inst)

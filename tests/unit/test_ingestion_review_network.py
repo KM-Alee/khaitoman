@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from datetime import date
-
 import pytest
 from shapely.geometry import LineString, Polygon, box, mapping
 
@@ -57,7 +55,14 @@ def test_review_selects_30_and_logs_every_raw_polygon():
 def test_overlap_is_clipped_from_lower_quality_polygon():
     feats = grid_fields(30)
     a = box(X0 + 1500, Y0 + 1500, X0 + 1600, Y0 + 1620)
-    b = Polygon([(X0 + 1590, Y0 + 1500), (X0 + 1700, Y0 + 1500), (X0 + 1700, Y0 + 1620), (X0 + 1590, Y0 + 1610)])
+    b = Polygon(
+        [
+            (X0 + 1590, Y0 + 1500),
+            (X0 + 1700, Y0 + 1500),
+            (X0 + 1700, Y0 + 1620),
+            (X0 + 1590, Y0 + 1610),
+        ]
+    )
     fc = {"type": "FeatureCollection", "features": [*feats, mfeat("a", a), mfeat("b", b)]}
     r = review(fc, AOI, ReviewConfig(min_area_m2=5000))
     clipped = [c for c in r.all if "overlap_clipped" in c.actions]
@@ -68,7 +73,11 @@ def test_overlap_is_clipped_from_lower_quality_polygon():
 
 def test_too_few_eligible_raises():
     with pytest.raises(ValueError, match="eligible"):
-        review({"type": "FeatureCollection", "features": grid_fields(10)}, AOI, ReviewConfig(min_area_m2=5000))
+        review(
+            {"type": "FeatureCollection", "features": grid_fields(10)},
+            AOI,
+            ReviewConfig(min_area_m2=5000),
+        )
 
 
 def test_duplicate_model_ids_rejected():
@@ -88,7 +97,11 @@ def test_manual_edits_and_canal_exclusion():
     assert by["m001"]["decision"] == "rejected"
     assert any("canal" in x for x in by["m000"]["reasons"])  # first column touches the canal buffer
     with pytest.raises(ValueError, match="unknown model id"):
-        review({"type": "FeatureCollection", "features": feats}, AOI, manual_edits=[ManualEdit("zz", "reject", "x")])
+        review(
+            {"type": "FeatureCollection", "features": feats},
+            AOI,
+            manual_edits=[ManualEdit("zz", "reject", "x")],
+        )
 
 
 def _network():
@@ -110,7 +123,7 @@ def test_network_is_tree_with_distinct_reaches():
     parent = check_graph(net.nodes, net.edges, errors)
     assert errors == []
     assert set(net.field_outlet) == {s.field_id for s in sites}
-    for wc, reaches in net.reach_edges.items():
+    for reaches in net.reach_edges.values():
         f = [e.delivery_factor for e in net.edges if e.edge_id in reaches]
         assert len(f) == 3 and len(set(f)) == 3
         for e in net.edges:
@@ -118,7 +131,9 @@ def test_network_is_tree_with_distinct_reaches():
                 assert e.geometry_ref is None and e.source_feature_ids == []
     observed = [e for e in net.edges if e.geometry_ref]
     assert all(e.geometry_ref == "osm:way/1" for e in observed)
-    tail = next(f for f, g in net.field_group.items() if g == "tail" and net.field_watercourse[f] == "wc1")
+    tail = next(
+        f for f, g in net.field_group.items() if g == "tail" and net.field_watercourse[f] == "wc1"
+    )
     pf = netmod.path_factor(net.edges, net.mogha_of["wc1"], net.field_outlet[tail])
     assert pf == pytest.approx(0.93 * 0.86 * 0.79)
     assert parent
@@ -195,7 +210,7 @@ def test_assets_and_interventions():
     assert pond.usable_capacity_m3 == pytest.approx(0.075 * area[ab.pond_field])
     nodes = {n.node_id: n for n in net.nodes}
     lengths = {e.edge_id: netmod.reach_length_m(e, nodes, CRS) for e in net.edges}
-    types, inst = ops.build_interventions("pilot-t", net, net.edges, area, ab, lengths)
+    _types, inst = ops.build_interventions("pilot-t", net, net.edges, area, ab, lengths)
     assert {i.category for i in inst} == set(ActionCategory)
     repairs = [i for i in inst if i.category == ActionCategory.shared_repair]
     assert len(repairs) == 2 and all(i.shared and i.capex_pkr > 0 for i in repairs)
@@ -205,7 +220,8 @@ def test_assets_and_interventions():
         groups.setdefault(p.mutually_exclusive_group, []).append(p.parameters["irrigations_held"])
         fid = p.target_ids[0]
         assert p.parameters["usable_capacity_m3"] == pytest.approx(
-            p.parameters["irrigations_held"] * 0.075 * area[fid], rel=1e-6)
+            p.parameters["irrigations_held"] * 0.075 * area[fid], rel=1e-6
+        )
         assert p.lead_time_days == 90 and p.capex_pkr > 0
     assert all(sorted(v) == [0.5, 1.0, 1.5] for v in groups.values())
     assert ab.pond_field not in {i.target_ids[0] for i in ponds}

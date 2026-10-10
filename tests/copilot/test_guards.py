@@ -171,10 +171,19 @@ def test_force_eligible_investment_why_not(app_env):
     t = ask(app_env, prov, "What if we build the small pond anyway?")
     res = first(t, "evaluate_alternative")["result"]
     assert res["ok"] and res["submitted"], res
-    run = res["solve"]["run"]
-    if run["outcome"] == "plan":
-        assert fx.POND_S in run["selected_intervention_instance_ids"]
-        assert res["objective_difference"] is not None
+    if "solve" in res:  # fallback when the why-not route is unavailable
+        run = res["solve"]["run"]
+        if run["outcome"] == "plan":
+            assert fx.POND_S in run["selected_intervention_instance_ids"]
+            assert res["objective_difference"] is not None
+    else:
+        assert res["job"]["state"] == "succeeded", res
+        result = res["analysis"]["result"]
+        assert result["instance_id"] == fx.POND_S
+        assert result["difference"]["status"]
+        alt = result["alternative"]
+        if alt and alt.get("outcome") == "plan":
+            assert fx.POND_S in alt["selected_intervention_instance_ids"]
     assert len(t["job_ids"]) == 1
 
 
@@ -375,3 +384,24 @@ def test_turn_retry_reuses_branch_and_job(app_env):
     assert b1["scenario_revision_id"] == b2["scenario_revision_id"]
     assert t1["job_ids"] == t2["job_ids"] and len(t1["job_ids"]) == 1
     assert t2["idem_namespace"] == t1["turn_id"]
+
+
+def test_sensitivity_needs_two_distinct_values_and_submits_no_job(app_env):
+    sens = {
+        "analysis_id": None,
+        "base_revision_id": None,
+        "parameter": "operating_budget_pkr",
+        "values": ["2 lakh", "200,000"],
+        "service_group": None,
+        "wait_s": None,
+    }
+    prov = ScriptedProvider(
+        [
+            lambda o: [("analyze_sensitivity", sens)],
+            lambda o: final([], clarify="Which other operating budgets should I compare?"),
+        ]
+    )
+    t = ask(app_env, prov, "How sensitive is the plan to operating budget around 2 lakh?")
+    res = first(t, "analyze_sensitivity")["result"]
+    assert res["error"]["code"] == "INVALID_INPUT" and "2 to 12" in res["error"]["detail"]
+    assert t["job_ids"] == []

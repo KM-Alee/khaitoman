@@ -467,25 +467,11 @@ async def run_stress_test(ctx: ToolCtx, args: StressArgs) -> dict[str, Any]:
         raise ToolFailure(
             "NO_PLAN", f"run {rid} is {view['run']['solver_status']}; there is no plan to stress"
         )
-    usid = args.uncertainty_set_id
-    if not usid:
-        rv = await ctx.revision_in_pilot(view["run"]["scenario_revision_id"])
-        usid = rv["revision"]["request"].get("uncertainty_set_id")
-    if not usid:
-        sets = await ctx.cached_get(
-            "/uncertainty-sets",
-            pilot_id=ctx.context.pilot_id,
-            season_id=(view.get("meta") or {}).get("season_id"),
-        )
-        if not sets["uncertainty_sets"]:
-            raise ToolFailure(
-                "ASSET_UNAVAILABLE", "no published uncertainty set for this pilot/season"
-            )
-        usid = sets["uncertainty_sets"][0]["uncertainty_set_id"]
+    # null uses the run's own uncertainty set (server default)
     payload = {
         "run_id": rid,
         "mode": args.mode,
-        "uncertainty_set_id": usid,
+        "uncertainty_set_id": args.uncertainty_set_id,
         "state_ids": args.state_ids,
     }
     return await _analysis(ctx, "stress", payload, f"Stress test ({args.mode})", args.wait_s)
@@ -560,6 +546,10 @@ async def build_frontier(ctx: ToolCtx, args: FrontierArgs) -> dict[str, Any]:
                 "service_group": svc.get("service_group"),
             }
         )
+    if len(
+        {(p["capital_budget_pkr"], p["minimum_service_ratio"], p["service_group"]) for p in pts}
+    ) != len(pts):
+        raise ToolFailure("INVALID_INPUT", "frontier settings must be distinct")
     payload = {"base_revision_id": base, "settings": pts, "plan_kind": "P"}
     return await _analysis(ctx, "frontier", payload, "Frontier", args.wait_s)
 
@@ -572,12 +562,23 @@ class SensitivityArgs(ToolArgs):
         None, description="Read an existing sensitivity analysis instead of running"
     )
     base_revision_id: str | None = None
-    parameter: str | None = Field(
+    parameter: (
+        Literal[
+            "capital_budget_pkr",
+            "operating_budget_pkr",
+            "uniform_reduction_fraction",
+            "minimum_service_ratio",
+        ]
+        | None
+    ) = Field(None, description="Parameter to vary")
+    values: list[str] | None = Field(
         None,
-        description="Parameter to vary, e.g. capital_budget_pkr, operating_budget_pkr, "
-        "uniform_reduction_fraction, intervention_cost_multiplier, effect_multiplier, soil_profile",
+        description="2 to 12 explicit values as said (PKR amounts may use lakh/crore). For a range "
+        "such as 'between 50,000 and 400,000' pass several points spanning it, ends included",
     )
-    values: list[str] | None = Field(None, description="Explicit values or range points as text")
+    service_group: Literal["all", "head", "middle", "tail"] | None = Field(
+        None, description="Group the service floor applies to (minimum_service_ratio only)"
+    )
     wait_s: int | None = None
 
 
@@ -607,10 +608,22 @@ async def analyze_sensitivity(ctx: ToolCtx, args: SensitivityArgs) -> dict[str, 
             values.append(_pkr(v, args.parameter)[0])
         else:
             try:
-                values.append(float(v))
-            except ValueError:
-                values.append(v)
-    payload = {"base_revision_id": base, "parameter": args.parameter, "values": values}
+                f = float(v.strip().rstrip("%"))
+            except ValueError as exc:
+                raise ToolFailure(
+                    "INVALID_INPUT", f"{v!r} is not a number for {args.parameter}"
+                ) from exc
+            values.append(f / 100 if v.strip().endswith("%") or f > 1 else f)
+    values = sorted(set(values))
+    if not 2 <= len(values) <= 12:
+        raise ToolFailure("INVALID_INPUT", "a sensitivity analysis needs 2 to 12 distinct values")
+    payload: dict[str, Any] = {
+        "base_revision_id": base,
+        "parameter": args.parameter,
+        "values": values,
+    }
+    if args.service_group and args.parameter == "minimum_service_ratio":
+        payload["service_group"] = args.service_group
     return await _analysis(
         ctx, "sensitivity", payload, f"Sensitivity: {args.parameter}", args.wait_s
     )
@@ -714,7 +727,17 @@ async def preview_policy(ctx: ToolCtx, args: PreviewArgs) -> dict[str, Any]:
             pv = await ctx.backend.post(
                 "/surrogate/previews", req, idempotency_key=ctx.idem("preview", req)
             )
-        except RouteUnavailable:
+        except ToolFailure as exc:
+            if exc.status == 503:
+                return {
+                    "ok": False,
+                    "code": "SURROGATE_NOT_VALIDATED",
+                    "detail": exc.detail,
+                    "note": "The surrogate has not passed its validation gate, so no approximate "
+                    "preview is offered. Offer exact_confirm (crop model) instead.",
+                }
+            if not isinstance(exc, RouteUnavailable):
+                raise
             from aabflow.surrogate.prediction import preview
 
             try:

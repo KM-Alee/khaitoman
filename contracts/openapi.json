@@ -2236,6 +2236,32 @@
         "title": "MapTerrain",
         "type": "object"
       },
+      "MessageIn": {
+        "additionalProperties": false,
+        "properties": {
+          "context": {
+            "$ref": "#/components/schemas/UIContext"
+          },
+          "contract_version": {
+            "const": "2.0.0",
+            "default": "2.0.0",
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "message": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "message",
+          "context"
+        ],
+        "title": "MessageIn",
+        "type": "object"
+      },
       "MetricDefinitions": {
         "additionalProperties": false,
         "properties": {
@@ -4810,6 +4836,56 @@
         "title": "ServiceReference",
         "type": "object"
       },
+      "SessionCreate": {
+        "additionalProperties": false,
+        "properties": {
+          "context": {
+            "$ref": "#/components/schemas/UIContext"
+          },
+          "contract_version": {
+            "const": "2.0.0",
+            "default": "2.0.0",
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "role": {
+            "default": "planner",
+            "enum": [
+              "planner",
+              "viewer"
+            ],
+            "title": "Role",
+            "type": "string"
+          }
+        },
+        "title": "SessionCreate",
+        "type": "object"
+      },
+      "SessionOut": {
+        "additionalProperties": false,
+        "properties": {
+          "role": {
+            "title": "Role",
+            "type": "string"
+          },
+          "session_id": {
+            "title": "Session Id",
+            "type": "string"
+          },
+          "status": {
+            "additionalProperties": true,
+            "title": "Status",
+            "type": "object"
+          }
+        },
+        "required": [
+          "session_id",
+          "role",
+          "status"
+        ],
+        "title": "SessionOut",
+        "type": "object"
+      },
       "SoilProfile": {
         "additionalProperties": false,
         "properties": {
@@ -5219,6 +5295,160 @@
           "note"
         ],
         "title": "Timeline",
+        "type": "object"
+      },
+      "TurnAccepted": {
+        "additionalProperties": false,
+        "properties": {
+          "context": {
+            "additionalProperties": true,
+            "title": "Context",
+            "type": "object"
+          },
+          "events_url": {
+            "title": "Events Url",
+            "type": "string"
+          },
+          "session_id": {
+            "title": "Session Id",
+            "type": "string"
+          },
+          "turn_id": {
+            "title": "Turn Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "turn_id",
+          "session_id",
+          "context",
+          "events_url"
+        ],
+        "title": "TurnAccepted",
+        "type": "object"
+      },
+      "UIContext": {
+        "additionalProperties": false,
+        "description": "What the client says it is showing when the user sends a message.",
+        "properties": {
+          "language": {
+            "default": "en",
+            "enum": [
+              "en",
+              "ur",
+              "roman_ur"
+            ],
+            "title": "Language",
+            "type": "string"
+          },
+          "pilot_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pilot Id"
+          },
+          "pilot_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pilot Version"
+          },
+          "scenario_revision_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scenario Revision Id"
+          },
+          "season_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Season Id"
+          },
+          "selected_field_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Selected Field Id"
+          },
+          "selected_run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Selected Run Id"
+          },
+          "timeline_date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timeline Date"
+          },
+          "ui_revision": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ui Revision"
+          },
+          "units": {
+            "const": "metric",
+            "default": "metric",
+            "title": "Units",
+            "type": "string"
+          },
+          "view": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "View"
+          }
+        },
+        "title": "UIContext",
         "type": "object"
       },
       "UncertaintySet": {
@@ -6172,6 +6402,378 @@
           }
         },
         "summary": "Get Comparison"
+      }
+    },
+    "/api/v2/copilot/sessions": {
+      "post": {
+        "operationId": "create_session_api_v2_copilot_sessions_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Session",
+        "tags": [
+          "copilot"
+        ]
+      }
+    },
+    "/api/v2/copilot/sessions/{session_id}": {
+      "get": {
+        "operationId": "get_session_api_v2_copilot_sessions__session_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "title": "Session Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Get Session Api V2 Copilot Sessions  Session Id  Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Session",
+        "tags": [
+          "copilot"
+        ]
+      }
+    },
+    "/api/v2/copilot/sessions/{session_id}/messages": {
+      "post": {
+        "operationId": "post_message_api_v2_copilot_sessions__session_id__messages_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "title": "Session Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MessageIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TurnAccepted"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Post Message",
+        "tags": [
+          "copilot"
+        ]
+      }
+    },
+    "/api/v2/copilot/status": {
+      "get": {
+        "operationId": "copilot_status_api_v2_copilot_status_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Copilot Status Api V2 Copilot Status Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Copilot Status",
+        "tags": [
+          "copilot"
+        ]
+      }
+    },
+    "/api/v2/copilot/turns/{turn_id}": {
+      "get": {
+        "operationId": "get_turn_api_v2_copilot_turns__turn_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "turn_id",
+            "required": true,
+            "schema": {
+              "title": "Turn Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "include_tools",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Include Tools",
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Get Turn Api V2 Copilot Turns  Turn Id  Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Turn",
+        "tags": [
+          "copilot"
+        ]
+      }
+    },
+    "/api/v2/copilot/turns/{turn_id}/cancel": {
+      "post": {
+        "operationId": "cancel_turn_api_v2_copilot_turns__turn_id__cancel_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "turn_id",
+            "required": true,
+            "schema": {
+              "title": "Turn Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Cancel Turn Api V2 Copilot Turns  Turn Id  Cancel Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Cancel Turn",
+        "tags": [
+          "copilot"
+        ]
+      }
+    },
+    "/api/v2/copilot/turns/{turn_id}/events": {
+      "get": {
+        "operationId": "turn_events_api_v2_copilot_turns__turn_id__events_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "turn_id",
+            "required": true,
+            "schema": {
+              "title": "Turn Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "after",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "After"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Last-Event-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Last-Event-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "text/event-stream": {}
+            },
+            "description": "SSE copilot turn events"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Turn Events",
+        "tags": [
+          "copilot"
+        ]
+      }
+    },
+    "/api/v2/copilot/turns/{turn_id}/retry": {
+      "post": {
+        "description": "Re-run a finished turn with its original message and pinned UI context. Mutation idempotency keys\nderive from the original turn, so a retry returns the existing branch/job/report instead of a duplicate.",
+        "operationId": "retry_turn_api_v2_copilot_turns__turn_id__retry_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "turn_id",
+            "required": true,
+            "schema": {
+              "title": "Turn Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TurnAccepted"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Retry Turn",
+        "tags": [
+          "copilot"
+        ]
       }
     },
     "/api/v2/evidence/search": {

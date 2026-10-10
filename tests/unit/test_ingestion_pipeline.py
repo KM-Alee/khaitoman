@@ -79,7 +79,10 @@ def test_grain_reader_schema_and_subset(tmp_path):
     p = tmp_path / "g.parquet"
     gpd.GeoDataFrame(
         {"GRAIN_ID": [1, 2], "use": ["Agricultural", "Agricultural"]},
-        geometry=[LineString([(72.31, 30.78), (72.32, 30.79)]), LineString([(70, 25), (70.1, 25.1)])],
+        geometry=[
+            LineString([(72.31, 30.78), (72.32, 30.79)]),
+            LineString([(70, 25), (70.1, 25.1)]),
+        ],
         crs="EPSG:4326",
     ).to_parquet(p)
     sub = grain.read_subset(p, (72.3, 30.77, 72.33, 30.80))
@@ -94,12 +97,18 @@ def test_grain_reader_schema_and_subset(tmp_path):
 def test_validate_aoi_limits():
     v = pipeline.validate_aoi(AOI_GJ)
     assert v["metric_crs"] == "EPSG:32643" and not v["blockers"] and 5e6 < v["area_m2"] < 6e6
-    big = {"type": "Polygon", "coordinates": [[[72.0, 30.5], [72.2, 30.5], [72.2, 30.7], [72.0, 30.7], [72.0, 30.5]]]}
+    big = {
+        "type": "Polygon",
+        "coordinates": [[[72.0, 30.5], [72.2, 30.5], [72.2, 30.7], [72.0, 30.7], [72.0, 30.5]]],
+    }
     assert pipeline.validate_aoi(big)["blockers"]
 
 
 def test_create_intake_guards(tmp_path):
-    big = {"type": "Polygon", "coordinates": [[[72.0, 30.5], [72.2, 30.5], [72.2, 30.7], [72.0, 30.7], [72.0, 30.5]]]}
+    big = {
+        "type": "Polygon",
+        "coordinates": [[[72.0, 30.5], [72.2, 30.5], [72.2, 30.7], [72.0, 30.7], [72.0, 30.5]]],
+    }
     with pytest.raises(AoiError):
         pipeline.create_intake("i1", big, "online", None, tmp_path / "w1")
     with pytest.raises(ValueError, match="raw_package_ref"):
@@ -157,7 +166,7 @@ def test_manifest_checks(tmp_path):
 
 
 def test_check_fields_count_overlap_and_area():
-    from aabflow.ingestion.aoi import Aoi, to_metric, to_wgs84  # noqa: PLC0415
+    from aabflow.ingestion.aoi import Aoi, to_metric, to_wgs84
 
     aoi = Aoi.from_geojson(AOI_GJ)
     x0, y0 = to_metric(aoi.geometry, aoi.metric_crs).bounds[:2]
@@ -168,7 +177,12 @@ def test_check_fields_count_overlap_and_area():
         props = {"field_id": f"p:field-{i}", "label": str(i), "geometry_ref": f"p:field-{i}",
                  "gross_area_m2": a, "gross_area_ha": a / 1e4, "soil_profile_id": "s",
                  "outlet_node_id": "n", "group": "head"}  # fmt: skip
-        return {"type": "Feature", "id": f"p:field-{i}", "geometry": gw.__geo_interface__, "properties": props}
+        return {
+            "type": "Feature",
+            "id": f"p:field-{i}",
+            "geometry": gw.__geo_interface__,
+            "properties": props,
+        }
 
     feats = [feat(i, box(x0 + 100 + 120 * (i % 6), y0 + 100 + 150 * (i // 6), x0 + 200 + 120 * (i % 6),
                          y0 + 220 + 150 * (i // 6))) for i in range(30)]  # fmt: skip
