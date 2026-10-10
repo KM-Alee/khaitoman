@@ -11,6 +11,8 @@ Executed in Docker:
 - Frontend: 114 tests passed in 17 files; TypeScript and Vite production build passed on the combined #12/#13 source.
 - E2E TypeScript check passed.
 - OpenAPI and generated TypeScript regenerated with no contract changes.
+- All four requested Docker image targets (api, web, demo, e2e) rebuilt; api/web recreated with fresh dependency volumes. Health reports schema 4, database ok, 3 published pilots, 12 ready libraries and running dispatcher.
+- Chromium against the real local services: 30-field imagery/terrain map loaded; keyboard resize and double-click reset passed; full chat opened and Escape returned to the side panel; planner idle screen rendered; unknown API path returned typed JSON 404; no page errors. See win-path-browser-20261010.json and ../screenshots/pr12-windows-20261010.png. The initial screenshot with motion enabled timed out; reduced-motion capture succeeded. This does not certify animated tour capture.
 - Earlier integration scientific sweep: 45 passed in 1139.19 s; core acceptance v1: 19 passed, 1 skipped. No science engine code changed in #12/#13 or these fixes, so the sweep was reused.
 
 This is a review/build check, not full AT13–AT18 acceptance. No hosted-model turn, complete guided tour, recording replay, pitch rendering or offline acceptance was executed here. Existing author-reported tour timeout/resource 404s, absent dated USD rate and unfinished evidence-pack remain recorded limitations. AT17 evaluation remains explicitly deferred by the user.
