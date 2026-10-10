@@ -2,6 +2,10 @@
 .venv
 .venv-vision
 .env
+.env.*
+.laptop
+.agent-work
+.claude/worktrees
 **/__pycache__
 **/.pytest_cache
 .ruff_cache

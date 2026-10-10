@@ -21,6 +21,7 @@ import maplibregl, {
 } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { MapBundle } from "@/lib/api/adapters";
+import { backendCredentials, backendMapRequest } from "@/lib/api/urls";
 import type { Asset, Edge, NetNode } from "@/lib/api/types";
 import { canvasReadbackIsTrustworthy, demEncoding, demTileTemplate, demStats } from "./demTiles";
 import {
@@ -121,7 +122,7 @@ const imageryCache = new Map<string, Promise<ImageBitmap>>();
 function decodeImagery(url: string): Promise<ImageBitmap> {
   let p = imageryCache.get(url);
   if (!p) {
-    p = fetch(url)
+    p = fetch(url, { credentials: backendCredentials(url) })
       .then((r) => {
         if (!r.ok) throw new Error(`imagery ${r.status}`);
         return r.blob();
@@ -222,6 +223,7 @@ export class MapEngine {
   private hdVisible = true;
   private offHd: () => void = () => {};
   private rawVisible = false;
+  private rawOpacity = 0.95;
   private parcelsVisible = true;
   private dataKey = "";
   private dimAmount = 0.42;
@@ -235,6 +237,7 @@ export class MapEngine {
       layers: [{ id: "bg", type: "background", paint: { "background-color": cssVar("--map-bg", "#dfe3da") } }],
     };
     this.map = new maplibregl.Map({
+      transformRequest: backendMapRequest,
       container,
       style,
       center: [72.5, 30.8],
@@ -503,7 +506,7 @@ export class MapEngine {
         type: "line",
         source: SRC.raw,
         layout: { visibility: this.rawVisible ? "visible" : "none" },
-        paint: { "line-color": cssVar("--warning"), "line-width": 1.2, "line-dasharray": [2, 1.5], "line-opacity": 0.95 },
+        paint: { "line-color": cssVar("--warning"), "line-width": 1.2, "line-dasharray": [2, 1.5], "line-opacity": this.rawOpacity },
       });
     }
 
@@ -813,6 +816,14 @@ export class MapEngine {
   setParcelsVisible(on: boolean) {
     this.parcelsVisible = on;
     for (const id of ["parcels-fill", "parcels-line"]) if (this.map.getLayer(id)) this.map.setLayoutProperty(id, "visibility", on ? "visible" : "none");
+  }
+
+  /** Fade the raw AI outlines (tour reveal): 1 = as drawn, lower = receding behind the reviewed fields. */
+  setRawOpacity(k: number, ms = 0) {
+    this.rawOpacity = 0.95 * Math.max(0, Math.min(1, k));
+    if (!this.map.getLayer("fields-raw")) return;
+    this.map.setPaintProperty("fields-raw", "line-opacity-transition", { duration: ms, delay: 0 });
+    this.map.setPaintProperty("fields-raw", "line-opacity", this.rawOpacity);
   }
 
   setRawVisible(on: boolean) {

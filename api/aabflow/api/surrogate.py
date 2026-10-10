@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 import sqlite3
+import time
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Body, Depends, Header
+from pydantic import Field
 
 from aabflow.api.errors import DomainError
 from aabflow.api.idempotency import run_idempotent
@@ -30,6 +32,10 @@ class PreviewView(SurrogatePreview):
     verification: dict[str, Any] | None
     verify_job_id: str | None
     created_at: str
+    elapsed_ms: float | None = Field(
+        default=None,
+        description="Server-measured time to compute this preview (create only; null on read)",
+    )
 
 
 class VerifyAccepted(StrictModel):
@@ -50,9 +56,11 @@ def _gate(state: AppState) -> None:
 @router.post("/surrogate/previews", status_code=201, response_model=PreviewView)
 def create_preview(state: State, conn: Conn, body: Annotated[dict[str, Any], Body()]) -> dict:
     _gate(state)
+    t0 = time.perf_counter()
     req, pv = svc.make_preview(state.catalog, get_bindings(state.settings), body)
+    elapsed_ms = (time.perf_counter() - t0) * 1000.0
     svc.store(conn, req, pv)
-    return svc.get(conn, pv.preview_id)
+    return {**svc.get(conn, pv.preview_id), "elapsed_ms": elapsed_ms}
 
 
 @router.get("/surrogate/previews/{preview_id}", response_model=PreviewView)

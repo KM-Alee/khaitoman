@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": [
+      "ES2022",
+      "DOM"
+    ],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "noUnusedLocals": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "types": [
+      "node"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "*": [
+        "node_modules/*",
+        "node_modules/@types/*"
+      ]
+    }
+  },
+  "include": [
+    "../tests/e2e/onboarding.spec.ts",
+    "../tests/e2e/impact.spec.ts",
+    "../tests/e2e/journey-copilot.spec.ts",
+    "../tests/e2e/a11y-copilot.spec.ts"
+  ]
+}

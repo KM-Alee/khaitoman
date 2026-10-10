@@ -23,6 +23,7 @@ from typing import Any, Literal
 from pydantic import Field
 
 from aabflow.copilot.registry import ToolArgs, strict_schema
+from aabflow.copilot.visuals import MAX_VISUALS, VisualSpec, materialize
 
 # ------------------------------------------------------------------ answer schema
 
@@ -41,7 +42,7 @@ class AnswerBlock(ToolArgs):
         None, description="metric block: field for field-level metrics, else null"
     )
     comparison_id: str | None = Field(
-        None, description="comparison block: comparison_id from compare_runs"
+        None, description="comparison block: comparison_id from a tool result"
     )
     action: (
         Literal[
@@ -60,7 +61,19 @@ class AnswerBlock(ToolArgs):
 
 class FinalAnswer(ToolArgs):
     language: Literal["en", "ur", "roman_ur"]
+    headline: str | None = Field(
+        None,
+        description="One short plain-language sentence that answers the question (shown first, large)",
+    )
     blocks: list[AnswerBlock]
+    visuals: list[VisualSpec] = Field(
+        default_factory=list,
+        description="0-3 charts/tables/maps built by the server from datasets returned this turn",
+    )
+    follow_ups: list[str] = Field(
+        default_factory=list,
+        description="2-3 short follow-up questions the user could ask next, in the answer language",
+    )
     needs_clarification: bool = Field(
         description="True when one focused question must be answered first"
     )
@@ -71,16 +84,20 @@ FINAL_ANSWER_TOOL: dict[str, Any] = {
     "type": "function",
     "name": "final_answer",
     "description": (
-        "Finish the turn. Text blocks explain results in the user's language and cite the run/evidence IDs "
-        "they rely on. Use metric blocks (metric_id + run_id [+ field_id]) and comparison blocks "
-        "(comparison_id) for quantities: the server renders their values. Only quote numbers that appear in "
-        "tool results; never compute new figures. Use uncertainty blocks for limitations, missing data, "
-        "UNKNOWN/INFEASIBLE status or running jobs. Set needs_clarification with one question when an amount, "
-        "currency or service floor is ambiguous."
+        "Finish the turn. headline: one plain sentence answering the question. Text blocks explain results "
+        "simply in the user's language and cite the run/evidence IDs they rely on. Metric blocks (metric_id + "
+        "run_id [+ field_id]) and comparison blocks (comparison_id) are rendered by the server. visuals: pick "
+        "a dataset_id returned by a tool this turn and one of its suggested charts; the server copies the "
+        "values, so never type chart numbers. Only quote numbers that appear in tool results; never compute "
+        "new figures. Use uncertainty blocks for caveats (assumed rights/costs, uncalibrated crop model, "
+        "finite candidate library), missing data, UNKNOWN/INFEASIBLE status or running jobs. follow_ups: 2-3 "
+        "short next questions. Set needs_clarification with one question when an amount, currency or service "
+        "floor is ambiguous."
     ),
     "strict": True,
     "parameters": strict_schema(FinalAnswer),
 }
+
 
 # ------------------------------------------------------------------------ facts
 
@@ -280,42 +297,85 @@ def withhold_sentences(text: str, bad: list[str], language: str) -> str:
 class Validation:
     blocks: list[dict[str, Any]]
     issues: list[str]
-    numeric_issues: list[tuple[int, list[str]]]
+    numeric_issues: list[tuple[Any, list[str]]]
+    headline: dict[str, Any] | None = None
+    visuals: list[dict[str, Any]] = field(default_factory=list)
+    visual_specs: list[Any] = field(default_factory=list)
+    follow_ups: list[str] = field(default_factory=list)
 
     @property
     def ok(self) -> bool:
         return not self.issues and not self.numeric_issues
 
 
+_ID_ACTIONS = {
+    "run_": "open_run",
+    "rev_": "open_branch",
+    "ana_": "open_analysis",
+    "cmp_": "open_comparison",
+    "rpt_": "open_report",
+}
+
+
+def action_for_id(ref_id: str) -> str | None:
+    """The workspace view an ID opens, from its type prefix (field IDs look like ``pilot:field-001``)."""
+    for prefix, action in _ID_ACTIONS.items():
+        if ref_id.startswith(prefix):
+            return action
+    if ":field-" in ref_id or ref_id.split(":")[-1].startswith("f"):
+        return "open_field"
+    return None
+
+
+def _cites(raw: list[str] | None, text: str, facts: Facts, where: str, issues: list[str]):
+    cites = []
+    for c in raw or []:
+        if c in facts.ids:
+            cites.append({"ref_id": c, "kind": facts.ids[c]})
+        else:
+            issues.append(f"{where}: citation {c!r} was not returned by any tool in this turn")
+    for r in refs_for_text(text, facts):
+        if r in facts.ids and not any(x["ref_id"] == r for x in cites):
+            cites.append({"ref_id": r, "kind": facts.ids[r], "auto": True})
+    return cites
+
+
 async def validate_answer(answer: FinalAnswer, facts: Facts, tctx: Any) -> Validation:
-    """Resolve cards server-side and check references and prose numbers. ``tctx`` is a ToolCtx."""
+    """Resolve cards and visuals server-side and check references and prose numbers.
+
+    ``tctx`` is a ToolCtx: metric/comparison values come from services and visual rows from the turn's
+    dataset store, never from the model.
+    """
     from aabflow.copilot.tools.backend import ToolFailure
+    from aabflow.copilot.tools.base import metric_basis
 
     blocks: list[dict[str, Any]] = []
     issues: list[str] = []
-    numeric: list[tuple[int, list[str]]] = []
+    numeric: list[tuple[Any, list[str]]] = []
     if answer.needs_clarification and not (answer.clarification_question or "").strip():
         issues.append("needs_clarification is true but clarification_question is empty")
+    headline = None
+    if (answer.headline or "").strip():
+        text = answer.headline.strip()[:240]
+        bad = unsupported_numbers(text, facts)
+        if bad:
+            numeric.append(("headline", bad))
+        headline = {
+            "type": "headline",
+            "text": text,
+            "citations": _cites(None, text, facts, "headline", issues),
+        }
+    labels = await tctx.metric_labels() if hasattr(tctx, "metric_labels") else {}
     for i, b in enumerate(answer.blocks):
         if b.type in ("text", "uncertainty"):
             text = (b.text or "").strip()
             if not text:
                 issues.append(f"block {i}: empty {b.type} block")
                 continue
-            cites = []
-            for c in b.citations or []:
-                if c in facts.ids:
-                    cites.append({"ref_id": c, "kind": facts.ids[c]})
-                else:
-                    issues.append(
-                        f"block {i}: citation {c!r} was not returned by any tool in this turn"
-                    )
+            cites = _cites(b.citations, text, facts, f"block {i}", issues)
             bad = unsupported_numbers(text, facts)
             if bad:
                 numeric.append((i, bad))
-            for r in refs_for_text(text, facts):
-                if r in facts.ids and not any(x["ref_id"] == r for x in cites):
-                    cites.append({"ref_id": r, "kind": facts.ids[r], "auto": True})
             blocks.append({"type": b.type, "text": text, "citations": cites, "_origin": i})
         elif b.type == "metric":
             if not b.metric_id or not b.run_id:
@@ -348,13 +408,12 @@ async def validate_answer(answer: FinalAnswer, facts: Facts, tctx: Any) -> Valid
                     f"block {i}: metric {b.metric_id} (field {b.field_id}) does not exist in run {b.run_id}"
                 )
                 continue
-            from aabflow.copilot.tools.base import metric_basis
-
             blocks.append(
                 {
                     "type": "metric",
                     "metric_id": m["metric_id"],
-                    "definition_id": m["definition_id"],
+                    "definition_id": m.get("definition_id"),
+                    "label": (labels.get(m["metric_id"]) or {}).get("label"),
                     "run_id": b.run_id,
                     "field_id": m.get("field_id"),
                     "value": m.get("value"),
@@ -369,7 +428,7 @@ async def validate_answer(answer: FinalAnswer, facts: Facts, tctx: Any) -> Valid
         elif b.type == "comparison":
             if not b.comparison_id or b.comparison_id not in facts.ids:
                 issues.append(
-                    f"block {i}: comparison {b.comparison_id!r} was not created by compare_runs this turn"
+                    f"block {i}: comparison {b.comparison_id!r} was not created by a tool this turn"
                 )
                 continue
             try:
@@ -384,8 +443,24 @@ async def validate_answer(answer: FinalAnswer, facts: Facts, tctx: Any) -> Valid
                     "run_ids": cmp["run_ids"],
                     "compatible": cmp["compatible"],
                     "label": cmp["labels"]["comparison"],
+                    "plans": [
+                        {k: p.get(k) for k in ("run_id", "plan_kind", "solver_status")}
+                        for p in cmp.get("plans", [])
+                    ],
                     "deltas": [
-                        {k: d[k] for k in ("metric_id", "unit", "a", "b", "delta", "status")}
+                        {
+                            k: d.get(k)
+                            for k in (
+                                "metric_id",
+                                "unit",
+                                "a",
+                                "b",
+                                "delta",
+                                "status",
+                                "a_run_id",
+                                "b_run_id",
+                            )
+                        }
                         for d in cmp["deltas"]
                         if d["field_id"] is None
                     ],
@@ -399,21 +474,61 @@ async def validate_answer(answer: FinalAnswer, facts: Facts, tctx: Any) -> Valid
             if b.ref_id not in facts.ids:
                 issues.append(f"block {i}: {b.ref_id!r} was not returned by a tool in this turn")
                 continue
+            action = action_for_id(b.ref_id) or b.action  # the ID decides what the button opens
+            if any(x["type"] == "action" and x["ref_id"] == b.ref_id for x in blocks):
+                continue
             blocks.append(
                 {
                     "type": "action",
-                    "action": b.action,
+                    "action": action,
                     "ref_id": b.ref_id,
-                    "label": (b.label or b.action.replace("_", " "))[:80],
+                    "label": (b.label or action.replace("_", " "))[:80],
                 }
             )
-    if not blocks and not answer.needs_clarification:
+    visuals: list[dict[str, Any]] = []
+    store = getattr(tctx, "datasets", None)
+    for j, spec in enumerate(answer.visuals[:MAX_VISUALS]):
+        if store is None:
+            issues.append("visuals: no datasets were produced in this turn")
+            break
+        for part, txt in (("title", spec.title), ("caption", spec.caption)):
+            bad = unsupported_numbers(txt or "", facts)
+            if bad:
+                numeric.append((f"visual{j}.{part}", bad))
+        mat = materialize(spec, store, f"v{j + 1}")
+        if mat.block is None:
+            issues.extend(mat.issues)
+            continue
+        ds = store.get(spec.dataset_id)
+        visuals.append(
+            {
+                **mat.block.model_dump(mode="json"),
+                "_origin": f"visual{j}",
+                "_dataset_title": ds.title if ds else None,
+            }
+        )
+    if len(answer.visuals) > MAX_VISUALS:
+        issues.append(f"visuals: at most {MAX_VISUALS} visuals per answer")
+    follow = []
+    for q in answer.follow_ups[:3]:
+        q = " ".join(q.split())[:160]
+        if q and q not in follow:
+            follow.append(q)
+    if not blocks and not visuals and not headline and not answer.needs_clarification:
         issues.append("the answer has no valid blocks")
-    return Validation(blocks, issues, numeric)
+    return Validation(
+        blocks,
+        issues,
+        numeric,
+        headline=headline,
+        visuals=visuals,
+        visual_specs=list(answer.visuals[:MAX_VISUALS]),
+        follow_ups=follow,
+    )
 
 
 def apply_fallback(v: Validation, language: str) -> list[dict[str, Any]]:
-    """Replace unsupported numeric sentences with a withheld notice (after one failed regeneration)."""
+    """After one failed regeneration: withhold unsupported numeric sentences, drop unsupported captions."""
     bad = dict(v.numeric_issues)
     out = []
     for b in v.blocks:
@@ -422,8 +537,42 @@ def apply_fallback(v: Validation, language: str) -> list[dict[str, Any]]:
             b["text"] = withhold_sentences(b["text"], bad[b["_origin"]], language)
             b["withheld"] = True
         out.append(b)
+    if v.headline is not None and "headline" in bad:
+        text = withhold_sentences(v.headline["text"], bad["headline"], language)
+        v.headline = {**v.headline, "text": text, "withheld": True}
+    for vis in v.visuals:
+        o = vis.get("_origin")
+        if f"{o}.caption" in bad:
+            vis["caption"] = None
+        if f"{o}.title" in bad:
+            vis["title"] = vis.get("_dataset_title") or "Chart"
     return out
 
 
 def public_blocks(blocks: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return [{k: v for k, v in b.items() if not k.startswith("_")} for b in blocks]
+
+
+def order_blocks(
+    *,
+    badges: list[dict[str, Any]],
+    headline: dict[str, Any] | None,
+    blocks: list[dict[str, Any]],
+    visuals: list[dict[str, Any]],
+    follow_ups: list[str],
+) -> list[dict[str, Any]]:
+    """Canonical reading order: run identity, headline, first explanation, cards, visuals, the rest."""
+    texts = [b for b in blocks if b["type"] == "text"]
+    out: list[dict[str, Any]] = list(badges)
+    if headline:
+        out.append(headline)
+    out += texts[:1]
+    out += [b for b in blocks if b["type"] == "metric"]
+    out += visuals
+    out += texts[1:]
+    out += [b for b in blocks if b["type"] == "comparison"]
+    out += [b for b in blocks if b["type"] == "uncertainty"]
+    out += [b for b in blocks if b["type"] == "action"]
+    if follow_ups:
+        out.append({"type": "follow_ups", "questions": follow_ups})
+    return public_blocks(out)

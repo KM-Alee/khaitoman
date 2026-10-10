@@ -17,6 +17,10 @@ make up               # API http://127.0.0.1:8000  UI http://127.0.0.1:5173
 
 Put `OPENAI_API_KEY` in `.env` for the copilot. `make help` lists every command.
 
+For a future Vercel frontend with the API, data and workers on the laptop, see
+[the laptop deployment runbook](docs/LAPTOP_DEPLOYMENT.md). Its separate frozen
+Compose project keeps serving while the development checkout changes.
+
 ## Day to day
 
 | Task | Command |
@@ -31,6 +35,10 @@ Put `OPENAI_API_KEY` in `.env` for the copilot. `make help` lists every command.
 | Frozen demo / browser checks | `make demo` / `make ui-checks` |
 
 Containers run as your user (`HOST_UID`/`HOST_GID` in `.env`), so generated files stay yours. `data/` is mounted from the repo, and large data is git-ignored.
+
+## Building with Cursor agents
+
+Select Grok 4.7, High, 500k context and Fast off in a local Agent session, then run `/aabflow-build`. `/aabflow-resume` recovers interrupted work and `/aabflow-status` shows the current frontier. The [complete work DAG](docs/AGENT_DAG.md) and [workflow](docs/AGENT_WORKFLOW.md) cover every remaining chunk, isolated worktrees, up to three specialists, shared-contract ownership, executed validation and independent PR review. The non-chat core must pass before copilot work; no scope is held back to finish sooner.
 
 ## Building with Claude Code
 

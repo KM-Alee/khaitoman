@@ -1,0 +1,1074 @@
+{
+  "version": 1,
+  "model": "grok-4.7[effort=high,context=500k,fast=false]",
+  "max_workers": 6,
+  "resources": {
+    "contracts": 1,
+    "gpu": 1,
+    "science": 1,
+    "demo": 1,
+    "provider": 1
+  },
+  "chunks": {
+    "P00": [
+      "P00"
+    ],
+    "P01": [
+      "P01"
+    ],
+    "P02": [
+      "P02"
+    ],
+    "P03": [
+      "P03"
+    ],
+    "P04": [
+      "P04"
+    ],
+    "P05": [
+      "P05-api",
+      "P05-files"
+    ],
+    "P06": [
+      "P06-service",
+      "P06-ui"
+    ],
+    "P07": [
+      "P07-process",
+      "P07-review",
+      "P07-ui"
+    ],
+    "P08": [
+      "P08-zip",
+      "P08-pack"
+    ],
+    "P09": [
+      "P09-offline",
+      "P09-restart"
+    ],
+    "P10": [
+      "P10"
+    ],
+    "P11": [
+      "P11-core",
+      "P11-final"
+    ],
+    "P12": [
+      "P12"
+    ],
+    "P13": [
+      "P13-timing",
+      "P13-release"
+    ]
+  },
+  "features": {
+    "F01": [
+      "P02",
+      "P11-core"
+    ],
+    "F02": [
+      "P02",
+      "P07-review"
+    ],
+    "F03": [
+      "P07-ui"
+    ],
+    "F04": [
+      "P01",
+      "P11-core"
+    ],
+    "F05": [
+      "P01",
+      "P03",
+      "P11-core"
+    ],
+    "F06": [
+      "P03",
+      "P11-core"
+    ],
+    "F07": [
+      "P03",
+      "P11-core"
+    ],
+    "F08": [
+      "P03",
+      "P11-core"
+    ],
+    "F09": [
+      "P11-core",
+      "P09-offline"
+    ],
+    "F10": [
+      "P04",
+      "P11-core"
+    ],
+    "F11": [
+      "P04",
+      "P06-service",
+      "P11-core"
+    ],
+    "F12": [
+      "P04",
+      "P11-core"
+    ],
+    "F13": [
+      "P04",
+      "P11-core"
+    ],
+    "F14": [
+      "P05-files",
+      "P11-core"
+    ],
+    "F15": [
+      "P03",
+      "P11-core"
+    ],
+    "F16": [
+      "P06-ui"
+    ],
+    "F17": [
+      "P02",
+      "P05-files",
+      "P08-pack"
+    ],
+    "F18": [
+      "P11-final"
+    ],
+    "F19": [
+      "P10",
+      "P11-final"
+    ],
+    "F20": [
+      "P12",
+      "P13-release",
+      "G-RELEASE"
+    ]
+  },
+  "acceptance": {
+    "AT01": [
+      "P02"
+    ],
+    "AT02": [
+      "P01"
+    ],
+    "AT03": [
+      "P01"
+    ],
+    "AT04": [
+      "P01"
+    ],
+    "AT05": [
+      "P03"
+    ],
+    "AT06": [
+      "P03"
+    ],
+    "AT07": [
+      "P03"
+    ],
+    "AT08": [
+      "P03"
+    ],
+    "AT09": [
+      "P04"
+    ],
+    "AT10": [
+      "P04"
+    ],
+    "AT11": [
+      "P04"
+    ],
+    "AT12": [
+      "P03"
+    ],
+    "AT13": [
+      "P11-final"
+    ],
+    "AT14": [
+      "P11-final"
+    ],
+    "AT15": [
+      "P09-offline"
+    ],
+    "AT16": [
+      "P07-ui"
+    ],
+    "AT17": [
+      "P10"
+    ],
+    "AT18": [
+      "P09-restart"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "P00",
+      "chunk": "P00",
+      "title": "Merged foundation snapshot",
+      "role": "lead",
+      "needs": [],
+      "resources": [],
+      "paths": [],
+      "specs": [
+        "T1–T13",
+        "docs/REVIEW_PLAN.md P00"
+      ],
+      "requirements": [
+        "Verify merged PR #2 and its base SHA against GitHub; preserve executed foundation evidence."
+      ],
+      "checks": [
+        "gh pr view 2 --json state,mergeCommit"
+      ],
+      "external": true
+    },
+    {
+      "id": "P01",
+      "chunk": "P01",
+      "title": "Exact libraries and GPU evaluation snapshot",
+      "role": "science",
+      "needs": [
+        "P00"
+      ],
+      "resources": [],
+      "paths": [],
+      "specs": [
+        "PRD §5–7",
+        "T5–T6",
+        "docs/P01_DOMAIN.md"
+      ],
+      "requirements": [
+        "Verify PR #3 current SHA, both pilots/four seasons, retained hashes, AT02–AT04 and actual GPU evaluation; do not duplicate the existing PR."
+      ],
+      "checks": [
+        "gh pr view 3 --json state,headRefOid,mergeCommit",
+        "Read recorded make domain-tests and make science-smoke evidence"
+      ],
+      "external": true
+    },
+    {
+      "id": "G-CONTRACT",
+      "chunk": null,
+      "title": "Inventory and freeze shared interfaces",
+      "role": "lead",
+      "needs": [
+        "P00"
+      ],
+      "resources": [
+        "contracts"
+      ],
+      "paths": [
+        "docs/**",
+        "api/aabflow/domain/**",
+        "api/aabflow/main.py",
+        "api/aabflow/jobs/**",
+        "api/aabflow/repositories/**",
+        "contracts/**",
+        "web/src/generated/**"
+      ],
+      "specs": [
+        "T3",
+        "T9.1–T9.5",
+        "T10",
+        "T13.2"
+      ],
+      "requirements": [
+        "Record existing MetricValue/run/baseline/pilot-version/report/job shapes and source-of-truth services; inspect stubs without counting them as complete.",
+        "Assign exact per-node files, API wiring owner, schema migration owner and job registration owner; all shared edits serialized by lead.",
+        "Record validated ancestor SHAs, images, asset manifests, worker slots and contract change/invalidation procedure before dispatch."
+      ],
+      "checks": [
+        "make test",
+        "make contracts; inspect generated diff"
+      ]
+    },
+    {
+      "id": "P02",
+      "chunk": "P02",
+      "title": "Real pilot provenance and reproduction",
+      "role": "data",
+      "needs": [
+        "G-CONTRACT"
+      ],
+      "resources": [
+        "science"
+      ],
+      "paths": [
+        "api/aabflow/ingestion/**",
+        "scripts/publish_pilot.py",
+        "tests/integration/test_pilot_packages.py",
+        "data/pilots/**"
+      ],
+      "specs": [
+        "PRD §5.1–5.2, AT01",
+        "T2",
+        "T9.1"
+      ],
+      "requirements": [
+        "Both actual pilots: real scene/source identifiers, at least 30 reviewed fields, valid directed graph and distinct reach delivery factors, provenance and manifest hashes.",
+        "Execute make pilot-a and make pilot-b reproduction with real bundles; verify hashes, review flags, attribution and inference/cache lineage; fix every rejection gap."
+      ],
+      "checks": [
+        "make pilot-a",
+        "make pilot-b",
+        "make test"
+      ]
+    },
+    {
+      "id": "P03",
+      "chunk": "P03",
+      "title": "Decision invariants and acceptance runner",
+      "role": "api",
+      "needs": [
+        "G-CONTRACT",
+        "P01"
+      ],
+      "resources": [
+        "science"
+      ],
+      "paths": [
+        "api/aabflow/optimizer/**",
+        "api/aabflow/services/solve/**",
+        "tests/unit/test_optimizer_*.py",
+        "tests/integration/**"
+      ],
+      "specs": [
+        "PRD §6–7, §11.2 AT05–AT08/AT12",
+        "T4",
+        "T6",
+        "T12.1–T12.2",
+        "T13.4"
+      ],
+      "requirements": [
+        "Verify five action categories, zero-capital ladder, re-solve/stale/cancel behavior, matched labels, finite-model coverage/optimality and independent original-precision validation.",
+        "Test shared cost once, pond footprint once, pumping budget, rights/commissioning/limits and all specified invalid inputs/status distinctions.",
+        "Implement core-acceptance v1 that fails on executed failures and explicitly lists absent coverage; v1 is never the G-CORE completion gate."
+      ],
+      "checks": [
+        "make test",
+        "make domain-tests",
+        "make core-acceptance"
+      ]
+    },
+    {
+      "id": "P05-api",
+      "chunk": "P05",
+      "title": "Reports jobs and retrieval contract",
+      "role": "api",
+      "needs": [
+        "G-CONTRACT"
+      ],
+      "resources": [],
+      "paths": [
+        "api/aabflow/services/reports/**",
+        "api/aabflow/api/reports.py",
+        "tests/unit/test_reports_*.py",
+        "tests/integration/test_reports_*.py"
+      ],
+      "specs": [
+        "PRD §8.1–8.2/8.6",
+        "T7",
+        "T9.1/T9.4"
+      ],
+      "requirements": [
+        "Typed POST/GET/files API, idempotency, 202 report_id/job_id/job contract, persisted status/download URL and honest failure/interruption handling.",
+        "Read canonical stored metrics and immutable run/version IDs; path traversal/ownership/missing run/nonfinite/unknown field tests. Reserve copilot interface; defer live integration until G-CORE."
+      ],
+      "checks": [
+        "make test",
+        "make contracts"
+      ]
+    },
+    {
+      "id": "P04",
+      "chunk": "P04",
+      "title": "Analysis, surrogate and preview performance",
+      "role": "science",
+      "needs": [
+        "G-CONTRACT",
+        "P01",
+        "P03"
+      ],
+      "resources": [
+        "science",
+        "gpu"
+      ],
+      "paths": [
+        "api/aabflow/surrogate/**",
+        "api/aabflow/services/analyses/**",
+        "tests/scientific/**",
+        "tests/unit/test_surrogate_*.py",
+        "evidence/benchmarks/**"
+      ],
+      "specs": [
+        "PRD §7.2–7.5, §11.1 AT09–AT11",
+        "T5.5",
+        "T6–T7",
+        "T12.3"
+      ],
+      "requirements": [
+        "Six-setting frontier and nine-cell stress link to actual runs; robust shared decisions across states, undeliverable cells without yield, why-not/bottleneck/synergy evidence.",
+        "Default preview in-domain and at most 300 ms after load, held-out evaluation and exact confirmation with version/device/artifact hashes.",
+        "If retraining is needed, use make train-surrogate GPU=1, record actual device; retain required statistical holdouts; AquaCrop/CP-SAT stay CPU."
+      ],
+      "checks": [
+        "make test",
+        "make science-smoke",
+        "Execute preview timing and exact-confirmation benchmark"
+      ]
+    },
+    {
+      "id": "P05-files",
+      "chunk": "P05",
+      "title": "Self-contained action report and evidence files",
+      "role": "api",
+      "needs": [
+        "P05-api",
+        "P03"
+      ],
+      "resources": [],
+      "paths": [
+        "api/aabflow/services/reports/**",
+        "tests/unit/test_reports_*.py",
+        "tests/integration/test_reports_*.py",
+        "data/reports/**"
+      ],
+      "specs": [
+        "PRD §8.1–8.4/8.6, §13.3",
+        "T7",
+        "T9.3–T9.5"
+      ],
+      "requirements": [
+        "Self-contained report.html, CSVs, GeoJSON and sha256 manifest; validate all files and reject missing/tampered/unsafe content.",
+        "Action sheet dates, roles, approvals, prerequisites and status; B0→B1→P→R incrementals; financial input gaps, sensitivity, illustrative cashflow/payback disclosure; canonical units/run IDs and no recalculated analytics.",
+        "Exercise real route/job/files flow with stored real runs; report-tool wire shape covered without pre-core live copilot implementation."
+      ],
+      "checks": [
+        "make test",
+        "make contracts",
+        "Execute report job and verify artifact hashes/offline HTML"
+      ]
+    },
+    {
+      "id": "P06-service",
+      "chunk": "P06",
+      "title": "Canonical SDG proxies and distribution",
+      "role": "api",
+      "needs": [
+        "G-CONTRACT",
+        "P03",
+        "P04"
+      ],
+      "resources": [],
+      "paths": [
+        "api/aabflow/services/impact/**",
+        "api/aabflow/api/impact.py",
+        "tests/unit/test_impact_*.py"
+      ],
+      "specs": [
+        "PRD §8.5",
+        "T7.5"
+      ],
+      "requirements": [
+        "Three cards for 2.4, 6.4/6.5 and 13.1 with official target text/URL, official_indicator=false, formulas, numerator/denominator/units, limitations and run/baseline IDs.",
+        "Field-change distribution; no aggregate 0–100 score; CO2 not_estimated; 13.1 blocked when any tested state is undeliverable; rejection/missing input tests."
+      ],
+      "checks": [
+        "make test",
+        "make contracts"
+      ]
+    },
+    {
+      "id": "P06-ui",
+      "chunk": "P06",
+      "title": "Impact cards in real screen",
+      "role": "ui",
+      "needs": [
+        "P06-service"
+      ],
+      "resources": [],
+      "paths": [
+        "web/src/**",
+        "tests/e2e/impact*.spec.ts"
+      ],
+      "specs": [
+        "PRD §8.5/§9",
+        "T10"
+      ],
+      "requirements": [
+        "Render all canonical SDG cards, distributions, units, evidence and limitations, including blocked/missing states; no browser analytics duplication.",
+        "Exercise with actual API and verify accessible loading/empty/error states."
+      ],
+      "checks": [
+        "make test",
+        "make web-test",
+        "make web-build",
+        "make contracts"
+      ]
+    },
+    {
+      "id": "P07-process",
+      "chunk": "P07",
+      "title": "Real raw intake and process jobs",
+      "role": "data",
+      "needs": [
+        "G-CONTRACT",
+        "P02"
+      ],
+      "resources": [
+        "science",
+        "gpu"
+      ],
+      "paths": [
+        "api/aabflow/ingestion/**",
+        "api/aabflow/services/onboarding/**",
+        "api/aabflow/api/onboarding.py",
+        "tests/integration/test_onboarding_*.py"
+      ],
+      "specs": [
+        "PRD §5.3",
+        "T2.6",
+        "T9.1/T9.4"
+      ],
+      "requirements": [
+        "AOI check, raw-packages/intake/process/layers routes and persisted resumable jobs; acquisition errors/progress/cancel surfaced.",
+        "Actual pilot-b raw bundle goes through real pipeline; GPU for supported vision with recorded device or concrete measured fallback; cache hit disclosed by inference/asset hashes. Raw intake is distinct from completed-package ZIP import."
+      ],
+      "checks": [
+        "make test",
+        "Execute pilot-b raw intake/process with real inference lineage",
+        "make contracts"
+      ]
+    },
+    {
+      "id": "P07-review",
+      "chunk": "P07",
+      "title": "Versioned review and immutable publish",
+      "role": "data",
+      "needs": [
+        "P07-process",
+        "P01"
+      ],
+      "resources": [
+        "science"
+      ],
+      "paths": [
+        "api/aabflow/services/onboarding/**",
+        "api/aabflow/ingestion/**",
+        "tests/integration/test_onboarding_*.py",
+        "data/pilots/**"
+      ],
+      "specs": [
+        "PRD §5.2–5.3, AT16",
+        "T9.1–T9.5"
+      ],
+      "requirements": [
+        "Review PATCH stale version returns 409; field/network edits, rejection errors and validation enforced; publish blocks structural errors.",
+        "Publish pilot-b reviewed-v2 without overwriting reviewed-v1; old incompatible libraries flagged and baseline/candidate readiness/jobs handled; verify immutable hashes and index updates."
+      ],
+      "checks": [
+        "make test",
+        "Execute process→review→publish→readiness integration",
+        "make contracts"
+      ]
+    },
+    {
+      "id": "P07-ui",
+      "chunk": "P07",
+      "title": "Onboarding wizard end to end",
+      "role": "ui",
+      "needs": [
+        "P07-review"
+      ],
+      "resources": [
+        "demo"
+      ],
+      "paths": [
+        "web/src/**",
+        "tests/e2e/onboarding*.spec.ts"
+      ],
+      "specs": [
+        "PRD §5.3, §9.4, AT16",
+        "T10"
+      ],
+      "requirements": [
+        "Wizard drives real intake/process/review/publish with progress, conflicts, errors and recoverability; real reviewed-v2 test evidence.",
+        "Do not mark AT16 from route unit fixtures alone; show lineage and library readiness."
+      ],
+      "checks": [
+        "make test",
+        "make web-test",
+        "make web-build",
+        "make ui-checks"
+      ]
+    },
+    {
+      "id": "P08-zip",
+      "chunk": "P08",
+      "title": "Finished-package export/import validation",
+      "role": "api",
+      "needs": [
+        "P05-files",
+        "P07-review"
+      ],
+      "resources": [],
+      "paths": [
+        "api/aabflow/services/packages/**",
+        "api/aabflow/api/packages.py",
+        "tests/unit/test_packages_*.py",
+        "tests/integration/test_packages_*.py"
+      ],
+      "specs": [
+        "T9.3–T9.5",
+        "PRD §8.6/§13.3"
+      ],
+      "requirements": [
+        "Round-trip actual published packages with manifest/version/ownership checks and atomic immutable publication.",
+        "Reject traversal, duplicate entries, wrong version, compressed/expanded oversize, invalid formats, bad hashes and existing versions; never execute archive code or fetch arbitrary embedded URLs; distinguish raw intake."
+      ],
+      "checks": [
+        "make test",
+        "make contracts",
+        "Execute actual package round trip and hostile ZIP cases"
+      ]
+    },
+    {
+      "id": "P08-pack",
+      "chunk": "P08",
+      "title": "Reproducible evidence pack assembly",
+      "role": "api",
+      "needs": [
+        "P08-zip",
+        "P04",
+        "P06-ui",
+        "P07-ui"
+      ],
+      "resources": [],
+      "paths": [
+        "scripts/build_evidence_pack.py",
+        "tests/unit/test_evidence_pack.py",
+        "evidence/pack/**"
+      ],
+      "specs": [
+        "PRD §13.3",
+        "T9.5/T12.5"
+      ],
+      "requirements": [
+        "Build §13.3 pack including all required raw/source/inference/review/library/run/evaluation/report artifacts, provenance/licenses/versions/hashes; no secrets.",
+        "Inventory every PRD §13.3 proof item, including final rehearsal recording and distributable assets/prebuilt image; record these as pending until P13 executes them.",
+        "Missing evidence fails or is explicitly incomplete; future copilot/release artifacts cannot be labelled passed yet. Final pack regenerated in P13 after actual evaluations."
+      ],
+      "checks": [
+        "make test",
+        "Execute scripts/build_evidence_pack.py and verify manifest"
+      ]
+    },
+    {
+      "id": "P11-core",
+      "chunk": "P11",
+      "title": "Non-chat UI and report consistency",
+      "role": "ui",
+      "needs": [
+        "P05-files",
+        "P06-ui",
+        "P07-ui",
+        "P04"
+      ],
+      "resources": [
+        "demo"
+      ],
+      "paths": [
+        "web/**",
+        "tests/e2e/**",
+        "evidence/screenshots/**"
+      ],
+      "specs": [
+        "PRD §4, §7.1, §8–9, AT13/AT14 partial",
+        "T10"
+      ],
+      "requirements": [
+        "Workspace, Compare, Explore, Impact, Onboarding and Evidence flows use canonical API metrics, units and run IDs; replay, action sheet/finance/equity/water and explanation behavior fully inspected.",
+        "Responsive/keyboard/contrast/states/reduced-motion via Playwright+axe at three viewports; actual Esri browser check plus no-key local fallback and truthful unavailable Copilot shell.",
+        "Record partial AT13/AT14 evidence only; six-screen contract includes Copilot, whose full state/consistency validation remains P11-final."
+      ],
+      "checks": [
+        "make test",
+        "make web-test",
+        "make web-build",
+        "make ui-checks",
+        "make contracts"
+      ]
+    },
+    {
+      "id": "P09-offline",
+      "chunk": "P09",
+      "title": "Network-denied complete core",
+      "role": "api",
+      "needs": [
+        "P08-pack",
+        "P11-core"
+      ],
+      "resources": [
+        "demo",
+        "science"
+      ],
+      "paths": [
+        "scripts/offline_check.py",
+        "tests/integration/test_offline_*.py",
+        "tests/e2e/offline*.spec.ts"
+      ],
+      "specs": [
+        "PRD §11.2 AT15",
+        "T12.4"
+      ],
+      "requirements": [
+        "Block non-loopback sockets and exercise boot, both pilots, solve, replay, frontier, stress and export; scan built web/dist for hidden CDN requests.",
+        "No startup downloads/training/provider dependency; truthful offline copilot unavailability. Execute browser and backend offline evidence, not mock-only checks."
+      ],
+      "checks": [
+        "make test",
+        "make web-build",
+        "make ui-checks",
+        "Execute network-denied workflow and scripts/offline_check.py"
+      ]
+    },
+    {
+      "id": "P09-restart",
+      "chunk": "P09",
+      "title": "Restart, interruption and tamper recovery",
+      "role": "api",
+      "needs": [
+        "P09-offline"
+      ],
+      "resources": [
+        "demo",
+        "science"
+      ],
+      "paths": [
+        "api/aabflow/jobs/**",
+        "api/aabflow/repositories/**",
+        "tests/integration/test_restart_*.py"
+      ],
+      "specs": [
+        "PRD §11.2 AT18",
+        "T9.4/T12.4"
+      ],
+      "requirements": [
+        "Restart restores actual saved runs and independently re-verifies; interrupted jobs become interrupted honestly; partial artifacts never accepted as cache hits.",
+        "Tampered/missing artifacts refused, leases/heartbeat/atomic publication tested; preserve restored IDs/version/hash lineage."
+      ],
+      "checks": [
+        "make test",
+        "Execute restart/interruption/tamper tests against real persisted artifacts"
+      ]
+    },
+    {
+      "id": "G-CORE",
+      "chunk": null,
+      "title": "Complete non-chat acceptance gate",
+      "role": "verifier",
+      "needs": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05-files",
+        "P06-ui",
+        "P07-ui",
+        "P08-pack",
+        "P09-restart",
+        "P11-core"
+      ],
+      "resources": [
+        "demo",
+        "science"
+      ],
+      "paths": [
+        "tests/**",
+        "evidence/commands/**"
+      ],
+      "specs": [
+        "PRD §11.2",
+        "T11/T13.2/T13.4"
+      ],
+      "requirements": [
+        "On one integrated snapshot execute all non-chat full features including offline/restart; parent owns upgrading core-acceptance from v1 to fail if any required capability/test is absent, verifier independently executes it.",
+        "Map F01–F17 and non-chat F18 plus AT01–AT12/AT15/AT16/AT18 to actual artifacts. AT13/AT14 remain partial and AT17 unpassed. Lead fixes every finding before admitting M7."
+      ],
+      "checks": [
+        "make doctor",
+        "make test",
+        "make domain-tests",
+        "make science-smoke",
+        "make web-test",
+        "make web-build",
+        "make ui-checks",
+        "make core-acceptance"
+      ]
+    },
+    {
+      "id": "G-CONNECT",
+      "chunk": null,
+      "title": "Provider connectivity preparation only",
+      "role": "lead",
+      "needs": [
+        "G-CONTRACT"
+      ],
+      "resources": [
+        "provider"
+      ],
+      "paths": [
+        "evidence/commands/**"
+      ],
+      "specs": [
+        "PRD §10.4",
+        "T11.4/T13.2"
+      ],
+      "requirements": [
+        "Check existing product copilot account/model connectivity with redacted evidence; reserve interface only. Coding-agent Grok choice does not change product provider.",
+        "No pre-core copilot implementation, live workflow evaluation or 30×3 suite."
+      ],
+      "checks": [
+        "make provider-check"
+      ]
+    },
+    {
+      "id": "P10",
+      "chunk": "P10",
+      "title": "Copilot wiring without the 90-run evaluation",
+      "role": "api",
+      "needs": [
+        "G-CORE",
+        "G-CONNECT"
+      ],
+      "resources": [
+        "provider"
+      ],
+      "paths": [
+        "api/aabflow/copilot/**",
+        "tests/unit/test_copilot_*.py",
+        "scripts/copilot_*.py",
+        "evidence/copilot/**"
+      ],
+      "specs": [
+        "PRD §10, AT17",
+        "T11.1–T11.8/T13.4"
+      ],
+      "requirements": [
+        "User decision 2026-10-10: do not run the 30 cases × 3 live evaluation. AT17 stays not passed. Do not delete or weaken the case file to fake a pass.",
+        "Keep the existing copilot unit tests green. One provider smoke is already recorded. No further live copilot suite."
+      ],
+      "checks": [
+        "make test"
+      ]
+    },
+    {
+      "id": "P11-final",
+      "chunk": "P11",
+      "title": "Full three-surface consistency and six-screen UI gate",
+      "role": "ui",
+      "needs": [
+        "P11-core",
+        "P10"
+      ],
+      "resources": [
+        "demo",
+        "provider"
+      ],
+      "paths": [
+        "web/**",
+        "tests/e2e/**",
+        "evidence/screenshots/**"
+      ],
+      "specs": [
+        "PRD §9.6, AT13/AT14",
+        "T10–T11"
+      ],
+      "requirements": [
+        "Same original-precision metrics, display units and run IDs across reports, actual UI and real copilot tool results; bilingual cards and chat states included.",
+        "All six screens (Workspace/Compare/Explore/Impact/Onboarding/Copilot) pass accessibility/state/reduced-motion and 3 viewports; refresh screenshots and all affected non-chat evidence. Only now mark full AT13/AT14 passed."
+      ],
+      "checks": [
+        "make test",
+        "make web-test",
+        "make web-build",
+        "make ui-checks",
+        "make contracts"
+      ]
+    },
+    {
+      "id": "P12",
+      "chunk": "P12",
+      "title": "Actual five-minute stage route E2E",
+      "role": "ui",
+      "needs": [
+        "P11-final",
+        "P08-pack",
+        "P09-restart"
+      ],
+      "resources": [
+        "demo",
+        "provider",
+        "science"
+      ],
+      "paths": [
+        "tests/e2e/stage-route.spec.ts",
+        "evidence/commands/**"
+      ],
+      "specs": [
+        "PRD §13.2",
+        "T12"
+      ],
+      "requirements": [
+        "Implement and execute entire PRD stage route against real API and stored outputs, including exports/onboarding/copilot; no production fixtures or test-only success paths.",
+        "Execute deeper inspections explicitly: real cotton run, surrogate preview→exact confirmation, synergy, SDG formula drill-down, onboarding and network-denied core operation (PRD §13.2).",
+        "Capture run/job/version IDs, screenshots and traces; reject mismatched/stale values and incomplete transitions."
+      ],
+      "checks": [
+        "make test",
+        "make web-test",
+        "make web-build",
+        "make ui-checks",
+        "make core-acceptance",
+        "make copilot-evals"
+      ]
+    },
+    {
+      "id": "P13-timing",
+      "chunk": "P13",
+      "title": "Presentation-device cold launch and timings",
+      "role": "verifier",
+      "needs": [
+        "P12"
+      ],
+      "resources": [
+        "demo",
+        "science",
+        "provider"
+      ],
+      "paths": [
+        "scripts/release_*.py",
+        "evidence/benchmarks/**",
+        "evidence/commands/**"
+      ],
+      "specs": [
+        "PRD §11.1",
+        "T12.3/T13.4"
+      ],
+      "requirements": [
+        "Parent owns fixing make demo to launch an already-built frozen image without installs/builds/downloads/training; separate explicit build step, verifier independently measures execution.",
+        "Clean data/bootstrap and cold/warm presentation-device measurements, at least 20 actual 30-field solves, p50/p95/gap/CPU/RAM/device/assets and all §11.1 targets; fix shortfalls without weakening targets."
+      ],
+      "checks": [
+        "Build frozen image explicitly, then make demo",
+        "Execute full presentation-device timing suite",
+        "make test"
+      ]
+    },
+    {
+      "id": "G-REVIEW",
+      "chunk": null,
+      "title": "Reviewer-merged prerequisite gate",
+      "role": "lead",
+      "needs": [
+        "P00",
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05-files",
+        "P06-ui",
+        "P07-ui",
+        "P08-pack",
+        "P09-restart",
+        "P10",
+        "P11-final",
+        "P12"
+      ],
+      "resources": [],
+      "paths": [
+        "docs/**"
+      ],
+      "specs": [
+        "docs/WORKFLOW.md",
+        "docs/REVIEW_PLAN.md §1–2"
+      ],
+      "requirements": [
+        "All prerequisite PRs independently verified and merged by reviewer after required human confirmation; milestone gates recorded; builder cannot approve or merge its own PR.",
+        "Verify GitHub state and exact merged SHAs; no gap/fixable finding hidden at release."
+      ],
+      "checks": [
+        "gh pr list and individual merge SHA verification",
+        "Read reviewer milestone evidence"
+      ],
+      "dependency_state": "merged"
+    },
+    {
+      "id": "P13-release",
+      "chunk": "P13",
+      "title": "Complete release report and final proof pack",
+      "role": "lead",
+      "needs": [
+        "P13-timing",
+        "G-REVIEW"
+      ],
+      "resources": [
+        "demo",
+        "science",
+        "provider"
+      ],
+      "paths": [
+        "scripts/release_*.py",
+        "scripts/build_evidence_pack.py",
+        "docs/STATUS.md",
+        "evidence/pack/**"
+      ],
+      "specs": [
+        "PRD §0/§11/§13.3",
+        "T12.5/T13.4"
+      ],
+      "requirements": [
+        "Execute make release-check aggregating each F01–F20/AT01–AT18 with genuine passed/failed/blocked evidence, versions, hashes and full cold-launch/timing/provider/offline results.",
+        "Include actual rehearsal recording, permitted licensed distributable assets and prebuilt image/bootstrap preparation; source alone cannot support a clean-clone offline claim. Verify final pack after recording.",
+        "Regenerate complete proof pack and STATUS on final integrated frozen snapshot; missing/failed requirements exit nonzero. Ship P13 PR; release is prepared, not fully released, until its reviewer gate passes."
+      ],
+      "checks": [
+        "make doctor",
+        "make core-acceptance",
+        "make copilot-evals",
+        "make release-check",
+        "Execute final evidence-pack build and hash verification"
+      ]
+    },
+    {
+      "id": "G-RELEASE",
+      "chunk": null,
+      "title": "Independent final release confirmation",
+      "role": "lead",
+      "needs": [
+        "P13-release"
+      ],
+      "resources": [
+        "demo",
+        "science",
+        "provider"
+      ],
+      "paths": [
+        "evidence/**",
+        "docs/STATUS.md"
+      ],
+      "specs": [
+        "docs/REVIEW_PLAN.md M8",
+        "PRD §0/§11/§13"
+      ],
+      "requirements": [
+        "P13 merged after independent reviewer verification and human confirmation; rerun release-check on final main/image/data hashes and preserve reviewer release evidence.",
+        "Only complete when all scope passes; concrete blockers reported honestly; no automatic merge or claimed Cursor execution from configuration."
+      ],
+      "checks": [
+        "Verify P13 merged SHA and reviewer M8 evidence",
+        "make release-check"
+      ],
+      "dependency_state": "merged"
+    }
+  ]
+}

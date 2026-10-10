@@ -1,0 +1,9 @@
+---
+description: AabFlow full-scope development, DAG orchestration and honest evidence
+alwaysApply: true
+---
+Read AGENTS.md and CLAUDE.md. Preserve all F01–F20/AT01–AT18; complete every actionable finding and rejection case before shipping. Docker only; no host project dependency installs. Never inspect .env/.env.* or commit keys. Never commit/push main, force-push or rebase pushed branches. Existing approval rules for merges/spec edits/deletions still apply; Cursor does not inherit Claude hooks automatically.
+
+For queue-wide development, parallel work, /aabflow-build or /aabflow-resume, follow docs/AGENT_WORKFLOW.md and docs/agent-dag.json. Parent owns shared contracts, integration, checkpoints and commits. At most six direct custom subagents in isolated local worktrees; exact file assignments, Docker runtime isolation and resource leases required. Workers never recursively delegate or mutate another checkout. Copilot implementation/evaluation starts only after complete G-CORE; provider connectivity alone may precede it. Coding-agent model preferences never change the product provider.
+
+Use Grok 4.7 high/500k/Fast off for parent and all named custom agents; inspect actual task model, do not silently substitute built-in faster agents. Configuration alone is not executed model/GPU/test evidence. Actual GPU for supported workloads; AquaCrop/CP-SAT CPU; required statistical holdouts remain. Read-only spec audit and executed verification supplement independent Sipra-Aoun PR review; builders never approve/merge their own work.

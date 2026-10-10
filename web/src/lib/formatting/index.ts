@@ -115,6 +115,8 @@ export function formatWithUnit(value: number, unit: string): string {
     case "fraction":
     case "ratio":
       return formatPercent(value, Math.abs(value) < 0.1 ? 1 : 0);
+    case "pct_points":
+      return `${formatNumber(value, 1)} pp`;
     case "percent":
     case "%":
       return `${formatNumber(value, 1)}%`;
@@ -148,7 +150,7 @@ export function formatDelta(value: number, unit: string): string {
 }
 
 export function shortUnit(unit: string): string {
-  return unit === "fraction" ? "pp" : unit.replace("m3", "m³");
+  return unit === "fraction" || unit === "ratio" || unit === "pct_points" ? "pp" : unit.replace("m3", "m³");
 }
 
 const dateFmt = new Intl.DateTimeFormat("en-GB", { timeZone: TZ, day: "numeric", month: "short", year: "numeric" });

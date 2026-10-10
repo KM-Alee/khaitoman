@@ -10,6 +10,7 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass, field, replace
 from pathlib import Path
+from urllib.parse import urlsplit
 
 ROOT = Path(__file__).resolve().parents[2]
 CONTRACT_VERSION = "2.0.0"
@@ -38,6 +39,7 @@ class Settings:
     heartbeat_s: float = 2.0
     lease_s: float = 15.0
     extra: dict = field(default_factory=dict)
+    cors_origins: tuple[str, ...] = ()
 
     @property
     def pilots_dir(self) -> Path:
@@ -74,4 +76,24 @@ def settings_from_env() -> Settings:
         db_path=Path(os.environ.get("AABFLOW_DB_PATH", data / "app.sqlite")),
         workers=int(os.environ.get("AABFLOW_WORKERS", "2")),
         solver_workers=int(os.environ.get("AABFLOW_SOLVER_WORKERS", "2")),
+        cors_origins=parse_cors_origins(os.environ.get("AABFLOW_CORS_ORIGINS", "")),
     )
+
+
+def parse_cors_origins(raw: str) -> tuple[str, ...]:
+    """Explicit browser origins only; never grant credentialed access to a wildcard."""
+    origins = tuple(dict.fromkeys(s.strip().rstrip("/") for s in raw.split(",") if s.strip()))
+    for origin in origins:
+        url = urlsplit(origin)
+        if (
+            url.scheme not in {"http", "https"}
+            or not url.hostname
+            or url.username
+            or url.password
+            or url.path
+            or url.query
+            or url.fragment
+            or "*" in origin
+        ):
+            raise ValueError("AABFLOW_CORS_ORIGINS must contain explicit http(s) origins")
+    return origins

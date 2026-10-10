@@ -10,7 +10,7 @@ import { useFieldLabel } from "@/features/impact/viewKit";
 import { formatPKR, formatPercent, formatVolume, titleCase } from "@/lib/formatting";
 import { cn } from "@/lib/cn";
 import { useRunExplanations, type RunExplanations } from "./api";
-import { CitationChip } from "./TurnView";
+import { CitationChip } from "./blocks";
 
 const CATEGORY_LABEL: Record<string, string> = {
   timing: "Timing with existing assets",

@@ -6,6 +6,7 @@ What is done, what is left, and the ordered PR queue that "ai continue" works th
 - **Process** lives in [`docs/WORKFLOW.md`](WORKFLOW.md) (builder ships PRs, reviewer verifies, fixes and merges).
 - **Reviewer side** of this plan: [`docs/REVIEW_PLAN.md`](REVIEW_PLAN.md).
 - **"ai continue"**: [`docs/CONTINUE.md`](CONTINUE.md) reads this file and picks the next step for your role (builder or reviewer).
+- **Parallel execution**: [`AGENT_WORKFLOW.md`](AGENT_WORKFLOW.md) and the complete [`agent-dag.json`](agent-dag.json) refine this PR queue into bounded tasks, core-before-copilot gates and independent reviewer joins. The generated graph is [`AGENT_DAG.md`](AGENT_DAG.md).
 
 Scope is fixed: F01–F20 and AT01–AT18, nothing cut.
 
@@ -39,32 +40,34 @@ P00 was merged as PR #2 on 2026-10-10. P01 now targets `main`; its domain and GP
 
 ## 2. PR queue
 
-Work top to bottom. Each row is one PR (stack only where **Needs** names an unmerged PR). Branch `feat/pNN-<slug>` (or `fix/`, `chore/`), PR title `PNN <IDs>: <summary>`.
+For serial work, use the first ready row; parallel work follows the DAG's substeps and validated SHA ancestry. Each row is one coherent PR, with explicit stacked sub-PRs where a split integration gate requires them. Parent chunks stay incomplete until all substeps pass. Branch `feat/pNN-<slug>` (or `fix/`, `chore/`), PR title `PNN <IDs>: <summary>`.
 
 Status values: `todo`, `building` (branch pushed, no PR yet), `review #n`, `done #n`. The builder sets `review #n` in the PR itself; the reviewer sets `done #n` in its last review commit before merging.
 
 | ID | Milestone | Delivers | Needs | Status |
 |---|---|---|---|---|
 | P00 | M1–M5 | One PR with the whole current working tree (`git add .`; `.env` and `.xfer/` stay ignored), opened by the lead thread, including these plan docs: workflow, Esri imagery, surrogate retrain + domain-coverage test, pilot weather, copilot tool shapes. Refresh `docs/STATUS.md` with evidence for M0–M5 rows. | — | done #2 |
-| P01 | M2 | Pilot-b candidate libraries for all 4 seasons (`make candidates PILOT=pilot-b`). `make domain-tests` runs the AT02–AT04 tests and the water/property suites. | P00 | review #3 |
-| P02 | M1 | AT01 test (`tests/integration/test_pilot_packages.py`): both pilots have real scene/source IDs, ≥30 reviewed fields, valid directed graph, manifest hashes match. `make pilot-a`/`pilot-b` reproduce the package. | P00 | todo |
-| P03 | M3 | Mark AT05–AT08, AT12 with evidence; fill any rule in PRD §11.2 those tests miss. `make core-acceptance` v1 runs every AT test that exists. | P00 | todo |
-| P04 | M5 | AT09–AT11 evidence; surrogate preview ≤300 ms after load (PRD §11.1), in-domain on the default request. | P00 | todo |
-| P05 | M6 | Reports + evidence API (F14, F17): `POST /reports`, `GET /reports/{id}`, files route, report job, self-contained `report.html`, CSVs, GeoJSON, `manifest.json` with sha256. Match the contract the copilot already calls. | P00 | todo |
-| P06 | M6 | Impact/SDG (F16, PRD §8.5, T7.5): `services/impact`, three cards (2.4, 6.4/6.5, 13.1), field-change distribution, no 0–100 score, CO₂ `not_estimated`. Impact screen SDG cards. | P00 | todo |
-| P07 | M6 | Onboarding API + job (F03, AT16, T9.1): aoi-check, raw-packages, intake, process, versioned review (409 on stale), publish with validation, layers. UI wizard wired. Integration test publishes pilot-b `reviewed-v2` from its real raw bundle. | P00 | todo |
-| P08 | M6 | Package export/import zip (T9.3–T9.5) with all import checks; `scripts/build_evidence_pack.py` writes the §13.3 pack. | P05 | todo |
-| P09 | M6 | AT15 offline (sockets blocked; boot, pilots, solve, replay, frontier, stress, export) + `scripts/offline_check.py` on `web/dist`. AT18 restart (runs restore and re-verify, interrupted jobs marked honestly, tampered artifact refused). | P05, P08 | todo |
-| P10 | M7 | Copilot live smoke eval, then full 30×3; fix failures; bilingual (en/ur) answers and cards; `make copilot-evals`. AT17. | P05 | todo |
+| P01 | M2 | Pilot-b candidate libraries for all 4 seasons (`make candidates PILOT=pilot-b`). `make domain-tests` runs the AT02–AT04 tests and the water/property suites. | P00 | done #3 |
+| P02 | M1 | AT01 test (`tests/integration/test_pilot_packages.py`): both pilots have real scene/source IDs, ≥30 reviewed fields, valid directed graph, manifest hashes match. `make pilot-a`/`pilot-b` reproduce the package. | P00 | done #4 |
+| P03 | M3 | Mark AT05–AT08, AT12 with evidence; fill any rule in PRD §11.2 those tests miss. `make core-acceptance` v1 runs every AT test that exists; partial v1 cannot unlock M7. | P00, P01 | done #5 |
+| P04 | M5 | AT09–AT11 evidence; surrogate preview ≤300 ms after load (PRD §11.1), in-domain on the default request. | P01, P03 | todo |
+| P05 | M6 | Reports + evidence API (F14, F17): `POST /reports`, `GET /reports/{id}`, files route, report job, self-contained `report.html`, CSVs, GeoJSON, `manifest.json` with sha256. Match the contract the copilot already calls. | P00 | done #9 |
+| P06 | M6 | Impact/SDG (F16, PRD §8.5, T7.5): `services/impact`, three cards (2.4, 6.4/6.5, 13.1), field-change distribution, no 0–100 score, CO₂ `not_estimated`. Impact screen SDG cards. | P03, P04 | building |
+| P07 | M6 | Onboarding API + job (F03, AT16, T9.1): aoi-check, raw-packages, intake, process, versioned review (409 on stale), publish with validation, layers. UI wizard wired. Integration test publishes pilot-b `reviewed-v2` from its real raw bundle. | P00 | building |
+| P08 | M6 | Package export/import zip (T9.3–T9.5) with all import checks; `scripts/build_evidence_pack.py` writes the §13.3 pack. | P05, P07; pack also P04/P06 | building |
+| P09 | M6 | AT15 offline (sockets blocked; boot, pilots, solve, replay, frontier, stress, export) + `scripts/offline_check.py` on `web/dist`. AT18 restart (runs restore and re-verify, interrupted jobs marked honestly, tampered artifact refused). | P08, P11-core | todo |
+| P10 | M7 | Copilot code stays; no 30×3 live eval (user decision 2026-10-10). AT17 is not marked passed. Existing unit tests stay green. | Full G-CORE including P09 | todo |
 | P11 | M4 | AT13 (report, UI and copilot show the same values, units, run IDs) and AT14 (six screens: responsive, keyboard, contrast, states, reduced motion; Playwright + axe). Screenshots at 3 viewports in `evidence/screenshots/`. Esri check in a real browser. | P06, P07, P10 | todo |
 | P12 | M8 | Playwright E2E of the full PRD §13.2 stage route against the real API (`tests/e2e/stage-route.spec.ts`). | P11 | todo |
 | P13 | M8 | Cold launch via `make demo`, §11.1 timings recorded, `make release-check`, release/capability report (each F and AT passed/failed/blocked with artifact paths), evidence pack, final STATUS. | P12 | todo |
+
+P06-service (#7), P07-process (#6), and P08-zip (#8) are merged. Their parent rows remain incomplete until the remaining UI, publish and evidence-pack scope has its full validation. Integration code beyond these sub-PRs does not by itself pass a parent or acceptance gate.
 
 Gap issues (`gh issue list --label gap`) jump the queue: the builder fixes open gaps for merged work before starting the next `todo` row, and that PR says `Closes #n`.
 
 ## 3. Next up
 
 1. P00 (#2) is merged. P01 (#3) is ready for reviewer verification; the builder takes P02 next.
-2. P01, P02, P05, P06 and P07 only need P00, so they can be built in parallel (separate branches from `origin/main` once P00 merges, or stacked on the P00 branch until then).
-3. P10 (copilot eval) starts as soon as P05 is merged; it costs model calls and time, so start it early.
-4. P11–P13 are the release run and go last.
+2. After shared-interface inventory, P02, P03 and P05 API preparation can proceed independently; the DAG caps workers and expensive resources. P05 artifacts require P03; P07 process needs P02 and review uses P01 version/library semantics. Final chunk validation uses all recorded dependencies.
+3. P11-core runs before P09/G-CORE. Each required check runs once. Reuse libraries, the trained surrogate, and cached inference. Do not retrain or repeat a passing run.
+4. The 30×3 copilot evaluation is waived. AT17 stays unpassed. P11-final, P12, and P13 still ship the product once each. Reviewer merges remain required for release.

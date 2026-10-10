@@ -1,0 +1,5584 @@
+{
+ "kind": "copilot-live-smoke",
+ "note": "Live hosted-model smoke on real pilot data; not the T11.8 30x3 evaluation and not AT17.",
+ "started_at": "2026-10-10T13:11:12.221135+00:00",
+ "model": "gpt-6-luna",
+ "key_configured": true,
+ "pilot": {
+  "pilot_id": "pilot-a",
+  "pilot_version": "reviewed-v1",
+  "season_id": "wheat-rabi-2027-28"
+ },
+ "turns": [
+  {
+   "case": "S1",
+   "covers": "lay best-plan question with a chart",
+   "message": "What's the best plan for our canal this season? Keep it simple.",
+   "turn_id": "turn_1c50e296765d4b93a5a77958d1d9f435",
+   "status": "completed",
+   "language": "en",
+   "wall_s": 33.1,
+   "latency_ms": 32114,
+   "rounds": 2,
+   "timings": {
+    "provider_calls": [
+     {
+      "calls": [
+       "get_plan_ladder",
+       "action_plan"
+      ],
+      "forced_final": false,
+      "latency_ms": 11733,
+      "round": 1,
+      "usage": {
+       "input_tokens": 6695,
+       "output_tokens": 94,
+       "total_tokens": 6789
+      }
+     },
+     {
+      "calls": [
+       "final_answer"
+      ],
+      "forced_final": false,
+      "latency_ms": 20225,
+      "round": 2,
+      "usage": {
+       "input_tokens": 14497,
+       "output_tokens": 815,
+       "total_tokens": 15312
+      }
+     }
+    ],
+    "provider_ms": 31958,
+    "tool_ms": 104,
+    "tools": [
+     {
+      "call_id": "call_oemii9ndQJIYQLGHCZHTdMSE",
+      "ms": 28,
+      "round": 1,
+      "status": "succeeded",
+      "tool": "action_plan"
+     },
+     {
+      "call_id": "call_Fpb601pfweCpiu3XCNn3jEae",
+      "ms": 76,
+      "round": 1,
+      "status": "succeeded",
+      "tool": "get_plan_ladder"
+     }
+    ],
+    "total_ms": 32114
+   },
+   "model": "gpt-6-luna",
+   "prompt_version": "copilot-prompt-2.1.0",
+   "tool_schema_version": "tools-a3cc2c9c802cf55b",
+   "provider_request_ids": [
+    "resp_0a153e94e6073d93006aca39a0031c87d28f63655493763567",
+    "resp_0a153e94e6073d93006aca39a971dc87d29d6b5e931288944e"
+   ],
+   "tool_calls": [
+    {
+     "call_id": "call_Fpb601pfweCpiu3XCNn3jEae",
+     "round": 1,
+     "tool": "get_plan_ladder",
+     "arguments": {
+      "revision_id": "rev_33c49fe81962437d934e7638052e3c71"
+     },
+     "status": "succeeded",
+     "error": null,
+     "datasets": [
+      {
+       "dataset_id": "ds2",
+       "kind": "plans_side_by_side",
+       "title": "Plans side by side",
+       "rows": 4,
+       "charts": [
+        "table",
+        "bar",
+        "grouped_bar",
+        "kpi"
+       ]
+      },
+      {
+       "dataset_id": "ds3",
+       "kind": "field_deltas",
+       "title": "Change per field: P integrated plan versus B0 fixed roster",
+       "rows": 30,
+       "charts": [
+        "table",
+        "delta_bar",
+        "map",
+        "bar"
+       ]
+      },
+      {
+       "dataset_id": "ds4",
+       "kind": "ladder_steps",
+       "title": "What each step up the plan ladder adds",
+       "rows": 2,
+       "charts": [
+        "table",
+        "delta_bar",
+        "bar"
+       ]
+      }
+     ]
+    },
+    {
+     "call_id": "call_oemii9ndQJIYQLGHCZHTdMSE",
+     "round": 1,
+     "tool": "action_plan",
+     "arguments": {
+      "field_id": null,
+      "run_id": "run_c1251d888e0045fc88e80f05b20158f0"
+     },
+     "status": "succeeded",
+     "error": null,
+     "datasets": [
+      {
+       "dataset_id": "ds1",
+       "kind": "action_steps",
+       "title": "What to do, in order (run run_c1251d888e0045fc88e80f05b20158f0)",
+       "rows": 3,
+       "charts": [
+        "table",
+        "steps"
+       ]
+      }
+     ]
+    }
+   ],
+   "created_refs": [],
+   "error": null,
+   "answer_validated": true,
+   "answer_issues": [],
+   "block_types": [
+    "run_badge",
+    "headline",
+    "text",
+    "metric",
+    "metric",
+    "visual",
+    "visual",
+    "comparison",
+    "uncertainty",
+    "follow_ups"
+   ],
+   "visuals": [
+    {
+     "chart": "bar",
+     "title": "Plans at a glance",
+     "dataset_kind": "plans_side_by_side",
+     "rows": 4,
+     "source": {
+      "tool": "get_plan_ladder",
+      "call_id": "call_Fpb601pfweCpiu3XCNn3jEae",
+      "run_ids": [
+       "run_13c326f075704c4abd06b90c64e9da44",
+       "run_3608c92ef3964ed39775cec045a40f69",
+       "run_c1251d888e0045fc88e80f05b20158f0",
+       "run_a7462c4c40d84e3898b5ccc60e668396"
+      ],
+      "analysis_ids": [],
+      "comparison_ids": [
+       "cmp_699ad41728044b91b47a2bca9bf78282"
+      ],
+      "revision_ids": [],
+      "endpoint": "/comparisons"
+     }
+    },
+    {
+     "chart": "steps",
+     "title": "What the integrated plan asks us to do",
+     "dataset_kind": "action_steps",
+     "rows": 3,
+     "source": {
+      "tool": "action_plan",
+      "call_id": "call_oemii9ndQJIYQLGHCZHTdMSE",
+      "run_ids": [
+       "run_c1251d888e0045fc88e80f05b20158f0"
+      ],
+      "analysis_ids": [],
+      "comparison_ids": [],
+      "revision_ids": [],
+      "endpoint": "/runs/run_c1251d888e0045fc88e80f05b20158f0/action-plan"
+     }
+    }
+   ],
+   "answer": {
+    "language": "en",
+    "blocks": [
+     {
+      "type": "run_badge",
+      "role": "context",
+      "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+      "plan_kind": "P",
+      "solver_status": "OPTIMAL",
+      "outcome": "plan",
+      "scenario_revision_id": "rev_33c49fe81962437d934e7638052e3c71",
+      "pilot_id": "pilot-a",
+      "pilot_version": "reviewed-v1",
+      "season_id": "wheat-rabi-2027-28",
+      "label": null
+     },
+     {
+      "type": "headline",
+      "text": "The integrated plan (P) is the strongest choice for this season in the model, within the available plan options.",
+      "citations": [],
+      "withheld": false
+     },
+     {
+      "type": "text",
+      "text": "It has the highest modeled crop production of the compared plans while keeping the lowest-field service share at the same level as today’s fixed-roster plan. It involves leveling fields, building two farm ponds, and repairing a shared watercourse; approvals and participant costs need to be confirmed.",
+      "citations": [
+       {
+        "ref_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "kind": "run",
+        "auto": false
+       }
+      ],
+      "withheld": false
+     },
+     {
+      "type": "metric",
+      "metric_id": "production_kg",
+      "definition_id": "production_kg@metrics-1.0.0",
+      "label": "Modeled crop production",
+      "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+      "field_id": null,
+      "value": 154117.87875700262,
+      "unit": "kg",
+      "status": "available",
+      "reason": null,
+      "basis": "model_output",
+      "plan_kind": "P",
+      "solver_status": "OPTIMAL"
+     },
+     {
+      "type": "metric",
+      "metric_id": "capital_commitment_pkr",
+      "definition_id": "capital_commitment_pkr@metrics-1.0.0",
+      "label": "Gross capital commitment",
+      "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+      "field_id": null,
+      "value": 1953216.0,
+      "unit": "PKR",
+      "status": "available",
+      "reason": null,
+      "basis": "computed_from_inputs",
+      "plan_kind": "P",
+      "solver_status": "OPTIMAL"
+     },
+     {
+      "type": "visual",
+      "visual_id": "v1",
+      "chart": "bar",
+      "title": "Plans at a glance",
+      "caption": "Compare modeled production and spending across the available plans.",
+      "dataset_id": "ds2",
+      "dataset_kind": "plans_side_by_side",
+      "columns": [
+       {
+        "key": "plan",
+        "label": "Plan",
+        "label_ur": "منصوبہ",
+        "kind": "category",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "plan_kind",
+        "label": "Plan kind",
+        "label_ur": "منصوبے کی قسم",
+        "kind": "category",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "production_kg",
+        "label": "Crop production",
+        "label_ur": "فصل کی پیداوار",
+        "kind": "number",
+        "unit": "kg",
+        "unit_column": null,
+        "basis": "model_output",
+        "ref": null
+       },
+       {
+        "key": "capital_commitment_pkr",
+        "label": "Capital spent",
+        "label_ur": "سرمایہ خرچ",
+        "kind": "number",
+        "unit": "PKR",
+        "unit_column": null,
+        "basis": "computed_from_inputs",
+        "ref": null
+       },
+       {
+        "key": "operating_cost_pkr",
+        "label": "Seasonal operating cost",
+        "label_ur": "موسمی آپریٹنگ لاگت",
+        "kind": "number",
+        "unit": "PKR",
+        "unit_column": null,
+        "basis": "computed_from_inputs",
+        "ref": null
+       },
+       {
+        "key": "canal_source_withdrawal_m3",
+        "label": "Canal water withdrawn",
+        "label_ur": "نہر سے لیا گیا پانی",
+        "kind": "number",
+        "unit": "m3",
+        "unit_column": null,
+        "basis": "computed_from_inputs",
+        "ref": null
+       },
+       {
+        "key": "groundwater_m3",
+        "label": "Groundwater pumped",
+        "label_ur": "زیر زمین پانی",
+        "kind": "number",
+        "unit": "m3",
+        "unit_column": null,
+        "basis": "computed_from_inputs",
+        "ref": null
+       },
+       {
+        "key": "min_service_ratio",
+        "label": "Lowest field's share of allowance",
+        "label_ur": "کم ترین کھیت کا حصہ",
+        "kind": "number",
+        "unit": "ratio",
+        "unit_column": null,
+        "basis": "computed_from_inputs",
+        "ref": null
+       },
+       {
+        "key": "tail_min_service_ratio",
+        "label": "Lowest tail field's share",
+        "label_ur": "دم کے کم ترین کھیت کا حصہ",
+        "kind": "number",
+        "unit": "ratio",
+        "unit_column": null,
+        "basis": "computed_from_inputs",
+        "ref": null
+       },
+       {
+        "key": "solver_status",
+        "label": "Solver status",
+        "label_ur": "حل کی حالت",
+        "kind": "status",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "run_id",
+        "label": "Run",
+        "label_ur": "رن",
+        "kind": "id",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": "run"
+       }
+      ],
+      "rows": [
+       {
+        "canal_source_withdrawal_m3": 40199.2,
+        "capital_commitment_pkr": 1953220.0,
+        "groundwater_m3": 8288.04,
+        "min_service_ratio": 0.609553,
+        "operating_cost_pkr": 70452.0,
+        "plan": "P integrated plan",
+        "plan_kind": "P",
+        "production_kg": 154118.0,
+        "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "solver_status": "OPTIMAL",
+        "tail_min_service_ratio": 0.609553
+       },
+       {
+        "canal_source_withdrawal_m3": 38145.8,
+        "capital_commitment_pkr": 0.0,
+        "groundwater_m3": 8269.56,
+        "min_service_ratio": 0.443327,
+        "operating_cost_pkr": 70295.0,
+        "plan": "B1 no new capital",
+        "plan_kind": "B1",
+        "production_kg": 140467.0,
+        "run_id": "run_3608c92ef3964ed39775cec045a40f69",
+        "solver_status": "OPTIMAL",
+        "tail_min_service_ratio": 0.443327
+       },
+       {
+        "canal_source_withdrawal_m3": 40101.6,
+        "capital_commitment_pkr": 0.0,
+        "groundwater_m3": 0.0,
+        "min_service_ratio": 0.609553,
+        "operating_cost_pkr": 0.0,
+        "plan": "B0 fixed roster",
+        "plan_kind": "B0",
+        "production_kg": 129701.0,
+        "run_id": "run_13c326f075704c4abd06b90c64e9da44",
+        "solver_status": "FEASIBLE",
+        "tail_min_service_ratio": 0.609553
+       },
+       {
+        "canal_source_withdrawal_m3": 25476.9,
+        "capital_commitment_pkr": 1543810.0,
+        "groundwater_m3": 4794.45,
+        "min_service_ratio": 0.386695,
+        "operating_cost_pkr": 40757.0,
+        "plan": "R robust plan",
+        "plan_kind": "R",
+        "production_kg": 126757.0,
+        "run_id": "run_a7462c4c40d84e3898b5ccc60e668396",
+        "solver_status": "OPTIMAL",
+        "tail_min_service_ratio": 0.389032
+       }
+      ],
+      "row_count": 4,
+      "truncated": false,
+      "encoding": {
+       "x": "plan",
+       "y": [
+        "production_kg"
+       ],
+       "series": null,
+       "value": null,
+       "label": null,
+       "color": null,
+       "source": null,
+       "target": null,
+       "id": "run_id",
+       "status": "solver_status"
+      },
+      "highlight_ids": [
+       "run_c1251d888e0045fc88e80f05b20158f0"
+      ],
+      "source": {
+       "tool": "get_plan_ladder",
+       "call_id": "call_Fpb601pfweCpiu3XCNn3jEae",
+       "run_ids": [
+        "run_13c326f075704c4abd06b90c64e9da44",
+        "run_3608c92ef3964ed39775cec045a40f69",
+        "run_c1251d888e0045fc88e80f05b20158f0",
+        "run_a7462c4c40d84e3898b5ccc60e668396"
+       ],
+       "analysis_ids": [],
+       "comparison_ids": [
+        "cmp_699ad41728044b91b47a2bca9bf78282"
+       ],
+       "revision_ids": [],
+       "endpoint": "/comparisons"
+      },
+      "basis": [
+       "computed_from_inputs",
+       "model_output"
+      ],
+      "notes": [
+       "matched comparison",
+       "R robust plan is evaluated across several weather/supply states; it is shown for reference and is not part of the matched comparison."
+      ],
+      "interactions": [
+       {
+        "on": "select_row",
+        "column": "run_id",
+        "intent": "open_run"
+       }
+      ],
+      "table_fallback": true,
+      "auto": false
+     },
+     {
+      "type": "visual",
+      "visual_id": "v2",
+      "chart": "steps",
+      "title": "What the integrated plan asks us to do",
+      "caption": "The main work is field leveling, ponds, and a shared watercourse repair.",
+      "dataset_id": "ds1",
+      "dataset_kind": "action_steps",
+      "columns": [
+       {
+        "key": "title",
+        "label": "Step",
+        "label_ur": "قدم",
+        "kind": "text",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "category",
+        "label": "Action type",
+        "label_ur": "اقدام کی قسم",
+        "kind": "category",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "start_date",
+        "label": "Start",
+        "label_ur": "آغاز",
+        "kind": "date",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "commissioning_date",
+        "label": "Ready by",
+        "label_ur": "تیار ہونے کی تاریخ",
+        "kind": "date",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "capex_pkr",
+        "label": "Capital cost",
+        "label_ur": "سرمایہ لاگت",
+        "kind": "number",
+        "unit": "PKR",
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "fields_affected",
+        "label": "Fields affected",
+        "label_ur": "متاثرہ کھیت",
+        "kind": "number",
+        "unit": "count",
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "responsible_role",
+        "label": "Who acts",
+        "label_ur": "ذمہ دار",
+        "kind": "text",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "required_approval",
+        "label": "Approval",
+        "label_ur": "منظوری",
+        "kind": "text",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "run_id",
+        "label": "Run",
+        "label_ur": "رن",
+        "kind": "id",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": "run"
+       }
+      ],
+      "rows": [
+       {
+        "capex_pkr": 357893.0,
+        "category": "leveling",
+        "commissioning_date": "2026-10-24",
+        "fields_affected": 30,
+        "required_approval": "Field owner consent",
+        "responsible_role": "Field owner with leveling service provider",
+        "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "start_date": "2026-10-14",
+        "title": "Level fields (30): field-001, field-002, field-003 +27 more"
+       },
+       {
+        "capex_pkr": 409403.0,
+        "category": "pond",
+        "commissioning_date": "2027-01-29",
+        "fields_affected": 2,
+        "required_approval": "WUA committee approval; site/land check",
+        "responsible_role": "Field owner with WUA coordinator",
+        "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "start_date": "2026-10-31",
+        "title": "Build farm pond (2): field-022, field-029"
+       },
+       {
+        "capex_pkr": 1185920.0,
+        "category": "shared_repair",
+        "commissioning_date": "2027-03-09",
+        "fields_affected": 30,
+        "required_approval": "Irrigation department / WUA committee",
+        "responsible_role": "WUA coordinator with irrigation department",
+        "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "start_date": "2026-11-09",
+        "title": "Repair shared watercourse: edge-wc1-reach2"
+       }
+      ],
+      "row_count": 3,
+      "truncated": false,
+      "encoding": {
+       "x": "start_date",
+       "y": [],
+       "series": null,
+       "value": "capex_pkr",
+       "label": "title",
+       "color": null,
+       "source": null,
+       "target": null,
+       "id": "run_id",
+       "status": null
+      },
+      "highlight_ids": [],
+      "source": {
+       "tool": "action_plan",
+       "call_id": "call_oemii9ndQJIYQLGHCZHTdMSE",
+       "run_ids": [
+        "run_c1251d888e0045fc88e80f05b20158f0"
+       ],
+       "analysis_ids": [],
+       "comparison_ids": [],
+       "revision_ids": [],
+       "endpoint": "/runs/run_c1251d888e0045fc88e80f05b20158f0/action-plan"
+      },
+      "basis": [
+       "assumption",
+       "solver_result"
+      ],
+      "notes": [
+       "'accepted' records the local user's decision only; it is not an authorization or work order",
+       "Steps group the run's selected actions by type; costs are server-side sums of listed actions.",
+       "A recommendation does not operate a canal, order equipment or contact a farmer."
+      ],
+      "interactions": [
+       {
+        "on": "select_row",
+        "column": "run_id",
+        "intent": "open_run"
+       }
+      ],
+      "table_fallback": true,
+      "auto": false
+     },
+     {
+      "type": "comparison",
+      "comparison_id": "cmp_699ad41728044b91b47a2bca9bf78282",
+      "run_ids": [
+       "run_13c326f075704c4abd06b90c64e9da44",
+       "run_3608c92ef3964ed39775cec045a40f69",
+       "run_c1251d888e0045fc88e80f05b20158f0"
+      ],
+      "compatible": true,
+      "label": "matched comparison",
+      "deltas": [
+       {
+        "metric_id": "canal_source_withdrawal_m3",
+        "unit": "m3",
+        "a": 40101.6041805469,
+        "b": 38145.77351857119,
+        "delta": -1955.8306619757059,
+        "status": "available"
+       },
+       {
+        "metric_id": "capital_commitment_pkr",
+        "unit": "PKR",
+        "a": 0.0,
+        "b": 0.0,
+        "delta": 0.0,
+        "status": "available"
+       },
+       {
+        "metric_id": "conveyance_loss_m3",
+        "unit": "m3",
+        "a": 8823.290180546886,
+        "b": 8154.121518571252,
+        "delta": -669.1686619756347,
+        "status": "available"
+       },
+       {
+        "metric_id": "crop_value_pkr",
+        "unit": "PKR",
+        "a": null,
+        "b": null,
+        "delta": null,
+        "status": "not_comparable"
+       },
+       {
+        "metric_id": "cropped_area_ha",
+        "unit": "ha",
+        "a": 25.5627,
+        "b": 25.5627,
+        "delta": 0.0,
+        "status": "available"
+       },
+       {
+        "metric_id": "field_application_m3",
+        "unit": "m3",
+        "a": 31311.39819999996,
+        "b": 38261.211999999985,
+        "delta": 6949.813800000025,
+        "status": "available"
+       },
+       {
+        "metric_id": "groundwater_m3",
+        "unit": "m3",
+        "a": 0.0,
+        "b": 8269.560000000001,
+        "delta": 8269.560000000001,
+        "status": "available"
+       },
+       {
+        "metric_id": "head_mean_service_ratio",
+        "unit": "ratio",
+        "a": 0.6852218476421792,
+        "b": 0.6852218476421792,
+        "delta": 0.0,
+        "status": "available"
+       },
+       {
+        "metric_id": "irrigation_contribution_pkr",
+        "unit": "PKR",
+        "a": null,
+        "b": null,
+        "delta": null,
+        "status": "not_comparable"
+       },
+       {
+        "metric_id": "middle_mean_service_ratio",
+        "unit": "ratio",
+        "a": 0.6738937226867499,
+        "b": 0.6435439398276358,
+        "delta": -0.03034978285911405,
+        "status": "available"
+       },
+       {
+        "metric_id": "min_service_ratio",
+        "unit": "ratio",
+        "a": 0.6095528655821812,
+        "b": 0.4433268299732641,
+        "delta": -0.16622603560891713,
+        "status": "available"
+       },
+       {
+        "metric_id": "new_instances_count",
+        "unit": "count",
+        "a": 0.0,
+        "b": 0.0,
+        "delta": 0.0,
+        "status": "available"
+       },
+       {
+        "metric_id": "objective_quantization_bound_kg",
+        "unit": "kg",
+        "a": 3.0,
+        "b": 3.0,
+        "delta": 0.0,
+        "status": "available"
+       },
+       {
+        "metric_id": "operating_cost_pkr",
+        "unit": "PKR",
+        "a": 0.0,
+        "b": 70295.0,
+        "delta": 70295.0,
+        "status": "available"
+       },
+       {
+        "metric_id": "outlet_receipt_m3",
+        "unit": "m3",
+        "a": 31278.31399999996,
+        "b": 29991.65199999994,
+        "delta": -1286.6620000000185,
+        "status": "available"
+       },
+       {
+        "metric_id": "pond_losses_m3",
+        "unit": "m3",
+        "a": 157.07733200000015,
+        "b": 0.0,
+        "delta": -157.07733200000015,
+        "status": "available"
+       },
+       {
+        "metric_id": "pond_rain_m3",
+        "unit": "m3",
+        "a": 17.051532,
+        "b": 0.0,
+        "delta": -17.051532,
+        "status": "available"
+       },
+       {
+        "metric_id": "pond_spill_m3",
+        "unit": "m3",
+        "a": 0.0,
+        "b": 0.0,
+        "delta": 0.0,
+        "status": "available"
+       },
+       {
+        "metric_id": "production_kg",
+        "unit": "kg",
+        "a": 129700.96790749862,
+        "b": 140466.54099240943,
+        "delta": 10765.573084910808,
+        "status": "available"
+       },
+       {
+        "metric_id": "pumping_cost_pkr",
+        "unit": "PKR",
+        "a": 0.0,
+        "b": 70295.0,
+        "delta": 70295.0,
+        "status": "available"
+       },
+       {
+        "metric_id": "sdg_13_1_worst_tested_production_kg",
+        "unit": "kg",
+        "a": null,
+        "b": null,
+        "delta": null,
+        "status": "not_comparable"
+       },
+       {
+        "metric_id": "sdg_2_4_production_retained_fraction",
+        "unit": "ratio",
+        "a": null,
+        "b": null,
+        "delta": null,
+        "status": "not_comparable"
+       },
+       {
+        "metric_id": "sdg_6_4_water_productivity_kg_m3",
+        "unit": "kg/m3",
+        "a": 3.2343087155205614,
+        "b": 3.0262960608956413,
+        "delta": -0.20801265462492013,
+        "status": "available"
+       },
+       {
+        "metric_id": "sdg_6_5_min_entitlement_fulfillment",
+        "unit": "ratio",
+        "a": 0.6095528655821812,
+        "b": 0.4433268299732641,
+        "delta": -0.16622603560891713,
+        "status": "available"
+       },
+       {
+        "metric_id": "tail_mean_service_ratio",
+        "unit": "ratio",
+        "a": 0.6432493178168157,
+        "b": 0.5568530145279048,
+        "delta": -0.0863963032889109,
+        "status": "available"
+       },
+       {
+        "metric_id": "tail_min_service_ratio",
+        "unit": "ratio",
+        "a": 0.6095528655821812,
+        "b": 0.4433268299732641,
+        "delta": -0.16622603560891713,
+        "status": "available"
+       },
+       {
+        "metric_id": "terminal_pond_m3",
+        "unit": "m3",
+        "a": 0.0,
+        "b": 0.0,
+        "delta": 0.0,
+        "status": "available"
+       },
+       {
+        "metric_id": "typical_production_kg",
+        "unit": "kg",
+        "a": 129700.96790749862,
+        "b": 140466.54099240943,
+        "delta": 10765.573084910808,
+        "status": "available"
+       },
+       {
+        "metric_id": "withdrawal_productivity_kg_m3",
+        "unit": "kg/m3",
+        "a": 3.2343087155205614,
+        "b": 3.0262960608956413,
+        "delta": -0.20801265462492013,
+        "status": "available"
+       },
+       {
+        "metric_id": "worst_tested_production_kg",
+        "unit": "kg",
+        "a": 129700.96790749862,
+        "b": 140466.54099240943,
+        "delta": 10765.573084910808,
+        "status": "available"
+       },
+       {
+        "metric_id": "canal_source_withdrawal_m3",
+        "unit": "m3",
+        "a": 40101.6041805469,
+        "b": 40199.23994388747,
+        "delta": 97.63576334057143,
+        "status": "available"
+       },
+       {
+        "metric_id": "capital_commitment_pkr",
+        "unit": "PKR",
+        "a": 0.0,
+        "b": 1953216.0,
+        "delta": 1953216.0,
+        "status": "available"
+       },
+       {
+        "metric_id": "conveyance_loss_m3",
+        "unit": "m3",
+        "a": 8823.290180546886,
+        "b": 7852.820500887458,
+        "delta": -970.469679659428,
+        "status": "available"
+       },
+       {
+        "metric_id": "crop_value_pkr",
+        "unit": "PKR",
+        "a": null,
+        "b": null,
+        "delta": null,
+        "status": "not_comparable"
+       },
+       {
+        "metric_id": "cropped_area_ha",
+        "unit": "ha",
+        "a": 25.5627,
+        "b": 25.493217,
+        "delta": -0.06948299999999819,
+        "status": "available"
+       },
+       {
+        "metric_id": "field_application_m3",
+        "unit": "m3",
+        "a": 31311.39819999996,
+        "b": 40337.765737999965,
+        "delta": 9026.367538000006,
+        "status": "available"
+       },
+       {
+        "metric_id": "groundwater_m3",
+        "unit": "m3",
+        "a": 0.0,
+        "b": 8288.04,
+        "delta": 8288.04,
+        "status": "available"
+       },
+       {
+        "metric_id": "head_mean_service_ratio",
+        "unit": "ratio",
+        "a": 0.6852218476421792,
+        "b": 0.7368293462153539,
+        "delta": 0.051607498573174704,
+        "status": "available"
+       },
+       {
+        "metric_id": "irrigation_contribution_pkr",
+        "unit": "PKR",
+        "a": null,
+        "b": null,
+        "delta": null,
+        "status": "not_comparable"
+       },
+       {
+        "metric_id": "middle_mean_service_ratio",
+        "unit": "ratio",
+        "a": 0.6738937226867499,
+        "b": 0.6817705361907939,
+        "delta": 0.007876813504044011,
+        "status": "available"
+       },
+       {
+        "metric_id": "min_service_ratio",
+        "unit": "ratio",
+        "a": 0.6095528655821812,
+        "b": 0.6095528655821812,
+        "delta": 0.0,
+        "status": "available"
+       },
+       {
+        "metric_id": "new_instances_count",
+        "unit": "count",
+        "a": 0.0,
+        "b": 33.0,
+        "delta": 33.0,
+        "status": "available"
+       },
+       {
+        "metric_id": "objective_quantization_bound_kg",
+        "unit": "kg",
+        "a": 3.0,
+        "b": 3.0,
+        "delta": 0.0,
+        "status": "available"
+       },
+       {
+        "metric_id": "operating_cost_pkr",
+        "unit": "PKR",
+        "a": 0.0,
+        "b": 70452.0,
+        "delta": 70452.0,
+        "status": "available"
+       },
+       {
+        "metric_id": "outlet_receipt_m3",
+        "unit": "m3",
+        "a": 31278.31399999996,
+        "b": 32346.41944299996,
+        "delta": 1068.1054430000004,
+        "status": "available"
+       },
+       {
+        "metric_id": "pond_losses_m3",
+        "unit": "m3",
+        "a": 157.07733200000015,
+        "b": 327.11129300000255,
+        "delta": 170.0339610000024,
+        "status": "available"
+       },
+       {
+        "metric_id": "pond_rain_m3",
+        "unit": "m3",
+        "a": 17.051532,
+        "b": 30.41758799999999,
+        "delta": 13.36605599999999,
+        "status": "available"
+       },
+       {
+        "metric_id": "pond_spill_m3",
+        "unit": "m3",
+        "a": 0.0,
+        "b": 0.0,
+        "delta": 0.0,
+        "status": "available"
+       },
+       {
+        "metric_id": "production_kg",
+        "unit": "kg",
+        "a": 129700.96790749862,
+        "b": 154117.87875700262,
+        "delta": 24416.910849503998,
+        "status": "available"
+       },
+       {
+        "metric_id": "pumping_cost_pkr",
+        "unit": "PKR",
+        "a": 0.0,
+        "b": 70452.0,
+        "delta": 70452.0,
+        "status": "available"
+       },
+       {
+        "metric_id": "sdg_13_1_worst_tested_production_kg",
+        "unit": "kg",
+        "a": null,
+        "b": null,
+        "delta": null,
+        "status": "not_comparable"
+       },
+       {
+        "metric_id": "sdg_2_4_production_retained_fraction",
+        "unit": "ratio",
+        "a": null,
+        "b": null,
+        "delta": null,
+        "status": "not_comparable"
+       },
+       {
+        "metric_id": "sdg_6_4_water_productivity_kg_m3",
+        "unit": "kg/m3",
+        "a": 3.2343087155205614,
+        "b": 3.178521850170963,
+        "delta": -0.055786865349598536,
+        "status": "available"
+       },
+       {
+        "metric_id": "sdg_6_5_min_entitlement_fulfillment",
+        "unit": "ratio",
+        "a": 0.6095528655821812,
+        "b": 0.6095528655821812,
+        "delta": 0.0,
+        "status": "available"
+       },
+       {
+        "metric_id": "tail_mean_service_ratio",
+        "unit": "ratio",
+        "a": 0.6432493178168157,
+        "b": 0.6421300131382204,
+        "delta": -0.0011193046785953342,
+        "status": "available"
+       },
+       {
+        "metric_id": "tail_min_service_ratio",
+        "unit": "ratio",
+        "a": 0.6095528655821812,
+        "b": 0.6095528655821812,
+        "delta": 0.0,
+        "status": "available"
+       },
+       {
+        "metric_id": "terminal_pond_m3",
+        "unit": "m3",
+        "a": 0.0,
+        "b": 0.0,
+        "delta": 0.0,
+        "status": "available"
+       },
+       {
+        "metric_id": "typical_production_kg",
+        "unit": "kg",
+        "a": 129700.96790749862,
+        "b": 154117.87875700262,
+        "delta": 24416.910849503998,
+        "status": "available"
+       },
+       {
+        "metric_id": "withdrawal_productivity_kg_m3",
+        "unit": "kg/m3",
+        "a": 3.2343087155205614,
+        "b": 3.178521850170963,
+        "delta": -0.055786865349598536,
+        "status": "available"
+       },
+       {
+        "metric_id": "worst_tested_production_kg",
+        "unit": "kg",
+        "a": 129700.96790749862,
+        "b": 154117.87875700262,
+        "delta": 24416.910849503998,
+        "status": "available"
+       }
+      ],
+      "fields_worse_off": []
+     },
+     {
+      "type": "uncertainty",
+      "text": "Production is an uncalibrated AquaCrop model output, not a measured harvest. Costs and water rights are assumptions, and “optimal” means best within the finite set of candidate plans.",
+      "citations": [
+       {
+        "ref_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "kind": "run",
+        "auto": false
+       }
+      ],
+      "withheld": false
+     },
+     {
+      "type": "follow_ups",
+      "questions": [
+       "Show me the detailed work schedule and approvals.",
+       "How does the integrated plan hold up in dry or shortage conditions?",
+       "Compare the integrated plan with the no-new-capital option."
+      ]
+     }
+    ],
+    "needs_clarification": false,
+    "clarification_question": null,
+    "validated": true,
+    "issues": [],
+    "deterministic": false
+   },
+   "event_types": [
+    "turn_started",
+    "thinking",
+    "tool_started",
+    "tool_started",
+    "dataset_ready",
+    "tool_finished",
+    "dataset_ready",
+    "dataset_ready",
+    "dataset_ready",
+    "tool_finished",
+    "thinking",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer",
+    "turn_finished",
+    "jobs_settled"
+   ]
+  },
+  {
+   "case": "S2",
+   "covers": "what-if budget change that solves a new run",
+   "message": "What if we only had 10 lakh rupees to spend instead?",
+   "turn_id": "turn_4f5b82bf435a442ba19b8c4dbf15f126",
+   "status": "completed",
+   "language": "en",
+   "wall_s": 62.8,
+   "latency_ms": 62676,
+   "rounds": 3,
+   "timings": {
+    "provider_calls": [
+     {
+      "calls": [
+       "run_what_if"
+      ],
+      "forced_final": false,
+      "latency_ms": 11013,
+      "round": 1,
+      "usage": {
+       "input_tokens": 6833,
+       "output_tokens": 121,
+       "total_tokens": 6954
+      }
+     },
+     {
+      "calls": [
+       "final_answer"
+      ],
+      "forced_final": false,
+      "latency_ms": 16893,
+      "rejected": [
+       "0: unsupported numbers ['5.2']"
+      ],
+      "round": 2,
+      "usage": {
+       "input_tokens": 12759,
+       "output_tokens": 1150,
+       "total_tokens": 13909
+      }
+     },
+     {
+      "calls": [
+       "final_answer"
+      ],
+      "forced_final": false,
+      "latency_ms": 31639,
+      "round": 3,
+      "usage": {
+       "input_tokens": 13983,
+       "output_tokens": 934,
+       "total_tokens": 14917
+      }
+     }
+    ],
+    "provider_ms": 59545,
+    "tool_ms": 3062,
+    "tools": [
+     {
+      "call_id": "call_3kzKxNIFRiTLYmCgoCZtYggW",
+      "ms": 3062,
+      "round": 1,
+      "status": "succeeded",
+      "tool": "run_what_if"
+     }
+    ],
+    "total_ms": 62676
+   },
+   "model": "gpt-6-luna",
+   "prompt_version": "copilot-prompt-2.1.0",
+   "tool_schema_version": "tools-a3cc2c9c802cf55b",
+   "provider_request_ids": [
+    "resp_046b6181b17a4e75006aca39bf015487d2b757e811c0905376",
+    "resp_046b6181b17a4e75006aca39cc708487d2b5fc88bf11e05a07",
+    "resp_046b6181b17a4e75006aca39ee92e887d285b05130fc0c346e"
+   ],
+   "tool_calls": [
+    {
+     "call_id": "call_3kzKxNIFRiTLYmCgoCZtYggW",
+     "round": 1,
+     "tool": "run_what_if",
+     "arguments": {
+      "changes": {
+       "allowed_intervention_instance_ids": null,
+       "blocked_edge_ids": null,
+       "capital_budget": "10 lakh rupees",
+       "excluded_instance_ids": null,
+       "forced_instance_ids": null,
+       "minimum_service_ratio": null,
+       "operating_budget": null,
+       "permit_groundwater": null,
+       "service_group": null,
+       "service_preset": null,
+       "supply_profile_id": null,
+       "uniform_reduction_percent": null,
+       "weather_scenario_ids": null
+      },
+      "compare_with_run_id": null,
+      "label": "Budget 10 lakh",
+      "plan_kind": "P"
+     },
+     "status": "succeeded",
+     "error": null,
+     "datasets": [
+      {
+       "dataset_id": "ds1",
+       "kind": "plans_side_by_side",
+       "title": "Plans side by side",
+       "rows": 2,
+       "charts": [
+        "table",
+        "bar",
+        "grouped_bar",
+        "kpi"
+       ]
+      },
+      {
+       "dataset_id": "ds2",
+       "kind": "field_deltas",
+       "title": "Change per field: P integrated plan versus P integrated plan",
+       "rows": 30,
+       "charts": [
+        "table",
+        "delta_bar",
+        "map",
+        "bar"
+       ]
+      }
+     ]
+    }
+   ],
+   "created_refs": [
+    {
+     "kind": "branch",
+     "ref_id": "rev_abdcfe6ee6974d82a9f6341dd690053a",
+     "label": "Budget 10 lakh"
+    },
+    {
+     "kind": "run",
+     "ref_id": "run_8d790478bbde4b1cb788c6d1c1f8aaa8",
+     "label": "P run"
+    },
+    {
+     "kind": "comparison",
+     "ref_id": "cmp_f1cbace4343c41e8ae932b4ddc985683",
+     "label": "Compare with the current plan"
+    }
+   ],
+   "error": null,
+   "answer_validated": true,
+   "answer_issues": [],
+   "block_types": [
+    "run_badge",
+    "run_badge",
+    "headline",
+    "text",
+    "metric",
+    "metric",
+    "metric",
+    "visual",
+    "comparison",
+    "uncertainty",
+    "action",
+    "action",
+    "action",
+    "follow_ups"
+   ],
+   "visuals": [
+    {
+     "chart": "table",
+     "title": "Current plan vs 10-lakh plan",
+     "dataset_kind": "plans_side_by_side",
+     "rows": 2,
+     "source": {
+      "tool": "run_what_if",
+      "call_id": "call_3kzKxNIFRiTLYmCgoCZtYggW",
+      "run_ids": [
+       "run_c1251d888e0045fc88e80f05b20158f0",
+       "run_8d790478bbde4b1cb788c6d1c1f8aaa8"
+      ],
+      "analysis_ids": [],
+      "comparison_ids": [
+       "cmp_f1cbace4343c41e8ae932b4ddc985683"
+      ],
+      "revision_ids": [],
+      "endpoint": "/comparisons"
+     }
+    }
+   ],
+   "answer": {
+    "language": "en",
+    "blocks": [
+     {
+      "type": "run_badge",
+      "role": "context",
+      "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+      "plan_kind": "P",
+      "solver_status": "OPTIMAL",
+      "outcome": "plan",
+      "scenario_revision_id": "rev_33c49fe81962437d934e7638052e3c71",
+      "pilot_id": "pilot-a",
+      "pilot_version": "reviewed-v1",
+      "season_id": "wheat-rabi-2027-28",
+      "label": null
+     },
+     {
+      "type": "run_badge",
+      "role": "created",
+      "run_id": "run_8d790478bbde4b1cb788c6d1c1f8aaa8",
+      "plan_kind": "P",
+      "solver_status": "OPTIMAL",
+      "outcome": "plan",
+      "scenario_revision_id": "rev_abdcfe6ee6974d82a9f6341dd690053a",
+      "pilot_id": "pilot-a",
+      "pilot_version": "reviewed-v1",
+      "season_id": "wheat-rabi-2027-28",
+      "label": null
+     },
+     {
+      "type": "headline",
+      "text": "With a 10-lakh budget, the plan remains feasible, with slightly lower modeled production and minimum service.",
+      "citations": [],
+      "withheld": false
+     },
+     {
+      "type": "text",
+      "text": "The new integrated plan stays OPTIMAL within the available candidate library. It prioritizes widespread field leveling and two ponds; versus the current plan, modeled production and the lowest field’s service share both decline.",
+      "citations": [
+       {
+        "ref_id": "run_8d790478bbde4b1cb788c6d1c1f8aaa8",
+        "kind": "run",
+        "auto": false
+       },
+       {
+        "ref_id": "cmp_f1cbace4343c41e8ae932b4ddc985683",
+        "kind": "comparison",
+        "auto": false
+       }
+      ],
+      "withheld": false
+     },
+     {
+      "type": "metric",
+      "metric_id": "production_kg",
+      "definition_id": "production_kg@metrics-1.0.0",
+      "label": "Modeled crop production",
+      "run_id": "run_8d790478bbde4b1cb788c6d1c1f8aaa8",
+      "field_id": null,
+      "value": 153311.90853862604,
+      "unit": "kg",
+      "status": "available",
+      "reason": null,
+      "basis": "model_output",
+      "plan_kind": "P",
+      "solver_status": "OPTIMAL"
+     },
+     {
+      "type": "metric",
+      "metric_id": "capital_commitment_pkr",
+      "definition_id": "capital_commitment_pkr@metrics-1.0.0",
+      "label": "Gross capital commitment",
+      "run_id": "run_8d790478bbde4b1cb788c6d1c1f8aaa8",
+      "field_id": null,
+      "value": 767296.0,
+      "unit": "PKR",
+      "status": "available",
+      "reason": null,
+      "basis": "computed_from_inputs",
+      "plan_kind": "P",
+      "solver_status": "OPTIMAL"
+     },
+     {
+      "type": "metric",
+      "metric_id": "min_service_ratio",
+      "definition_id": "min_service_ratio@metrics-1.0.0",
+      "label": "Minimum field service",
+      "run_id": "run_8d790478bbde4b1cb788c6d1c1f8aaa8",
+      "field_id": null,
+      "value": 0.5578757790609129,
+      "unit": "ratio",
+      "status": "available",
+      "reason": null,
+      "basis": "computed_from_inputs",
+      "plan_kind": "P",
+      "solver_status": "OPTIMAL"
+     },
+     {
+      "type": "visual",
+      "visual_id": "v1",
+      "chart": "table",
+      "title": "Current plan vs 10-lakh plan",
+      "caption": "Compare modeled production, investment, and minimum service under the two budgets.",
+      "dataset_id": "ds1",
+      "dataset_kind": "plans_side_by_side",
+      "columns": [
+       {
+        "key": "plan",
+        "label": "Plan",
+        "label_ur": "منصوبہ",
+        "kind": "category",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "plan_kind",
+        "label": "Plan kind",
+        "label_ur": "منصوبے کی قسم",
+        "kind": "category",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "production_kg",
+        "label": "Crop production",
+        "label_ur": "فصل کی پیداوار",
+        "kind": "number",
+        "unit": "kg",
+        "unit_column": null,
+        "basis": "model_output",
+        "ref": null
+       },
+       {
+        "key": "capital_commitment_pkr",
+        "label": "Capital spent",
+        "label_ur": "سرمایہ خرچ",
+        "kind": "number",
+        "unit": "PKR",
+        "unit_column": null,
+        "basis": "computed_from_inputs",
+        "ref": null
+       },
+       {
+        "key": "operating_cost_pkr",
+        "label": "Seasonal operating cost",
+        "label_ur": "موسمی آپریٹنگ لاگت",
+        "kind": "number",
+        "unit": "PKR",
+        "unit_column": null,
+        "basis": "computed_from_inputs",
+        "ref": null
+       },
+       {
+        "key": "canal_source_withdrawal_m3",
+        "label": "Canal water withdrawn",
+        "label_ur": "نہر سے لیا گیا پانی",
+        "kind": "number",
+        "unit": "m3",
+        "unit_column": null,
+        "basis": "computed_from_inputs",
+        "ref": null
+       },
+       {
+        "key": "groundwater_m3",
+        "label": "Groundwater pumped",
+        "label_ur": "زیر زمین پانی",
+        "kind": "number",
+        "unit": "m3",
+        "unit_column": null,
+        "basis": "computed_from_inputs",
+        "ref": null
+       },
+       {
+        "key": "min_service_ratio",
+        "label": "Lowest field's share of allowance",
+        "label_ur": "کم ترین کھیت کا حصہ",
+        "kind": "number",
+        "unit": "ratio",
+        "unit_column": null,
+        "basis": "computed_from_inputs",
+        "ref": null
+       },
+       {
+        "key": "tail_min_service_ratio",
+        "label": "Lowest tail field's share",
+        "label_ur": "دم کے کم ترین کھیت کا حصہ",
+        "kind": "number",
+        "unit": "ratio",
+        "unit_column": null,
+        "basis": "computed_from_inputs",
+        "ref": null
+       },
+       {
+        "key": "solver_status",
+        "label": "Solver status",
+        "label_ur": "حل کی حالت",
+        "kind": "status",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "run_id",
+        "label": "Run",
+        "label_ur": "رن",
+        "kind": "id",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": "run"
+       }
+      ],
+      "rows": [
+       {
+        "canal_source_withdrawal_m3": 40199.2,
+        "capital_commitment_pkr": 1953220.0,
+        "groundwater_m3": 8288.04,
+        "min_service_ratio": 0.609553,
+        "operating_cost_pkr": 70452.0,
+        "plan": "Current plan (P)",
+        "plan_kind": "P",
+        "production_kg": 154118.0,
+        "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "solver_status": "OPTIMAL",
+        "tail_min_service_ratio": 0.609553
+       },
+       {
+        "canal_source_withdrawal_m3": 40175.1,
+        "capital_commitment_pkr": 767296.0,
+        "groundwater_m3": 8269.56,
+        "min_service_ratio": 0.557876,
+        "operating_cost_pkr": 70295.0,
+        "plan": "Budget 10 lakh",
+        "plan_kind": "P",
+        "production_kg": 153312.0,
+        "run_id": "run_8d790478bbde4b1cb788c6d1c1f8aaa8",
+        "solver_status": "OPTIMAL",
+        "tail_min_service_ratio": 0.557876
+       }
+      ],
+      "row_count": 2,
+      "truncated": false,
+      "encoding": {
+       "x": null,
+       "y": [],
+       "series": null,
+       "value": null,
+       "label": null,
+       "color": null,
+       "source": null,
+       "target": null,
+       "id": null,
+       "status": null
+      },
+      "highlight_ids": [
+       "run_8d790478bbde4b1cb788c6d1c1f8aaa8"
+      ],
+      "source": {
+       "tool": "run_what_if",
+       "call_id": "call_3kzKxNIFRiTLYmCgoCZtYggW",
+       "run_ids": [
+        "run_c1251d888e0045fc88e80f05b20158f0",
+        "run_8d790478bbde4b1cb788c6d1c1f8aaa8"
+       ],
+       "analysis_ids": [],
+       "comparison_ids": [
+        "cmp_f1cbace4343c41e8ae932b4ddc985683"
+       ],
+       "revision_ids": [],
+       "endpoint": "/comparisons"
+      },
+      "basis": [
+       "computed_from_inputs",
+       "model_output"
+      ],
+      "notes": [
+       "matched comparison"
+      ],
+      "interactions": [
+       {
+        "on": "select_row",
+        "column": "run_id",
+        "intent": "open_run"
+       }
+      ],
+      "table_fallback": true,
+      "auto": false
+     },
+     {
+      "type": "comparison",
+      "comparison_id": "cmp_f1cbace4343c41e8ae932b4ddc985683",
+      "run_ids": [
+       "run_c1251d888e0045fc88e80f05b20158f0",
+       "run_8d790478bbde4b1cb788c6d1c1f8aaa8"
+      ],
+      "compatible": true,
+      "label": "matched comparison",
+      "deltas": [
+       {
+        "metric_id": "canal_source_withdrawal_m3",
+        "unit": "m3",
+        "a": 40199.23994388747,
+        "b": 40175.10879900119,
+        "delta": -24.131144886283437,
+        "status": "available"
+       },
+       {
+        "metric_id": "capital_commitment_pkr",
+        "unit": "PKR",
+        "a": 1953216.0,
+        "b": 767296.0,
+        "delta": -1185920.0,
+        "status": "available"
+       },
+       {
+        "metric_id": "conveyance_loss_m3",
+        "unit": "m3",
+        "a": 7852.820500887458,
+        "b": 8573.901356001226,
+        "delta": 721.0808551137679,
+        "status": "available"
+       },
+       {
+        "metric_id": "crop_value_pkr",
+        "unit": "PKR",
+        "a": null,
+        "b": null,
+        "delta": null,
+        "status": "not_comparable"
+       },
+       {
+        "metric_id": "cropped_area_ha",
+        "unit": "ha",
+        "a": 25.493217,
+        "b": 25.493217,
+        "delta": 0.0,
+        "status": "available"
+       },
+       {
+        "metric_id": "field_application_m3",
+        "unit": "m3",
+        "a": 40337.765737999965,
+        "b": 39574.07373799997,
+        "delta": -763.6919999999955,
+        "status": "available"
+       },
+       {
+        "metric_id": "groundwater_m3",
+        "unit": "m3",
+        "a": 8288.04,
+        "b": 8269.560000000001,
+        "delta": -18.479999999999563,
+        "status": "available"
+       },
+       {
+        "metric_id": "head_mean_service_ratio",
+        "unit": "ratio",
+        "a": 0.7368293462153539,
+        "b": 0.7368293462153539,
+        "delta": 0.0,
+        "status": "available"
+       },
+       {
+        "metric_id": "irrigation_contribution_pkr",
+        "unit": "PKR",
+        "a": null,
+        "b": null,
+        "delta": null,
+        "status": "not_comparable"
+       },
+       {
+        "metric_id": "middle_mean_service_ratio",
+        "unit": "ratio",
+        "a": 0.6817705361907939,
+        "b": 0.6490683614825326,
+        "delta": -0.03270217470826131,
+        "status": "available"
+       },
+       {
+        "metric_id": "min_service_ratio",
+        "unit": "ratio",
+        "a": 0.6095528655821812,
+        "b": 0.5578757790609129,
+        "delta": -0.051677086521268345,
+        "status": "available"
+       },
+       {
+        "metric_id": "new_instances_count",
+        "unit": "count",
+        "a": 33.0,
+        "b": 32.0,
+        "delta": -1.0,
+        "status": "available"
+       },
+       {
+        "metric_id": "objective_quantization_bound_kg",
+        "unit": "kg",
+        "a": 3.0,
+        "b": 3.0,
+        "delta": 0.0,
+        "status": "available"
+       },
+       {
+        "metric_id": "operating_cost_pkr",
+        "unit": "PKR",
+        "a": 70452.0,
+        "b": 70295.0,
+        "delta": -157.0,
+        "status": "available"
+       },
+       {
+        "metric_id": "outlet_receipt_m3",
+        "unit": "m3",
+        "a": 32346.41944299996,
+        "b": 31601.207442999952,
+        "delta": -745.2120000000068,
+        "status": "available"
+       },
+       {
+        "metric_id": "pond_losses_m3",
+        "unit": "m3",
+        "a": 327.11129300000255,
+        "b": 327.11129300000255,
+        "delta": 0.0,
+        "status": "available"
+       },
+       {
+        "metric_id": "pond_rain_m3",
+        "unit": "m3",
+        "a": 30.41758799999999,
+        "b": 30.41758799999999,
+        "delta": 0.0,
+        "status": "available"
+       },
+       {
+        "metric_id": "pond_spill_m3",
+        "unit": "m3",
+        "a": 0.0,
+        "b": 0.0,
+        "delta": 0.0,
+        "status": "available"
+       },
+       {
+        "metric_id": "production_kg",
+        "unit": "kg",
+        "a": 154117.87875700262,
+        "b": 153311.90853862604,
+        "delta": -805.9702183765767,
+        "status": "available"
+       },
+       {
+        "metric_id": "pumping_cost_pkr",
+        "unit": "PKR",
+        "a": 70452.0,
+        "b": 70295.0,
+        "delta": -157.0,
+        "status": "available"
+       },
+       {
+        "metric_id": "sdg_13_1_worst_tested_production_kg",
+        "unit": "kg",
+        "a": null,
+        "b": null,
+        "delta": null,
+        "status": "not_comparable"
+       },
+       {
+        "metric_id": "sdg_2_4_production_retained_fraction",
+        "unit": "ratio",
+        "a": null,
+        "b": null,
+        "delta": null,
+        "status": "not_comparable"
+       },
+       {
+        "metric_id": "sdg_6_4_water_productivity_kg_m3",
+        "unit": "kg/m3",
+        "a": 3.178521850170963,
+        "b": 3.164680703561482,
+        "delta": -0.01384114660948077,
+        "status": "available"
+       },
+       {
+        "metric_id": "sdg_6_5_min_entitlement_fulfillment",
+        "unit": "ratio",
+        "a": 0.6095528655821812,
+        "b": 0.5578757790609129,
+        "delta": -0.051677086521268345,
+        "status": "available"
+       },
+       {
+        "metric_id": "tail_mean_service_ratio",
+        "unit": "ratio",
+        "a": 0.6421300131382204,
+        "b": 0.6101947774413687,
+        "delta": -0.03193523569685164,
+        "status": "available"
+       },
+       {
+        "metric_id": "tail_min_service_ratio",
+        "unit": "ratio",
+        "a": 0.6095528655821812,
+        "b": 0.5578757790609129,
+        "delta": -0.051677086521268345,
+        "status": "available"
+       },
+       {
+        "metric_id": "terminal_pond_m3",
+        "unit": "m3",
+        "a": 0.0,
+        "b": 0.0,
+        "delta": 0.0,
+        "status": "available"
+       },
+       {
+        "metric_id": "typical_production_kg",
+        "unit": "kg",
+        "a": 154117.87875700262,
+        "b": 153311.90853862604,
+        "delta": -805.9702183765767,
+        "status": "available"
+       },
+       {
+        "metric_id": "withdrawal_productivity_kg_m3",
+        "unit": "kg/m3",
+        "a": 3.178521850170963,
+        "b": 3.164680703561482,
+        "delta": -0.01384114660948077,
+        "status": "available"
+       },
+       {
+        "metric_id": "worst_tested_production_kg",
+        "unit": "kg",
+        "a": 154117.87875700262,
+        "b": 153311.90853862604,
+        "delta": -805.9702183765767,
+        "status": "available"
+       }
+      ],
+      "fields_worse_off": [
+       "pilot-a:field-001",
+       "pilot-a:field-002",
+       "pilot-a:field-003",
+       "pilot-a:field-004",
+       "pilot-a:field-005",
+       "pilot-a:field-008",
+       "pilot-a:field-009",
+       "pilot-a:field-015",
+       "pilot-a:field-019",
+       "pilot-a:field-031"
+      ]
+     },
+     {
+      "type": "uncertainty",
+      "text": "Production is a model output, not a measured harvest. Optimality applies only within the finite candidate library; water rights and intervention costs are assumptions.",
+      "citations": [
+       {
+        "ref_id": "run_8d790478bbde4b1cb788c6d1c1f8aaa8",
+        "kind": "run",
+        "auto": false
+       }
+      ],
+      "withheld": false
+     },
+     {
+      "type": "action",
+      "action": "open_run",
+      "ref_id": "run_8d790478bbde4b1cb788c6d1c1f8aaa8",
+      "label": "Open 10-lakh plan",
+      "auto": false
+     },
+     {
+      "type": "action",
+      "action": "open_branch",
+      "ref_id": "rev_abdcfe6ee6974d82a9f6341dd690053a",
+      "label": "Budget 10 lakh",
+      "auto": true
+     },
+     {
+      "type": "action",
+      "action": "open_comparison",
+      "ref_id": "cmp_f1cbace4343c41e8ae932b4ddc985683",
+      "label": "Compare with the current plan",
+      "auto": true
+     },
+     {
+      "type": "follow_ups",
+      "questions": [
+       "Would you like to see which fields lose the most under this budget?",
+       "Should I test 10 lakh with tail protection?",
+       "Would you like a dated action plan for this option?"
+      ]
+     }
+    ],
+    "needs_clarification": false,
+    "clarification_question": null,
+    "validated": true,
+    "issues": [],
+    "deterministic": false
+   },
+   "event_types": [
+    "turn_started",
+    "thinking",
+    "tool_started",
+    "dataset_ready",
+    "dataset_ready",
+    "tool_finished",
+    "thinking",
+    "thinking",
+    "thinking",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer",
+    "turn_finished",
+    "jobs_settled"
+   ]
+  },
+  {
+   "case": "S3",
+   "covers": "stress / robustness with heatmap",
+   "message": "How robust is our plan if we get a dry year or the canal water is cut?",
+   "turn_id": "turn_559c063be99f47c9b38d6c87e6a2d528",
+   "status": "budget_exhausted",
+   "language": "en",
+   "wall_s": 90.1,
+   "latency_ms": 90013,
+   "rounds": 1,
+   "timings": {
+    "provider_calls": [
+     {
+      "calls": [
+       "get_context",
+       "read_analysis",
+       "inspect_run"
+      ],
+      "forced_final": false,
+      "latency_ms": 26065,
+      "round": 1,
+      "usage": {
+       "input_tokens": 7005,
+       "output_tokens": 94,
+       "total_tokens": 7099
+      }
+     }
+    ],
+    "provider_ms": 26065,
+    "tool_ms": 38,
+    "tools": [
+     {
+      "call_id": "call_tQngbostJ14hUSr6q83EjpIc",
+      "ms": 4,
+      "round": 1,
+      "status": "succeeded",
+      "tool": "get_context"
+     },
+     {
+      "call_id": "call_9BoFxAhLcMnewfDvTrxLlVMC",
+      "ms": 13,
+      "round": 1,
+      "status": "succeeded",
+      "tool": "read_analysis"
+     },
+     {
+      "call_id": "call_0HqJMgb0grJSop0W7ou5g061",
+      "ms": 21,
+      "round": 1,
+      "status": "succeeded",
+      "tool": "inspect_run"
+     }
+    ],
+    "total_ms": 90013
+   },
+   "model": "gpt-6-luna",
+   "prompt_version": "copilot-prompt-2.1.0",
+   "tool_schema_version": "tools-a3cc2c9c802cf55b",
+   "provider_request_ids": [
+    "resp_0eb2445f89f5cdd0006aca3a07486c87d2bbc9e111d96e773b"
+   ],
+   "tool_calls": [
+    {
+     "call_id": "call_tQngbostJ14hUSr6q83EjpIc",
+     "round": 1,
+     "tool": "get_context",
+     "arguments": {},
+     "status": "succeeded",
+     "error": null,
+     "datasets": []
+    },
+    {
+     "call_id": "call_9BoFxAhLcMnewfDvTrxLlVMC",
+     "round": 1,
+     "tool": "read_analysis",
+     "arguments": {
+      "analysis_id": null,
+      "kind": "stress",
+      "mode": "fixed_plan"
+     },
+     "status": "succeeded",
+     "error": null,
+     "datasets": [
+      {
+       "dataset_id": "ds1",
+       "kind": "stress_matrix",
+       "title": "Stress test (same plan in every condition)",
+       "rows": 9,
+       "charts": [
+        "table",
+        "heatmap",
+        "bar"
+       ]
+      }
+     ]
+    },
+    {
+     "call_id": "call_0HqJMgb0grJSop0W7ou5g061",
+     "round": 1,
+     "tool": "inspect_run",
+     "arguments": {
+      "field_id": null,
+      "run_id": "run_c1251d888e0045fc88e80f05b20158f0"
+     },
+     "status": "succeeded",
+     "error": null,
+     "datasets": [
+      {
+       "dataset_id": "ds2",
+       "kind": "run_metrics",
+       "title": "Key results of P integrated plan (run_c1251d888e0045fc88e80f05b20158f0)",
+       "rows": 30,
+       "charts": [
+        "table",
+        "kpi"
+       ]
+      },
+      {
+       "dataset_id": "ds3",
+       "kind": "field_outcomes",
+       "title": "Field-by-field results of P integrated plan (run_c1251d888e0045fc88e80f05b20158f0)",
+       "rows": 30,
+       "charts": [
+        "table",
+        "bar",
+        "map",
+        "scatter"
+       ]
+      }
+     ]
+    }
+   ],
+   "created_refs": [],
+   "error": {
+    "code": "TURN_TIMEOUT",
+    "detail": "the turn reached its time budget"
+   },
+   "answer_validated": true,
+   "answer_issues": [],
+   "block_types": [
+    "run_badge",
+    "visual",
+    "visual",
+    "uncertainty",
+    "uncertainty"
+   ],
+   "visuals": [
+    {
+     "chart": "heatmap",
+     "title": "Stress test (same plan in every condition)",
+     "dataset_kind": "stress_matrix",
+     "rows": 9,
+     "source": {
+      "tool": "read_analysis",
+      "call_id": "call_9BoFxAhLcMnewfDvTrxLlVMC",
+      "run_ids": [
+       "run_c1251d888e0045fc88e80f05b20158f0",
+       "run_06164fe5e5974c6ea0a84f4fbd1522b1",
+       "run_abd89c99b7334f5dbb75ab56c59a4d00",
+       "run_da36373d2c94402d97e3950c02946bc7",
+       "run_6dc501be322b40449c6ce48310b54688",
+       "run_b17e5f86fad547b2ad02a38262560ef0",
+       "run_fbcf98a2ed844f6f8da18ca0850796f6",
+       "run_a90cb92077ec43abb8be1cee5710b1ca",
+       "run_07263c179fa5493db8725d94df43f015",
+       "run_f56694adc30c4572be8c89185f116b3a"
+      ],
+      "analysis_ids": [
+       "ana_ecaa32dac26343d3996e305c5f689d7e"
+      ],
+      "comparison_ids": [],
+      "revision_ids": [],
+      "endpoint": "/analyses/ana_ecaa32dac26343d3996e305c5f689d7e"
+     }
+    },
+    {
+     "chart": "kpi",
+     "title": "Key results of P integrated plan (run_c1251d888e0045fc88e80f05b20158f0)",
+     "dataset_kind": "run_metrics",
+     "rows": 30,
+     "source": {
+      "tool": "inspect_run",
+      "call_id": "call_0HqJMgb0grJSop0W7ou5g061",
+      "run_ids": [
+       "run_c1251d888e0045fc88e80f05b20158f0"
+      ],
+      "analysis_ids": [],
+      "comparison_ids": [],
+      "revision_ids": [],
+      "endpoint": "/runs/run_c1251d888e0045fc88e80f05b20158f0"
+     }
+    }
+   ],
+   "answer": {
+    "language": "en",
+    "blocks": [
+     {
+      "type": "run_badge",
+      "role": "context",
+      "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+      "plan_kind": "P",
+      "solver_status": "OPTIMAL",
+      "outcome": "plan",
+      "scenario_revision_id": "rev_33c49fe81962437d934e7638052e3c71",
+      "pilot_id": "pilot-a",
+      "pilot_version": "reviewed-v1",
+      "season_id": "wheat-rabi-2027-28",
+      "label": null
+     },
+     {
+      "type": "visual",
+      "visual_id": "v1",
+      "chart": "heatmap",
+      "title": "Stress test (same plan in every condition)",
+      "caption": null,
+      "dataset_id": "ds1",
+      "dataset_kind": "stress_matrix",
+      "columns": [
+       {
+        "key": "weather",
+        "label": "Weather",
+        "label_ur": "موسم",
+        "kind": "category",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "supply",
+        "label": "Canal supply",
+        "label_ur": "نہری فراہمی",
+        "kind": "category",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "state_id",
+        "label": "State",
+        "label_ur": null,
+        "kind": "id",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "production_kg",
+        "label": "Crop production",
+        "label_ur": "فصل کی پیداوار",
+        "kind": "number",
+        "unit": "kg",
+        "unit_column": null,
+        "basis": "model_output",
+        "ref": null
+       },
+       {
+        "key": "deliverable",
+        "label": "Plan deliverable",
+        "label_ur": "منصوبہ قابل عمل",
+        "kind": "bool",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "status",
+        "label": "Status",
+        "label_ur": "حالت",
+        "kind": "status",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "violations",
+        "label": "Broken delivery rules",
+        "label_ur": null,
+        "kind": "number",
+        "unit": "count",
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "solver_status",
+        "label": "Solver status",
+        "label_ur": "حل کی حالت",
+        "kind": "status",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "run_id",
+        "label": "Run",
+        "label_ur": "رن",
+        "kind": "id",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": "run"
+       }
+      ],
+      "rows": [
+       {
+        "deliverable": true,
+        "production_kg": 79074.0,
+        "run_id": "run_06164fe5e5974c6ea0a84f4fbd1522b1",
+        "solver_status": "OPTIMAL",
+        "state_id": "dry__nominal-roster-v1",
+        "status": "deliverable",
+        "supply": "nominal roster",
+        "violations": 0,
+        "weather": "dry"
+       },
+       {
+        "deliverable": false,
+        "production_kg": null,
+        "run_id": "run_abd89c99b7334f5dbb75ab56c59a4d00",
+        "solver_status": "INFEASIBLE",
+        "state_id": "dry__shortage-22pct-v1",
+        "status": "undeliverable",
+        "supply": "22% shortage",
+        "violations": 22,
+        "weather": "dry"
+       },
+       {
+        "deliverable": false,
+        "production_kg": null,
+        "run_id": "run_da36373d2c94402d97e3950c02946bc7",
+        "solver_status": "INFEASIBLE",
+        "state_id": "dry__interruption-14d-v1",
+        "status": "undeliverable",
+        "supply": "14-day interruption",
+        "violations": 30,
+        "weather": "dry"
+       },
+       {
+        "deliverable": true,
+        "production_kg": 154118.0,
+        "run_id": "run_6dc501be322b40449c6ce48310b54688",
+        "solver_status": "OPTIMAL",
+        "state_id": "typical__nominal-roster-v1",
+        "status": "deliverable",
+        "supply": "nominal roster",
+        "violations": 0,
+        "weather": "typical"
+       },
+       {
+        "deliverable": false,
+        "production_kg": null,
+        "run_id": "run_b17e5f86fad547b2ad02a38262560ef0",
+        "solver_status": "INFEASIBLE",
+        "state_id": "typical__shortage-22pct-v1",
+        "status": "undeliverable",
+        "supply": "22% shortage",
+        "violations": 22,
+        "weather": "typical"
+       },
+       {
+        "deliverable": false,
+        "production_kg": null,
+        "run_id": "run_fbcf98a2ed844f6f8da18ca0850796f6",
+        "solver_status": "INFEASIBLE",
+        "state_id": "typical__interruption-14d-v1",
+        "status": "undeliverable",
+        "supply": "14-day interruption",
+        "violations": 30,
+        "weather": "typical"
+       },
+       {
+        "deliverable": true,
+        "production_kg": 187492.0,
+        "run_id": "run_a90cb92077ec43abb8be1cee5710b1ca",
+        "solver_status": "OPTIMAL",
+        "state_id": "wet__nominal-roster-v1",
+        "status": "deliverable",
+        "supply": "nominal roster",
+        "violations": 0,
+        "weather": "wet"
+       },
+       {
+        "deliverable": false,
+        "production_kg": null,
+        "run_id": "run_07263c179fa5493db8725d94df43f015",
+        "solver_status": "INFEASIBLE",
+        "state_id": "wet__shortage-22pct-v1",
+        "status": "undeliverable",
+        "supply": "22% shortage",
+        "violations": 22,
+        "weather": "wet"
+       },
+       {
+        "deliverable": false,
+        "production_kg": null,
+        "run_id": "run_f56694adc30c4572be8c89185f116b3a",
+        "solver_status": "INFEASIBLE",
+        "state_id": "wet__interruption-14d-v1",
+        "status": "undeliverable",
+        "supply": "14-day interruption",
+        "violations": 30,
+        "weather": "wet"
+       }
+      ],
+      "row_count": 9,
+      "truncated": false,
+      "encoding": {
+       "x": "supply",
+       "y": [
+        "weather"
+       ],
+       "series": null,
+       "value": "production_kg",
+       "label": null,
+       "color": null,
+       "source": null,
+       "target": null,
+       "id": "run_id",
+       "status": "status"
+      },
+      "highlight_ids": [],
+      "source": {
+       "tool": "read_analysis",
+       "call_id": "call_9BoFxAhLcMnewfDvTrxLlVMC",
+       "run_ids": [
+        "run_c1251d888e0045fc88e80f05b20158f0",
+        "run_06164fe5e5974c6ea0a84f4fbd1522b1",
+        "run_abd89c99b7334f5dbb75ab56c59a4d00",
+        "run_da36373d2c94402d97e3950c02946bc7",
+        "run_6dc501be322b40449c6ce48310b54688",
+        "run_b17e5f86fad547b2ad02a38262560ef0",
+        "run_fbcf98a2ed844f6f8da18ca0850796f6",
+        "run_a90cb92077ec43abb8be1cee5710b1ca",
+        "run_07263c179fa5493db8725d94df43f015",
+        "run_f56694adc30c4572be8c89185f116b3a"
+       ],
+       "analysis_ids": [
+        "ana_ecaa32dac26343d3996e305c5f689d7e"
+       ],
+       "comparison_ids": [],
+       "revision_ids": [],
+       "endpoint": "/analyses/ana_ecaa32dac26343d3996e305c5f689d7e"
+      },
+      "basis": [
+       "model_output",
+       "solver_result"
+      ],
+      "notes": [
+       "Undeliverable cells have no production: the plan's dated deliveries break the rules in that condition (not a low yield).",
+       "worst within the tested states only; no probability of success is implied"
+      ],
+      "interactions": [
+       {
+        "on": "select_cell",
+        "column": "run_id",
+        "intent": "open_run"
+       }
+      ],
+      "table_fallback": true,
+      "auto": true
+     },
+     {
+      "type": "visual",
+      "visual_id": "v2",
+      "chart": "kpi",
+      "title": "Key results of P integrated plan (run_c1251d888e0045fc88e80f05b20158f0)",
+      "caption": null,
+      "dataset_id": "ds2",
+      "dataset_kind": "run_metrics",
+      "columns": [
+       {
+        "key": "metric",
+        "label": "Measure",
+        "label_ur": "پیمانہ",
+        "kind": "category",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "metric_id",
+        "label": "Metric ID",
+        "label_ur": "میٹرک آئی ڈی",
+        "kind": "id",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "value",
+        "label": "Value",
+        "label_ur": "قدر",
+        "kind": "number",
+        "unit": null,
+        "unit_column": "unit",
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "unit",
+        "label": "Unit",
+        "label_ur": "اکائی",
+        "kind": "text",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "status",
+        "label": "Status",
+        "label_ur": "حالت",
+        "kind": "status",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "run_id",
+        "label": "Run",
+        "label_ur": "رن",
+        "kind": "id",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": "run"
+       }
+      ],
+      "rows": [
+       {
+        "metric": "Modeled crop production",
+        "metric_id": "production_kg",
+        "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "status": "available",
+        "unit": "kg",
+        "value": 154118.0
+       },
+       {
+        "metric": "Gross capital commitment",
+        "metric_id": "capital_commitment_pkr",
+        "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "status": "available",
+        "unit": "PKR",
+        "value": 1953220.0
+       },
+       {
+        "metric": "Seasonal operating cost",
+        "metric_id": "operating_cost_pkr",
+        "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "status": "available",
+        "unit": "PKR",
+        "value": 70452.0
+       },
+       {
+        "metric": "Canal source withdrawal",
+        "metric_id": "canal_source_withdrawal_m3",
+        "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "status": "available",
+        "unit": "m3",
+        "value": 40199.2
+       },
+       {
+        "metric": "Groundwater abstraction",
+        "metric_id": "groundwater_m3",
+        "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "status": "available",
+        "unit": "m3",
+        "value": 8288.04
+       },
+       {
+        "metric": "Tail minimum service",
+        "metric_id": "tail_min_service_ratio",
+        "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "status": "available",
+        "unit": "ratio",
+        "value": 0.609553
+       },
+       {
+        "metric": "Minimum field service",
+        "metric_id": "min_service_ratio",
+        "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "status": "available",
+        "unit": "ratio",
+        "value": 0.609553
+       },
+       {
+        "metric": "Withdrawal productivity",
+        "metric_id": "withdrawal_productivity_kg_m3",
+        "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "status": "available",
+        "unit": "kg/m3",
+        "value": 3.17852
+       },
+       {
+        "metric": "Total cropped area",
+        "metric_id": "cropped_area_ha",
+        "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "status": "available",
+        "unit": "ha",
+        "value": 25.4932
+       },
+       {
+        "metric": "Conveyance loss",
+        "metric_id": "conveyance_loss_m3",
+        "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "status": "available",
+        "unit": "m3",
+        "value": 7852.82
+       },
+       {
+        "metric": "Modeled crop value",
+        "metric_id": "crop_value_pkr",
+        "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "status": "not_estimated",
+        "unit": "PKR",
+        "value": null
+       },
+       {
+        "metric": "Gross field application",
+        "metric_id": "field_application_m3",
+        "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "status": "available",
+        "unit": "m3",
+        "value": 40337.8
+       },
+       {
+        "metric": "Head fields mean service",
+        "metric_id": "head_mean_service_ratio",
+        "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "status": "available",
+        "unit": "ratio",
+        "value": 0.736829
+       },
+       {
+        "metric": "Irrigation contribution",
+        "metric_id": "irrigation_contribution_pkr",
+        "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "status": "not_estimated",
+        "unit": "PKR",
+        "value": null
+       },
+       {
+        "metric": "Middle fields mean service",
+        "metric_id": "middle_mean_service_ratio",
+        "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "status": "available",
+        "unit": "ratio",
+        "value": 0.681771
+       },
+       {
+        "metric": "New intervention instances",
+        "metric_id": "new_instances_count",
+        "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "status": "available",
+        "unit": "count",
+        "value": 33.0
+       },
+       {
+        "metric": "Objective quantization bound",
+        "metric_id": "objective_quantization_bound_kg",
+        "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "status": "available",
+        "unit": "kg",
+        "value": 3.0
+       },
+       {
+        "metric": "Canal water received at fields",
+        "metric_id": "outlet_receipt_m3",
+        "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "status": "available",
+        "unit": "m3",
+        "value": 32346.4
+       },
+       {
+        "metric": "Pond evaporation and seepage",
+        "metric_id": "pond_losses_m3",
+        "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "status": "available",
+        "unit": "m3",
+        "value": 327.111
+       },
+       {
+        "metric": "Pond rainfall capture",
+        "metric_id": "pond_rain_m3",
+        "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "status": "available",
+        "unit": "m3",
+        "value": 30.4176
+       },
+       {
+        "metric": "Pond spill",
+        "metric_id": "pond_spill_m3",
+        "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "status": "available",
+        "unit": "m3",
+        "value": 0.0
+       },
+       {
+        "metric": "Seasonal pumping cost",
+        "metric_id": "pumping_cost_pkr",
+        "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "status": "available",
+        "unit": "PKR",
+        "value": 70452.0
+       },
+       {
+        "metric": "Worst tested scenario outcome",
+        "metric_id": "sdg_13_1_worst_tested_production_kg",
+        "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "status": "not_applicable",
+        "unit": "kg",
+        "value": null
+       },
+       {
+        "metric": "Production retained across tested scenarios",
+        "metric_id": "sdg_2_4_production_retained_fraction",
+        "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "status": "not_applicable",
+        "unit": "ratio",
+        "value": null
+       },
+       {
+        "metric": "Crop per drop (withdrawal productivity)",
+        "metric_id": "sdg_6_4_water_productivity_kg_m3",
+        "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "status": "available",
+        "unit": "kg/m3",
+        "value": 3.17852
+       },
+       {
+        "metric": "Minimum entitlement fulfillment",
+        "metric_id": "sdg_6_5_min_entitlement_fulfillment",
+        "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "status": "available",
+        "unit": "ratio",
+        "value": 0.609553
+       },
+       {
+        "metric": "Tail fields mean service",
+        "metric_id": "tail_mean_service_ratio",
+        "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "status": "available",
+        "unit": "ratio",
+        "value": 0.64213
+       },
+       {
+        "metric": "Pond inventory at season end",
+        "metric_id": "terminal_pond_m3",
+        "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "status": "available",
+        "unit": "m3",
+        "value": 0.0
+       },
+       {
+        "metric": "Production in the typical state",
+        "metric_id": "typical_production_kg",
+        "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "status": "available",
+        "unit": "kg",
+        "value": 154118.0
+       },
+       {
+        "metric": "Worst tested production",
+        "metric_id": "worst_tested_production_kg",
+        "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "status": "available",
+        "unit": "kg",
+        "value": 154118.0
+       }
+      ],
+      "row_count": 30,
+      "truncated": false,
+      "encoding": {
+       "x": null,
+       "y": [],
+       "series": null,
+       "value": "value",
+       "label": "metric",
+       "color": null,
+       "source": null,
+       "target": null,
+       "id": "run_id",
+       "status": "status"
+      },
+      "highlight_ids": [],
+      "source": {
+       "tool": "inspect_run",
+       "call_id": "call_0HqJMgb0grJSop0W7ou5g061",
+       "run_ids": [
+        "run_c1251d888e0045fc88e80f05b20158f0"
+       ],
+       "analysis_ids": [],
+       "comparison_ids": [],
+       "revision_ids": [],
+       "endpoint": "/runs/run_c1251d888e0045fc88e80f05b20158f0"
+      },
+      "basis": [
+       "computed_from_inputs",
+       "model_output"
+      ],
+      "notes": [
+       "Production and yields are AquaCrop crop-model outputs (uncalibrated unless stated); costs use configured assumptions."
+      ],
+      "interactions": [
+       {
+        "on": "select_row",
+        "column": "run_id",
+        "intent": "open_run"
+       }
+      ],
+      "table_fallback": true,
+      "auto": true
+     },
+     {
+      "type": "uncertainty",
+      "text": "I reached this turn's time or step limit before I could finish the explanation.",
+      "citations": [],
+      "withheld": false
+     },
+     {
+      "type": "uncertainty",
+      "text": "The charts below show results the tools already returned in this turn, without an explanation.",
+      "citations": [],
+      "withheld": false
+     }
+    ],
+    "needs_clarification": false,
+    "clarification_question": null,
+    "validated": true,
+    "issues": [],
+    "deterministic": true
+   },
+   "event_types": [
+    "turn_started",
+    "thinking",
+    "tool_started",
+    "tool_started",
+    "tool_started",
+    "tool_finished",
+    "dataset_ready",
+    "tool_finished",
+    "dataset_ready",
+    "dataset_ready",
+    "tool_finished",
+    "thinking",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer",
+    "turn_finished",
+    "jobs_settled"
+   ]
+  },
+  {
+   "case": "S4",
+   "covers": "fairness / tail fields with table",
+   "message": "Which farmers lose out? Are the tail-end fields treated fairly?",
+   "turn_id": "turn_b6cea823125f47b38c81a758392e3ca7",
+   "status": "completed",
+   "language": "en",
+   "wall_s": 16.7,
+   "latency_ms": 16535,
+   "rounds": 2,
+   "timings": {
+    "provider_calls": [
+     {
+      "calls": [
+       "get_context",
+       "equity",
+       "read_analysis"
+      ],
+      "forced_final": false,
+      "latency_ms": 5885,
+      "round": 1,
+      "usage": {
+       "input_tokens": 7047,
+       "output_tokens": 133,
+       "total_tokens": 7180
+      }
+     },
+     {
+      "calls": [
+       "final_answer"
+      ],
+      "forced_final": false,
+      "latency_ms": 10599,
+      "round": 2,
+      "usage": {
+       "input_tokens": 13669,
+       "output_tokens": 934,
+       "total_tokens": 14603
+      }
+     }
+    ],
+    "provider_ms": 16484,
+    "tool_ms": 34,
+    "tools": [
+     {
+      "call_id": "call_KNR2MW7vegTSs6V0DL2oiV7L",
+      "ms": 7,
+      "round": 1,
+      "status": "succeeded",
+      "tool": "get_context"
+     },
+     {
+      "call_id": "call_LwMBw2MRN36b2TovMCKWXE7G",
+      "ms": 8,
+      "round": 1,
+      "status": "succeeded",
+      "tool": "read_analysis"
+     },
+     {
+      "call_id": "call_8rGSdhD7PkZDeSH5zLLMNuda",
+      "ms": 19,
+      "round": 1,
+      "status": "succeeded",
+      "tool": "equity"
+     }
+    ],
+    "total_ms": 16535
+   },
+   "model": "gpt-6-luna",
+   "prompt_version": "copilot-prompt-2.1.0",
+   "tool_schema_version": "tools-a3cc2c9c802cf55b",
+   "provider_request_ids": [
+    "resp_0811445875721a9c006aca3a53393487d2ac24035e9f037a02",
+    "resp_0811445875721a9c006aca3a59370887d2ab9dc98cd78e45f4"
+   ],
+   "tool_calls": [
+    {
+     "call_id": "call_KNR2MW7vegTSs6V0DL2oiV7L",
+     "round": 1,
+     "tool": "get_context",
+     "arguments": {},
+     "status": "succeeded",
+     "error": null,
+     "datasets": []
+    },
+    {
+     "call_id": "call_8rGSdhD7PkZDeSH5zLLMNuda",
+     "round": 1,
+     "tool": "equity",
+     "arguments": {
+      "baseline_run_id": "run_13c326f075704c4abd06b90c64e9da44",
+      "run_id": "run_c1251d888e0045fc88e80f05b20158f0"
+     },
+     "status": "succeeded",
+     "error": null,
+     "datasets": [
+      {
+       "dataset_id": "ds2",
+       "kind": "equity_fields",
+       "title": "Who gets what (run run_c1251d888e0045fc88e80f05b20158f0 vs run_13c326f075704c4abd06b90c64e9da44)",
+       "rows": 30,
+       "charts": [
+        "table",
+        "bar",
+        "delta_bar",
+        "map"
+       ]
+      },
+      {
+       "dataset_id": "ds3",
+       "kind": "equity_groups",
+       "title": "Head, middle and tail fields (run run_c1251d888e0045fc88e80f05b20158f0)",
+       "rows": 3,
+       "charts": [
+        "table",
+        "grouped_bar",
+        "bar"
+       ]
+      }
+     ]
+    },
+    {
+     "call_id": "call_LwMBw2MRN36b2TovMCKWXE7G",
+     "round": 1,
+     "tool": "read_analysis",
+     "arguments": {
+      "analysis_id": "ana_ecaa32dac26343d3996e305c5f689d7e",
+      "kind": "stress",
+      "mode": "fixed_plan"
+     },
+     "status": "succeeded",
+     "error": null,
+     "datasets": [
+      {
+       "dataset_id": "ds1",
+       "kind": "stress_matrix",
+       "title": "Stress test (same plan in every condition)",
+       "rows": 9,
+       "charts": [
+        "table",
+        "heatmap",
+        "bar"
+       ]
+      }
+     ]
+    }
+   ],
+   "created_refs": [],
+   "error": null,
+   "answer_validated": true,
+   "answer_issues": [],
+   "block_types": [
+    "run_badge",
+    "headline",
+    "text",
+    "visual",
+    "visual",
+    "text",
+    "uncertainty",
+    "follow_ups"
+   ],
+   "visuals": [
+    {
+     "chart": "grouped_bar",
+     "title": "Canal allowance share by position",
+     "dataset_kind": "equity_groups",
+     "rows": 3,
+     "source": {
+      "tool": "equity",
+      "call_id": "call_8rGSdhD7PkZDeSH5zLLMNuda",
+      "run_ids": [
+       "run_c1251d888e0045fc88e80f05b20158f0"
+      ],
+      "analysis_ids": [],
+      "comparison_ids": [],
+      "revision_ids": [],
+      "endpoint": "/runs/run_c1251d888e0045fc88e80f05b20158f0/equity"
+     }
+    },
+    {
+     "chart": "map",
+     "title": "Field-level fairness check",
+     "dataset_kind": "equity_fields",
+     "rows": 30,
+     "source": {
+      "tool": "equity",
+      "call_id": "call_8rGSdhD7PkZDeSH5zLLMNuda",
+      "run_ids": [
+       "run_c1251d888e0045fc88e80f05b20158f0",
+       "run_13c326f075704c4abd06b90c64e9da44"
+      ],
+      "analysis_ids": [],
+      "comparison_ids": [],
+      "revision_ids": [],
+      "endpoint": "/runs/run_c1251d888e0045fc88e80f05b20158f0/equity"
+     }
+    }
+   ],
+   "answer": {
+    "language": "en",
+    "blocks": [
+     {
+      "type": "run_badge",
+      "role": "context",
+      "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+      "plan_kind": "P",
+      "solver_status": "OPTIMAL",
+      "outcome": "plan",
+      "scenario_revision_id": "rev_33c49fe81962437d934e7638052e3c71",
+      "pilot_id": "pilot-a",
+      "pilot_version": "reviewed-v1",
+      "season_id": "wheat-rabi-2027-28",
+      "label": null
+     },
+     {
+      "type": "headline",
+      "text": "No field is worse off than the fixed-roster baseline, but tail fields receive a smaller share of their allowance than head fields.",
+      "citations": [],
+      "withheld": false
+     },
+     {
+      "type": "text",
+      "text": "In the integrated plan (P), compared with today’s fixed-roster plan (B0), the equity check finds no fields with lower modeled production. The lowest service shares are concentrated in the tail and middle: A-010 is lowest overall, followed by middle fields A-004, A-031 and A-005, then tail field A-008; each listed field has a positive production change versus B0.",
+      "citations": [
+       {
+        "ref_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "kind": "run",
+        "auto": false
+       },
+       {
+        "ref_id": "run_13c326f075704c4abd06b90c64e9da44",
+        "kind": "run",
+        "auto": false
+       }
+      ],
+      "withheld": false
+     },
+     {
+      "type": "visual",
+      "visual_id": "v1",
+      "chart": "grouped_bar",
+      "title": "Canal allowance share by position",
+      "caption": "Compare the average and lowest allowance share for head, middle and tail fields.",
+      "dataset_id": "ds3",
+      "dataset_kind": "equity_groups",
+      "columns": [
+       {
+        "key": "group",
+        "label": "Canal position",
+        "label_ur": "نہر پر مقام",
+        "kind": "category",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "fields",
+        "label": "Fields",
+        "label_ur": null,
+        "kind": "number",
+        "unit": "count",
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "mean_service_ratio",
+        "label": "Average share received",
+        "label_ur": null,
+        "kind": "number",
+        "unit": "ratio",
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "min_service_ratio",
+        "label": "Lowest share received",
+        "label_ur": "کم ترین کھیت کا حصہ",
+        "kind": "number",
+        "unit": "ratio",
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       }
+      ],
+      "rows": [
+       {
+        "fields": 10,
+        "group": "head",
+        "mean_service_ratio": 0.736829,
+        "min_service_ratio": 0.701897
+       },
+       {
+        "fields": 10,
+        "group": "middle",
+        "mean_service_ratio": 0.681771,
+        "min_service_ratio": 0.618439
+       },
+       {
+        "fields": 10,
+        "group": "tail",
+        "mean_service_ratio": 0.64213,
+        "min_service_ratio": 0.609553
+       }
+      ],
+      "row_count": 3,
+      "truncated": false,
+      "encoding": {
+       "x": "group",
+       "y": [
+        "mean_service_ratio",
+        "min_service_ratio"
+       ],
+       "series": null,
+       "value": null,
+       "label": null,
+       "color": null,
+       "source": null,
+       "target": null,
+       "id": null,
+       "status": null
+      },
+      "highlight_ids": [],
+      "source": {
+       "tool": "equity",
+       "call_id": "call_8rGSdhD7PkZDeSH5zLLMNuda",
+       "run_ids": [
+        "run_c1251d888e0045fc88e80f05b20158f0"
+       ],
+       "analysis_ids": [],
+       "comparison_ids": [],
+       "revision_ids": [],
+       "endpoint": "/runs/run_c1251d888e0045fc88e80f05b20158f0/equity"
+      },
+      "basis": [
+       "assumption",
+       "computed_from_inputs"
+      ],
+      "notes": [
+       "Shares are canal receipt divided by each field's assumed reference allowance."
+      ],
+      "interactions": [],
+      "table_fallback": true,
+      "auto": false
+     },
+     {
+      "type": "visual",
+      "visual_id": "v2",
+      "chart": "map",
+      "title": "Field-level fairness check",
+      "caption": "See where the lowest allowance shares and field changes occur along the canal.",
+      "dataset_id": "ds2",
+      "dataset_kind": "equity_fields",
+      "columns": [
+       {
+        "key": "field",
+        "label": "Field",
+        "label_ur": "کھیت",
+        "kind": "category",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "field_id",
+        "label": "Field ID",
+        "label_ur": "کھیت آئی ڈی",
+        "kind": "id",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": "field"
+       },
+       {
+        "key": "group",
+        "label": "Canal position",
+        "label_ur": "نہر پر مقام",
+        "kind": "category",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "service_ratio",
+        "label": "Share of canal allowance received",
+        "label_ur": "نہری حصے کا وصول شدہ تناسب",
+        "kind": "number",
+        "unit": "ratio",
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "production_kg",
+        "label": "Crop production",
+        "label_ur": "فصل کی پیداوار",
+        "kind": "number",
+        "unit": "kg",
+        "unit_column": null,
+        "basis": "model_output",
+        "ref": null
+       },
+       {
+        "key": "production_delta_kg",
+        "label": "Change versus baseline",
+        "label_ur": "پیداوار میں تبدیلی",
+        "kind": "number",
+        "unit": "kg",
+        "unit_column": null,
+        "basis": "model_output",
+        "ref": null
+       },
+       {
+        "key": "groundwater_m3",
+        "label": "Groundwater pumped",
+        "label_ur": "زیر زمین پانی",
+        "kind": "number",
+        "unit": "m3",
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "pumping_share",
+        "label": "Share of pumping burden",
+        "label_ur": null,
+        "kind": "number",
+        "unit": "ratio",
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "worse_off",
+        "label": "Worse off than baseline",
+        "label_ur": null,
+        "kind": "bool",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       }
+      ],
+      "rows": [
+       {
+        "field": "A-001",
+        "field_id": "pilot-a:field-001",
+        "groundwater_m3": 762.0,
+        "group": "tail",
+        "production_delta_kg": 1335.0,
+        "production_kg": 4810.63,
+        "pumping_share": 0.0919397,
+        "service_ratio": 0.620888,
+        "worse_off": false
+       },
+       {
+        "field": "A-002",
+        "field_id": "pilot-a:field-002",
+        "groundwater_m3": 689.28,
+        "group": "tail",
+        "production_delta_kg": 1207.6,
+        "production_kg": 4351.54,
+        "pumping_share": 0.0831656,
+        "service_ratio": 0.620921,
+        "worse_off": false
+       },
+       {
+        "field": "A-003",
+        "field_id": "pilot-a:field-003",
+        "groundwater_m3": 523.52,
+        "group": "middle",
+        "production_delta_kg": 1295.77,
+        "production_kg": 5051.98,
+        "pumping_share": 0.0631657,
+        "service_ratio": 0.796219,
+        "worse_off": false
+       },
+       {
+        "field": "A-004",
+        "field_id": "pilot-a:field-004",
+        "groundwater_m3": 840.72,
+        "group": "middle",
+        "production_delta_kg": 1429.17,
+        "production_kg": 5434.87,
+        "pumping_share": 0.101438,
+        "service_ratio": 0.618439,
+        "worse_off": false
+       },
+       {
+        "field": "A-005",
+        "field_id": "pilot-a:field-005",
+        "groundwater_m3": 734.28,
+        "group": "middle",
+        "production_delta_kg": 1253.93,
+        "production_kg": 4766.19,
+        "pumping_share": 0.0885951,
+        "service_ratio": 0.618477,
+        "worse_off": false
+       },
+       {
+        "field": "A-006",
+        "field_id": "pilot-a:field-006",
+        "groundwater_m3": 0.0,
+        "group": "head",
+        "production_delta_kg": 450.715,
+        "production_kg": 5661.01,
+        "pumping_share": 0.0,
+        "service_ratio": 0.721417,
+        "worse_off": false
+       },
+       {
+        "field": "A-007",
+        "field_id": "pilot-a:field-007",
+        "groundwater_m3": 0.0,
+        "group": "head",
+        "production_delta_kg": 363.706,
+        "production_kg": 4568.17,
+        "pumping_share": 0.0,
+        "service_ratio": 0.721379,
+        "worse_off": false
+       },
+       {
+        "field": "A-008",
+        "field_id": "pilot-a:field-008",
+        "groundwater_m3": 1123.44,
+        "group": "tail",
+        "production_delta_kg": 2064.92,
+        "production_kg": 7103.77,
+        "pumping_share": 0.13555,
+        "service_ratio": 0.620862,
+        "worse_off": false
+       },
+       {
+        "field": "A-009",
+        "field_id": "pilot-a:field-009",
+        "groundwater_m3": 973.56,
+        "group": "tail",
+        "production_delta_kg": 1705.19,
+        "production_kg": 5900.01,
+        "pumping_share": 0.117466,
+        "service_ratio": 0.638413,
+        "worse_off": false
+       },
+       {
+        "field": "A-010",
+        "field_id": "pilot-a:field-010",
+        "groundwater_m3": 0.0,
+        "group": "tail",
+        "production_delta_kg": 330.231,
+        "production_kg": 3814.63,
+        "pumping_share": 0.0,
+        "service_ratio": 0.609553,
+        "worse_off": false
+       },
+       {
+        "field": "A-011",
+        "field_id": "pilot-a:field-011",
+        "groundwater_m3": 0.0,
+        "group": "tail",
+        "production_delta_kg": 156.209,
+        "production_kg": 3660.38,
+        "pumping_share": 0.0,
+        "service_ratio": 0.622451,
+        "worse_off": false
+       },
+       {
+        "field": "A-012",
+        "field_id": "pilot-a:field-012",
+        "groundwater_m3": 0.0,
+        "group": "head",
+        "production_delta_kg": 335.622,
+        "production_kg": 3779.53,
+        "pumping_share": 0.0,
+        "service_ratio": 0.776829,
+        "worse_off": false
+       },
+       {
+        "field": "A-013",
+        "field_id": "pilot-a:field-013",
+        "groundwater_m3": 0.0,
+        "group": "head",
+        "production_delta_kg": 957.046,
+        "production_kg": 11336.7,
+        "pumping_share": 0.0,
+        "service_ratio": 0.763949,
+        "worse_off": false
+       },
+       {
+        "field": "A-014",
+        "field_id": "pilot-a:field-014",
+        "groundwater_m3": 0.0,
+        "group": "head",
+        "production_delta_kg": 378.551,
+        "production_kg": 4754.63,
+        "pumping_share": 0.0,
+        "service_ratio": 0.721411,
+        "worse_off": false
+       },
+       {
+        "field": "A-015",
+        "field_id": "pilot-a:field-015",
+        "groundwater_m3": 615.52,
+        "group": "middle",
+        "production_delta_kg": 1469.91,
+        "production_kg": 5939.78,
+        "pumping_share": 0.0742661,
+        "service_ratio": 0.796198,
+        "worse_off": false
+       },
+       {
+        "field": "A-018",
+        "field_id": "pilot-a:field-018",
+        "groundwater_m3": 0.0,
+        "group": "tail",
+        "production_delta_kg": 402.698,
+        "production_kg": 3726.45,
+        "pumping_share": 0.0,
+        "service_ratio": 0.66499,
+        "worse_off": false
+       },
+       {
+        "field": "A-019",
+        "field_id": "pilot-a:field-019",
+        "groundwater_m3": 1335.72,
+        "group": "tail",
+        "production_delta_kg": 2315.41,
+        "production_kg": 8152.67,
+        "pumping_share": 0.161162,
+        "service_ratio": 0.644767,
+        "worse_off": false
+       },
+       {
+        "field": "A-020",
+        "field_id": "pilot-a:field-020",
+        "groundwater_m3": 0.0,
+        "group": "middle",
+        "production_delta_kg": 1089.48,
+        "production_kg": 11360.6,
+        "pumping_share": 0.0,
+        "service_ratio": 0.662925,
+        "worse_off": false
+       },
+       {
+        "field": "A-021",
+        "field_id": "pilot-a:field-021",
+        "groundwater_m3": 0.0,
+        "group": "head",
+        "production_delta_kg": 482.621,
+        "production_kg": 4219.12,
+        "pumping_share": 0.0,
+        "service_ratio": 0.701897,
+        "worse_off": false
+       },
+       {
+        "field": "A-022",
+        "field_id": "pilot-a:field-022",
+        "groundwater_m3": 0.0,
+        "group": "tail",
+        "production_delta_kg": 586.594,
+        "production_kg": 5180.49,
+        "pumping_share": 0.0,
+        "service_ratio": 0.713458,
+        "worse_off": false
+       },
+       {
+        "field": "A-023",
+        "field_id": "pilot-a:field-023",
+        "groundwater_m3": 0.0,
+        "group": "head",
+        "production_delta_kg": 296.086,
+        "production_kg": 2588.41,
+        "pumping_share": 0.0,
+        "service_ratio": 0.701942,
+        "worse_off": false
+       },
+       {
+        "field": "A-024",
+        "field_id": "pilot-a:field-024",
+        "groundwater_m3": 0.0,
+        "group": "middle",
+        "production_delta_kg": 495.984,
+        "production_kg": 4657.35,
+        "pumping_share": 0.0,
+        "service_ratio": 0.718175,
+        "worse_off": false
+       },
+       {
+        "field": "A-025",
+        "field_id": "pilot-a:field-025",
+        "groundwater_m3": 0.0,
+        "group": "head",
+        "production_delta_kg": 377.79,
+        "production_kg": 2876.02,
+        "pumping_share": 0.0,
+        "service_ratio": 0.773427,
+        "worse_off": false
+       },
+       {
+        "field": "A-026",
+        "field_id": "pilot-a:field-026",
+        "groundwater_m3": 0.0,
+        "group": "middle",
+        "production_delta_kg": 268.425,
+        "production_kg": 3187.49,
+        "pumping_share": 0.0,
+        "service_ratio": 0.662953,
+        "worse_off": false
+       },
+       {
+        "field": "A-027",
+        "field_id": "pilot-a:field-027",
+        "groundwater_m3": 0.0,
+        "group": "middle",
+        "production_delta_kg": 608.247,
+        "production_kg": 7484.96,
+        "pumping_share": 0.0,
+        "service_ratio": 0.662905,
+        "worse_off": false
+       },
+       {
+        "field": "A-028",
+        "field_id": "pilot-a:field-028",
+        "groundwater_m3": 0.0,
+        "group": "middle",
+        "production_delta_kg": 286.918,
+        "production_kg": 3407.09,
+        "pumping_share": 0.0,
+        "service_ratio": 0.662943,
+        "worse_off": false
+       },
+       {
+        "field": "A-029",
+        "field_id": "pilot-a:field-029",
+        "groundwater_m3": 0.0,
+        "group": "head",
+        "production_delta_kg": 495.121,
+        "production_kg": 4297.77,
+        "pumping_share": 0.0,
+        "service_ratio": 0.767832,
+        "worse_off": false
+       },
+       {
+        "field": "A-030",
+        "field_id": "pilot-a:field-030",
+        "groundwater_m3": 0.0,
+        "group": "head",
+        "production_delta_kg": 553.177,
+        "production_kg": 4778.82,
+        "pumping_share": 0.0,
+        "service_ratio": 0.71821,
+        "worse_off": false
+       },
+       {
+        "field": "A-031",
+        "field_id": "pilot-a:field-031",
+        "groundwater_m3": 690.0,
+        "group": "middle",
+        "production_delta_kg": 1115.3,
+        "production_kg": 4402.88,
+        "pumping_share": 0.0832525,
+        "service_ratio": 0.618472,
+        "worse_off": false
+       },
+       {
+        "field": "A-032",
+        "field_id": "pilot-a:field-032",
+        "groundwater_m3": 0.0,
+        "group": "tail",
+        "production_delta_kg": 309.493,
+        "production_kg": 2863.95,
+        "pumping_share": 0.0,
+        "service_ratio": 0.664998,
+        "worse_off": false
+       }
+      ],
+      "row_count": 30,
+      "truncated": false,
+      "encoding": {
+       "x": null,
+       "y": [],
+       "series": null,
+       "value": "service_ratio",
+       "label": "field",
+       "color": null,
+       "source": null,
+       "target": null,
+       "id": "field_id",
+       "status": null
+      },
+      "highlight_ids": [
+       "pilot-a:field-010",
+       "pilot-a:field-004",
+       "pilot-a:field-031",
+       "pilot-a:field-005",
+       "pilot-a:field-008"
+      ],
+      "source": {
+       "tool": "equity",
+       "call_id": "call_8rGSdhD7PkZDeSH5zLLMNuda",
+       "run_ids": [
+        "run_c1251d888e0045fc88e80f05b20158f0",
+        "run_13c326f075704c4abd06b90c64e9da44"
+       ],
+       "analysis_ids": [],
+       "comparison_ids": [],
+       "revision_ids": [],
+       "endpoint": "/runs/run_c1251d888e0045fc88e80f05b20158f0/equity"
+      },
+      "basis": [
+       "assumption",
+       "computed_from_inputs",
+       "model_output"
+      ],
+      "notes": [
+       "Service = receipt / reference allowance (rights are assumed).",
+       "no ownership mapping supplied; results are per field, not per household"
+      ],
+      "interactions": [
+       {
+        "on": "select_field",
+        "column": "field_id",
+        "intent": "open_field"
+       }
+      ],
+      "table_fallback": true,
+      "auto": false
+     },
+     {
+      "type": "text",
+      "text": "So, by this measure, tail fields are not being cut below the baseline, but they are not receiving as large a share of their reference canal allowance as head fields. This is field-level, not household-level: no farmer ownership mapping was supplied.",
+      "citations": [
+       {
+        "ref_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "kind": "run",
+        "auto": false
+       }
+      ],
+      "withheld": false
+     },
+     {
+      "type": "uncertainty",
+      "text": "Allowance shares rely on assumed water rights, and production is modeled rather than measured. “Fair” here means the tool’s receipt-versus-allowance and baseline comparison, not a complete judgment of household fairness.",
+      "citations": [
+       {
+        "ref_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "kind": "run",
+        "auto": false
+       }
+      ],
+      "withheld": false
+     },
+     {
+      "type": "follow_ups",
+      "questions": [
+       "Would you like a tail-protection what-if for this plan?",
+       "Which fields have the lowest allowance shares?",
+       "Can you show the field-by-field changes on a canal map?"
+      ]
+     }
+    ],
+    "needs_clarification": false,
+    "clarification_question": null,
+    "validated": true,
+    "issues": [],
+    "deterministic": false
+   },
+   "event_types": [
+    "turn_started",
+    "thinking",
+    "tool_started",
+    "tool_started",
+    "tool_started",
+    "tool_finished",
+    "dataset_ready",
+    "tool_finished",
+    "dataset_ready",
+    "dataset_ready",
+    "tool_finished",
+    "thinking",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer",
+    "turn_finished",
+    "jobs_settled"
+   ]
+  },
+  {
+   "case": "S5",
+   "covers": "Urdu question (what-if canal closure)",
+   "message": "اگر نہر دو ہفتے بند رہے تو ہماری فصل پر کیا اثر ہوگا؟",
+   "turn_id": "turn_614e196eb501461890786715b379a2f6",
+   "status": "completed",
+   "language": "ur",
+   "wall_s": 18.1,
+   "latency_ms": 17924,
+   "rounds": 2,
+   "timings": {
+    "provider_calls": [
+     {
+      "calls": [
+       "run_what_if"
+      ],
+      "forced_final": false,
+      "latency_ms": 5879,
+      "round": 1,
+      "usage": {
+       "input_tokens": 6714,
+       "output_tokens": 156,
+       "total_tokens": 6870
+      }
+     },
+     {
+      "calls": [
+       "final_answer"
+      ],
+      "forced_final": false,
+      "latency_ms": 11367,
+      "round": 2,
+      "usage": {
+       "input_tokens": 12695,
+       "output_tokens": 1109,
+       "total_tokens": 13804
+      }
+     }
+    ],
+    "provider_ms": 17246,
+    "tool_ms": 640,
+    "tools": [
+     {
+      "call_id": "call_4tJLBK8ZwUNQusbYRdwTONLl",
+      "ms": 640,
+      "round": 1,
+      "status": "succeeded",
+      "tool": "run_what_if"
+     }
+    ],
+    "total_ms": 17924
+   },
+   "model": "gpt-6-luna",
+   "prompt_version": "copilot-prompt-2.1.0",
+   "tool_schema_version": "tools-a3cc2c9c802cf55b",
+   "provider_request_ids": [
+    "resp_0e4caba7288a62a7006aca3a62aa8c87d28568878913728be7",
+    "resp_0e4caba7288a62a7006aca3a69663487d2a4eb764b073baa96"
+   ],
+   "tool_calls": [
+    {
+     "call_id": "call_4tJLBK8ZwUNQusbYRdwTONLl",
+     "round": 1,
+     "tool": "run_what_if",
+     "arguments": {
+      "changes": {
+       "allowed_intervention_instance_ids": null,
+       "blocked_edge_ids": null,
+       "capital_budget": null,
+       "excluded_instance_ids": null,
+       "forced_instance_ids": null,
+       "minimum_service_ratio": null,
+       "operating_budget": null,
+       "permit_groundwater": null,
+       "service_group": null,
+       "service_preset": null,
+       "supply_profile_id": "interruption-14d-v1",
+       "uniform_reduction_percent": null,
+       "weather_scenario_ids": null
+      },
+      "compare_with_run_id": null,
+      "label": "14-day canal closure",
+      "plan_kind": "P"
+     },
+     "status": "succeeded",
+     "error": null,
+     "datasets": [
+      {
+       "dataset_id": "ds1",
+       "kind": "plans_side_by_side",
+       "title": "Plans side by side",
+       "rows": 2,
+       "charts": [
+        "table",
+        "bar",
+        "grouped_bar",
+        "kpi"
+       ]
+      },
+      {
+       "dataset_id": "ds2",
+       "kind": "field_deltas",
+       "title": "Change per field: P integrated plan versus P integrated plan",
+       "rows": 30,
+       "charts": [
+        "table",
+        "delta_bar",
+        "map",
+        "bar"
+       ]
+      }
+     ]
+    }
+   ],
+   "created_refs": [
+    {
+     "kind": "branch",
+     "ref_id": "rev_2bddddf6d449486db9217eeff06d9249",
+     "label": "14-day canal closure"
+    },
+    {
+     "kind": "run",
+     "ref_id": "run_b747eef91b9d40d8acdf468e85045587",
+     "label": "P run"
+    },
+    {
+     "kind": "comparison",
+     "ref_id": "cmp_765994209dab459a9b84e984d0250e63",
+     "label": "Compare with the current plan"
+    }
+   ],
+   "error": null,
+   "answer_validated": true,
+   "answer_issues": [],
+   "block_types": [
+    "run_badge",
+    "run_badge",
+    "headline",
+    "text",
+    "visual",
+    "comparison",
+    "uncertainty",
+    "action",
+    "action",
+    "action",
+    "follow_ups"
+   ],
+   "visuals": [
+    {
+     "chart": "grouped_bar",
+     "title": "موجودہ اور بندش والے منظرنامے",
+     "dataset_kind": "plans_side_by_side",
+     "rows": 2,
+     "source": {
+      "tool": "run_what_if",
+      "call_id": "call_4tJLBK8ZwUNQusbYRdwTONLl",
+      "run_ids": [
+       "run_c1251d888e0045fc88e80f05b20158f0",
+       "run_b747eef91b9d40d8acdf468e85045587"
+      ],
+      "analysis_ids": [],
+      "comparison_ids": [
+       "cmp_765994209dab459a9b84e984d0250e63"
+      ],
+      "revision_ids": [],
+      "endpoint": "/comparisons"
+     }
+    }
+   ],
+   "answer": {
+    "language": "ur",
+    "blocks": [
+     {
+      "type": "run_badge",
+      "role": "context",
+      "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+      "plan_kind": "P",
+      "solver_status": "OPTIMAL",
+      "outcome": "plan",
+      "scenario_revision_id": "rev_33c49fe81962437d934e7638052e3c71",
+      "pilot_id": "pilot-a",
+      "pilot_version": "reviewed-v1",
+      "season_id": "wheat-rabi-2027-28",
+      "label": null
+     },
+     {
+      "type": "run_badge",
+      "role": "created",
+      "run_id": "run_b747eef91b9d40d8acdf468e85045587",
+      "plan_kind": "P",
+      "solver_status": "OPTIMAL",
+      "outcome": "plan",
+      "scenario_revision_id": "rev_2bddddf6d449486db9217eeff06d9249",
+      "pilot_id": "pilot-a",
+      "pilot_version": "reviewed-v1",
+      "season_id": "wheat-rabi-2027-28",
+      "label": null
+     },
+     {
+      "type": "headline",
+      "text": "دو ہفتے کی بندش کے منظرنامے میں ماڈل گندم کی پیداوار کم دکھاتا ہے، مگر یہ قطعی پیش گوئی نہیں۔",
+      "citations": [],
+      "withheld": false
+     },
+     {
+      "type": "text",
+      "text": "اس منظرنامے میں بہتر بنایا گیا منصوبہ P پیداوار 154,118 kg سے 139,128 kg دکھاتا ہے؛ موازنہ سروس کے مطابق فرق −14,990.4 kg ہے۔ کم ترین کھیت کا اپنے مفروضہ پانی الاؤنس میں حصہ بھی 0.610 سے 0.498 رہتا ہے۔",
+      "citations": [
+       {
+        "ref_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "kind": "run",
+        "auto": false
+       },
+       {
+        "ref_id": "run_b747eef91b9d40d8acdf468e85045587",
+        "kind": "run",
+        "auto": false
+       }
+      ],
+      "withheld": false
+     },
+     {
+      "type": "visual",
+      "visual_id": "v1",
+      "chart": "grouped_bar",
+      "title": "موجودہ اور بندش والے منظرنامے",
+      "caption": "ماڈل شدہ پیداوار اور پانی کی فراہمی کے اہم فرق دیکھیں۔",
+      "dataset_id": "ds1",
+      "dataset_kind": "plans_side_by_side",
+      "columns": [
+       {
+        "key": "plan",
+        "label": "Plan",
+        "label_ur": "منصوبہ",
+        "kind": "category",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "plan_kind",
+        "label": "Plan kind",
+        "label_ur": "منصوبے کی قسم",
+        "kind": "category",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "production_kg",
+        "label": "Crop production",
+        "label_ur": "فصل کی پیداوار",
+        "kind": "number",
+        "unit": "kg",
+        "unit_column": null,
+        "basis": "model_output",
+        "ref": null
+       },
+       {
+        "key": "capital_commitment_pkr",
+        "label": "Capital spent",
+        "label_ur": "سرمایہ خرچ",
+        "kind": "number",
+        "unit": "PKR",
+        "unit_column": null,
+        "basis": "computed_from_inputs",
+        "ref": null
+       },
+       {
+        "key": "operating_cost_pkr",
+        "label": "Seasonal operating cost",
+        "label_ur": "موسمی آپریٹنگ لاگت",
+        "kind": "number",
+        "unit": "PKR",
+        "unit_column": null,
+        "basis": "computed_from_inputs",
+        "ref": null
+       },
+       {
+        "key": "canal_source_withdrawal_m3",
+        "label": "Canal water withdrawn",
+        "label_ur": "نہر سے لیا گیا پانی",
+        "kind": "number",
+        "unit": "m3",
+        "unit_column": null,
+        "basis": "computed_from_inputs",
+        "ref": null
+       },
+       {
+        "key": "groundwater_m3",
+        "label": "Groundwater pumped",
+        "label_ur": "زیر زمین پانی",
+        "kind": "number",
+        "unit": "m3",
+        "unit_column": null,
+        "basis": "computed_from_inputs",
+        "ref": null
+       },
+       {
+        "key": "min_service_ratio",
+        "label": "Lowest field's share of allowance",
+        "label_ur": "کم ترین کھیت کا حصہ",
+        "kind": "number",
+        "unit": "ratio",
+        "unit_column": null,
+        "basis": "computed_from_inputs",
+        "ref": null
+       },
+       {
+        "key": "tail_min_service_ratio",
+        "label": "Lowest tail field's share",
+        "label_ur": "دم کے کم ترین کھیت کا حصہ",
+        "kind": "number",
+        "unit": "ratio",
+        "unit_column": null,
+        "basis": "computed_from_inputs",
+        "ref": null
+       },
+       {
+        "key": "solver_status",
+        "label": "Solver status",
+        "label_ur": "حل کی حالت",
+        "kind": "status",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "run_id",
+        "label": "Run",
+        "label_ur": "رن",
+        "kind": "id",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": "run"
+       }
+      ],
+      "rows": [
+       {
+        "canal_source_withdrawal_m3": 40199.2,
+        "capital_commitment_pkr": 1953220.0,
+        "groundwater_m3": 8288.04,
+        "min_service_ratio": 0.609553,
+        "operating_cost_pkr": 70452.0,
+        "plan": "Current plan (P)",
+        "plan_kind": "P",
+        "production_kg": 154118.0,
+        "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "solver_status": "OPTIMAL",
+        "tail_min_service_ratio": 0.609553
+       },
+       {
+        "canal_source_withdrawal_m3": 32791.2,
+        "capital_commitment_pkr": 1543810.0,
+        "groundwater_m3": 4766.0,
+        "min_service_ratio": 0.498116,
+        "operating_cost_pkr": 40514.0,
+        "plan": "14-day canal closure",
+        "plan_kind": "P",
+        "production_kg": 139128.0,
+        "run_id": "run_b747eef91b9d40d8acdf468e85045587",
+        "solver_status": "OPTIMAL",
+        "tail_min_service_ratio": 0.498116
+       }
+      ],
+      "row_count": 2,
+      "truncated": false,
+      "encoding": {
+       "x": "plan",
+       "y": [
+        "production_kg",
+        "min_service_ratio"
+       ],
+       "series": null,
+       "value": null,
+       "label": null,
+       "color": null,
+       "source": null,
+       "target": null,
+       "id": "run_id",
+       "status": null
+      },
+      "highlight_ids": [
+       "run_b747eef91b9d40d8acdf468e85045587"
+      ],
+      "source": {
+       "tool": "run_what_if",
+       "call_id": "call_4tJLBK8ZwUNQusbYRdwTONLl",
+       "run_ids": [
+        "run_c1251d888e0045fc88e80f05b20158f0",
+        "run_b747eef91b9d40d8acdf468e85045587"
+       ],
+       "analysis_ids": [],
+       "comparison_ids": [
+        "cmp_765994209dab459a9b84e984d0250e63"
+       ],
+       "revision_ids": [],
+       "endpoint": "/comparisons"
+      },
+      "basis": [
+       "computed_from_inputs",
+       "model_output"
+      ],
+      "notes": [
+       "non-matched comparison: differences are not causal",
+       "NON-MATCHED comparison: conditions differ, so differences are not caused by the plan."
+      ],
+      "interactions": [
+       {
+        "on": "select_row",
+        "column": "run_id",
+        "intent": "open_run"
+       }
+      ],
+      "table_fallback": true,
+      "auto": false
+     },
+     {
+      "type": "comparison",
+      "comparison_id": "cmp_765994209dab459a9b84e984d0250e63",
+      "run_ids": [
+       "run_c1251d888e0045fc88e80f05b20158f0",
+       "run_b747eef91b9d40d8acdf468e85045587"
+      ],
+      "compatible": false,
+      "label": "non-matched comparison: differences are not causal",
+      "deltas": [
+       {
+        "metric_id": "canal_source_withdrawal_m3",
+        "unit": "m3",
+        "a": 40199.23994388747,
+        "b": 32791.159354593416,
+        "delta": -7408.080589294055,
+        "status": "available"
+       },
+       {
+        "metric_id": "capital_commitment_pkr",
+        "unit": "PKR",
+        "a": 1953216.0,
+        "b": 1543813.0,
+        "delta": -409403.0,
+        "status": "available"
+       },
+       {
+        "metric_id": "conveyance_loss_m3",
+        "unit": "m3",
+        "a": 7852.820500887458,
+        "b": 6421.714554593419,
+        "delta": -1431.1059462940393,
+        "status": "available"
+       },
+       {
+        "metric_id": "crop_value_pkr",
+        "unit": "PKR",
+        "a": null,
+        "b": null,
+        "delta": null,
+        "status": "not_comparable"
+       },
+       {
+        "metric_id": "cropped_area_ha",
+        "unit": "ha",
+        "a": 25.493217,
+        "b": 25.5627,
+        "delta": 0.06948299999999819,
+        "status": "available"
+       },
+       {
+        "metric_id": "field_application_m3",
+        "unit": "m3",
+        "a": 40337.765737999965,
+        "b": 31135.444799999957,
+        "delta": -9202.320938000008,
+        "status": "available"
+       },
+       {
+        "metric_id": "groundwater_m3",
+        "unit": "m3",
+        "a": 8288.04,
+        "b": 4766.0,
+        "delta": -3522.040000000001,
+        "status": "available"
+       },
+       {
+        "metric_id": "head_mean_service_ratio",
+        "unit": "ratio",
+        "a": 0.7368293462153539,
+        "b": 0.5942112913116562,
+        "delta": -0.14261805490369772,
+        "status": "available"
+       },
+       {
+        "metric_id": "irrigation_contribution_pkr",
+        "unit": "PKR",
+        "a": null,
+        "b": null,
+        "delta": null,
+        "status": "not_comparable"
+       },
+       {
+        "metric_id": "middle_mean_service_ratio",
+        "unit": "ratio",
+        "a": 0.6817705361907939,
+        "b": 0.5679586914437535,
+        "delta": -0.11381184474704031,
+        "status": "available"
+       },
+       {
+        "metric_id": "min_service_ratio",
+        "unit": "ratio",
+        "a": 0.6095528655821812,
+        "b": 0.49811612791830595,
+        "delta": -0.1114367376638753,
+        "status": "available"
+       },
+       {
+        "metric_id": "new_instances_count",
+        "unit": "count",
+        "a": 33.0,
+        "b": 31.0,
+        "delta": -2.0,
+        "status": "available"
+       },
+       {
+        "metric_id": "objective_quantization_bound_kg",
+        "unit": "kg",
+        "a": 3.0,
+        "b": 3.0,
+        "delta": 0.0,
+        "status": "available"
+       },
+       {
+        "metric_id": "operating_cost_pkr",
+        "unit": "PKR",
+        "a": 70452.0,
+        "b": 40514.0,
+        "delta": -29938.0,
+        "status": "available"
+       },
+       {
+        "metric_id": "outlet_receipt_m3",
+        "unit": "m3",
+        "a": 32346.41944299996,
+        "b": 26369.44479999996,
+        "delta": -5976.974642999998,
+        "status": "available"
+       },
+       {
+        "metric_id": "pond_losses_m3",
+        "unit": "m3",
+        "a": 327.11129300000255,
+        "b": 0.0,
+        "delta": -327.11129300000255,
+        "status": "available"
+       },
+       {
+        "metric_id": "pond_rain_m3",
+        "unit": "m3",
+        "a": 30.41758799999999,
+        "b": 0.0,
+        "delta": -30.41758799999999,
+        "status": "available"
+       },
+       {
+        "metric_id": "pond_spill_m3",
+        "unit": "m3",
+        "a": 0.0,
+        "b": 0.0,
+        "delta": 0.0,
+        "status": "available"
+       },
+       {
+        "metric_id": "production_kg",
+        "unit": "kg",
+        "a": 154117.87875700262,
+        "b": 139127.50594492455,
+        "delta": -14990.372812078072,
+        "status": "available"
+       },
+       {
+        "metric_id": "pumping_cost_pkr",
+        "unit": "PKR",
+        "a": 70452.0,
+        "b": 40514.0,
+        "delta": -29938.0,
+        "status": "available"
+       },
+       {
+        "metric_id": "sdg_13_1_worst_tested_production_kg",
+        "unit": "kg",
+        "a": null,
+        "b": null,
+        "delta": null,
+        "status": "not_comparable"
+       },
+       {
+        "metric_id": "sdg_2_4_production_retained_fraction",
+        "unit": "ratio",
+        "a": null,
+        "b": null,
+        "delta": null,
+        "status": "not_comparable"
+       },
+       {
+        "metric_id": "sdg_6_4_water_productivity_kg_m3",
+        "unit": "kg/m3",
+        "a": 3.178521850170963,
+        "b": 3.7044203644732945,
+        "delta": 0.5258985143023316,
+        "status": "available"
+       },
+       {
+        "metric_id": "sdg_6_5_min_entitlement_fulfillment",
+        "unit": "ratio",
+        "a": 0.6095528655821812,
+        "b": 0.49811612791830595,
+        "delta": -0.1114367376638753,
+        "status": "available"
+       },
+       {
+        "metric_id": "tail_mean_service_ratio",
+        "unit": "ratio",
+        "a": 0.6421300131382204,
+        "b": 0.5263390764137567,
+        "delta": -0.11579093672446372,
+        "status": "available"
+       },
+       {
+        "metric_id": "tail_min_service_ratio",
+        "unit": "ratio",
+        "a": 0.6095528655821812,
+        "b": 0.49811612791830595,
+        "delta": -0.1114367376638753,
+        "status": "available"
+       },
+       {
+        "metric_id": "terminal_pond_m3",
+        "unit": "m3",
+        "a": 0.0,
+        "b": 0.0,
+        "delta": 0.0,
+        "status": "available"
+       },
+       {
+        "metric_id": "typical_production_kg",
+        "unit": "kg",
+        "a": 154117.87875700262,
+        "b": 139127.50594492455,
+        "delta": -14990.372812078072,
+        "status": "available"
+       },
+       {
+        "metric_id": "withdrawal_productivity_kg_m3",
+        "unit": "kg/m3",
+        "a": 3.178521850170963,
+        "b": 3.7044203644732945,
+        "delta": 0.5258985143023316,
+        "status": "available"
+       },
+       {
+        "metric_id": "worst_tested_production_kg",
+        "unit": "kg",
+        "a": 154117.87875700262,
+        "b": 139127.50594492455,
+        "delta": -14990.372812078072,
+        "status": "available"
+       }
+      ],
+      "fields_worse_off": [
+       "pilot-a:field-001",
+       "pilot-a:field-002",
+       "pilot-a:field-003",
+       "pilot-a:field-004",
+       "pilot-a:field-005",
+       "pilot-a:field-006",
+       "pilot-a:field-007",
+       "pilot-a:field-008",
+       "pilot-a:field-009",
+       "pilot-a:field-010",
+       "pilot-a:field-011",
+       "pilot-a:field-012",
+       "pilot-a:field-013",
+       "pilot-a:field-014",
+       "pilot-a:field-015",
+       "pilot-a:field-018",
+       "pilot-a:field-019",
+       "pilot-a:field-020",
+       "pilot-a:field-021",
+       "pilot-a:field-022",
+       "pilot-a:field-023",
+       "pilot-a:field-024",
+       "pilot-a:field-025",
+       "pilot-a:field-026",
+       "pilot-a:field-027",
+       "pilot-a:field-028",
+       "pilot-a:field-029",
+       "pilot-a:field-030",
+       "pilot-a:field-031",
+       "pilot-a:field-032"
+      ]
+     },
+     {
+      "type": "uncertainty",
+      "text": "پیداوار AquaCrop کا غیر کیلیبریٹڈ ماڈل آؤٹ پٹ ہے، مشاہدہ شدہ فصل نہیں؛ نتیجہ مفروضہ پانی کے حقوق اور اس مخصوص منظرنامے پر منحصر ہے۔",
+      "citations": [
+       {
+        "ref_id": "run_b747eef91b9d40d8acdf468e85045587",
+        "kind": "run",
+        "auto": false
+       }
+      ],
+      "withheld": false
+     },
+     {
+      "type": "action",
+      "action": "open_run",
+      "ref_id": "run_b747eef91b9d40d8acdf468e85045587",
+      "label": "بندش والا منصوبہ کھولیں",
+      "auto": false
+     },
+     {
+      "type": "action",
+      "action": "open_branch",
+      "ref_id": "rev_2bddddf6d449486db9217eeff06d9249",
+      "label": "14-day canal closure",
+      "auto": true
+     },
+     {
+      "type": "action",
+      "action": "open_comparison",
+      "ref_id": "cmp_765994209dab459a9b84e984d0250e63",
+      "label": "Compare with the current plan",
+      "auto": true
+     },
+     {
+      "type": "follow_ups",
+      "questions": [
+       "دم کے کھیتوں پر بندش کا اثر الگ دکھائیں؟",
+       "بندش میں کم نقصان کے لیے کیا تبدیلیاں ممکن ہیں؟",
+       "اس منظرنامے کی فصل وار تفصیل کھولوں؟"
+      ]
+     }
+    ],
+    "needs_clarification": false,
+    "clarification_question": null,
+    "validated": true,
+    "issues": [],
+    "deterministic": false
+   },
+   "event_types": [
+    "turn_started",
+    "thinking",
+    "tool_started",
+    "dataset_ready",
+    "dataset_ready",
+    "tool_finished",
+    "thinking",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer",
+    "turn_finished",
+    "jobs_settled"
+   ]
+  },
+  {
+   "case": "S6",
+   "covers": "failure case: tool error on a run that does not exist",
+   "message": "Compare our plan with run run_0000deadbeef please.",
+   "turn_id": "turn_fc8fb0186eea44e486c1b2e3bb39b1bf",
+   "status": "completed",
+   "language": "en",
+   "wall_s": 13.6,
+   "latency_ms": 13197,
+   "rounds": 3,
+   "timings": {
+    "provider_calls": [
+     {
+      "calls": [
+       "get_context"
+      ],
+      "forced_final": false,
+      "latency_ms": 5263,
+      "round": 1,
+      "usage": {
+       "input_tokens": 6695,
+       "output_tokens": 14,
+       "total_tokens": 6709
+      }
+     },
+     {
+      "calls": [
+       "compare_runs"
+      ],
+      "forced_final": false,
+      "latency_ms": 3001,
+      "round": 2,
+      "usage": {
+       "input_tokens": 9046,
+       "output_tokens": 79,
+       "total_tokens": 9125
+      }
+     },
+     {
+      "calls": [
+       "final_answer"
+      ],
+      "forced_final": false,
+      "latency_ms": 4892,
+      "round": 3,
+      "usage": {
+       "input_tokens": 9167,
+       "output_tokens": 304,
+       "total_tokens": 9471
+      }
+     }
+    ],
+    "provider_ms": 13156,
+    "tool_ms": 7,
+    "tools": [
+     {
+      "call_id": "call_WofaTZ9nqheRZIzYt9Zj6D51",
+      "ms": 2,
+      "round": 1,
+      "status": "succeeded",
+      "tool": "get_context"
+     },
+     {
+      "call_id": "call_PWyDyssZttaGD5GVdLd4WPpx",
+      "ms": 5,
+      "round": 2,
+      "status": "failed",
+      "tool": "compare_runs"
+     }
+    ],
+    "total_ms": 13197
+   },
+   "model": "gpt-6-luna",
+   "prompt_version": "copilot-prompt-2.1.0",
+   "tool_schema_version": "tools-a3cc2c9c802cf55b",
+   "provider_request_ids": [
+    "resp_07a7033f3be61912006aca3a761c6c87d295135a46fdb7a0b0",
+    "resp_07a7033f3be61912006aca3a79017887d2b4e09a4e6078db2e",
+    "resp_07a7033f3be61912006aca3a7bf0a887d2a8bc4ed4b6beca3c"
+   ],
+   "tool_calls": [
+    {
+     "call_id": "call_WofaTZ9nqheRZIzYt9Zj6D51",
+     "round": 1,
+     "tool": "get_context",
+     "arguments": {},
+     "status": "succeeded",
+     "error": null,
+     "datasets": []
+    },
+    {
+     "call_id": "call_PWyDyssZttaGD5GVdLd4WPpx",
+     "round": 2,
+     "tool": "compare_runs",
+     "arguments": {
+      "run_ids": [
+       "run_c1251d888e0045fc88e80f05b20158f0",
+       "run_0000deadbeef"
+      ]
+     },
+     "status": "failed",
+     "error": {
+      "code": "NOT_FOUND",
+      "detail": "run run_0000deadbeef does not exist"
+     },
+     "datasets": []
+    }
+   ],
+   "created_refs": [],
+   "error": null,
+   "answer_validated": true,
+   "answer_issues": [],
+   "block_types": [
+    "run_badge",
+    "headline",
+    "text",
+    "uncertainty",
+    "follow_ups"
+   ],
+   "visuals": [],
+   "answer": {
+    "language": "en",
+    "blocks": [
+     {
+      "type": "run_badge",
+      "role": "context",
+      "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+      "plan_kind": "P",
+      "solver_status": "OPTIMAL",
+      "outcome": "plan",
+      "scenario_revision_id": "rev_33c49fe81962437d934e7638052e3c71",
+      "pilot_id": "pilot-a",
+      "pilot_version": "reviewed-v1",
+      "season_id": "wheat-rabi-2027-28",
+      "label": null
+     },
+     {
+      "type": "headline",
+      "text": "I couldn’t compare the plans because run_0000deadbeef does not exist in this pilot.",
+      "citations": [],
+      "withheld": false
+     },
+     {
+      "type": "text",
+      "text": "Your current plan is the integrated plan P. Please share a valid run ID from this pilot and I can compare it with P.",
+      "citations": [
+       {
+        "ref_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "kind": "run",
+        "auto": false
+       }
+      ],
+      "withheld": false
+     },
+     {
+      "type": "uncertainty",
+      "text": "The comparison service returned NOT_FOUND for the run ID you provided, so there are no comparison results to report.",
+      "citations": [],
+      "withheld": false
+     },
+     {
+      "type": "follow_ups",
+      "questions": [
+       "Which valid run ID should I compare with P?",
+       "Would you like me to compare P with the baseline B0 or B1 instead?"
+      ]
+     }
+    ],
+    "needs_clarification": false,
+    "clarification_question": null,
+    "validated": true,
+    "issues": [],
+    "deterministic": false
+   },
+   "event_types": [
+    "turn_started",
+    "thinking",
+    "tool_started",
+    "tool_finished",
+    "thinking",
+    "tool_started",
+    "tool_finished",
+    "thinking",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer",
+    "turn_finished",
+    "jobs_settled"
+   ]
+  },
+  {
+   "case": "S7",
+   "covers": "where the water goes (sankey)",
+   "message": "Where does all the canal water actually go?",
+   "turn_id": "turn_e9f5f7407ded4667b9ba82a1bf30ad14",
+   "status": "completed",
+   "language": "en",
+   "wall_s": 9.6,
+   "latency_ms": 9259,
+   "rounds": 2,
+   "timings": {
+    "provider_calls": [
+     {
+      "calls": [
+       "water_accounting"
+      ],
+      "forced_final": false,
+      "latency_ms": 2778,
+      "round": 1,
+      "usage": {
+       "input_tokens": 7169,
+       "output_tokens": 39,
+       "total_tokens": 7208
+      }
+     },
+     {
+      "calls": [
+       "final_answer"
+      ],
+      "forced_final": false,
+      "latency_ms": 6368,
+      "round": 2,
+      "usage": {
+       "input_tokens": 8217,
+       "output_tokens": 484,
+       "total_tokens": 8701
+      }
+     }
+    ],
+    "provider_ms": 9146,
+    "tool_ms": 79,
+    "tools": [
+     {
+      "call_id": "call_TFewkUcwAYidZm4zxXJmD4zN",
+      "ms": 79,
+      "round": 1,
+      "status": "succeeded",
+      "tool": "water_accounting"
+     }
+    ],
+    "total_ms": 9259
+   },
+   "model": "gpt-6-luna",
+   "prompt_version": "copilot-prompt-2.1.0",
+   "tool_schema_version": "tools-a3cc2c9c802cf55b",
+   "provider_request_ids": [
+    "resp_0d4baa5e71664378006aca3a81481087d29c3706620a1d3038",
+    "resp_0d4baa5e71664378006aca3a8409a087d2a7b958282c528875"
+   ],
+   "tool_calls": [
+    {
+     "call_id": "call_TFewkUcwAYidZm4zxXJmD4zN",
+     "round": 1,
+     "tool": "water_accounting",
+     "arguments": {
+      "run_id": "run_c1251d888e0045fc88e80f05b20158f0"
+     },
+     "status": "succeeded",
+     "error": null,
+     "datasets": [
+      {
+       "dataset_id": "ds1",
+       "kind": "water_flows",
+       "title": "Where the water goes (run run_c1251d888e0045fc88e80f05b20158f0)",
+       "rows": 8,
+       "charts": [
+        "table",
+        "sankey"
+       ]
+      },
+      {
+       "dataset_id": "ds2",
+       "kind": "water_by_field",
+       "title": "Water sources per field (run run_c1251d888e0045fc88e80f05b20158f0)",
+       "rows": 30,
+       "charts": [
+        "table",
+        "stacked_bar",
+        "map"
+       ]
+      }
+     ]
+    }
+   ],
+   "created_refs": [],
+   "error": null,
+   "answer_validated": true,
+   "answer_issues": [],
+   "block_types": [
+    "run_badge",
+    "headline",
+    "text",
+    "visual",
+    "visual",
+    "uncertainty",
+    "follow_ups"
+   ],
+   "visuals": [
+    {
+     "chart": "sankey",
+     "title": "Water flow in the plan",
+     "dataset_kind": "water_flows",
+     "rows": 8,
+     "source": {
+      "tool": "water_accounting",
+      "call_id": "call_TFewkUcwAYidZm4zxXJmD4zN",
+      "run_ids": [
+       "run_c1251d888e0045fc88e80f05b20158f0"
+      ],
+      "analysis_ids": [],
+      "comparison_ids": [],
+      "revision_ids": [],
+      "endpoint": "/runs/run_c1251d888e0045fc88e80f05b20158f0/accounting"
+     }
+    },
+    {
+     "chart": "stacked_bar",
+     "title": "Water sources by field",
+     "dataset_kind": "water_by_field",
+     "rows": 30,
+     "source": {
+      "tool": "water_accounting",
+      "call_id": "call_TFewkUcwAYidZm4zxXJmD4zN",
+      "run_ids": [
+       "run_c1251d888e0045fc88e80f05b20158f0"
+      ],
+      "analysis_ids": [],
+      "comparison_ids": [],
+      "revision_ids": [],
+      "endpoint": "/runs/run_c1251d888e0045fc88e80f05b20158f0/accounting"
+     }
+    }
+   ],
+   "answer": {
+    "language": "en",
+    "blocks": [
+     {
+      "type": "run_badge",
+      "role": "context",
+      "run_id": "run_c1251d888e0045fc88e80f05b20158f0",
+      "plan_kind": "P",
+      "solver_status": "OPTIMAL",
+      "outcome": "plan",
+      "scenario_revision_id": "rev_33c49fe81962437d934e7638052e3c71",
+      "pilot_id": "pilot-a",
+      "pilot_version": "reviewed-v1",
+      "season_id": "wheat-rabi-2027-28",
+      "label": null
+     },
+     {
+      "type": "headline",
+      "text": "In the integrated plan, most canal water reaches field outlets; some is lost in channels, and some is stored briefly in ponds.",
+      "citations": [],
+      "withheld": false
+     },
+     {
+      "type": "text",
+      "text": "For the typical-weather, nominal-supply case, the canal withdrawal is split between water lost along channels and water arriving at field outlets. Of the outlet water, most goes straight to fields; a smaller amount fills ponds, which later release water and also lose some to evaporation and seepage. Groundwater also contributes to field application, so not all water applied to crops is canal water.",
+      "citations": [
+       {
+        "ref_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "kind": "run",
+        "auto": false
+       }
+      ],
+      "withheld": false
+     },
+     {
+      "type": "visual",
+      "visual_id": "v1",
+      "chart": "sankey",
+      "title": "Water flow in the plan",
+      "caption": "Follow the flows from the canal source through channel losses and field outlets to direct use and pond storage.",
+      "dataset_id": "ds1",
+      "dataset_kind": "water_flows",
+      "columns": [
+       {
+        "key": "from",
+        "label": "From",
+        "label_ur": "سے",
+        "kind": "category",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "to",
+        "label": "To",
+        "label_ur": "تک",
+        "kind": "category",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "m3",
+        "label": "Water volume",
+        "label_ur": "پانی کا حجم",
+        "kind": "number",
+        "unit": "m3",
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       }
+      ],
+      "rows": [
+       {
+        "from": "Canal source",
+        "m3": 7852.82,
+        "to": "Lost in channels"
+       },
+       {
+        "from": "Canal source",
+        "m3": 32346.4,
+        "to": "Delivered to field outlets"
+       },
+       {
+        "from": "Delivered to field outlets",
+        "m3": 1043.38,
+        "to": "pond_storage"
+       },
+       {
+        "from": "Delivered to field outlets",
+        "m3": 31303.0,
+        "to": "direct_field_application"
+       },
+       {
+        "from": "Rain into ponds",
+        "m3": 30.4176,
+        "to": "pond_storage"
+       },
+       {
+        "from": "pond_storage",
+        "m3": 746.682,
+        "to": "field_application_from_pond"
+       },
+       {
+        "from": "pond_storage",
+        "m3": 327.111,
+        "to": "Pond evaporation/seepage"
+       },
+       {
+        "from": "Groundwater pumping",
+        "m3": 8288.04,
+        "to": "field_application_from_pump"
+       }
+      ],
+      "row_count": 8,
+      "truncated": false,
+      "encoding": {
+       "x": null,
+       "y": [],
+       "series": null,
+       "value": "m3",
+       "label": null,
+       "color": null,
+       "source": "from",
+       "target": "to",
+       "id": null,
+       "status": null
+      },
+      "highlight_ids": [],
+      "source": {
+       "tool": "water_accounting",
+       "call_id": "call_TFewkUcwAYidZm4zxXJmD4zN",
+       "run_ids": [
+        "run_c1251d888e0045fc88e80f05b20158f0"
+       ],
+       "analysis_ids": [],
+       "comparison_ids": [],
+       "revision_ids": [],
+       "endpoint": "/runs/run_c1251d888e0045fc88e80f05b20158f0/accounting"
+      },
+      "basis": [
+       "computed_from_inputs"
+      ],
+      "notes": [
+       "source withdrawal = conveyance loss + outlet receipt (within float tolerance); soil-water and network/pond accounting are separate; ET components are not summed as losses"
+      ],
+      "interactions": [],
+      "table_fallback": true,
+      "auto": false
+     },
+     {
+      "type": "visual",
+      "visual_id": "v2",
+      "chart": "stacked_bar",
+      "title": "Water sources by field",
+      "caption": "Compare each field’s canal, groundwater and pond contribution to its applied water.",
+      "dataset_id": "ds2",
+      "dataset_kind": "water_by_field",
+      "columns": [
+       {
+        "key": "field",
+        "label": "Field",
+        "label_ur": "کھیت",
+        "kind": "category",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "field_id",
+        "label": "Field ID",
+        "label_ur": "کھیت آئی ڈی",
+        "kind": "id",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": "field"
+       },
+       {
+        "key": "group",
+        "label": "Canal position",
+        "label_ur": "نہر پر مقام",
+        "kind": "category",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "canal_m3",
+        "label": "Canal water",
+        "label_ur": null,
+        "kind": "number",
+        "unit": "m3",
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "pump_m3",
+        "label": "Groundwater pumped",
+        "label_ur": null,
+        "kind": "number",
+        "unit": "m3",
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "pond_m3",
+        "label": "From ponds",
+        "label_ur": null,
+        "kind": "number",
+        "unit": "m3",
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "applied_m3",
+        "label": "Applied on field",
+        "label_ur": null,
+        "kind": "number",
+        "unit": "m3",
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       }
+      ],
+      "rows": [
+       {
+        "applied_m3": 1331.6,
+        "canal_m3": 569.595,
+        "field": "A-001",
+        "field_id": "pilot-a:field-001",
+        "group": "tail",
+        "pond_m3": null,
+        "pump_m3": 762.0
+       },
+       {
+        "applied_m3": 1204.52,
+        "canal_m3": 515.237,
+        "field": "A-002",
+        "field_id": "pilot-a:field-002",
+        "group": "tail",
+        "pond_m3": null,
+        "pump_m3": 689.28
+       },
+       {
+        "applied_m3": 1476.33,
+        "canal_m3": 952.806,
+        "field": "A-003",
+        "field_id": "pilot-a:field-003",
+        "group": "middle",
+        "pond_m3": null,
+        "pump_m3": 523.52
+       },
+       {
+        "applied_m3": 1633.1,
+        "canal_m3": 792.379,
+        "field": "A-004",
+        "field_id": "pilot-a:field-004",
+        "group": "middle",
+        "pond_m3": null,
+        "pump_m3": 840.72
+       },
+       {
+        "applied_m3": 1426.34,
+        "canal_m3": 692.059,
+        "field": "A-005",
+        "field_id": "pilot-a:field-005",
+        "group": "middle",
+        "pond_m3": null,
+        "pump_m3": 734.28
+       },
+       {
+        "applied_m3": 1341.33,
+        "canal_m3": 1341.33,
+        "field": "A-006",
+        "field_id": "pilot-a:field-006",
+        "group": "head",
+        "pond_m3": null,
+        "pump_m3": null
+       },
+       {
+        "applied_m3": 1082.39,
+        "canal_m3": 1082.39,
+        "field": "A-007",
+        "field_id": "pilot-a:field-007",
+        "group": "head",
+        "pond_m3": null,
+        "pump_m3": null
+       },
+       {
+        "applied_m3": 1963.21,
+        "canal_m3": 839.771,
+        "field": "A-008",
+        "field_id": "pilot-a:field-008",
+        "group": "tail",
+        "pond_m3": null,
+        "pump_m3": 1123.44
+       },
+       {
+        "applied_m3": 1659.11,
+        "canal_m3": 685.548,
+        "field": "A-009",
+        "field_id": "pilot-a:field-009",
+        "group": "tail",
+        "pond_m3": null,
+        "pump_m3": 973.56
+       },
+       {
+        "applied_m3": 790.79,
+        "canal_m3": 790.79,
+        "field": "A-010",
+        "field_id": "pilot-a:field-010",
+        "group": "tail",
+        "pond_m3": null,
+        "pump_m3": null
+       },
+       {
+        "applied_m3": 774.106,
+        "canal_m3": 774.106,
+        "field": "A-011",
+        "field_id": "pilot-a:field-011",
+        "group": "tail",
+        "pond_m3": null,
+        "pump_m3": null
+       },
+       {
+        "applied_m3": 956.012,
+        "canal_m3": 956.012,
+        "field": "A-012",
+        "field_id": "pilot-a:field-012",
+        "group": "head",
+        "pond_m3": null,
+        "pump_m3": null
+       },
+       {
+        "applied_m3": 2768.4,
+        "canal_m3": 2768.4,
+        "field": "A-013",
+        "field_id": "pilot-a:field-013",
+        "group": "head",
+        "pond_m3": null,
+        "pump_m3": null
+       },
+       {
+        "applied_m3": 1126.57,
+        "canal_m3": 1126.57,
+        "field": "A-014",
+        "field_id": "pilot-a:field-014",
+        "group": "head",
+        "pond_m3": null,
+        "pump_m3": null
+       },
+       {
+        "applied_m3": 1735.77,
+        "canal_m3": 1120.25,
+        "field": "A-015",
+        "field_id": "pilot-a:field-015",
+        "group": "middle",
+        "pond_m3": null,
+        "pump_m3": 615.52
+       },
+       {
+        "applied_m3": 837.455,
+        "canal_m3": 837.455,
+        "field": "A-018",
+        "field_id": "pilot-a:field-018",
+        "group": "tail",
+        "pond_m3": null,
+        "pump_m3": null
+       },
+       {
+        "applied_m3": 2257.37,
+        "canal_m3": 921.647,
+        "field": "A-019",
+        "field_id": "pilot-a:field-019",
+        "group": "tail",
+        "pond_m3": null,
+        "pump_m3": 1335.72
+       },
+       {
+        "applied_m3": 2889.3,
+        "canal_m3": 2889.3,
+        "field": "A-020",
+        "field_id": "pilot-a:field-020",
+        "group": "middle",
+        "pond_m3": null,
+        "pump_m3": null
+       },
+       {
+        "applied_m3": 1178.06,
+        "canal_m3": 1178.06,
+        "field": "A-021",
+        "field_id": "pilot-a:field-021",
+        "group": "head",
+        "pond_m3": null,
+        "pump_m3": null
+       },
+       {
+        "applied_m3": 1034.88,
+        "canal_m3": 1149.52,
+        "field": "A-022",
+        "field_id": "pilot-a:field-022",
+        "group": "tail",
+        "pond_m3": 334.562,
+        "pump_m3": null
+       },
+       {
+        "applied_m3": 722.736,
+        "canal_m3": 722.736,
+        "field": "A-023",
+        "field_id": "pilot-a:field-023",
+        "group": "head",
+        "pond_m3": null,
+        "pump_m3": null
+       },
+       {
+        "applied_m3": 1269.78,
+        "canal_m3": 1269.78,
+        "field": "A-024",
+        "field_id": "pilot-a:field-024",
+        "group": "middle",
+        "pond_m3": null,
+        "pump_m3": null
+       },
+       {
+        "applied_m3": 876.792,
+        "canal_m3": 876.792,
+        "field": "A-025",
+        "field_id": "pilot-a:field-025",
+        "group": "head",
+        "pond_m3": null,
+        "pump_m3": null
+       },
+       {
+        "applied_m3": 799.502,
+        "canal_m3": 799.502,
+        "field": "A-026",
+        "field_id": "pilot-a:field-026",
+        "group": "middle",
+        "pond_m3": null,
+        "pump_m3": null
+       },
+       {
+        "applied_m3": 1870.26,
+        "canal_m3": 1870.26,
+        "field": "A-027",
+        "field_id": "pilot-a:field-027",
+        "group": "middle",
+        "pond_m3": null,
+        "pump_m3": null
+       },
+       {
+        "applied_m3": 854.582,
+        "canal_m3": 854.582,
+        "field": "A-028",
+        "field_id": "pilot-a:field-028",
+        "group": "middle",
+        "pond_m3": null,
+        "pump_m3": null
+       },
+       {
+        "applied_m3": 1130.41,
+        "canal_m3": 1312.47,
+        "field": "A-029",
+        "field_id": "pilot-a:field-029",
+        "group": "head",
+        "pond_m3": 412.121,
+        "pump_m3": null
+       },
+       {
+        "applied_m3": 1363.13,
+        "canal_m3": 1363.13,
+        "field": "A-030",
+        "field_id": "pilot-a:field-030",
+        "group": "head",
+        "pond_m3": null,
+        "pump_m3": null
+       },
+       {
+        "applied_m3": 1340.33,
+        "canal_m3": 650.325,
+        "field": "A-031",
+        "field_id": "pilot-a:field-031",
+        "group": "middle",
+        "pond_m3": null,
+        "pump_m3": 690.0
+       },
+       {
+        "applied_m3": 643.625,
+        "canal_m3": 643.625,
+        "field": "A-032",
+        "field_id": "pilot-a:field-032",
+        "group": "tail",
+        "pond_m3": null,
+        "pump_m3": null
+       }
+      ],
+      "row_count": 30,
+      "truncated": false,
+      "encoding": {
+       "x": "field",
+       "y": [
+        "canal_m3",
+        "pump_m3",
+        "pond_m3"
+       ],
+       "series": null,
+       "value": null,
+       "label": null,
+       "color": null,
+       "source": null,
+       "target": null,
+       "id": "field_id",
+       "status": null
+      },
+      "highlight_ids": [],
+      "source": {
+       "tool": "water_accounting",
+       "call_id": "call_TFewkUcwAYidZm4zxXJmD4zN",
+       "run_ids": [
+        "run_c1251d888e0045fc88e80f05b20158f0"
+       ],
+       "analysis_ids": [],
+       "comparison_ids": [],
+       "revision_ids": [],
+       "endpoint": "/runs/run_c1251d888e0045fc88e80f05b20158f0/accounting"
+      },
+      "basis": [
+       "computed_from_inputs"
+      ],
+      "notes": [
+       "A missing source means the field did not use it (no ledger event)."
+      ],
+      "interactions": [
+       {
+        "on": "select_row",
+        "column": "field_id",
+        "intent": "open_field"
+       }
+      ],
+      "table_fallback": true,
+      "auto": false
+     },
+     {
+      "type": "uncertainty",
+      "text": "The water ledger reconciles canal withdrawal to channel losses and outlet receipts. Basin-level savings are not estimated because return flows and a basin boundary are not modeled.",
+      "citations": [
+       {
+        "ref_id": "run_c1251d888e0045fc88e80f05b20158f0",
+        "kind": "run",
+        "auto": false
+       }
+      ],
+      "withheld": false
+     },
+     {
+      "type": "follow_ups",
+      "questions": [
+       "Which fields rely most on groundwater?",
+       "How much water is lost in each canal position?",
+       "Can you show the water balance for the 10-lakh plan?"
+      ]
+     }
+    ],
+    "needs_clarification": false,
+    "clarification_question": null,
+    "validated": true,
+    "issues": [],
+    "deterministic": false
+   },
+   "event_types": [
+    "turn_started",
+    "thinking",
+    "tool_started",
+    "dataset_ready",
+    "dataset_ready",
+    "tool_finished",
+    "thinking",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer",
+    "turn_finished",
+    "jobs_settled"
+   ]
+  }
+ ],
+ "copilot_status": {
+  "configured": true,
+  "state": "ready",
+  "reason": null,
+  "model": "gpt-6-luna",
+  "prompt_version": "copilot-prompt-2.1.0",
+  "tool_schema_version": "tools-a3cc2c9c802cf55b",
+  "offline_note": "Hosted chat needs internet and a configured key. Saved results, deterministic explanations and controls work offline; there is no offline generative assistant."
+ },
+ "prepared": {
+  "revision_id": "rev_33c49fe81962437d934e7638052e3c71",
+  "runs": {
+   "B0": "run_13c326f075704c4abd06b90c64e9da44",
+   "B1": "run_3608c92ef3964ed39775cec045a40f69",
+   "P": "run_c1251d888e0045fc88e80f05b20158f0",
+   "R": "run_a7462c4c40d84e3898b5ccc60e668396"
+  },
+  "stress_analysis_id": "ana_ecaa32dac26343d3996e305c5f689d7e",
+  "stress_state": "succeeded",
+  "frontier_analysis_id": "ana_a09808384aa548998c18089f9b07f9cf",
+  "frontier_state": "succeeded",
+  "prepare_s": 37.8
+ },
+ "sessions": {
+  "main": "cps_511a5a1f97334d598bda8ae6ee96632d",
+  "urdu": "cps_92ad253d0ef04935b4432cface38d69e",
+  "fail": "cps_555b1b5807564f908b8e0f7896fbd182"
+ },
+ "finished_at": "2026-10-10T13:15:54.450173+00:00",
+ "summary": {
+  "turns": 7,
+  "statuses": {
+   "S1": "completed",
+   "S2": "completed",
+   "S3": "budget_exhausted",
+   "S4": "completed",
+   "S5": "completed",
+   "S6": "completed",
+   "S7": "completed"
+  },
+  "wall_s": {
+   "min": 9.6,
+   "max": 90.1
+  },
+  "provider_call_ms": [
+   11733,
+   20225,
+   11013,
+   16893,
+   31639,
+   26065,
+   5885,
+   10599,
+   5879,
+   11367,
+   5263,
+   3001,
+   4892,
+   2778,
+   6368
+  ]
+ }
+}

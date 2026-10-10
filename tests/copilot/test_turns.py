@@ -60,7 +60,7 @@ def test_invented_number_is_regenerated_then_withheld(app_env):
     assert len(prov.requests) == 3  # one regeneration request
     regen_feedback = prov.requests[2]["input"][0]["output"]
     assert "987,654" in regen_feedback
-    text = t["answer"]["blocks"][0]
+    text = next(b for b in t["answer"]["blocks"] if b["type"] == "text")
     assert "987,654" not in text["text"] and text.get("withheld") is True
     assert t["answer"]["validated"] is False
 

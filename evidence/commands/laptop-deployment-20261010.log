@@ -1,0 +1,416 @@
+Laptop/Vercel split preparation — 2026-10-10T16:03:09.474418+00:00
+Scope: local backend activated; Vercel, public Tunnel and Access NOT deployed.
+Source baseline: bc2cbe00e8b0d4d3fd948bac4cff527836c59d3a (local feat/win-path).
+Validation Compose project: aabflow-laptop-validation; real copied data mounted read-only for integration tests.
+Initial bare-worktree make test lacked git-ignored raw bundles (3 failures); mounting the complete real snapshot resolved the environment cause. No assertions were weakened.
+Self-review against .claude/agents/spec-auditor.md: no actionable findings remaining. Local topology and JSON 404 preserved; explicit credentialed CORS for the requested split; no domain/science changes, fixture substitutions, schema changes or AT overclaims. T14 public authentication is a required external setup step before tunnel-up.
+Not executed: actual machine reboot, public DNS/TLS/Access flow, Vercel build/deployment, uncached vision inference, live copilot model turn, a schema migration rollback. Vision Torch CUDA check: false; CPU only. No GPU computation claimed.
+
+COMMAND / CHECK: make test (final)
+docker compose -p aabflow-laptop-validation -f compose.yaml -f .laptop/validation.yaml run --rm --no-deps api pytest -q --ignore=tests/scientific
+ Container aabflow-laptop-validation-api-run-56ec42242c50 Creating 
+ Container aabflow-laptop-validation-api-run-56ec42242c50 Created 
+........................................................................ [ 11%]
+........................................................................ [ 23%]
+........................................................................ [ 34%]
+........................................................................ [ 46%]
+........................................................................ [ 57%]
+........................................................................ [ 69%]
+........................................................................ [ 80%]
+........................................................................ [ 92%]
+................................................                         [100%]
+=============================== warnings summary ===============================
+tests/integration/test_onboarding_pilot_b.py::test_pilot_b_raw_bundle_reuses_the_delineate_cache
+tests/integration/test_onboarding_pilot_b.py::test_pilot_b_raw_bundle_reuses_the_delineate_cache
+tests/integration/test_onboarding_review.py::test_pilot_b_review_publishes_reviewed_v2
+tests/integration/test_onboarding_review.py::test_pilot_b_review_publishes_reviewed_v2
+tests/unit/test_ingestion_sources.py::test_display_stretch_corners_and_webp
+  /opt/venv/lib/python3.11/site-packages/rasterio/transform.py:189: PendingDeprecationWarning: Use `@` matmul instead of `*` mul operator for matrix multiplication
+    return Affine.translation(west, north) * Affine.scale(
+
+tests/unit/test_ingestion_sources.py::test_write_and_read_local_window
+  /opt/venv/lib/python3.11/site-packages/rasterio/windows.py:360: PendingDeprecationWarning: Use `@` matmul instead of `*` mul operator for matrix multiplication
+    x, y = transform * (window.col_off or 0.0, window.row_off or 0.0)
+
+tests/unit/test_ingestion_sources.py::test_write_and_read_local_window
+  /opt/venv/lib/python3.11/site-packages/rasterio/windows.py:361: PendingDeprecationWarning: Use `@` matmul instead of `*` mul operator for matrix multiplication
+    return Affine.translation(
+
+tests/unit/test_packages_zip.py::test_hostile_zip_cases_write_nothing
+  /usr/local/lib/python3.11/zipfile.py:1606: UserWarning: Duplicate name: 'a.json'
+    return self._open_to_write(zinfo, force_zip64=force_zip64)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+624 passed, 8 warnings in 51.20s
+
+
+COMMAND / CHECK: make web-test
+docker compose -p aabflow-laptop-validation run --rm --no-deps web npm run test
+ Container aabflow-laptop-validation-web-run-96fbc4ba6ad8 Creating 
+ Container aabflow-laptop-validation-web-run-96fbc4ba6ad8 Created 
+
+> aabflow-web@2.0.0 test
+> vitest run
+
+
+ RUN  v3.2.7 /app/web
+
+ ✓ src/app/store.test.ts (3 tests) 4ms
+ ✓ src/lib/api/adapters.test.ts (4 tests) 7ms
+ ✓ src/lib/api/urls.test.ts (2 tests) 32ms
+ ✓ src/components/map/demTiles.test.ts (2 tests) 21ms
+ ✓ src/lib/formatting/formatting.test.ts (14 tests) 12ms
+ ✓ src/components/map/palette.test.ts (12 tests) 49ms
+ ✓ src/features/copilot/charts.test.ts (9 tests) 14ms
+ ✓ src/features/copilot/stream.test.ts (4 tests) 33ms
+ ✓ src/features/explore/api.test.ts (4 tests) 3ms
+ ✓ src/components/status/status.test.tsx (4 tests) 106ms
+ ✓ src/features/landing/showcase.test.tsx (6 tests) 79ms
+ ✓ src/features/copilot/conversation.test.ts (6 tests) 555ms
+   ✓ multi-run comparisons are shown one before/after pair at a time  548ms
+ ✓ src/features/impact/impact.test.tsx (10 tests) 373ms
+ ✓ src/features/onboarding/onboarding.test.tsx (16 tests) 822ms
+ ✓ src/features/copilot/panel.test.tsx (7 tests) 1889ms
+   ✓ asking a suggested question streams progress and renders the answer  1573ms
+ ✓ src/app/App.test.tsx (2 tests) 3189ms
+   ✓ landing names an unreachable API  3036ms
+
+ Test Files  16 passed (16)
+      Tests  105 passed (105)
+   Start at  15:45:22
+   Duration  5.01s (transform 1.69s, setup 958ms, collect 5.99s, tests 7.19s, environment 6.62s, prepare 1.43s)
+
+npm notice
+npm notice New major version of npm available! 11.19.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+
+
+COMMAND / CHECK: production build with VITE_BACKEND_ORIGIN=http://127.0.0.1:8010
+ Container aabflow-laptop-validation-web-run-487792a94362 Creating 
+ Container aabflow-laptop-validation-web-run-487792a94362 Created 
+
+> aabflow-web@2.0.0 build
+> tsc --noEmit && vite build
+
+vite v6.4.3 building for production...
+transforming...
+✓ 2408 modules transformed.
+rendering chunks...
+[plugin vite:reporter] 
+(!) /app/web/src/components/ui/Toast.tsx is dynamically imported by /app/web/src/features/tour/TourHost.tsx but also statically imported by /app/web/src/app/App.tsx, /app/web/src/components/layout/JobTray.tsx, /app/web/src/features/copilot/visual.tsx, /app/web/src/features/explore/api.ts, /app/web/src/features/impact/ReportScreen.tsx, /app/web/src/features/onboarding/IntakeWorkspace.tsx, /app/web/src/features/onboarding/NewIntake.tsx, /app/web/src/features/onboarding/ReviewStage.tsx, /app/web/src/features/workspace/useScenario.ts, dynamic import will not move module into another chunk.
+
+computing gzip size...
+dist/index.html                               0.97 kB │ gzip:   0.46 kB
+dist/static/maplibre-B-YMMjus.css            69.94 kB │ gzip:  10.06 kB
+dist/static/index-C6eRa7JC.css               76.98 kB │ gzip:  14.95 kB
+dist/static/trash-2-CaU6TQBt.js               0.53 kB │ gzip:   0.35 kB
+dist/static/earth-C8Yrgi2B.js                 0.56 kB │ gzip:   0.37 kB
+dist/static/CompareTabs-D5mWMUB7.js           1.28 kB │ gzip:   0.70 kB
+dist/static/Card-CDFKcuhz.js                  1.41 kB │ gzip:   0.68 kB
+dist/static/EvidenceScreen-BI75I-pV.js       12.69 kB │ gzip:   4.15 kB
+dist/static/ReportScreen-y5R3cm6R.js         16.54 kB │ gzip:   6.01 kB
+dist/static/ReplayScreen-D4R-tVaW.js         18.46 kB │ gzip:   7.35 kB
+dist/static/CompareScreen-DwIcVvGD.js        25.05 kB │ gzip:   8.77 kB
+dist/static/ImpactScreen-7S5F32A0.js         44.40 kB │ gzip:  13.18 kB
+dist/static/OnboardingScreen-ptQ2RvTu.js     66.49 kB │ gzip:  20.52 kB
+dist/static/ExploreScreen-9hWDZSIR.js        86.09 kB │ gzip:  25.69 kB
+dist/static/index-Dm2XmIy3.js               442.59 kB │ gzip: 132.49 kB
+dist/static/vendor-DWEATANJ.js              519.66 kB │ gzip: 158.88 kB
+dist/static/echarts-7FnQ9GRI.js             672.95 kB │ gzip: 223.18 kB
+dist/static/maplibre-CR8FZ_iz.js          1,055.19 kB │ gzip: 285.09 kB
+✓ built in 5.00s
+npm notice
+npm notice New major version of npm available! 11.19.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+
+
+COMMAND / CHECK: make contracts (generated files unchanged)
+docker compose -p aabflow-laptop-validation run --rm --no-deps api python -c "import json; from aabflow.main import app; open('contracts/openapi.json','w').write(json.dumps(app.openapi(), indent=2, sort_keys=True))"
+ Container aabflow-laptop-validation-api-run-a87a750bfb67 Creating 
+ Container aabflow-laptop-validation-api-run-a87a750bfb67 Created 
+docker compose -p aabflow-laptop-validation run --rm --no-deps web npm run gen:api
+ Container aabflow-laptop-validation-web-run-68d671656026 Creating 
+ Container aabflow-laptop-validation-web-run-68d671656026 Created 
+
+> aabflow-web@2.0.0 gen:api
+> openapi-typescript ../contracts/openapi.json -o src/generated/api.ts
+
+✨ openapi-typescript 7.13.0
+🚀 ../contracts/openapi.json → src/generated/api.ts [139.5ms]
+npm notice
+npm notice New major version of npm available! 11.19.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+
+
+COMMAND / CHECK: frozen backend and vision builds
+ Image aabflow-laptop-vision:local Building 
+ Image aabflow-laptop-backend:local Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 1.12kB done
+#1 DONE 0.0s
+
+#2 [backend internal] load build definition from Dockerfile
+#2 transferring dockerfile: 3.38kB done
+#2 DONE 0.0s
+
+#3 [vision internal] load build definition from laptop-vision.Dockerfile
+#3 transferring dockerfile: 239B done
+#3 DONE 0.0s
+
+#4 [vision internal] load metadata for docker.io/library/aabflow-vision:local
+#4 DONE 0.0s
+
+#5 [backend] resolve image config for docker-image://docker.io/docker/dockerfile:1.7
+#5 ...
+
+#6 [vision internal] load .dockerignore
+#6 transferring context: 294B done
+#6 DONE 0.0s
+
+#7 [vision 1/4] FROM docker.io/library/aabflow-vision:local@sha256:1d74fa515c836aab7dafbea6a95f2940b6f545dc6483275fe6cbceb275671131
+#7 resolve docker.io/library/aabflow-vision:local@sha256:1d74fa515c836aab7dafbea6a95f2940b6f545dc6483275fe6cbceb275671131 done
+#7 DONE 0.0s
+
+#8 [vision internal] load build context
+#8 transferring context: 371B 0.0s done
+#8 DONE 0.0s
+
+#9 [vision 2/4] WORKDIR /app
+#9 CACHED
+
+#10 [vision 3/4] COPY vision/configs ./vision/configs
+#10 CACHED
+
+#11 [vision 4/4] COPY vision/*.py ./vision/
+#11 CACHED
+
+#12 [vision] exporting to image
+#12 exporting layers done
+#12 exporting manifest sha256:322fc0af63a35b9a9196a86c8dbfcd937d4ae5b0336b60d4115f7f91a284ceb8 done
+#12 exporting config sha256:44a7dc49939d6ab3cb51587dcde6aaf3e3c18d0221e4d7b13bd64d90a3a2b441 done
+#12 exporting attestation manifest sha256:b37c0a351940d224c4d94a23873a7081795d225e6883663cf7ebe9b01807d9e5 done
+#12 exporting manifest list sha256:d2adc0f9bea68908e91625fb172b3820f70d0968cf77529e90d1ad5ed86d534e done
+#12 naming to docker.io/library/aabflow-laptop-vision:local done
+#12 unpacking to docker.io/library/aabflow-laptop-vision:local done
+#12 DONE 0.0s
+
+#13 [vision] resolving provenance for metadata file
+#13 DONE 0.0s
+
+#5 [backend] resolve image config for docker-image://docker.io/docker/dockerfile:1.7
+#5 DONE 1.9s
+
+#14 [backend] docker-image://docker.io/docker/dockerfile:1.7@sha256:a57df69d0ea827fb7266491f2813635de6f17269be881f696fbfdf2d83dda33e
+#14 resolve docker.io/docker/dockerfile:1.7@sha256:a57df69d0ea827fb7266491f2813635de6f17269be881f696fbfdf2d83dda33e done
+#14 CACHED
+
+#15 [backend internal] load metadata for docker.io/library/python:3.11-slim-trixie
+#15 DONE 1.2s
+
+#16 [backend internal] load metadata for ghcr.io/astral-sh/uv:0.12.14
+#16 DONE 1.6s
+
+#17 [backend internal] load .dockerignore
+#17 transferring context: 294B done
+#17 DONE 0.0s
+
+#18 [backend uv 1/1] FROM ghcr.io/astral-sh/uv:0.12.14@sha256:1946145b8706ad9e5c0e79a513f9e324b58d5e38126bb2c8b7dbfca61febeb45
+#18 resolve ghcr.io/astral-sh/uv:0.12.14@sha256:1946145b8706ad9e5c0e79a513f9e324b58d5e38126bb2c8b7dbfca61febeb45 done
+#18 DONE 0.0s
+
+#19 [backend python-base 1/4] FROM docker.io/library/python:3.11-slim-trixie@sha256:e88e9763f943ec1834f992a4b51e0f24500486803e8bc534e5767af9ea65f6ce
+#19 resolve docker.io/library/python:3.11-slim-trixie@sha256:e88e9763f943ec1834f992a4b51e0f24500486803e8bc534e5767af9ea65f6ce done
+#19 DONE 0.0s
+
+#20 [backend internal] load build context
+#20 transferring context: 1.87MB 0.0s done
+#20 DONE 0.0s
+
+#21 [backend python-deps 1/2] COPY pyproject.toml uv.lock ./
+#21 CACHED
+
+#22 [backend python-base 3/4] COPY --from=uv /uv /uvx /usr/local/bin/
+#22 CACHED
+
+#23 [backend python-base 2/4] RUN apt-get update  && apt-get install -y --no-install-recommends libgomp1 make curl git ca-certificates  && rm -rf /var/lib/apt/lists/*
+#23 CACHED
+
+#24 [backend python-deps 2/2] RUN --mount=type=cache,target=/root/.cache/uv     HOME=/root uv sync --frozen --no-install-project --no-dev
+#24 CACHED
+
+#25 [backend python-base 4/4] WORKDIR /app
+#25 CACHED
+
+#26 [backend backend 1/4] COPY api ./api
+#26 CACHED
+
+#27 [backend backend 2/4] COPY scripts ./scripts
+#27 DONE 0.0s
+
+#28 [backend backend 3/4] COPY vision/configs ./vision/configs
+#28 DONE 0.0s
+
+#29 [backend backend 4/4] COPY vision/*.py ./vision/
+#29 DONE 0.0s
+
+#30 [backend] exporting to image
+#30 exporting layers 0.0s done
+#30 exporting manifest sha256:249f7201b4458bde3f8baa193cdf34549d8abe8ede19d5c6f70bb0a207ab7100 done
+#30 exporting config sha256:82611e332fd0475f740725fe608d9f9f9de8c524533f54a09613d013bff70445 done
+#30 exporting attestation manifest sha256:008f5622c2f03796e97e9d719df972e1e37f044ff4e72b1d2aadb6abe1311067 done
+#30 exporting manifest list sha256:fabcaa844281d8e7dbfeac931b8af3bf76d20575f2aaa638b5cf0c59bae275a2 done
+#30 naming to docker.io/library/aabflow-laptop-backend:local done
+#30 unpacking to docker.io/library/aabflow-laptop-backend:local 0.0s done
+#30 DONE 0.1s
+
+#31 [backend] resolving provenance for metadata file
+#31 DONE 0.0s
+ Image aabflow-laptop-backend:local Built 
+ Image aabflow-laptop-vision:local Built 
+
+
+COMMAND / CHECK: current frozen backend health
+ Container aabflow-laptop-backend-1 Recreate 
+ Container aabflow-laptop-backend-1 Recreated 
+ Container aabflow-laptop-backend-1 Starting 
+ Container aabflow-laptop-backend-1 Started 
+ Container aabflow-laptop-backend-1 Waiting 
+ Container aabflow-laptop-backend-1 Healthy 
+{
+  "status": "ok",
+  "contract_version": "2.0.0",
+  "schema_version": "3",
+  "database": "ok",
+  "pilots_published": 3,
+  "libraries_ready": 12,
+  "workers": 2,
+  "dispatcher": "running",
+  "versions": {
+    "aquacrop": "3.1.0",
+    "ortools": "9.15.6755",
+    "fastapi": "0.141.1",
+    "pydantic": "2.13.5",
+    "lightgbm": "4.7.0"
+  }
+}
+
+
+COMMAND / CHECK: real browser split smoke — native EventSource, CORS, assets, workspace
+{
+  "health": {
+    "status": "ok",
+    "contract_version": "2.0.0",
+    "schema_version": "3",
+    "database": "ok",
+    "pilots_published": 3,
+    "libraries_ready": 12,
+    "workers": 2,
+    "dispatcher": "running",
+    "versions": {
+      "aquacrop": "3.1.0",
+      "ortools": "9.15.6755",
+      "fastapi": "0.141.1",
+      "pydantic": "2.13.5",
+      "lightgbm": "4.7.0"
+    }
+  },
+  "sse": {
+    "type": "stage",
+    "event_id": 729
+  },
+  "pilots": 3,
+  "assets": [
+    {
+      "path": "/assets/pilots/pilot-a/reviewed-v1/fields.geojson",
+      "type": "application/geo+json",
+      "bytes": 413416
+    },
+    {
+      "path": "/assets/pilots/pilot-a/reviewed-v1/canals.geojson",
+      "type": "application/geo+json",
+      "bytes": 131146
+    },
+    {
+      "path": "/assets/pilots/pilot-a/reviewed-v1/imagery/S2C_43RBQ_20250223_0_L2A.webp",
+      "type": "image/webp",
+      "bytes": 56610
+    },
+    {
+      "path": "/assets/pilots/pilot-a/reviewed-v1/terrain/dem.png",
+      "type": "image/png",
+      "bytes": 37359
+    }
+  ],
+  "demo": {
+    "pilot": "pilot-a",
+    "version": "reviewed-v1",
+    "season": "wheat-rabi-2027-28"
+  },
+  "requestsFailed": [],
+  "page": "http://127.0.0.1:5180/p/pilot-a/reviewed-v1/workspace?season=wheat-rabi-2027-28"
+}
+
+
+COMMAND / CHECK: real report job and file retrieval
+{
+  "report": "rpt_435f18d20ec94d31bfd5d0f5ed885b4c",
+  "run": "run_49729353dd9b4f67b3d64e9fb2e24fc2",
+  "download_url": "/api/v2/reports/rpt_435f18d20ec94d31bfd5d0f5ed885b4c/files/report.html",
+  "bytes": 38154,
+  "CORS": "http://127.0.0.1:5180",
+  "job_state": "succeeded"
+}
+
+
+COMMAND / CHECK: SSE with recorded real job events
+{"job_id": "job_8b893292714241caa926e41b78582b0a", "SSE_content_type": "text/event-stream", "event_count": 8, "CORS": "http://127.0.0.1:5180"}
+
+
+COMMAND / CHECK: stopped-service full backup
+ Container aabflow-laptop-backend-1 Stopping 
+ Container aabflow-laptop-backend-1 Stopped 
+{
+  "created_at": "2026-10-10T15:47:31.908341+00:00",
+  "source": "/app/data",
+  "sqlite_integrity_check": "ok",
+  "data_kind": "copied real runtime data; not a test fixture"
+}
+Backup: /home/kali/.codex/worktrees/laptop-serving/khaitoman/.laptop/backup-20261010T154647Z (plus .vision and .image)
+ Container aabflow-laptop-backend-1 Starting 
+ Container aabflow-laptop-backend-1 Started 
+ Container aabflow-laptop-backend-1 Waiting 
+ Container aabflow-laptop-backend-1 Healthy 
+
+
+COMMAND / CHECK: restore from backup and verify stored real run bundle
+{
+  "restored_database": "ok",
+  "pilots": 3,
+  "libraries": 12,
+  "run_id": "run_49729353dd9b4f67b3d64e9fb2e24fc2",
+  "run_bundle_verified": true
+}
+
+
+COMMAND / CHECK: actual API-process crash and automatic Docker recovery
+Simulating application crash, pid 7
+PASS: application crash automatically recovered, restart_count=1 health=healthy
+{"status":"ok","contract_version":"2.0.0","schema_version":"3","database":"ok","pilots_published":3,"libraries_ready":12,"workers":2,"dispatcher":"running","versions":{"aquacrop":"3.1.0","ortools":"9.15.6755","fastapi":"0.141.1","pydantic":"2.13.5","lightgbm":"4.7.0"}}
+
+COMMAND / CHECK: actual stopped API-process, failed health checks and guard recovery
+Simulating unresponsive API, pid 8
+PASS: unhealthy backend recovered by guard, health=healthy
+Oct 10 20:54:48 mananlap systemd[2376]: Stopping AabFlow laptop sleep inhibitor and backend health recovery...
+Oct 10 20:54:48 mananlap systemd[2376]: Stopped AabFlow laptop sleep inhibitor and backend health recovery.
+Oct 10 20:54:48 mananlap systemd[2376]: aabflow-laptop-guard.service: Consumed 2.067s CPU time over 13min 12.095s wall clock time, 66.3M memory peak, 800K memory swap peak.
+Oct 10 20:54:48 mananlap systemd[2376]: Started AabFlow laptop sleep inhibitor and backend health recovery.
+Oct 10 20:56:48 mananlap systemd-inhibit[1137330]: Backend unhealthy after consecutive checks; restarting its container.
+Oct 10 20:56:48 mananlap systemd-inhibit[1140595]:  Container aabflow-laptop-backend-1 Restarting
+Oct 10 20:56:59 mananlap systemd-inhibit[1140595]:  Container aabflow-laptop-backend-1 Started
+

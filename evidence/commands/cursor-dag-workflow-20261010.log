@@ -1,0 +1,214 @@
+ Container aabflow-api-run-0d5e227f11b0 Creating 
+ Container aabflow-api-run-0d5e227f11b0 Created 
+All checks passed!
+3 files left unchanged
+.................................................................        [100%]
+65 passed in 7.81s
+Valid DAG: 27 nodes, 14 chunks; no execution claimed.
+ Image aabflow-dev:local Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 527B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 2.92kB done
+#2 DONE 0.0s
+
+#3 resolve image config for docker-image://docker.io/docker/dockerfile:1.7
+#3 DONE 2.2s
+
+#4 docker-image://docker.io/docker/dockerfile:1.7@sha256:a57df69d0ea827fb7266491f2813635de6f17269be881f696fbfdf2d83dda33e
+#4 resolve docker.io/docker/dockerfile:1.7@sha256:a57df69d0ea827fb7266491f2813635de6f17269be881f696fbfdf2d83dda33e done
+#4 CACHED
+
+#5 [internal] load metadata for ghcr.io/astral-sh/uv:0.12.14
+#5 ...
+
+#6 [internal] load metadata for docker.io/library/python:3.11-slim-trixie
+#6 DONE 1.7s
+
+#5 [internal] load metadata for ghcr.io/astral-sh/uv:0.12.14
+#5 DONE 2.1s
+
+#7 [internal] load .dockerignore
+#7 transferring context: 249B done
+#7 DONE 0.0s
+
+#8 [python-base 1/4] FROM docker.io/library/python:3.11-slim-trixie@sha256:e88e9763f943ec1834f992a4b51e0f24500486803e8bc534e5767af9ea65f6ce
+#8 resolve docker.io/library/python:3.11-slim-trixie@sha256:e88e9763f943ec1834f992a4b51e0f24500486803e8bc534e5767af9ea65f6ce done
+#8 DONE 0.0s
+
+#9 [uv 1/1] FROM ghcr.io/astral-sh/uv:0.12.14@sha256:1946145b8706ad9e5c0e79a513f9e324b58d5e38126bb2c8b7dbfca61febeb45
+#9 resolve ghcr.io/astral-sh/uv:0.12.14@sha256:1946145b8706ad9e5c0e79a513f9e324b58d5e38126bb2c8b7dbfca61febeb45 done
+#9 DONE 0.0s
+
+#10 [internal] load build context
+#10 transferring context: 208.14kB done
+#10 DONE 0.0s
+
+#11 [python-base 2/4] RUN apt-get update  && apt-get install -y --no-install-recommends libgomp1 make curl git ca-certificates  && rm -rf /var/lib/apt/lists/*
+#11 CACHED
+
+#12 [python-base 3/4] COPY --from=uv /uv /uvx /usr/local/bin/
+#12 CACHED
+
+#13 [python-base 4/4] WORKDIR /app
+#13 CACHED
+
+#14 [python-deps 1/2] COPY pyproject.toml uv.lock ./
+#14 DONE 0.0s
+
+#15 [python-deps 2/2] RUN --mount=type=cache,target=/root/.cache/uv     HOME=/root uv sync --frozen --no-install-project --no-dev
+#15 0.151 Using CPython 3.11.17 interpreter at: /usr/local/bin/python3
+#15 0.151 Creating virtual environment at: /opt/venv
+#15 0.721 Installed 98 packages in 541ms
+#15 2.466 Bytecode compiled 8040 files in 1.74s
+#15 2.466  + absl-py==2.5.0
+#15 2.466  + affine==3.0.1
+#15 2.466  + annotated-doc==0.0.5
+#15 2.466  + annotated-types==0.8.0
+#15 2.466  + anyio==4.15.1
+#15 2.466  + aquacrop==3.1.0
+#15 2.466  + attrs==26.1.0
+#15 2.466  + certifi==2026.7.22
+#15 2.466  + charset-normalizer==3.5.1
+#15 2.466  + click==8.5.0
+#15 2.467  + click-plugins==1.1.1.2
+#15 2.467  + cligj==0.7.2
+#15 2.467  + cloudpickle==3.1.2
+#15 2.467  + contourpy==1.3.3
+#15 2.467  + cycler==0.12.1
+#15 2.467  + fastapi==0.141.1
+#15 2.467  + fonttools==4.66.0
+#15 2.467  + geopandas==1.1.4
+#15 2.467  + h11==0.16.0
+#15 2.467  + httpcore==1.0.9
+#15 2.467  + httpcore2==2.13.1
+#15 2.467  + httptools==0.8.0
+#15 2.467  + httpx==0.28.1
+#15 2.467  + httpx2==2.13.1
+#15 2.467  + idna==3.20
+#15 2.467  + immutabledict==4.3.1
+#15 2.467  + jiter==0.17.0
+#15 2.467  + joblib==1.6.0
+#15 2.467  + jsonschema==4.26.0
+#15 2.467  + jsonschema-specifications==2025.9.1
+#15 2.467  + kiwisolver==1.5.1
+#15 2.467  + lightgbm==4.7.0
+#15 2.467  + matplotlib==3.11.2
+#15 2.467  + narwhals==2.26.0
+#15 2.467  + numpy==2.4.6
+#15 2.467  + openai==3.19.2
+#15 2.467  + ortools==9.15.6755
+#15 2.467  + packaging==26.3
+#15 2.467  + pandas==3.0.6
+#15 2.467  + pillow==12.3.0
+#15 2.467  + protobuf==6.33.6
+#15 2.467  + pyarrow==25.0.1
+#15 2.467  + pydantic==2.13.5
+#15 2.467  + pydantic-core==2.46.5
+#15 2.467  + pyogrio==0.13.0
+#15 2.467  + pyparsing==3.3.3
+#15 2.467  + pyproj==3.7.2
+#15 2.467  + pystac==1.15.2
+#15 2.467  + pystac-client==0.9.0
+#15 2.467  + pystac-core==1.15.2
+#15 2.467  + pystac-ext-classification==2.0.1
+#15 2.467  + pystac-ext-datacube==2.2.1
+#15 2.467  + pystac-ext-eo==1.1.1
+#15 2.467  + pystac-ext-file==2.1.1
+#15 2.467  + pystac-ext-grid==1.1.1
+#15 2.467  + pystac-ext-item-assets==1.0.1
+#15 2.467  + pystac-ext-label==1.0.2
+#15 2.467  + pystac-ext-mgrs==1.0.1
+#15 2.467  + pystac-ext-mlm==1.4.1
+#15 2.467  + pystac-ext-pointcloud==1.0.1
+#15 2.467  + pystac-ext-projection==2.0.1
+#15 2.467  + pystac-ext-raster==1.1.1
+#15 2.467  + pystac-ext-render==2.0.0
+#15 2.467  + pystac-ext-sar==1.0.1
+#15 2.467  + pystac-ext-sat==1.0.1
+#15 2.467  + pystac-ext-scientific==1.0.1
+#15 2.467  + pystac-ext-storage==2.0.1
+#15 2.467  + pystac-ext-table==1.2.1
+#15 2.467  + pystac-ext-timestamps==1.1.1
+#15 2.467  + pystac-ext-version==1.2.1
+#15 2.467  + pystac-ext-view==1.0.1
+#15 2.467  + pystac-ext-xarray-assets==1.0.1
+#15 2.467  + python-dateutil==2.9.0.post0
+#15 2.467  + python-dotenv==1.2.3
+#15 2.467  + python-multipart==0.0.32
+#15 2.467  + pyyaml==6.0.3
+#15 2.467  + rasterio==1.4.4
+#15 2.467  + referencing==0.37.0
+#15 2.467  + requests==2.34.2
+#15 2.467  + rpds-py==2026.6.3
+#15 2.467  + scikit-learn==1.9.1
+#15 2.467  + scipy==1.17.1
+#15 2.467  + seaborn==0.13.2
+#15 2.467  + shapely==2.1.2
+#15 2.467  + six==1.17.0
+#15 2.467  + sniffio==1.3.1
+#15 2.468  + sse-starlette==3.4.11
+#15 2.468  + starlette==1.7.0
+#15 2.468  + threadpoolctl==3.7.0
+#15 2.468  + tqdm==4.70.1
+#15 2.468  + truststore==0.10.4
+#15 2.468  + typing-extensions==4.16.0
+#15 2.468  + typing-inspection==0.4.4
+#15 2.468  + urllib3==2.8.0
+#15 2.468  + uvicorn==0.54.0
+#15 2.468  + uvloop==0.22.1
+#15 2.468  + watchfiles==1.3.0
+#15 2.468  + websockets==17.1
+#15 DONE 2.5s
+
+#16 [dev 1/1] RUN --mount=type=cache,target=/root/.cache/uv     HOME=/root uv sync --frozen --no-install-project
+#16 0.228 Installed 8 packages in 55ms
+#16 0.414 Bytecode compiled 8591 files in 186ms
+#16 0.414  + hypothesis==6.168.1
+#16 0.414  + iniconfig==2.3.0
+#16 0.414  + pluggy==1.6.0
+#16 0.414  + pygments==2.21.0
+#16 0.414  + pytest==9.1.1
+#16 0.414  + pytest-asyncio==1.4.0
+#16 0.414  + ruff==0.16.9
+#16 0.414  + sortedcontainers==2.4.0
+#16 DONE 0.5s
+
+#17 exporting to image
+#17 exporting layers
+#17 exporting layers 11.5s done
+#17 exporting manifest sha256:af668b35d9081e1c934e0e6ec664e237c28f7315c57c8d26e78f534f9b94134b
+#17 exporting manifest sha256:af668b35d9081e1c934e0e6ec664e237c28f7315c57c8d26e78f534f9b94134b done
+#17 exporting config sha256:d2ecf7f222dfdd26f034b6a449862cf727f4a91ed6ff7a360761c89ecc3f51b1 done
+#17 exporting attestation manifest sha256:0f5559743168b87c774a36796fd8a885306d0f5f0fc992da0e16674e5774379d done
+#17 exporting manifest list sha256:eeed98a6495ffe82e5d022801c3af9507f935f358f73fcb4acebd8075ab904f6 done
+#17 naming to docker.io/library/aabflow-dev:local done
+#17 unpacking to docker.io/library/aabflow-dev:local
+#17 unpacking to docker.io/library/aabflow-dev:local 4.2s done
+#17 DONE 15.8s
+
+#18 resolving provenance for metadata file
+#18 DONE 0.0s
+ Image aabflow-dev:local Built 
+Worker runtime prepared: aabflow-worker-validation-final, API/demo :18003, web :15173
+ Network aabflow-worker-validation-final_default Creating 
+ Network aabflow-worker-validation-final_default Creating 
+ Network aabflow-worker-validation-final_default Created 
+ Network aabflow-worker-validation-final_default Created 
+ Container aabflow-worker-validation-final-api-run-851caf88dd63 Creating 
+ Container aabflow-worker-validation-final-api-run-851caf88dd63 Created 
+final isolated runtime: passed
+ Container aabflow-api-run-fd439cd20414 Creating 
+ Container aabflow-api-run-fd439cd20414 Created 
+All checks passed!
+3 files already formatted
+Valid DAG: 27 nodes, 14 chunks; no execution claimed.
+ Container aabflow-api-run-5c26eb55cb4b Creating 
+ Container aabflow-api-run-5c26eb55cb4b Created 
+All checks passed!
+3 files already formatted
+..................................................................       [100%]
+66 passed in 7.60s
+Valid DAG: 27 nodes, 14 chunks; no execution claimed.

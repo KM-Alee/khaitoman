@@ -135,8 +135,12 @@ _DROP = {
 }
 
 
-def _inline(node: Any, defs: dict[str, Any]) -> Any:
+def _inline(node: Any, defs: dict[str, Any], *, names: bool = False) -> Any:
+    """Resolve $refs and drop unsupported keywords. ``names``: the dict maps property names (a field
+    called e.g. ``title`` or ``format`` is a property, not a JSON-schema keyword, and is kept)."""
     if isinstance(node, dict):
+        if names:
+            return {k: _inline(v, defs) for k, v in node.items()}
         if "$ref" in node:
             name = node["$ref"].split("/")[-1]
             merged = copy.deepcopy(defs[name])
@@ -146,6 +150,9 @@ def _inline(node: Any, defs: dict[str, Any]) -> Any:
         out = {}
         for k, v in node.items():
             if k == "$defs":
+                continue
+            if k == "properties":
+                out[k] = _inline(v, defs, names=True)
                 continue
             if k == "const":  # strict mode: represent a constant as a one-value enum
                 out["enum"] = [v]
@@ -217,6 +224,10 @@ def check_strict(schema: Any, path: str = "$") -> list[str]:
             if sorted(schema.get("required", [])) != sorted(props):
                 errs.append(f"{path}: every property must be required")
         for k, v in schema.items():
+            if k == "properties" and isinstance(v, dict):  # keys are property names, not keywords
+                for name, sub in v.items():
+                    errs.extend(check_strict(sub, f"{path}.properties.{name}"))
+                continue
             errs.extend(check_strict(v, f"{path}.{k}"))
     elif isinstance(schema, list):
         for i, v in enumerate(schema):
@@ -245,5 +256,6 @@ def tool_schema_version() -> str:
 
 def _ensure_loaded() -> None:
     import aabflow.copilot.tools.compute
+    import aabflow.copilot.tools.insight
     import aabflow.copilot.tools.read
     import aabflow.copilot.tools.view  # noqa: F401

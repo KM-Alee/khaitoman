@@ -10,6 +10,7 @@ from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
 from fastapi import APIRouter, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -24,17 +25,37 @@ from aabflow.services.pilots import PilotRepository
 
 
 def _routers() -> list[APIRouter]:
-    from aabflow.api import analyses, jobs, pilots, runs, scenarios, surrogate, system
+    from aabflow.api import (
+        analyses,
+        demo,
+        impact,
+        jobs,
+        onboarding,
+        packages,
+        pilots,
+        reports,
+        runs,
+        scenarios,
+        showcase,
+        surrogate,
+        system,
+    )
     from aabflow.copilot.router import router as copilot_router
 
     return [
         system.router,
         pilots.router,
+        onboarding.router,
+        packages.router,
         jobs.router,
         scenarios.router,
+        impact.router,
         runs.router,
         analyses.router,
         surrogate.router,
+        demo.router,
+        showcase.router,
+        reports.router,
         copilot_router,
     ]
 
@@ -77,6 +98,21 @@ def create_app(settings: config.Settings | None = None) -> FastAPI:
         catalog=Catalog(settings.libraries_dir),
     )
     errors.install(app)
+    if settings.cors_origins:
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=list(settings.cors_origins),
+            allow_credentials=True,
+            allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+            allow_headers=[
+                "Content-Type",
+                "X-Contract-Version",
+                "Idempotency-Key",
+                "Last-Event-ID",
+            ],
+            expose_headers=["Content-Disposition", "X-Contract-Version"],
+            max_age=600,
+        )
 
     api = APIRouter(prefix="/api/v2")
     for r in _routers():

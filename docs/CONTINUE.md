@@ -23,9 +23,9 @@ Pick the first of these that applies, then do it end to end:
 
 1. **Your PR has changes requested.** Check out its branch, address every review comment, push, re-request review.
 2. **An open `gap` issue** on merged work. Fix it on a `fix/` branch, PR says `Closes #n`.
-3. **The next `todo` row** in the PROGRESS.md queue whose **Needs** are `done`. If a Need is only `review #n`, stack on that PR's branch (`--base` it). Before starting, make sure nobody else has it: no open PR and no `origin/*pNN*` branch for that ID. If someone does, take the next row.
+3. **The next ready DAG substep** belonging to a `todo` or your active `building` PROGRESS row. Follow `docs/AGENT_WORKFLOW.md`, validate `docs/agent-dag.json`, and reconcile the private checkpoint before selecting. Use validated prerequisites with recorded SHA/evidence; single-parent work may stack on its open PR. A multi-parent base must contain every prerequisite SHA, otherwise wait for independent reviewer integration. Before claiming a new chunk, make sure nobody else has its PR/remote branch. Serial sessions take one ready substep; parallel sessions use the bounded dispatch workflow.
 
-For a queue row: branch `feat/pNN-<slug>`, set the row to `building`, then build it the way `/feature` and `/milestone` describe (specs first, full scope, tests for every rule including rejections, real data). Finish with `/ship`; the PR title starts with `PNN`, and the PR sets the row to `review #n`. Then, if your usage allows, continue with the next row (stacked if it needs this one) instead of stopping.
+For a queue row: branch `feat/pNN-<slug>`, set the row to `building`, then build its DAG substeps the way `/feature` and `/milestone` describe (specs first, full scope, tests for every rule including rejections, real data). Complete the whole chunk before `/ship`, except an explicitly recorded coherent sub-PR needed for integration (such as P11-core); its parent stays incomplete. Full non-chat G-CORE precedes P10; full AT13/AT14 await P11-final. The PR title starts with `PNN`, and the PR sets the row to `review #n` only when its full scope lands. Then continue with the next ready substep when usage allows.
 
 Never review or merge your own PR.
 

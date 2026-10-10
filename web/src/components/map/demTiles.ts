@@ -1,3 +1,4 @@
+import { backendCredentials } from "@/lib/api/urls";
 /**
  * Serves raster-dem tiles from the pilot package's single local Terrarium PNG
  * (`terrain/dem.png` + bounds). The image is decoded once to float elevations, and each
@@ -110,7 +111,7 @@ export async function decodePng(buf: ArrayBuffer): Promise<{ w: number; h: numbe
 }
 
 async function loadGrid(url: string, bounds: DemGrid["bounds"], encoding: "terrarium" | "mapbox"): Promise<DemGrid> {
-  const res = await fetch(url);
+  const res = await fetch(url, { credentials: backendCredentials(url) });
   if (!res.ok) throw new Error(`DEM ${res.status}`);
   const { w, h, channels, px } = await decodePng(await res.arrayBuffer());
   const n = w * h;

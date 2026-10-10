@@ -4,6 +4,7 @@
  * `null` so the UI shows "unavailable" instead of inventing data.
  */
 import type { Asset, Edge, ImageryRef, MetricValue, NetNode, RunResult } from "./types";
+import { backendUrl } from "./urls";
 
 type Json = Record<string, unknown>;
 const isObj = (v: unknown): v is Json => !!v && typeof v === "object" && !Array.isArray(v);
@@ -59,8 +60,8 @@ export interface MapBundle {
 
 export function assetUrl(pilotId: string, version: string, ref: string): string {
   if (/^(https?:)?\/\//.test(ref)) return ref; // will be flagged by the offline audit if remote
-  if (ref.startsWith("/")) return ref;
-  return `/assets/pilots/${encodeURIComponent(pilotId)}/${encodeURIComponent(version)}/${ref.replace(/^\.\//, "")}`;
+  if (ref.startsWith("/")) return backendUrl(ref);
+  return backendUrl(`/assets/pilots/${encodeURIComponent(pilotId)}/${encodeURIComponent(version)}/${ref.replace(/^\.\//, "")}`);
 }
 
 function geoRef(pilotId: string, version: string, v: unknown): GeoRef | null {

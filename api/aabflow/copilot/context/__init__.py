@@ -182,3 +182,132 @@ async def resolve(backend: Backend, ui: UIContext, *, role: str = "planner") -> 
         notes=notes,
         pinned_at=datetime.now(UTC),
     )
+
+
+# ------------------------------------------------------------- per-turn digest
+
+_ROMAN_URDU = {
+    "kya",
+    "kia",
+    "hai",
+    "hain",
+    "agar",
+    "kitna",
+    "kitni",
+    "kitne",
+    "nahi",
+    "nahin",
+    "mein",
+    "kyun",
+    "kyon",
+    "batao",
+    "bataen",
+    "bataiye",
+    "paani",
+    "pani",
+    "nehar",
+    "nahar",
+    "fasal",
+    "kisan",
+    "zameen",
+    "behtar",
+    "kaisa",
+    "kaise",
+    "karo",
+    "karen",
+    "hoga",
+    "hogi",
+    "wala",
+    "wali",
+}
+
+
+def detect_language(message: str, default: str = "en") -> tuple[str, str | None]:
+    """Language of the user's message: Urdu script, Roman Urdu (word heuristic) or the UI default."""
+    text = message or ""
+    arabic = sum(1 for ch in text if "؀" <= ch <= "ۿ")
+    letters = sum(1 for ch in text if ch.isalpha())
+    if letters and arabic / letters > 0.3:
+        return "ur", "The user wrote in Urdu script: answer in Urdu (language ur)."
+    words = {w.strip("?.,!;:'\"").lower() for w in text.split()}
+    hits = len(words & _ROMAN_URDU)
+    if hits >= 2 and hits / max(1, len(words)) >= 0.15:
+        return (
+            "roman_ur",
+            "The user appears to write Roman Urdu: answer in Roman Urdu (language roman_ur).",
+        )
+    return default, None
+
+
+async def workspace_digest(backend: Backend, ctx: PinnedContext) -> dict[str, Any]:
+    """Compact, authoritative overview for the system prompt so the model can pick tools in round one.
+
+    Everything comes from the same routes the UI uses; a failed lookup leaves its key out.
+    """
+    out: dict[str, Any] = {}
+    if ctx.scenario_revision_id:
+        try:
+            rv = await backend.get(f"/scenario-revisions/{ctx.scenario_revision_id}")
+            req = rv["revision"]["request"]
+            out["scenario"] = {
+                k: req.get(k)
+                for k in (
+                    "planning_mode",
+                    "capital_budget_pkr",
+                    "operating_budget_pkr",
+                    "supply_profile_id",
+                    "uniform_reduction_fraction",
+                    "weather_scenario_ids",
+                    "minimum_service_ratio",
+                    "service_group",
+                    "uncertainty_set_id",
+                )
+            }
+            latest: dict[str, Any] = {}
+            for r in rv.get("runs", []):
+                if not r.get("analysis_id"):
+                    latest[r["plan_kind"]] = {
+                        "run_id": r["run_id"],
+                        "solver_status": r["solver_status"],
+                    }
+            out["plans_in_scenario"] = latest
+        except ToolFailure:
+            pass
+        try:
+            an = await backend.get("/analyses", base_revision_id=ctx.scenario_revision_id, limit=20)
+            items = list(an.get("analyses", []))
+            if ctx.selected_run_id:
+                more = await backend.get("/analyses", base_run_id=ctx.selected_run_id, limit=20)
+                seen = {x["analysis_id"] for x in items}
+                items += [a for a in more.get("analyses", []) if a["analysis_id"] not in seen]
+            out["saved_analyses"] = [
+                {
+                    "analysis_id": a["analysis_id"],
+                    "kind": a["kind"],
+                    "mode": (a.get("request") or {}).get("mode"),
+                    "base_run_id": a.get("base_run_id"),
+                }
+                for a in items
+                if a.get("status") == "completed"
+            ][:10]
+        except ToolFailure:
+            pass
+    if ctx.season_id:
+        try:
+            us = await backend.get(
+                "/uncertainty-sets", pilot_id=ctx.pilot_id, season_id=ctx.season_id
+            )
+            states = [s for u in us.get("uncertainty_sets", []) for s in u.get("states", [])]
+            out["supply_profiles"] = sorted({s["supply_profile_id"] for s in states})
+            out["weather_scenarios"] = sorted({s["weather_scenario_id"] for s in states})
+        except ToolFailure:
+            pass
+    try:
+        pm = await backend.get(f"/pilots/{ctx.pilot_id}/versions/{ctx.pilot_version}/map")
+        groups: dict[str, int] = {}
+        for g in (pm.get("field_groups") or {}).values():
+            groups[g] = groups.get(g, 0) + 1
+        out["fields_by_canal_position"] = groups
+    except ToolFailure:
+        pass
+    return out

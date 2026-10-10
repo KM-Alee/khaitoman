@@ -302,20 +302,3 @@ def run_explanations(run_id: str, conn: Conn, state: State) -> dict:
 
     rc = RunContext(state.settings, state.pilots, state.catalog)
     return explain(rc, load_run(conn, run_id))
-
-
-@router.get("/runs/{run_id}/impact")
-def run_impact(
-    run_id: str,
-    conn: Conn,
-    baseline_run_id: str | None = None,
-    stress_analysis_id: str | None = None,
-) -> dict:
-    base = load_run(conn, baseline_run_id) if baseline_run_id else None
-    stress = None
-    if stress_analysis_id:
-        from aabflow.services.analyses import get_analysis
-
-        a = get_analysis(conn, stress_analysis_id)
-        stress = (a.get("result") or {}).get("metrics_by_id") if a else None
-    return insights.impact(load_run(conn, run_id), base, stress)

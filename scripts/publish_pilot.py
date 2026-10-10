@@ -59,14 +59,14 @@ def main() -> int:
     args = ap.parse_args()
 
     meta = PILOTS.get(args.pilot)
-    bundle = (args.bundle if args.bundle else latest_bundle(args.data_dir, args.pilot)).resolve()
     wd = args.workdir or args.data_dir / "pilots" / ".intake" / f"{args.pilot}-{args.version}"
-    rel_bundle = str(bundle.relative_to(ROOT.resolve()))
 
     def progress(stage, frac, detail):
         print(f"[{stage}]{'' if frac is None else f' {frac:4.0%}'} {detail}", flush=True)
 
     if not (wd / "intake.json").exists():
+        bundle = (args.bundle if args.bundle else latest_bundle(args.data_dir, args.pilot)).resolve()
+        rel_bundle = str(bundle.relative_to(ROOT.resolve()))
         aoi = json.loads((bundle / "aoi.geojson").read_text())
         st = pipeline.create_intake(
             f"{args.pilot}-{args.version}", aoi, "raw_package", rel_bundle, wd,
@@ -104,6 +104,21 @@ def main() -> int:
         if r["blockers"]:
             return 2
     if args.until == "review":
+        return 0
+    if pipeline.status(wd)["state"] == "published":
+        try:
+            manifest, _replaced = pipeline.reproduce_published(
+                wd, args.pilot, args.version, data_dir=args.data_dir
+            )
+        except pipeline.ReproductionError as exc:
+            print(str(exc), file=sys.stderr)
+            return 2
+        pilot_doc = read_json(args.data_dir / "pilots" / args.pilot / args.version / "pilot.json")
+        print(
+            f"reproduced {args.pilot}/{args.version}: {len(manifest.files)} files, "
+            f"{len(manifest.source_ids)} source ids, "
+            f"package_sha256 {pilot_doc['package_sha256']}"
+        )
         return 0
     m = pipeline.publish(wd, args.pilot, args.version, data_dir=args.data_dir)
     print(

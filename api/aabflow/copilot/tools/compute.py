@@ -17,7 +17,19 @@ from aabflow.copilot.tools.backend import RouteUnavailable, ToolFailure
 from aabflow.copilot.tools.base import ToolCtx, job_view, run_summary
 from aabflow.copilot.tools.money import AmountNeedsClarification, parse_pkr
 from aabflow.copilot.tools.presets import PRESETS, PresetId
-from aabflow.copilot.tools.read import analysis_summary, describe_job
+from aabflow.copilot.tools.read import (
+    analysis_summary,
+    comparison_view,
+    describe_job,
+    run_datasets,
+)
+
+PLAN_SHORT = {
+    "B0": "fixed roster (B0)",
+    "B1": "no-new-capital plan (B1)",
+    "P": "plan (P)",
+    "R": "robust plan (R)",
+}
 
 PlanKindArg = Literal["P", "R", "B0", "B1"]
 
@@ -165,8 +177,33 @@ async def branch_scenario(ctx: ToolCtx, args: BranchArgs) -> dict[str, Any]:
     server; an unknown currency returns NEEDS_CLARIFICATION. It cannot edit rights, sources, dates or
     provenance."""
     base = ctx.default_revision(args.base_revision_id)
+    rv, nid, shown, new = await _make_branch(ctx, base, args.changes, args.label)
+    out: dict[str, Any] = {
+        "ok": True,
+        "scenario_revision_id": nid,
+        "parent_revision_id": base,
+        "applied_changes": shown,
+        "readiness": new["readiness"],
+        "parent_runs": [r for r in rv["runs"] if r["outcome"]][-6:],
+        "note": "The parent revision is unchanged; the branch is offered to the UI to open.",
+    }
+    if args.solve:
+        if not new["readiness"]["ready"]:
+            out["solve"] = {
+                "submitted": False,
+                "reason": "revision not ready",
+                "blockers": new["readiness"]["blockers"],
+            }
+        else:
+            out["solve"] = await _submit_solve(ctx, nid, args.plan_kind or "P", args.wait_s)
+    return out
+
+
+async def _make_branch(
+    ctx: ToolCtx, base: str, ch: BranchChanges, label: str | None
+) -> tuple[dict[str, Any], str, list[str], dict[str, Any]]:
+    """Validate typed changes and create the child revision (idempotent per turn and arguments)."""
     rv = await ctx.revision_in_pilot(base)
-    ch = args.changes
     changes: dict[str, Any] = {}
     shown: list[str] = []
     for key, text, what in (
@@ -214,25 +251,111 @@ async def branch_scenario(ctx: ToolCtx, args: BranchArgs) -> dict[str, Any]:
         f"/scenarios/{sid}/revisions", body, idempotency_key=ctx.idem("branch_scenario", body)
     )
     nid = new["revision"]["scenario_revision_id"]
-    ctx.note_created("branch", nid, args.label or "New scenario branch")
+    ctx.note_created("branch", nid, label or "New scenario branch")
+    return rv, nid, shown, new
+
+
+# -------------------------------------------------------------------- run_what_if
+
+
+class WhatIfArgs(ToolArgs):
+    changes: BranchChanges
+    label: str | None = Field(
+        None,
+        description="Short name for the new scenario, e.g. 'Budget 20 lakh' or 'Canal closed 14 days'",
+    )
+    plan_kind: PlanKindArg | None = Field(
+        None, description="Plan to solve; null = the selected run's plan kind (P if none)"
+    )
+    compare_with_run_id: str | None = Field(
+        None,
+        description="Run to compare the new result with; null = the current scenario's run of the same kind",
+    )
+
+
+@tool(
+    "run_what_if",
+    args=WhatIfArgs,
+    semantics="create",
+    roles=PLANNER,
+    submits_jobs=True,
+    activity="Running your what-if as a new scenario",
+    timeout_s=80,
+    max_result_chars=16_000,
+)
+async def run_what_if(ctx: ToolCtx, args: WhatIfArgs) -> dict[str, Any]:
+    """One-step what-if: create a reversible branch of the current scenario with typed changes (budget as said,
+    supply profile e.g. interruption-14d-v1 for a two-week canal closure, uniform supply cut, weather, service
+    preset/floor, forced/excluded investments, groundwater permission), solve it, and compare the new run with
+    the current plan using the comparison service. Returns the new run's status, server-computed deltas and
+    chart datasets. The parent scenario is unchanged. Prefer this over branch_scenario + solve + compare."""
+    base = ctx.default_revision(None)
+    _, nid, shown, new = await _make_branch(ctx, base, args.changes, args.label)
+    sel_kind = ctx.context.selected_run_plan_kind
+    kind = args.plan_kind or (sel_kind if sel_kind in ("P", "R", "B1") else "P")
     out: dict[str, Any] = {
         "ok": True,
         "scenario_revision_id": nid,
         "parent_revision_id": base,
         "applied_changes": shown,
-        "readiness": new["readiness"],
-        "parent_runs": [r for r in rv["runs"] if r["outcome"]][-6:],
-        "note": "The parent revision is unchanged; the branch is offered to the UI to open.",
+        "plan_kind": kind,
     }
-    if args.solve:
-        if not new["readiness"]["ready"]:
-            out["solve"] = {
-                "submitted": False,
-                "reason": "revision not ready",
-                "blockers": new["readiness"]["blockers"],
-            }
-        else:
-            out["solve"] = await _submit_solve(ctx, nid, args.plan_kind or "P", args.wait_s)
+    if not new["readiness"]["ready"]:
+        out["solve"] = {"submitted": False, "blockers": new["readiness"]["blockers"]}
+        out["note"] = "The changed scenario is not ready to solve; explain the blockers."
+        return out
+    solved = await _submit_solve(ctx, nid, kind, 40)
+    run = solved.get("run")
+    out["job"] = {k: solved.get(k) for k in ("job_id", "state", "state_meaning", "error")}
+    if not run:
+        out["note"] = solved.get("note") or "The solve did not finish; no result exists yet."
+        return out
+    out["new_run"] = {
+        k: run.get(k)
+        for k in (
+            "run_id",
+            "plan_kind",
+            "solver_status",
+            "status_meaning",
+            "outcome",
+            "selected_intervention_instance_ids",
+            "infeasibility_kind",
+            "diagnostics",
+            "note",
+        )
+        if run.get(k) is not None
+    }
+    base_run = args.compare_with_run_id
+    if base_run is None:
+        from aabflow.copilot.tools.insight import latest_runs
+
+        parent = (await latest_runs(ctx, base)).get(kind)
+        base_run = parent["run_id"] if parent and parent.get("outcome") == "plan" else None
+        base_run = base_run or ctx.context.selected_run_id
+    if not base_run:
+        out["note"] = "No run of the current scenario to compare with; report the new run alone."
+        out["datasets"] = await run_datasets(ctx, await ctx.run_in_pilot(run["run_id"]))
+        return out
+    base_view = await ctx.run_in_pilot(base_run)
+    out["compared_with_run_id"] = base_run
+    if run["outcome"] != "plan" or base_view["run"]["outcome"] != "plan":
+        out["note"] = (
+            f"The new run is {run['solver_status']}: there is no plan to compare, so no production or "
+            "cost change exists. Explain the status and diagnostics; do not invent a loss."
+        )
+        return out
+    ids = [base_run, run["run_id"]]
+    cmp = await ctx.backend.post(
+        "/comparisons", {"run_ids": ids}, idempotency_key=ctx.idem("compare_runs", ids)
+    )
+    labels = {
+        base_run: f"Current {PLAN_SHORT.get(base_view['run']['plan_kind'], 'plan')}",
+        run["run_id"]: args.label or "What-if",
+    }
+    view = await comparison_view(ctx, cmp, labels)
+    ctx.note_created("comparison", cmp["comparison_id"], "Compare with the current plan")
+    out["comparison"] = view
+    out["datasets"] = view.pop("datasets")
     return out
 
 

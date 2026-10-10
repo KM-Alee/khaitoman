@@ -1,0 +1,112 @@
+=== validate 2026-10-10T09:19:45Z HEAD ad11be3c8698e759f4a3d6d76cc53844faba3478 ===
+ Container aabflow-api-run-d0643e2d5ef6 Creating 
+ Container aabflow-api-run-d0643e2d5ef6 Created 
+Valid DAG: 27 nodes, 14 chunks; no execution claimed.
+=== waves ===
+ Container aabflow-api-run-fef98dc43406 Creating 
+ Container aabflow-api-run-fef98dc43406 Created 
+{
+  "assumption": "Structural forecast only; every external gate is assumed satisfied, not verified.",
+  "external_gates": [
+    "P00",
+    "P01"
+  ],
+  "waves": [
+    [
+      "G-CONTRACT"
+    ],
+    [
+      "P02",
+      "P05-api",
+      "G-CONNECT"
+    ],
+    [
+      "P03"
+    ],
+    [
+      "P04",
+      "P05-files"
+    ],
+    [
+      "P06-service",
+      "P07-process"
+    ],
+    [
+      "P06-ui",
+      "P07-review"
+    ],
+    [
+      "P07-ui",
+      "P08-zip"
+    ],
+    [
+      "P08-pack",
+      "P11-core"
+    ],
+    [
+      "P09-offline"
+    ],
+    [
+      "P09-restart"
+    ],
+    [
+      "G-CORE"
+    ],
+    [
+      "P10"
+    ],
+    [
+      "P11-final"
+    ],
+    [
+      "P12"
+    ],
+    [
+      "P13-timing",
+      "G-REVIEW"
+    ],
+    [
+      "P13-release"
+    ],
+    [
+      "G-RELEASE"
+    ]
+  ]
+}
+=== plan ===
+ Container aabflow-api-run-7b07612cc5eb Creating 
+ Container aabflow-api-run-7b07612cc5eb Created 
+{
+  "ready": [
+    "G-CONTRACT"
+  ],
+  "active": [],
+  "waiting_external": [],
+  "blocked": {},
+  "waiting": {
+    "P02": "dependencies: G-CONTRACT",
+    "P03": "dependencies: G-CONTRACT",
+    "P05-api": "dependencies: G-CONTRACT",
+    "P04": "dependencies: G-CONTRACT, P03",
+    "P05-files": "dependencies: P05-api, P03",
+    "P06-service": "dependencies: G-CONTRACT, P03, P04",
+    "P06-ui": "dependencies: P06-service",
+    "P07-process": "dependencies: G-CONTRACT, P02",
+    "P07-review": "dependencies: P07-process",
+    "P07-ui": "dependencies: P07-review",
+    "P08-zip": "dependencies: P05-files, P07-review",
+    "P08-pack": "dependencies: P08-zip, P04, P06-ui, P07-ui",
+    "P11-core": "dependencies: P05-files, P06-ui, P07-ui, P04",
+    "P09-offline": "dependencies: P08-pack, P11-core",
+    "P09-restart": "dependencies: P09-offline",
+    "G-CORE": "dependencies: P02, P03, P04, P05-files, P06-ui, P07-ui, P08-pack, P09-restart, P11-core",
+    "G-CONNECT": "dependencies: G-CONTRACT",
+    "P10": "dependencies: G-CORE, G-CONNECT",
+    "P11-final": "dependencies: P11-core, P10",
+    "P12": "dependencies: P11-final, P08-pack, P09-restart",
+    "P13-timing": "dependencies: P12",
+    "G-REVIEW": "dependencies: P01, P02, P03, P04, P05-files, P06-ui, P07-ui, P08-pack, P09-restart, P10, P11-final, P12",
+    "P13-release": "dependencies: P13-timing, G-REVIEW",
+    "G-RELEASE": "dependencies: P13-release"
+  }
+}

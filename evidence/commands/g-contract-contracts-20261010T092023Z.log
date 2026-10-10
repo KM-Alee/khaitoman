@@ -1,0 +1,15 @@
+=== make contracts 2026-10-10T09:20:42Z HEAD ad11be3c8698e759f4a3d6d76cc53844faba3478 ===
+docker compose run --rm --no-deps api python -c "import json; from aabflow.main import app; open('contracts/openapi.json','w').write(json.dumps(app.openapi(), indent=2, sort_keys=True))"
+ Container aabflow-api-run-46ca2a834855 Creating 
+ Container aabflow-api-run-46ca2a834855 Created 
+docker compose run --rm --no-deps web npm run gen:api
+ Container aabflow-web-run-d75afbb8499d Creating 
+ Container aabflow-web-run-d75afbb8499d Created 
+
+> aabflow-web@2.0.0 gen:api
+> openapi-typescript ../contracts/openapi.json -o src/generated/api.ts
+
+✨ openapi-typescript 7.13.0
+🚀 ../contracts/openapi.json → src/generated/api.ts [101.7ms]
+EXIT:0
+=== diff stat ===

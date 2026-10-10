@@ -12,7 +12,7 @@ import shutil
 from dataclasses import dataclass
 from datetime import date, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 import numpy as np
 import rasterio
@@ -191,6 +191,8 @@ def build_package(
     review_state: dict,
     parent_canal_id: str,
     created_at: datetime | None = None,
+    warabandi: Literal["declared_cca", "selected_area"] = "declared_cca",
+    source_capacity_m3_s: float | None = None,
 ) -> Path:
     """Write the complete package into ``stage_dir`` and return it."""
     now = created_at or utc_now()
@@ -547,7 +549,11 @@ def build_package(
         CapacityInterval(
             start=ops._pkt(s.start),
             end=ops._pkt(s.end + __import__("datetime").timedelta(days=1)),
-            max_rate_m3_s=ops.ASSUMPTIONS["asm:source-capacity"].value,
+            max_rate_m3_s=(
+                ops.ASSUMPTIONS["asm:source-capacity"].value
+                if source_capacity_m3_s is None
+                else source_capacity_m3_s
+            ),
         )
         for s in ops.SEASONS
     ]
@@ -631,12 +637,12 @@ def build_package(
     area_ha = {k: v / 10_000.0 for k, v in area_m2.items()}
 
     # --- roster, service, assets, interventions -------------------------------------
-    roster = ops.build_roster(pilot_id, net, area_ha)
+    roster = ops.build_roster(pilot_id, net, area_ha, warabandi=warabandi)
     write_json(
         P / "roster.json",
         {"seasons": {k: [w.model_dump(mode="json") for w in v] for k, v in roster.items()}},
     )
-    svc = ops.build_service_reference(roster, net, net.edges)
+    svc = ops.build_service_reference(roster, net, net.edges, warabandi=warabandi)
     write_json(P / "service_reference.json", [s.model_dump(mode="json") for s in svc])
     ab = ops.build_assets(pilot_id, net, area_m2)
     write_json(P / "assets.json", [a.model_dump(mode="json") for a in ab.assets])
@@ -650,7 +656,10 @@ def build_package(
             "instances": [i.model_dump(mode="json") for i in instances],
         },
     )
-    for a in ops.ASSUMPTIONS.values():
+    assumptions = list(ops.ASSUMPTIONS.values())
+    if warabandi == "selected_area":
+        assumptions = [a for a in assumptions if a.evidence_id != "asm:watercourse-cca"]
+    for a in assumptions:
         ev.append(
             _ev(
                 evidence_id=a.evidence_id,

@@ -78,12 +78,14 @@ function JobWatcher({ job }: { job: TrackedJob }) {
   return null;
 }
 
-export function JobTray({ className }: { className?: string }) {
+/** `scopeKey` overrides the pilot key for screens outside a pilot route (e.g. onboarding). */
+export function JobTray({ className, scopeKey }: { className?: string; scopeKey?: string }) {
   const jobs = useUI((s) => s.jobs);
   const dismiss = useUI((s) => s.dismissJob);
   const sel = useSelection();
   const [open, setOpen] = useState(true);
-  const visible = jobs.filter((j) => !j.dismissed && j.pilotKey === sel.pilotKey).slice(0, 6);
+  const scope = scopeKey ?? sel.pilotKey;
+  const visible = jobs.filter((j) => !j.dismissed && j.pilotKey === scope).slice(0, 6);
   const running = visible.filter((j) => !isTerminal(j.state));
   const [, tick] = useState(0);
   // Succeeded jobs leave the tray once their result is bound; failures stay until dismissed.
@@ -102,7 +104,7 @@ export function JobTray({ className }: { className?: string }) {
   return (
     <section
       aria-label="Jobs"
-      className={cn("pointer-events-auto w-[320px] max-w-[calc(100vw-24px)] overflow-hidden rounded-[14px] border border-border bg-surface/97 shadow-3 backdrop-blur", className)}
+      className={cn("pointer-events-auto w-[320px] max-w-[calc(100vw-24px)] overflow-hidden rounded-[18px] border border-border bg-surface/97 shadow-3 backdrop-blur", className)}
       data-testid="job-tray"
     >
       <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} className="flex w-full items-center justify-between px-3.5 py-2.5 text-left">

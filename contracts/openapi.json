@@ -1,6 +1,51 @@
 {
   "components": {
     "schemas": {
+      "ActionBlock": {
+        "additionalProperties": false,
+        "description": "A button: selecting it updates the existing workspace (never operates anything physical).",
+        "properties": {
+          "action": {
+            "enum": [
+              "open_run",
+              "open_branch",
+              "open_field",
+              "open_report",
+              "open_analysis",
+              "open_comparison"
+            ],
+            "title": "Action",
+            "type": "string"
+          },
+          "auto": {
+            "default": false,
+            "description": "Added by the server for an object created this turn",
+            "title": "Auto",
+            "type": "boolean"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "ref_id": {
+            "title": "Ref Id",
+            "type": "string"
+          },
+          "type": {
+            "const": "action",
+            "default": "action",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "action",
+          "ref_id",
+          "label"
+        ],
+        "title": "ActionBlock",
+        "type": "object"
+      },
       "ActionCategory": {
         "description": "Five action categories (PRD \u00a76.2).",
         "enum": [
@@ -12,6 +57,183 @@
         ],
         "title": "ActionCategory",
         "type": "string"
+      },
+      "AiEngine": {
+        "additionalProperties": false,
+        "properties": {
+          "by_pilot": {
+            "additionalProperties": {
+              "additionalProperties": {
+                "type": "integer"
+              },
+              "type": "object"
+            },
+            "description": "sees only: pilot_id -> {raw_polygons, selected}",
+            "title": "By Pilot",
+            "type": "object"
+          },
+          "evidence_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence Ref"
+          },
+          "fact": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "one plain sentence built from the figures below",
+            "title": "Fact"
+          },
+          "fact_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fact Value"
+          },
+          "facts": {
+            "items": {
+              "$ref": "#/components/schemas/AiFact"
+            },
+            "title": "Facts",
+            "type": "array"
+          },
+          "id": {
+            "enum": [
+              "sees",
+              "predicts",
+              "plans",
+              "explains"
+            ],
+            "title": "Id",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "plain": {
+            "title": "Plain",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "status": {
+            "enum": [
+              "available",
+              "unavailable"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "plain",
+          "fact",
+          "fact_value",
+          "unit",
+          "evidence_ref",
+          "status"
+        ],
+        "title": "AiEngine",
+        "type": "object"
+      },
+      "AiFact": {
+        "additionalProperties": false,
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "label",
+          "value"
+        ],
+        "title": "AiFact",
+        "type": "object"
+      },
+      "AiStack": {
+        "additionalProperties": false,
+        "properties": {
+          "engines": {
+            "items": {
+              "$ref": "#/components/schemas/AiEngine"
+            },
+            "title": "Engines",
+            "type": "array"
+          }
+        },
+        "required": [
+          "engines"
+        ],
+        "title": "AiStack",
+        "type": "object"
       },
       "AnalysisAccepted": {
         "additionalProperties": false,
@@ -186,6 +408,27 @@
           "updated_at"
         ],
         "title": "AnalysisView",
+        "type": "object"
+      },
+      "AoiCheckRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "aoi": {
+            "additionalProperties": true,
+            "title": "Aoi",
+            "type": "object"
+          },
+          "contract_version": {
+            "const": "2.0.0",
+            "default": "2.0.0",
+            "title": "Contract Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "aoi"
+        ],
+        "title": "AoiCheckRequest",
         "type": "object"
       },
       "Asset": {
@@ -515,6 +758,268 @@
         "title": "CapacityInterval",
         "type": "object"
       },
+      "Citation": {
+        "additionalProperties": false,
+        "properties": {
+          "auto": {
+            "default": false,
+            "description": "Added by the server because the text quotes its numbers",
+            "title": "Auto",
+            "type": "boolean"
+          },
+          "kind": {
+            "description": "run, comparison, analysis, evidence, scenario_revision, field, ...",
+            "title": "Kind",
+            "type": "string"
+          },
+          "ref_id": {
+            "title": "Ref Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ref_id",
+          "kind"
+        ],
+        "title": "Citation",
+        "type": "object"
+      },
+      "Co2Estimate": {
+        "additionalProperties": false,
+        "properties": {
+          "official_indicator": {
+            "const": false,
+            "default": false,
+            "title": "Official Indicator",
+            "type": "boolean"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          },
+          "status": {
+            "const": "not_estimated",
+            "default": "not_estimated",
+            "title": "Status",
+            "type": "string"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "null"
+          },
+          "value": {
+            "title": "Value",
+            "type": "null"
+          }
+        },
+        "required": [
+          "reason"
+        ],
+        "title": "Co2Estimate",
+        "type": "object"
+      },
+      "Column": {
+        "additionalProperties": false,
+        "properties": {
+          "basis": {
+            "anyOf": [
+              {
+                "enum": [
+                  "model_output",
+                  "computed_from_inputs",
+                  "assumption",
+                  "observed",
+                  "surrogate_preview",
+                  "solver_result"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Basis"
+          },
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "kind": {
+            "default": "number",
+            "enum": [
+              "category",
+              "number",
+              "id",
+              "date",
+              "text",
+              "bool",
+              "status"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "label_ur": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label Ur"
+          },
+          "ref": {
+            "anyOf": [
+              {
+                "enum": [
+                  "run",
+                  "field",
+                  "analysis",
+                  "instance",
+                  "comparison",
+                  "revision",
+                  "report"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "ID column kind: selecting a row opens this entity in the workspace",
+            "title": "Ref"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Unit of every value in this column (kg, PKR, m3, ratio, ...)",
+            "title": "Unit"
+          },
+          "unit_column": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "For mixed-unit columns (metric cards): the column holding each row's unit",
+            "title": "Unit Column"
+          }
+        },
+        "required": [
+          "key",
+          "label"
+        ],
+        "title": "Column",
+        "type": "object"
+      },
+      "ComparedPlan": {
+        "additionalProperties": false,
+        "properties": {
+          "plan_kind": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Kind"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "solver_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Solver Status"
+          }
+        },
+        "required": [
+          "run_id"
+        ],
+        "title": "ComparedPlan",
+        "type": "object"
+      },
+      "ComparisonBlock": {
+        "additionalProperties": false,
+        "properties": {
+          "comparison_id": {
+            "title": "Comparison Id",
+            "type": "string"
+          },
+          "compatible": {
+            "title": "Compatible",
+            "type": "boolean"
+          },
+          "deltas": {
+            "items": {
+              "$ref": "#/components/schemas/Delta"
+            },
+            "title": "Deltas",
+            "type": "array"
+          },
+          "fields_worse_off": {
+            "items": {},
+            "title": "Fields Worse Off",
+            "type": "array"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "plans": {
+            "items": {
+              "$ref": "#/components/schemas/ComparedPlan"
+            },
+            "title": "Plans",
+            "type": "array"
+          },
+          "run_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Run Ids",
+            "type": "array"
+          },
+          "type": {
+            "const": "comparison",
+            "default": "comparison",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "comparison_id",
+          "run_ids",
+          "compatible",
+          "label",
+          "deltas"
+        ],
+        "title": "ComparisonBlock",
+        "type": "object"
+      },
       "ComparisonRequest": {
         "additionalProperties": false,
         "properties": {
@@ -585,6 +1090,193 @@
         "title": "ConfigurationStatus",
         "type": "object"
       },
+      "CopilotAnswer": {
+        "additionalProperties": false,
+        "description": "The validated answer of one turn, rendered top to bottom in block order.",
+        "properties": {
+          "blocks": {
+            "items": {
+              "discriminator": {
+                "mapping": {
+                  "action": "#/components/schemas/ActionBlock",
+                  "comparison": "#/components/schemas/ComparisonBlock",
+                  "follow_ups": "#/components/schemas/FollowUpsBlock",
+                  "headline": "#/components/schemas/HeadlineBlock",
+                  "metric": "#/components/schemas/MetricBlock",
+                  "run_badge": "#/components/schemas/RunBadgeBlock",
+                  "text": "#/components/schemas/TextBlock",
+                  "uncertainty": "#/components/schemas/UncertaintyBlock",
+                  "visual": "#/components/schemas/VisualBlock"
+                },
+                "propertyName": "type"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/RunBadgeBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/HeadlineBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/TextBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/MetricBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/VisualBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/ComparisonBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/UncertaintyBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/ActionBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/FollowUpsBlock"
+                }
+              ]
+            },
+            "title": "Blocks",
+            "type": "array"
+          },
+          "clarification_question": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Clarification Question"
+          },
+          "deterministic": {
+            "default": false,
+            "description": "Server-written (provider unavailable / budget exhausted); not a model answer",
+            "title": "Deterministic",
+            "type": "boolean"
+          },
+          "issues": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Issues",
+            "type": "array"
+          },
+          "language": {
+            "enum": [
+              "en",
+              "ur",
+              "roman_ur"
+            ],
+            "title": "Language",
+            "type": "string"
+          },
+          "needs_clarification": {
+            "default": false,
+            "title": "Needs Clarification",
+            "type": "boolean"
+          },
+          "validated": {
+            "description": "True when every reference and number passed validation",
+            "title": "Validated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "language",
+          "blocks",
+          "validated"
+        ],
+        "title": "CopilotAnswer",
+        "type": "object"
+      },
+      "CopilotEvent": {
+        "additionalProperties": false,
+        "description": "One server-sent event (``id`` = event_id; resume with Last-Event-ID or ?after=).",
+        "properties": {
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "event_id": {
+            "title": "Event Id",
+            "type": "integer"
+          },
+          "payload": {
+            "additionalProperties": true,
+            "title": "Payload",
+            "type": "object"
+          },
+          "turn_id": {
+            "title": "Turn Id",
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "turn_started",
+              "thinking",
+              "tool_started",
+              "tool_finished",
+              "dataset_ready",
+              "answer_block",
+              "answer",
+              "view_intents",
+              "error",
+              "turn_finished",
+              "job_update",
+              "jobs_settled",
+              "jobs_cancelled"
+            ],
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "event_id",
+          "turn_id",
+          "created_at",
+          "type",
+          "payload"
+        ],
+        "title": "CopilotEvent",
+        "type": "object"
+      },
+      "CreatedRef": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "enum": [
+              "branch",
+              "run",
+              "report",
+              "analysis",
+              "comparison"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "ref_id": {
+            "title": "Ref Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "ref_id",
+          "label"
+        ],
+        "title": "CreatedRef",
+        "type": "object"
+      },
       "Crop": {
         "enum": [
           "wheat",
@@ -592,6 +1284,591 @@
         ],
         "title": "Crop",
         "type": "string"
+      },
+      "DatasetSource": {
+        "additionalProperties": false,
+        "properties": {
+          "analysis_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Analysis Ids",
+            "type": "array"
+          },
+          "call_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Call Id"
+          },
+          "comparison_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Comparison Ids",
+            "type": "array"
+          },
+          "endpoint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The /api/v2 resource the rows were copied from",
+            "title": "Endpoint"
+          },
+          "revision_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Revision Ids",
+            "type": "array"
+          },
+          "run_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Run Ids",
+            "type": "array"
+          },
+          "tool": {
+            "title": "Tool",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tool"
+        ],
+        "title": "DatasetSource",
+        "type": "object"
+      },
+      "Delta": {
+        "additionalProperties": false,
+        "properties": {
+          "a": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "A"
+          },
+          "a_run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Run of the 'a' value (multi-run comparisons are pairwise)",
+            "title": "A Run Id"
+          },
+          "b": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "B"
+          },
+          "b_run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "B Run Id"
+          },
+          "delta": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delta"
+          },
+          "metric_id": {
+            "title": "Metric Id",
+            "type": "string"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          }
+        },
+        "required": [
+          "metric_id"
+        ],
+        "title": "Delta",
+        "type": "object"
+      },
+      "DemoAnalyses": {
+        "additionalProperties": false,
+        "properties": {
+          "frontier": {
+            "title": "Frontier",
+            "type": "string"
+          },
+          "stress": {
+            "title": "Stress",
+            "type": "string"
+          }
+        },
+        "required": [
+          "frontier",
+          "stress"
+        ],
+        "title": "DemoAnalyses",
+        "type": "object"
+      },
+      "DemoApi": {
+        "additionalProperties": false,
+        "properties": {
+          "base_url": {
+            "title": "Base Url",
+            "type": "string"
+          },
+          "contract_version": {
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "versions": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "title": "Versions",
+            "type": "object"
+          }
+        },
+        "required": [
+          "base_url",
+          "contract_version",
+          "versions"
+        ],
+        "title": "DemoApi",
+        "type": "object"
+      },
+      "DemoBudgetChange": {
+        "additionalProperties": false,
+        "properties": {
+          "changes": {
+            "additionalProperties": true,
+            "description": "RevisionChange body used to derive the child",
+            "title": "Changes",
+            "type": "object"
+          },
+          "parent_revision_id": {
+            "title": "Parent Revision Id",
+            "type": "string"
+          },
+          "revision_id": {
+            "title": "Revision Id",
+            "type": "string"
+          },
+          "runs": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "plan kind (B0, B1, P, R) -> run_id",
+            "title": "Runs",
+            "type": "object"
+          },
+          "selection_reason": {
+            "description": "Why this budget was used (it changed the selected P portfolio)",
+            "title": "Selection Reason",
+            "type": "string"
+          },
+          "tried_capital_budgets_pkr": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Tried Capital Budgets Pkr",
+            "type": "array"
+          }
+        },
+        "required": [
+          "revision_id",
+          "runs",
+          "parent_revision_id",
+          "changes",
+          "selection_reason"
+        ],
+        "title": "DemoBudgetChange",
+        "type": "object"
+      },
+      "DemoHeadline": {
+        "additionalProperties": false,
+        "properties": {
+          "budget_used_fraction": {
+            "$ref": "#/components/schemas/Figure"
+          },
+          "capital_budget_pkr": {
+            "$ref": "#/components/schemas/Figure"
+          },
+          "groundwater_above_b0": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "True when P pumps more groundwater than B0 (shown as a secondary line)",
+            "title": "Groundwater Above B0"
+          },
+          "pilot_id": {
+            "title": "Pilot Id",
+            "type": "string"
+          },
+          "pilot_version": {
+            "title": "Pilot Version",
+            "type": "string"
+          },
+          "plans": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/PlanFigures"
+            },
+            "description": "B0, B1, P",
+            "title": "Plans",
+            "type": "object"
+          },
+          "production_gain_pct_vs_b0": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Figure"
+            },
+            "description": "B1, P vs B0 (%)",
+            "title": "Production Gain Pct Vs B0",
+            "type": "object"
+          },
+          "run_created_at": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "run_id -> computed time",
+            "title": "Run Created At",
+            "type": "object"
+          },
+          "scenario_revision_id": {
+            "title": "Scenario Revision Id",
+            "type": "string"
+          },
+          "season_id": {
+            "title": "Season Id",
+            "type": "string"
+          },
+          "story": {
+            "enum": [
+              "tail_tradeoff",
+              "budget_efficiency",
+              "plain_gain"
+            ],
+            "title": "Story",
+            "type": "string"
+          },
+          "tail_service_change_pts": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Figure"
+            },
+            "description": "B1, P vs B0 (percentage points)",
+            "title": "Tail Service Change Pts",
+            "type": "object"
+          }
+        },
+        "required": [
+          "story",
+          "pilot_id",
+          "pilot_version",
+          "season_id",
+          "scenario_revision_id",
+          "plans",
+          "capital_budget_pkr",
+          "production_gain_pct_vs_b0",
+          "tail_service_change_pts",
+          "budget_used_fraction",
+          "groundwater_above_b0",
+          "run_created_at"
+        ],
+        "title": "DemoHeadline",
+        "type": "object"
+      },
+      "DemoRevision": {
+        "additionalProperties": false,
+        "properties": {
+          "revision_id": {
+            "title": "Revision Id",
+            "type": "string"
+          },
+          "runs": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "plan kind (B0, B1, P, R) -> run_id",
+            "title": "Runs",
+            "type": "object"
+          }
+        },
+        "required": [
+          "revision_id",
+          "runs"
+        ],
+        "title": "DemoRevision",
+        "type": "object"
+      },
+      "DemoRunDetail": {
+        "additionalProperties": false,
+        "description": "As returned by ``GET /runs/{id}`` when the seed ran; the run record stays authoritative.",
+        "properties": {
+          "capital_commitment_pkr": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capital Commitment Pkr"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "outcome": {
+            "title": "Outcome",
+            "type": "string"
+          },
+          "plan_kind": {
+            "title": "Plan Kind",
+            "type": "string"
+          },
+          "production_kg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Production Kg"
+          },
+          "selected_intervention_instance_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Selected Intervention Instance Ids",
+            "type": "array"
+          },
+          "solver_status": {
+            "title": "Solver Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "plan_kind",
+          "outcome",
+          "solver_status",
+          "created_at"
+        ],
+        "title": "DemoRunDetail",
+        "type": "object"
+      },
+      "DemoSession": {
+        "additionalProperties": false,
+        "description": "The seeded manifest plus a read-only availability check against this server's database.",
+        "properties": {
+          "analyses": {
+            "$ref": "#/components/schemas/DemoAnalyses"
+          },
+          "api": {
+            "$ref": "#/components/schemas/DemoApi"
+          },
+          "available": {
+            "additionalProperties": {
+              "type": "boolean"
+            },
+            "description": "referenced ID -> present in this database",
+            "title": "Available",
+            "type": "object"
+          },
+          "base": {
+            "$ref": "#/components/schemas/DemoRevision"
+          },
+          "budget_change": {
+            "$ref": "#/components/schemas/DemoBudgetChange"
+          },
+          "comparison_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comparison Id"
+          },
+          "complete": {
+            "title": "Complete",
+            "type": "boolean"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "decisive_date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decisive Date"
+          },
+          "decisive_date_reason": {
+            "title": "Decisive Date Reason",
+            "type": "string"
+          },
+          "focus_field_id": {
+            "title": "Focus Field Id",
+            "type": "string"
+          },
+          "focus_field_reason": {
+            "title": "Focus Field Reason",
+            "type": "string"
+          },
+          "manifest_version": {
+            "const": 1,
+            "default": 1,
+            "title": "Manifest Version",
+            "type": "integer"
+          },
+          "missing_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Missing Ids",
+            "type": "array"
+          },
+          "notes": {
+            "description": "Seed-time events, e.g. jobs resubmitted after a restart",
+            "items": {
+              "type": "string"
+            },
+            "title": "Notes",
+            "type": "array"
+          },
+          "pilot_id": {
+            "title": "Pilot Id",
+            "type": "string"
+          },
+          "pilot_version": {
+            "title": "Pilot Version",
+            "type": "string"
+          },
+          "run_details": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/DemoRunDetail"
+            },
+            "description": "run_id -> details at seed time",
+            "title": "Run Details",
+            "type": "object"
+          },
+          "scenario_id": {
+            "title": "Scenario Id",
+            "type": "string"
+          },
+          "scenario_request": {
+            "additionalProperties": true,
+            "title": "Scenario Request",
+            "type": "object"
+          },
+          "season_id": {
+            "title": "Season Id",
+            "type": "string"
+          },
+          "timings_s": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Timings S",
+            "type": "object"
+          }
+        },
+        "required": [
+          "created_at",
+          "api",
+          "pilot_id",
+          "pilot_version",
+          "season_id",
+          "scenario_request",
+          "scenario_id",
+          "base",
+          "budget_change",
+          "analyses",
+          "focus_field_id",
+          "focus_field_reason",
+          "decisive_date",
+          "decisive_date_reason",
+          "run_details",
+          "timings_s",
+          "available",
+          "missing_ids",
+          "complete"
+        ],
+        "title": "DemoSession",
+        "type": "object"
       },
       "Edge": {
         "additionalProperties": false,
@@ -685,6 +1962,119 @@
           "delivery_factor"
         ],
         "title": "Edge",
+        "type": "object"
+      },
+      "Encoding": {
+        "additionalProperties": false,
+        "properties": {
+          "color": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Color"
+          },
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "series": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Series"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "target": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "x": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "X"
+          },
+          "y": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Y",
+            "type": "array"
+          }
+        },
+        "title": "Encoding",
         "type": "object"
       },
       "EvidenceDetail": {
@@ -1044,6 +2434,152 @@
         "title": "FeatureStatus",
         "type": "object"
       },
+      "FieldChange": {
+        "additionalProperties": false,
+        "properties": {
+          "baseline_production_kg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline Production Kg"
+          },
+          "baseline_run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline Run Id"
+          },
+          "causal": {
+            "default": false,
+            "title": "Causal",
+            "type": "boolean"
+          },
+          "crop": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Crop"
+          },
+          "definition_id": {
+            "title": "Definition Id",
+            "type": "string"
+          },
+          "delta_kg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delta Kg"
+          },
+          "field_id": {
+            "title": "Field Id",
+            "type": "string"
+          },
+          "production_kg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Production Kg"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/MetricStatus"
+          },
+          "unit": {
+            "const": "kg",
+            "default": "kg",
+            "title": "Unit",
+            "type": "string"
+          }
+        },
+        "required": [
+          "field_id",
+          "production_kg",
+          "status",
+          "run_id",
+          "definition_id"
+        ],
+        "title": "FieldChange",
+        "type": "object"
+      },
+      "FieldChangeSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "fields_better_off": {
+            "title": "Fields Better Off",
+            "type": "integer"
+          },
+          "fields_not_comparable": {
+            "title": "Fields Not Comparable",
+            "type": "integer"
+          },
+          "fields_unchanged": {
+            "title": "Fields Unchanged",
+            "type": "integer"
+          },
+          "fields_worse_off": {
+            "title": "Fields Worse Off",
+            "type": "integer"
+          },
+          "quantum_kg": {
+            "title": "Quantum Kg",
+            "type": "number"
+          },
+          "unit": {
+            "const": "kg",
+            "default": "kg",
+            "title": "Unit",
+            "type": "string"
+          }
+        },
+        "required": [
+          "quantum_kg",
+          "fields_worse_off",
+          "fields_better_off",
+          "fields_unchanged",
+          "fields_not_comparable"
+        ],
+        "title": "FieldChangeSummary",
+        "type": "object"
+      },
       "FieldDetail": {
         "additionalProperties": false,
         "properties": {
@@ -1140,6 +2676,70 @@
           "evidence_ids"
         ],
         "title": "FieldDetail",
+        "type": "object"
+      },
+      "FieldEdit": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "enum": [
+              "reject",
+              "replace_geometry",
+              "split",
+              "merge_with"
+            ],
+            "title": "Action",
+            "type": "string"
+          },
+          "geometry_wgs84": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Geometry Wgs84"
+          },
+          "model_id": {
+            "title": "Model Id",
+            "type": "string"
+          },
+          "other_model_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Other Model Ids",
+            "type": "array"
+          },
+          "parts_wgs84": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parts Wgs84"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "model_id",
+          "action",
+          "reason"
+        ],
+        "title": "FieldEdit",
         "type": "object"
       },
       "Field_": {
@@ -1241,6 +2841,76 @@
           "group"
         ],
         "title": "Field_",
+        "type": "object"
+      },
+      "Figure": {
+        "additionalProperties": false,
+        "description": "One number shown on screen: a stored metric or a value derived from stored metrics.",
+        "properties": {
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "run_ids": {
+            "description": "the run(s) this figure is read or derived from",
+            "items": {
+              "type": "string"
+            },
+            "title": "Run Ids",
+            "type": "array"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "value",
+          "unit",
+          "run_ids"
+        ],
+        "title": "Figure",
+        "type": "object"
+      },
+      "FollowUpsBlock": {
+        "additionalProperties": false,
+        "properties": {
+          "questions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Questions",
+            "type": "array"
+          },
+          "type": {
+            "const": "follow_ups",
+            "default": "follow_ups",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "questions"
+        ],
+        "title": "FollowUpsBlock",
         "type": "object"
       },
       "FrontierRequest": {
@@ -1352,6 +3022,38 @@
           }
         },
         "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "HeadlineBlock": {
+        "additionalProperties": false,
+        "properties": {
+          "citations": {
+            "items": {
+              "$ref": "#/components/schemas/Citation"
+            },
+            "title": "Citations",
+            "type": "array"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "type": {
+            "const": "headline",
+            "default": "headline",
+            "title": "Type",
+            "type": "string"
+          },
+          "withheld": {
+            "default": false,
+            "title": "Withheld",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "title": "HeadlineBlock",
         "type": "object"
       },
       "Health": {
@@ -1502,6 +3204,133 @@
         "title": "ImageryRef",
         "type": "object"
       },
+      "ImpactRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "baseline_run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline Run Id"
+          },
+          "contract_version": {
+            "const": "2.0.0",
+            "default": "2.0.0",
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "stress_analysis_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stress Analysis Id"
+          }
+        },
+        "required": [
+          "run_id"
+        ],
+        "title": "ImpactRequest",
+        "type": "object"
+      },
+      "ImpactResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "available": {
+            "title": "Available",
+            "type": "boolean"
+          },
+          "baseline_run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline Run Id"
+          },
+          "cards": {
+            "items": {
+              "$ref": "#/components/schemas/SdgCard"
+            },
+            "title": "Cards",
+            "type": "array"
+          },
+          "co2": {
+            "$ref": "#/components/schemas/Co2Estimate"
+          },
+          "compatibility_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Compatibility Label"
+          },
+          "compatible": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Compatible"
+          },
+          "distribution": {
+            "items": {
+              "$ref": "#/components/schemas/FieldChange"
+            },
+            "title": "Distribution",
+            "type": "array"
+          },
+          "field_change_summary": {
+            "$ref": "#/components/schemas/FieldChangeSummary"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "available",
+          "run_id",
+          "field_change_summary",
+          "co2"
+        ],
+        "title": "ImpactResponse",
+        "type": "object"
+      },
       "InfeasibilityKind": {
         "enum": [
           "missing_input",
@@ -1511,6 +3340,140 @@
         ],
         "title": "InfeasibilityKind",
         "type": "string"
+      },
+      "IntakeCreate": {
+        "additionalProperties": false,
+        "properties": {
+          "aoi": {
+            "additionalProperties": true,
+            "title": "Aoi",
+            "type": "object"
+          },
+          "contract_version": {
+            "const": "2.0.0",
+            "default": "2.0.0",
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "geographic_name_basis": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Geographic Name Basis"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "parent_canal_feature_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Canal Feature Id"
+          },
+          "pilot_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pilot Id"
+          },
+          "raw_package_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Raw Package Id"
+          },
+          "raw_package_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Raw Package Ref"
+          },
+          "source_mode": {
+            "enum": [
+              "online",
+              "raw_package"
+            ],
+            "title": "Source Mode",
+            "type": "string"
+          }
+        },
+        "required": [
+          "aoi",
+          "source_mode"
+        ],
+        "title": "IntakeCreate",
+        "type": "object"
+      },
+      "Interaction": {
+        "additionalProperties": false,
+        "properties": {
+          "column": {
+            "title": "Column",
+            "type": "string"
+          },
+          "intent": {
+            "enum": [
+              "open_run",
+              "open_field",
+              "open_analysis",
+              "open_comparison",
+              "open_branch"
+            ],
+            "title": "Intent",
+            "type": "string"
+          },
+          "on": {
+            "enum": [
+              "select_row",
+              "select_point",
+              "select_cell",
+              "select_field"
+            ],
+            "title": "On",
+            "type": "string"
+          }
+        },
+        "required": [
+          "on",
+          "column",
+          "intent"
+        ],
+        "title": "Interaction",
+        "type": "object"
       },
       "InterventionEligibility": {
         "additionalProperties": false,
@@ -2260,6 +4223,136 @@
           "context"
         ],
         "title": "MessageIn",
+        "type": "object"
+      },
+      "MetricBlock": {
+        "additionalProperties": false,
+        "description": "One metric card; value resolved server-side from the run's stored metrics.",
+        "properties": {
+          "basis": {
+            "title": "Basis",
+            "type": "string"
+          },
+          "definition_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Definition Id"
+          },
+          "field_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Field Id"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "metric_id": {
+            "title": "Metric Id",
+            "type": "string"
+          },
+          "plan_kind": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Kind"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "solver_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Solver Status"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "type": {
+            "const": "metric",
+            "default": "metric",
+            "title": "Type",
+            "type": "string"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "metric_id",
+          "run_id",
+          "basis"
+        ],
+        "title": "MetricBlock",
         "type": "object"
       },
       "MetricDefinitions": {
@@ -3045,6 +5138,36 @@
         "title": "PilotVersionDetail",
         "type": "object"
       },
+      "PlanFigures": {
+        "additionalProperties": false,
+        "properties": {
+          "capital_commitment_pkr": {
+            "$ref": "#/components/schemas/Figure"
+          },
+          "groundwater_m3": {
+            "$ref": "#/components/schemas/Figure"
+          },
+          "production_kg": {
+            "$ref": "#/components/schemas/Figure"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "tail_min_service_ratio": {
+            "$ref": "#/components/schemas/Figure"
+          }
+        },
+        "required": [
+          "run_id",
+          "production_kg",
+          "tail_min_service_ratio",
+          "capital_commitment_pkr",
+          "groundwater_m3"
+        ],
+        "title": "PlanFigures",
+        "type": "object"
+      },
       "PlanKind": {
         "description": "Baseline ladder (PRD \u00a76.4).",
         "enum": [
@@ -3266,6 +5389,18 @@
             "title": "Domain Status",
             "type": "string"
           },
+          "elapsed_ms": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Server-measured time to compute this preview (create only; null on read)",
+            "title": "Elapsed Ms"
+          },
           "estimate_kind": {
             "const": "surrogate_preview",
             "default": "surrogate_preview",
@@ -3415,6 +5550,54 @@
         "title": "PreviewView",
         "type": "object"
       },
+      "ProcessRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "const": "2.0.0",
+            "default": "2.0.0",
+            "title": "Contract Version",
+            "type": "string"
+          }
+        },
+        "title": "ProcessRequest",
+        "type": "object"
+      },
+      "PublishRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "const": "2.0.0",
+            "default": "2.0.0",
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "pilot_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pilot Id"
+          },
+          "pilot_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pilot Version"
+          }
+        },
+        "title": "PublishRequest",
+        "type": "object"
+      },
       "Readiness": {
         "additionalProperties": false,
         "properties": {
@@ -3472,6 +5655,207 @@
         "title": "Readiness",
         "type": "object"
       },
+      "ReportAccepted": {
+        "additionalProperties": false,
+        "properties": {
+          "job": {
+            "$ref": "#/components/schemas/Job"
+          },
+          "job_id": {
+            "title": "Job Id",
+            "type": "string"
+          },
+          "report_id": {
+            "title": "Report Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "report_id",
+          "job_id",
+          "job"
+        ],
+        "title": "ReportAccepted",
+        "type": "object"
+      },
+      "ReportCreate": {
+        "additionalProperties": false,
+        "description": "Body reserved by copilot ``create_report``: run ids, analysis ids, report type.",
+        "properties": {
+          "analysis_ids": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 64,
+            "title": "Analysis Ids",
+            "type": "array"
+          },
+          "contract_version": {
+            "const": "2.0.0",
+            "default": "2.0.0",
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "report_type": {
+            "default": "one_page_plan",
+            "enum": [
+              "one_page_plan",
+              "full_report"
+            ],
+            "title": "Report Type",
+            "type": "string"
+          },
+          "run_ids": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 64,
+            "minItems": 1,
+            "title": "Run Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "run_ids"
+        ],
+        "title": "ReportCreate",
+        "type": "object"
+      },
+      "ReportView": {
+        "additionalProperties": false,
+        "properties": {
+          "analysis_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Analysis Ids",
+            "type": "array"
+          },
+          "artifact_kind": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Artifact Kind"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "download_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Download Url"
+          },
+          "final_self_contained_report": {
+            "title": "Final Self Contained Report",
+            "type": "boolean"
+          },
+          "job_error": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Job Error"
+          },
+          "job_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Job Id"
+          },
+          "job_state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Job State"
+          },
+          "report_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Report Hash"
+          },
+          "report_hash_scope": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Report Hash Scope"
+          },
+          "report_id": {
+            "title": "Report Id",
+            "type": "string"
+          },
+          "report_type": {
+            "title": "Report Type",
+            "type": "string"
+          },
+          "run_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Run Ids",
+            "type": "array"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "report_id",
+          "status",
+          "report_type",
+          "run_ids",
+          "analysis_ids",
+          "job_id",
+          "job_state",
+          "job_error",
+          "download_url",
+          "created_at",
+          "report_hash",
+          "report_hash_scope",
+          "artifact_kind",
+          "final_self_contained_report"
+        ],
+        "title": "ReportView",
+        "type": "object"
+      },
       "ReviewFlags": {
         "additionalProperties": false,
         "description": "Independent flags; never collapse into one 'verified' badge (PRD \u00a72.3).",
@@ -3518,6 +5902,68 @@
           }
         },
         "title": "ReviewFlags",
+        "type": "object"
+      },
+      "ReviewRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "const": "2.0.0",
+            "default": "2.0.0",
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "expected_version": {
+            "minimum": 0.0,
+            "title": "Expected Version",
+            "type": "integer"
+          },
+          "field_edits": {
+            "items": {
+              "$ref": "#/components/schemas/FieldEdit"
+            },
+            "title": "Field Edits",
+            "type": "array"
+          },
+          "parent_canal_feature_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Canal Feature Id"
+          },
+          "review_config": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Review Config"
+          },
+          "reviewer": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewer"
+          }
+        },
+        "required": [
+          "expected_version"
+        ],
+        "title": "ReviewRequest",
         "type": "object"
       },
       "RevisionChange": {
@@ -3984,6 +6430,112 @@
           "passed"
         ],
         "title": "RuleResidual",
+        "type": "object"
+      },
+      "RunBadgeBlock": {
+        "additionalProperties": false,
+        "description": "Identity of a run the answer is about (AT13: same run IDs as UI and report).",
+        "properties": {
+          "label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "outcome": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcome"
+          },
+          "pilot_id": {
+            "title": "Pilot Id",
+            "type": "string"
+          },
+          "pilot_version": {
+            "title": "Pilot Version",
+            "type": "string"
+          },
+          "plan_kind": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Kind"
+          },
+          "role": {
+            "enum": [
+              "context",
+              "created"
+            ],
+            "title": "Role",
+            "type": "string"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "scenario_revision_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scenario Revision Id"
+          },
+          "season_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Season Id"
+          },
+          "solver_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Solver Status"
+          },
+          "type": {
+            "const": "run_badge",
+            "default": "run_badge",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "role",
+          "run_id",
+          "pilot_id",
+          "pilot_version"
+        ],
+        "title": "RunBadgeBlock",
         "type": "object"
       },
       "RunList": {
@@ -4511,6 +7063,172 @@
         "title": "ScenarioView",
         "type": "object"
       },
+      "SdgCard": {
+        "additionalProperties": false,
+        "properties": {
+          "baseline_run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline Run Id"
+          },
+          "card": {
+            "enum": [
+              "SDG 2.4",
+              "SDG 6.4/6.5",
+              "SDG 13.1"
+            ],
+            "title": "Card",
+            "type": "string"
+          },
+          "crop": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Crop"
+          },
+          "denominator": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Term"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "difference_from_typical": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Term"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "formula": {
+            "title": "Formula",
+            "type": "string"
+          },
+          "formulas": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Formulas",
+            "type": "object"
+          },
+          "interpretation": {
+            "title": "Interpretation",
+            "type": "string"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Limitations",
+            "type": "array"
+          },
+          "metrics": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Metrics",
+            "type": "array"
+          },
+          "numerator": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Term"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "official_indicator": {
+            "const": false,
+            "default": false,
+            "title": "Official Indicator",
+            "type": "boolean"
+          },
+          "official_target_text": {
+            "title": "Official Target Text",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "run_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Run Ids",
+            "type": "array"
+          },
+          "source_records": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Records",
+            "type": "array"
+          },
+          "status": {
+            "$ref": "#/components/schemas/MetricStatus"
+          },
+          "target_url": {
+            "title": "Target Url",
+            "type": "string"
+          },
+          "values": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Values",
+            "type": "array"
+          }
+        },
+        "required": [
+          "card",
+          "official_target_text",
+          "target_url",
+          "interpretation",
+          "status",
+          "formula",
+          "formulas",
+          "metrics",
+          "values",
+          "limitations",
+          "run_id",
+          "run_ids",
+          "source_records"
+        ],
+        "title": "SdgCard",
+        "type": "object"
+      },
       "Season": {
         "additionalProperties": false,
         "properties": {
@@ -4861,6 +7579,23 @@
         "title": "SessionCreate",
         "type": "object"
       },
+      "SessionList": {
+        "additionalProperties": false,
+        "properties": {
+          "sessions": {
+            "items": {
+              "$ref": "#/components/schemas/SessionSummary"
+            },
+            "title": "Sessions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "sessions"
+        ],
+        "title": "SessionList",
+        "type": "object"
+      },
       "SessionOut": {
         "additionalProperties": false,
         "properties": {
@@ -4884,6 +7619,57 @@
           "status"
         ],
         "title": "SessionOut",
+        "type": "object"
+      },
+      "SessionSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "last_turn_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Turn At"
+          },
+          "role": {
+            "title": "Role",
+            "type": "string"
+          },
+          "session_id": {
+            "title": "Session Id",
+            "type": "string"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "turns": {
+            "title": "Turns",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "session_id",
+          "created_at",
+          "role",
+          "turns"
+        ],
+        "title": "SessionSummary",
         "type": "object"
       },
       "SoilProfile": {
@@ -5211,6 +7997,147 @@
         "title": "SynergyRequest",
         "type": "object"
       },
+      "Term": {
+        "additionalProperties": false,
+        "properties": {
+          "definition_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Definition Id"
+          },
+          "evidence_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Evidence Ids",
+            "type": "array"
+          },
+          "formula": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Formula"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "metric_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metric Id"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "role": {
+            "enum": [
+              "numerator",
+              "denominator",
+              "difference",
+              "component"
+            ],
+            "title": "Role",
+            "type": "string"
+          },
+          "run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Run Id"
+          },
+          "status": {
+            "$ref": "#/components/schemas/MetricStatus"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "role",
+          "label",
+          "value",
+          "unit",
+          "status"
+        ],
+        "title": "Term",
+        "type": "object"
+      },
+      "TextBlock": {
+        "additionalProperties": false,
+        "properties": {
+          "citations": {
+            "items": {
+              "$ref": "#/components/schemas/Citation"
+            },
+            "title": "Citations",
+            "type": "array"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "type": {
+            "const": "text",
+            "default": "text",
+            "title": "Type",
+            "type": "string"
+          },
+          "withheld": {
+            "default": false,
+            "description": "A sentence with an unsupported figure was removed",
+            "title": "Withheld",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "title": "TextBlock",
+        "type": "object"
+      },
       "Timeline": {
         "additionalProperties": false,
         "properties": {
@@ -5325,6 +8252,239 @@
           "events_url"
         ],
         "title": "TurnAccepted",
+        "type": "object"
+      },
+      "TurnView": {
+        "additionalProperties": false,
+        "properties": {
+          "answer": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CopilotAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "context": {
+            "additionalProperties": true,
+            "title": "Context",
+            "type": "object"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "created_refs": {
+            "items": {
+              "$ref": "#/components/schemas/CreatedRef"
+            },
+            "title": "Created Refs",
+            "type": "array"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "events": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Events"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished At"
+          },
+          "idem_namespace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Idem Namespace"
+          },
+          "job_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Job Ids",
+            "type": "array"
+          },
+          "language": {
+            "anyOf": [
+              {
+                "enum": [
+                  "en",
+                  "ur",
+                  "roman_ur"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Language"
+          },
+          "latency_ms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latency Ms"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
+          },
+          "prompt_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prompt Version"
+          },
+          "request_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Request Ids",
+            "type": "array"
+          },
+          "rounds": {
+            "default": 0,
+            "title": "Rounds",
+            "type": "integer"
+          },
+          "seq": {
+            "title": "Seq",
+            "type": "integer"
+          },
+          "session_id": {
+            "title": "Session Id",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "running",
+              "completed",
+              "clarification",
+              "failed",
+              "cancelled",
+              "provider_unavailable",
+              "budget_exhausted"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "timings": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timings"
+          },
+          "tool_calls": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Calls"
+          },
+          "tool_schema_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Schema Version"
+          },
+          "turn_id": {
+            "title": "Turn Id",
+            "type": "string"
+          },
+          "user_message": {
+            "title": "User Message",
+            "type": "string"
+          },
+          "view_intents": {
+            "items": {
+              "$ref": "#/components/schemas/ViewIntent"
+            },
+            "title": "View Intents",
+            "type": "array"
+          }
+        },
+        "required": [
+          "turn_id",
+          "session_id",
+          "seq",
+          "status",
+          "user_message",
+          "context",
+          "created_at"
+        ],
+        "title": "TurnView",
         "type": "object"
       },
       "UIContext": {
@@ -5449,6 +8609,39 @@
           }
         },
         "title": "UIContext",
+        "type": "object"
+      },
+      "UncertaintyBlock": {
+        "additionalProperties": false,
+        "description": "Caveat / limitation / running-job / unavailable notice (always shown, never collapsed away).",
+        "properties": {
+          "citations": {
+            "items": {
+              "$ref": "#/components/schemas/Citation"
+            },
+            "title": "Citations",
+            "type": "array"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "type": {
+            "const": "uncertainty",
+            "default": "uncertainty",
+            "title": "Type",
+            "type": "string"
+          },
+          "withheld": {
+            "default": false,
+            "title": "Withheld",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "title": "UncertaintyBlock",
         "type": "object"
       },
       "UncertaintySet": {
@@ -5609,6 +8802,172 @@
           "job"
         ],
         "title": "VerifyAccepted",
+        "type": "object"
+      },
+      "ViewIntent": {
+        "additionalProperties": true,
+        "description": "Typed UI intent from navigate_view, applied after the turn finishes.",
+        "properties": {
+          "target": {
+            "title": "Target",
+            "type": "string"
+          }
+        },
+        "required": [
+          "target"
+        ],
+        "title": "ViewIntent",
+        "type": "object"
+      },
+      "VisualBlock": {
+        "additionalProperties": false,
+        "description": "A chart/table/map block whose values were copied from a server dataset.",
+        "properties": {
+          "auto": {
+            "default": false,
+            "description": "Added by the server (no model explanation available)",
+            "title": "Auto",
+            "type": "boolean"
+          },
+          "basis": {
+            "items": {
+              "enum": [
+                "model_output",
+                "computed_from_inputs",
+                "assumption",
+                "observed",
+                "surrogate_preview",
+                "solver_result"
+              ],
+              "type": "string"
+            },
+            "title": "Basis",
+            "type": "array"
+          },
+          "caption": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Caption"
+          },
+          "chart": {
+            "enum": [
+              "kpi",
+              "table",
+              "bar",
+              "grouped_bar",
+              "stacked_bar",
+              "delta_bar",
+              "line",
+              "area",
+              "scatter",
+              "frontier",
+              "heatmap",
+              "sankey",
+              "map",
+              "steps"
+            ],
+            "title": "Chart",
+            "type": "string"
+          },
+          "columns": {
+            "items": {
+              "$ref": "#/components/schemas/Column"
+            },
+            "title": "Columns",
+            "type": "array"
+          },
+          "dataset_id": {
+            "title": "Dataset Id",
+            "type": "string"
+          },
+          "dataset_kind": {
+            "title": "Dataset Kind",
+            "type": "string"
+          },
+          "encoding": {
+            "$ref": "#/components/schemas/Encoding"
+          },
+          "highlight_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Highlight Ids",
+            "type": "array"
+          },
+          "interactions": {
+            "items": {
+              "$ref": "#/components/schemas/Interaction"
+            },
+            "title": "Interactions",
+            "type": "array"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Notes",
+            "type": "array"
+          },
+          "row_count": {
+            "title": "Row Count",
+            "type": "integer"
+          },
+          "rows": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Rows",
+            "type": "array"
+          },
+          "source": {
+            "$ref": "#/components/schemas/DatasetSource"
+          },
+          "table_fallback": {
+            "default": true,
+            "description": "Always true: the UI must offer the rows as an accessible table",
+            "title": "Table Fallback",
+            "type": "boolean"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "truncated": {
+            "default": false,
+            "title": "Truncated",
+            "type": "boolean"
+          },
+          "type": {
+            "const": "visual",
+            "default": "visual",
+            "title": "Type",
+            "type": "string"
+          },
+          "visual_id": {
+            "title": "Visual Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "visual_id",
+          "chart",
+          "title",
+          "dataset_id",
+          "dataset_kind",
+          "columns",
+          "rows",
+          "row_count",
+          "encoding",
+          "source"
+        ],
+        "title": "VisualBlock",
         "type": "object"
       },
       "WeatherScenario": {
@@ -5882,6 +9241,24 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/api/v2/ai-stack": {
+      "get": {
+        "operationId": "ai_stack_api_v2_ai_stack_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiStack"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Ai Stack"
+      }
+    },
     "/api/v2/analyses": {
       "get": {
         "operationId": "list_analyses_api_v2_analyses_get",
@@ -6405,6 +9782,50 @@
       }
     },
     "/api/v2/copilot/sessions": {
+      "get": {
+        "description": "Recent conversations (restorable after a restart).",
+        "operationId": "list_sessions_api_v2_copilot_sessions_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Sessions",
+        "tags": [
+          "copilot"
+        ]
+      },
       "post": {
         "operationId": "create_session_api_v2_copilot_sessions_post",
         "requestBody": {
@@ -6566,6 +9987,7 @@
     },
     "/api/v2/copilot/turns/{turn_id}": {
       "get": {
+        "description": "A turn with its validated answer (CopilotAnswer), created objects, view intents and timings.",
         "operationId": "get_turn_api_v2_copilot_turns__turn_id__get",
         "parameters": [
           {
@@ -6593,9 +10015,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": true,
-                  "title": "Response Get Turn Api V2 Copilot Turns  Turn Id  Get",
-                  "type": "object"
+                  "$ref": "#/components/schemas/TurnView"
                 }
               }
             },
@@ -6657,6 +10077,64 @@
           }
         },
         "summary": "Cancel Turn",
+        "tags": [
+          "copilot"
+        ]
+      }
+    },
+    "/api/v2/copilot/turns/{turn_id}/event-log": {
+      "get": {
+        "description": "The same events as the SSE stream, as JSON (restore a finished turn's activity log).",
+        "operationId": "turn_event_log_api_v2_copilot_turns__turn_id__event_log_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "turn_id",
+            "required": true,
+            "schema": {
+              "title": "Turn Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "after",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "After",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CopilotEvent"
+                  },
+                  "title": "Response Turn Event Log Api V2 Copilot Turns  Turn Id  Event Log Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Turn Event Log",
         "tags": [
           "copilot"
         ]
@@ -6776,6 +10254,43 @@
         ]
       }
     },
+    "/api/v2/demo/headline": {
+      "get": {
+        "description": "The landing story, from the seeded session's B0/B1/P runs (404 if any is missing).",
+        "operationId": "demo_headline_api_v2_demo_headline_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemoHeadline"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Demo Headline"
+      }
+    },
+    "/api/v2/demo/session": {
+      "get": {
+        "operationId": "demo_session_api_v2_demo_session_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemoSession"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Demo Session"
+      }
+    },
     "/api/v2/evidence/search": {
       "get": {
         "operationId": "evidence_search_api_v2_evidence_search_get",
@@ -6863,6 +10378,7 @@
     },
     "/api/v2/evidence/{evidence_id}": {
       "get": {
+        "description": "Package IDs such as ``ev:aoi`` repeat across pilots; ``pilot_id``/``pilot_version``\npick the record of the package being viewed instead of the last one published.",
         "operationId": "evidence_detail_api_v2_evidence__evidence_id__get",
         "parameters": [
           {
@@ -6872,6 +10388,38 @@
             "schema": {
               "title": "Evidence Id",
               "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pilot_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Pilot Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pilot_version",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Pilot Version"
             }
           }
         ],
@@ -6987,6 +10535,62 @@
           }
         },
         "summary": "Health"
+      }
+    },
+    "/api/v2/impact": {
+      "post": {
+        "operationId": "create_impact_api_v2_impact_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImpactRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImpactResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Impact"
       }
     },
     "/api/v2/interventions": {
@@ -7243,6 +10847,455 @@
         "summary": "Metric Definitions"
       }
     },
+    "/api/v2/onboarding": {
+      "post": {
+        "operationId": "create_intake_api_v2_onboarding_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IntakeCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Intake"
+      }
+    },
+    "/api/v2/onboarding/aoi-check": {
+      "post": {
+        "operationId": "aoi_check_api_v2_onboarding_aoi_check_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AoiCheckRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Aoi Check Api V2 Onboarding Aoi Check Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Aoi Check"
+      }
+    },
+    "/api/v2/onboarding/raw-packages": {
+      "get": {
+        "operationId": "raw_packages_api_v2_onboarding_raw_packages_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Raw Packages Api V2 Onboarding Raw Packages Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Raw Packages"
+      }
+    },
+    "/api/v2/onboarding/{onboarding_id}": {
+      "get": {
+        "operationId": "get_intake_api_v2_onboarding__onboarding_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "onboarding_id",
+            "required": true,
+            "schema": {
+              "title": "Onboarding Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Get Intake Api V2 Onboarding  Onboarding Id  Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Intake"
+      }
+    },
+    "/api/v2/onboarding/{onboarding_id}/layers": {
+      "get": {
+        "operationId": "intake_layers_api_v2_onboarding__onboarding_id__layers_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "onboarding_id",
+            "required": true,
+            "schema": {
+              "title": "Onboarding Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Intake Layers Api V2 Onboarding  Onboarding Id  Layers Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Intake Layers"
+      }
+    },
+    "/api/v2/onboarding/{onboarding_id}/layers/{layer_id}": {
+      "get": {
+        "operationId": "intake_layer_api_v2_onboarding__onboarding_id__layers__layer_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "onboarding_id",
+            "required": true,
+            "schema": {
+              "title": "Onboarding Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "layer_id",
+            "required": true,
+            "schema": {
+              "title": "Layer Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Intake Layer Api V2 Onboarding  Onboarding Id  Layers  Layer Id  Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Intake Layer"
+      }
+    },
+    "/api/v2/onboarding/{onboarding_id}/process": {
+      "post": {
+        "operationId": "process_intake_api_v2_onboarding__onboarding_id__process_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "onboarding_id",
+            "required": true,
+            "schema": {
+              "title": "Onboarding Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/ProcessRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Process Intake"
+      }
+    },
+    "/api/v2/onboarding/{onboarding_id}/publish": {
+      "post": {
+        "operationId": "publish_intake_api_v2_onboarding__onboarding_id__publish_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "onboarding_id",
+            "required": true,
+            "schema": {
+              "title": "Onboarding Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/PublishRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Publish Intake"
+      }
+    },
+    "/api/v2/onboarding/{onboarding_id}/review": {
+      "patch": {
+        "operationId": "review_intake_api_v2_onboarding__onboarding_id__review_patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "onboarding_id",
+            "required": true,
+            "schema": {
+              "title": "Onboarding Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Review Intake"
+      }
+    },
     "/api/v2/pilots": {
       "get": {
         "operationId": "list_pilots_api_v2_pilots_get",
@@ -7355,6 +11408,253 @@
           }
         },
         "summary": "Pilot Map"
+      }
+    },
+    "/api/v2/pilots/{pilot_id}/versions/{version}/package": {
+      "get": {
+        "operationId": "export_pilot_package_api_v2_pilots__pilot_id__versions__version__package_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "pilot_id",
+            "required": true,
+            "schema": {
+              "title": "Pilot Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "version",
+            "required": true,
+            "schema": {
+              "title": "Version",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Export Pilot Package"
+      },
+      "post": {
+        "operationId": "import_pilot_package_api_v2_pilots__pilot_id__versions__version__package_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "pilot_id",
+            "required": true,
+            "schema": {
+              "title": "Pilot Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "version",
+            "required": true,
+            "schema": {
+              "title": "Version",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Import Pilot Package"
+      }
+    },
+    "/api/v2/reports": {
+      "post": {
+        "operationId": "create_report_api_v2_reports_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportAccepted"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Report"
+      }
+    },
+    "/api/v2/reports/{report_id}": {
+      "get": {
+        "operationId": "get_report_api_v2_reports__report_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "report_id",
+            "required": true,
+            "schema": {
+              "title": "Report Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Report"
+      }
+    },
+    "/api/v2/reports/{report_id}/files/{rel}": {
+      "get": {
+        "operationId": "report_file_api_v2_reports__report_id__files__rel__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "report_id",
+            "required": true,
+            "schema": {
+              "title": "Report Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "rel",
+            "required": true,
+            "schema": {
+              "title": "Rel",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Report File"
       }
     },
     "/api/v2/runs": {
@@ -7799,9 +12099,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": true,
-                  "title": "Response Run Impact Api V2 Runs  Run Id  Impact Get",
-                  "type": "object"
+                  "$ref": "#/components/schemas/ImpactResponse"
                 }
               }
             },

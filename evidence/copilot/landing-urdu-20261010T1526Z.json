@@ -1,0 +1,25 @@
+{
+  "check": "W5 landing Ask box, Urdu chip, live",
+  "question": "اگر نہر دو ہفتے بند رہے تو کیا ہوگا؟",
+  "turn_id": "turn_19027edb4823490ab39173a0e25feeed",
+  "status": "completed",
+  "language": "ur",
+  "latency_ms": 54252,
+  "answer_language": "ur",
+  "validated": true,
+  "block_types": [
+    "run_badge",
+    "run_badge",
+    "headline",
+    "text",
+    "visual:grouped_bar",
+    "visual:map",
+    "comparison",
+    "uncertainty",
+    "action",
+    "action",
+    "action",
+    "follow_ups"
+  ],
+  "created_at": "2026-10-10T15:25:27.724713Z"
+}

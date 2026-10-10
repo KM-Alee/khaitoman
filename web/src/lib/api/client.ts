@@ -1,6 +1,7 @@
 import type { ApiErrorBody } from "./types";
+import { apiRequestUrl, backendCredentials, BACKEND_ORIGIN } from "./urls";
 
-export const API_BASE = "/api/v2";
+export { API_BASE } from "./urls";
 export const CONTRACT_VERSION = "2.0.0";
 
 /** A typed API failure; preserves HTTP status and the domain error code (T9.3). */
@@ -44,7 +45,7 @@ export function describeError(err: unknown): { title: string; detail: string } {
       case "PROVIDER_UNAVAILABLE":
         return { title: "Hosted assistant unavailable", detail: err.message };
       case "NETWORK":
-        return { title: "Local API not reachable", detail: "The AabFlow service at this origin did not respond." };
+        return { title: `${BACKEND_ORIGIN ? "Backend" : "Local"} API not reachable`, detail: "The AabFlow service did not respond." };
       default:
         if (err.status >= 500) return { title: `Service error (${err.status})`, detail: err.message };
         return { title: `Request failed (${err.status})`, detail: err.message };
@@ -87,10 +88,10 @@ export async function request<T>(path: string, opts: RequestOptions = {}): Promi
     headers["X-Contract-Version"] = CONTRACT_VERSION;
     if (opts.idempotent || opts.idempotencyKey) headers["Idempotency-Key"] = opts.idempotencyKey ?? newIdempotencyKey();
   }
-  const url = path.startsWith("/") && !path.startsWith(API_BASE) && !path.startsWith("/assets") ? API_BASE + path : path;
+  const url = apiRequestUrl(path);
   let res: Response;
   try {
-    res = await fetch(url, { method, headers, body, signal: opts.signal });
+    res = await fetch(url, { method, headers, body, signal: opts.signal, credentials: backendCredentials(url) });
   } catch (e) {
     if ((e as Error)?.name === "AbortError") throw e;
     throw new ApiError(0, null, (e as Error)?.message ?? "Network error");

@@ -575,6 +575,8 @@ export interface PreviewView {
   verification: SurrogateVerification | null;
   verify_job_id: string | null;
   created_at: string;
+  /** Server-measured compute time; present on create only. */
+  elapsed_ms?: number | null;
 }
 
 export function useCreatePreview() {

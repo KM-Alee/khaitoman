@@ -3,13 +3,20 @@
 from __future__ import annotations
 
 import asyncio
+import contextvars
 import time
 from dataclasses import dataclass, field
 from typing import Any
 
 from aabflow.copilot.context import PinnedContext
 from aabflow.copilot.tools.backend import Backend, ToolFailure
+from aabflow.copilot.visuals import DatasetStore
 from aabflow.domain.hashes import content_hash
+
+# (call_id, tool name) of the tool invocation running in this task; datasets record their origin.
+CURRENT_CALL: contextvars.ContextVar[tuple[str, str] | None] = contextvars.ContextVar(
+    "copilot_current_call", default=None
+)
 
 TERMINAL_JOB_STATES = {"succeeded", "failed", "cancelled", "interrupted"}
 MAX_WAIT_S = 45.0
@@ -71,7 +78,48 @@ class ToolCtx:
     )  # ids created/returned earlier in this session
     cancel: asyncio.Event = field(default_factory=asyncio.Event)
     idem_namespace: str | None = None  # a retried turn reuses its original turn's keys
+    datasets: DatasetStore = field(default_factory=DatasetStore)
     _cache: dict[str, Any] = field(default_factory=dict)
+
+    def call(self) -> tuple[str | None, str]:
+        """(call_id, tool name) of the running tool call, for dataset provenance."""
+        cur = CURRENT_CALL.get()
+        return (cur[0], cur[1]) if cur else (None, "server")
+
+    async def field_roster(self) -> dict[str, dict[str, Any]]:
+        """Field labels, canal position and area of the pinned pilot (from the published package)."""
+        key = "__roster__"
+        if key in self._cache:
+            return self._cache[key]
+        c = self.context
+        roster: dict[str, dict[str, Any]] = {}
+        try:
+            pm = await self.cached_get(f"/pilots/{c.pilot_id}/versions/{c.pilot_version}/map")
+            for fid, g in (pm.get("field_groups") or {}).items():
+                roster[fid] = {"group": g}
+            getter = getattr(self.backend, "get_asset", None)
+            if getter is not None and pm.get("fields_url"):
+                gj = await getter(pm["fields_url"])
+                for f in gj.get("features", []):
+                    p = f.get("properties") or {}
+                    if p.get("field_id"):
+                        entry = roster.setdefault(p["field_id"], {})
+                        entry.update(
+                            label=p.get("label"),
+                            group=p.get("group") or entry.get("group"),
+                            area_ha=p.get("gross_area_ha"),
+                        )
+        except ToolFailure:
+            pass
+        self._cache[key] = roster
+        return roster
+
+    async def metric_labels(self) -> dict[str, dict[str, Any]]:
+        try:
+            defs = await self.cached_get("/metrics/definitions")
+        except ToolFailure:
+            return {}
+        return {d["metric_id"]: d for d in defs.get("definitions", [])}
 
     def idem(self, tool: str, args: Any) -> str:
         """Idempotency key from turn identity and canonical arguments (a provider retry cannot duplicate)."""

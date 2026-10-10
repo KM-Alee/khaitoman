@@ -1,0 +1,102 @@
+{
+  "pilot_id": "pilot-b",
+  "pilot_version": "reviewed-v2",
+  "name": "Lower Chenab representative pilot B",
+  "geographic_name_basis": "Inside the published Mungi study search extent (doi:10.3390/w14030405); no Mungi waterway identified. The AOI lies along the canal mapped in OSM as 'R-1' (way 488499235) about 12 km south-west of pilot A in the same broader Lower Chenab irrigated region, so it is named a Lower Chenab representative pilot.",
+  "aoi_geojson_ref": "aoi.geojson",
+  "aoi_bbox": [
+    72.234,
+    30.657,
+    72.256,
+    30.677
+  ],
+  "aoi_area_m2": 4679111.62,
+  "metric_crs": "EPSG:32643",
+  "timezone": "Asia/Karachi",
+  "state": "published",
+  "review_flags": {
+    "geography_reviewed": true,
+    "topology_structurally_valid": true,
+    "rights_verification": "assumed",
+    "cost_evidence": "assumed",
+    "crop_calibration": "uncalibrated"
+  },
+  "source_refs": [
+    "ev:aoi",
+    "ev:delineate",
+    "ev:dem",
+    "ev:discovery-extent",
+    "ev:field-review",
+    "ev:grain",
+    "ev:ndvi:S2B_43RBP_20241210_0_L2A",
+    "ev:ndvi:S2C_43RBQ_20250223_0_L2A",
+    "ev:network",
+    "ev:osm-canals",
+    "ev:s2-display:S2B_43RBP_20241210_0_L2A",
+    "ev:s2-display:S2C_43RBQ_20250223_0_L2A",
+    "ev:s2:S2B_43RBP_20241210_0_L2A",
+    "ev:s2:S2C_43RBQ_20250223_0_L2A",
+    "ev:weather:openmeteo-archive-30.7000N-72.2000E-20140101-20251231"
+  ],
+  "imagery": [
+    {
+      "scene_id": "S2C_43RBQ_20250223_0_L2A",
+      "collection": "sentinel-2-l2a",
+      "acquired_at": "2025-02-23T06:00:51.949000Z",
+      "aoi_valid_fraction": 1.0,
+      "display_image_ref": "imagery/S2C_43RBQ_20250223_0_L2A.webp",
+      "display_corners_wgs84": [
+        [
+          72.22700957,
+          30.68308609
+        ],
+        [
+          72.2630809,
+          30.68308609
+        ],
+        [
+          72.2630809,
+          30.6509803
+        ],
+        [
+          72.22700957,
+          30.6509803
+        ]
+      ],
+      "resolution_m": 10.0,
+      "evidence_id": "ev:s2:S2C_43RBQ_20250223_0_L2A"
+    },
+    {
+      "scene_id": "S2B_43RBP_20241210_0_L2A",
+      "collection": "sentinel-2-l2a",
+      "acquired_at": "2024-12-10T06:00:40.147000Z",
+      "aoi_valid_fraction": 1.0,
+      "display_image_ref": "imagery/S2B_43RBP_20241210_0_L2A.webp",
+      "display_corners_wgs84": [
+        [
+          72.22700957,
+          30.68308609
+        ],
+        [
+          72.2630809,
+          30.68308609
+        ],
+        [
+          72.2630809,
+          30.6509803
+        ],
+        [
+          72.22700957,
+          30.6509803
+        ]
+      ],
+      "resolution_m": 10.0,
+      "evidence_id": "ev:s2:S2B_43RBP_20241210_0_L2A"
+    }
+  ],
+  "package_sha256": "55a6bf3f94520bb61f4d439c948f8e106f5a43beffa879e9302772c4dd5e22dc",
+  "created_at": "2026-10-10T11:40:36Z",
+  "terrain_ref": "terrain/dem.json",
+  "weather_index_ref": "weather/index.json",
+  "bundle_ref": "data/raw/bundles/pilot-b/20261010T003841Z-798d10d2"
+}

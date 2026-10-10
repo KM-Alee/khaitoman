@@ -162,20 +162,20 @@ export function ChartPanel({
 }) {
   const [view, setView] = useState<"chart" | "table">(defaultView);
   return (
-    <section className={cn("rounded-[14px] border border-border bg-surface shadow-1", className)} aria-labelledby={id ? `${id}-h` : undefined} data-testid={id}>
-      <header className="flex items-start justify-between gap-3 px-4 pb-1 pt-3.5">
+    <section className={cn("rounded-[18px] border border-border bg-surface shadow-1", className)} aria-labelledby={id ? `${id}-h` : undefined} data-testid={id}>
+      <header className="flex items-start justify-between gap-3 px-5 pb-1 pt-4">
         <div className="min-w-0">
-          <h3 id={id ? `${id}-h` : undefined} className="text-[13px] font-semibold text-ink">
+          <h3 id={id ? `${id}-h` : undefined} className="text-[14.5px] font-semibold tracking-[-0.01em] text-ink">
             {title}
           </h3>
-          {summary ? <p className="mt-0.5 text-[12px] leading-snug text-ink-secondary">{summary}</p> : null}
+          {summary ? <p className="mt-1 max-w-[80ch] text-[12.5px] leading-snug text-ink-secondary">{summary}</p> : null}
         </div>
         <div className="flex shrink-0 items-center gap-1">
           {aside}
           <button
             type="button"
             onClick={() => setView(view === "chart" ? "table" : "chart")}
-            className="inline-flex h-7 items-center gap-1 rounded-[8px] px-2 text-[12px] font-medium text-ink-secondary hover:bg-surface-muted hover:text-ink"
+            className="inline-flex h-8 items-center gap-1.5 rounded-[9px] border border-border px-2.5 text-[12px] font-medium text-ink-secondary transition-colors hover:bg-surface-muted hover:text-ink"
             aria-pressed={view === "table"}
             aria-label={view === "chart" ? "Show as table" : "Show as chart"}
           >
@@ -184,7 +184,7 @@ export function ChartPanel({
           </button>
         </div>
       </header>
-      <div className="px-2 pb-3">{view === "chart" ? chart : <div className="max-h-[420px] overflow-auto px-2">{table}</div>}</div>
+      <div className="px-3 pb-4">{view === "chart" ? chart : <div className="max-h-[420px] overflow-auto px-2">{table}</div>}</div>
     </section>
   );
 }

@@ -4,6 +4,23 @@
  */
 
 export interface paths {
+    "/api/v2/ai-stack": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Ai Stack */
+        get: operations["ai_stack_api_v2_ai_stack_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v2/analyses": {
         parameters: {
             query?: never;
@@ -181,7 +198,11 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /**
+         * List Sessions
+         * @description Recent conversations (restorable after a restart).
+         */
+        get: operations["list_sessions_api_v2_copilot_sessions_get"];
         put?: never;
         /** Create Session */
         post: operations["create_session_api_v2_copilot_sessions_post"];
@@ -249,7 +270,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Turn */
+        /**
+         * Get Turn
+         * @description A turn with its validated answer (CopilotAnswer), created objects, view intents and timings.
+         */
         get: operations["get_turn_api_v2_copilot_turns__turn_id__get"];
         put?: never;
         post?: never;
@@ -270,6 +294,26 @@ export interface paths {
         put?: never;
         /** Cancel Turn */
         post: operations["cancel_turn_api_v2_copilot_turns__turn_id__cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/copilot/turns/{turn_id}/event-log": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Turn Event Log
+         * @description The same events as the SSE stream, as JSON (restore a finished turn's activity log).
+         */
+        get: operations["turn_event_log_api_v2_copilot_turns__turn_id__event_log_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -314,6 +358,43 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v2/demo/headline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Demo Headline
+         * @description The landing story, from the seeded session's B0/B1/P runs (404 if any is missing).
+         */
+        get: operations["demo_headline_api_v2_demo_headline_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/demo/session": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Demo Session */
+        get: operations["demo_session_api_v2_demo_session_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v2/evidence/search": {
         parameters: {
             query?: never;
@@ -338,7 +419,11 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Evidence Detail */
+        /**
+         * Evidence Detail
+         * @description Package IDs such as ``ev:aoi`` repeat across pilots; ``pilot_id``/``pilot_version``
+         *     pick the record of the package being viewed instead of the last one published.
+         */
         get: operations["evidence_detail_api_v2_evidence__evidence_id__get"];
         put?: never;
         post?: never;
@@ -376,6 +461,23 @@ export interface paths {
         get: operations["health_api_v2_health_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/impact": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Impact */
+        post: operations["create_impact_api_v2_impact_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -467,6 +569,159 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v2/onboarding": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Intake */
+        post: operations["create_intake_api_v2_onboarding_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/onboarding/aoi-check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Aoi Check */
+        post: operations["aoi_check_api_v2_onboarding_aoi_check_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/onboarding/raw-packages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Raw Packages */
+        get: operations["raw_packages_api_v2_onboarding_raw_packages_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/onboarding/{onboarding_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Intake */
+        get: operations["get_intake_api_v2_onboarding__onboarding_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/onboarding/{onboarding_id}/layers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Intake Layers */
+        get: operations["intake_layers_api_v2_onboarding__onboarding_id__layers_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/onboarding/{onboarding_id}/layers/{layer_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Intake Layer */
+        get: operations["intake_layer_api_v2_onboarding__onboarding_id__layers__layer_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/onboarding/{onboarding_id}/process": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Process Intake */
+        post: operations["process_intake_api_v2_onboarding__onboarding_id__process_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/onboarding/{onboarding_id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Publish Intake */
+        post: operations["publish_intake_api_v2_onboarding__onboarding_id__publish_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/onboarding/{onboarding_id}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Review Intake */
+        patch: operations["review_intake_api_v2_onboarding__onboarding_id__review_patch"];
+        trace?: never;
+    };
     "/api/v2/pilots": {
         parameters: {
             query?: never;
@@ -510,6 +765,75 @@ export interface paths {
         };
         /** Pilot Map */
         get: operations["pilot_map_api_v2_pilots__pilot_id__versions__version__map_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/pilots/{pilot_id}/versions/{version}/package": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Export Pilot Package */
+        get: operations["export_pilot_package_api_v2_pilots__pilot_id__versions__version__package_get"];
+        put?: never;
+        /** Import Pilot Package */
+        post: operations["import_pilot_package_api_v2_pilots__pilot_id__versions__version__package_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Report */
+        post: operations["create_report_api_v2_reports_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/reports/{report_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Report */
+        get: operations["get_report_api_v2_reports__report_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/reports/{report_id}/files/{rel}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Report File */
+        get: operations["report_file_api_v2_reports__report_id__files__rel__get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -914,11 +1238,92 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         /**
+         * ActionBlock
+         * @description A button: selecting it updates the existing workspace (never operates anything physical).
+         */
+        ActionBlock: {
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "open_run" | "open_branch" | "open_field" | "open_report" | "open_analysis" | "open_comparison";
+            /**
+             * Auto
+             * @description Added by the server for an object created this turn
+             * @default false
+             */
+            auto: boolean;
+            /** Label */
+            label: string;
+            /** Ref Id */
+            ref_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "action";
+        };
+        /**
          * ActionCategory
          * @description Five action categories (PRD §6.2).
          * @enum {string}
          */
         ActionCategory: "timing" | "leveling" | "pond" | "shared_repair" | "pump_supplement";
+        /** AiEngine */
+        AiEngine: {
+            /**
+             * By Pilot
+             * @description sees only: pilot_id -> {raw_polygons, selected}
+             */
+            by_pilot?: {
+                [key: string]: {
+                    [key: string]: number;
+                };
+            };
+            /** Evidence Ref */
+            evidence_ref: string | null;
+            /**
+             * Fact
+             * @description one plain sentence built from the figures below
+             */
+            fact: string | null;
+            /** Fact Value */
+            fact_value: number | string | null;
+            /** Facts */
+            facts?: components["schemas"]["AiFact"][];
+            /**
+             * Id
+             * @enum {string}
+             */
+            id: "sees" | "predicts" | "plans" | "explains";
+            /** Label */
+            label: string;
+            /** Plain */
+            plain: string;
+            /** Reason */
+            reason?: string | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "available" | "unavailable";
+            /** Unit */
+            unit: string | null;
+        };
+        /** AiFact */
+        AiFact: {
+            /** Label */
+            label: string;
+            /** Unit */
+            unit?: string | null;
+            /** Value */
+            value: number | string | null;
+        };
+        /** AiStack */
+        AiStack: {
+            /** Engines */
+            engines: components["schemas"]["AiEngine"][];
+        };
         /** AnalysisAccepted */
         AnalysisAccepted: {
             /** Analysis Id */
@@ -970,6 +1375,19 @@ export interface components {
             status: string;
             /** Updated At */
             updated_at: string;
+        };
+        /** AoiCheckRequest */
+        AoiCheckRequest: {
+            /** Aoi */
+            aoi: {
+                [key: string]: unknown;
+            };
+            /**
+             * Contract Version
+             * @default 2.0.0
+             * @constant
+             */
+            contract_version: "2.0.0";
         };
         /** Asset */
         Asset: {
@@ -1087,6 +1505,106 @@ export interface components {
              */
             start: string;
         };
+        /** Citation */
+        Citation: {
+            /**
+             * Auto
+             * @description Added by the server because the text quotes its numbers
+             * @default false
+             */
+            auto: boolean;
+            /**
+             * Kind
+             * @description run, comparison, analysis, evidence, scenario_revision, field, ...
+             */
+            kind: string;
+            /** Ref Id */
+            ref_id: string;
+        };
+        /** Co2Estimate */
+        Co2Estimate: {
+            /**
+             * Official Indicator
+             * @default false
+             * @constant
+             */
+            official_indicator: false;
+            /** Reason */
+            reason: string;
+            /**
+             * Status
+             * @default not_estimated
+             * @constant
+             */
+            status: "not_estimated";
+            /** Unit */
+            unit?: null;
+            /** Value */
+            value?: null;
+        };
+        /** Column */
+        Column: {
+            /** Basis */
+            basis?: ("model_output" | "computed_from_inputs" | "assumption" | "observed" | "surrogate_preview" | "solver_result") | null;
+            /** Key */
+            key: string;
+            /**
+             * Kind
+             * @default number
+             * @enum {string}
+             */
+            kind: "category" | "number" | "id" | "date" | "text" | "bool" | "status";
+            /** Label */
+            label: string;
+            /** Label Ur */
+            label_ur?: string | null;
+            /**
+             * Ref
+             * @description ID column kind: selecting a row opens this entity in the workspace
+             */
+            ref?: ("run" | "field" | "analysis" | "instance" | "comparison" | "revision" | "report") | null;
+            /**
+             * Unit
+             * @description Unit of every value in this column (kg, PKR, m3, ratio, ...)
+             */
+            unit?: string | null;
+            /**
+             * Unit Column
+             * @description For mixed-unit columns (metric cards): the column holding each row's unit
+             */
+            unit_column?: string | null;
+        };
+        /** ComparedPlan */
+        ComparedPlan: {
+            /** Plan Kind */
+            plan_kind?: string | null;
+            /** Run Id */
+            run_id: string;
+            /** Solver Status */
+            solver_status?: string | null;
+        };
+        /** ComparisonBlock */
+        ComparisonBlock: {
+            /** Comparison Id */
+            comparison_id: string;
+            /** Compatible */
+            compatible: boolean;
+            /** Deltas */
+            deltas: components["schemas"]["Delta"][];
+            /** Fields Worse Off */
+            fields_worse_off?: unknown[];
+            /** Label */
+            label: string;
+            /** Plans */
+            plans?: components["schemas"]["ComparedPlan"][];
+            /** Run Ids */
+            run_ids: string[];
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "comparison";
+        };
         /** ComparisonRequest */
         ComparisonRequest: {
             /**
@@ -1111,10 +1629,314 @@ export interface components {
             wall_ms: number;
         };
         /**
+         * CopilotAnswer
+         * @description The validated answer of one turn, rendered top to bottom in block order.
+         */
+        CopilotAnswer: {
+            /** Blocks */
+            blocks: (components["schemas"]["RunBadgeBlock"] | components["schemas"]["HeadlineBlock"] | components["schemas"]["TextBlock"] | components["schemas"]["MetricBlock"] | components["schemas"]["VisualBlock"] | components["schemas"]["ComparisonBlock"] | components["schemas"]["UncertaintyBlock"] | components["schemas"]["ActionBlock"] | components["schemas"]["FollowUpsBlock"])[];
+            /** Clarification Question */
+            clarification_question?: string | null;
+            /**
+             * Deterministic
+             * @description Server-written (provider unavailable / budget exhausted); not a model answer
+             * @default false
+             */
+            deterministic: boolean;
+            /** Issues */
+            issues?: string[];
+            /**
+             * Language
+             * @enum {string}
+             */
+            language: "en" | "ur" | "roman_ur";
+            /**
+             * Needs Clarification
+             * @default false
+             */
+            needs_clarification: boolean;
+            /**
+             * Validated
+             * @description True when every reference and number passed validation
+             */
+            validated: boolean;
+        };
+        /**
+         * CopilotEvent
+         * @description One server-sent event (``id`` = event_id; resume with Last-Event-ID or ?after=).
+         */
+        CopilotEvent: {
+            /** Created At */
+            created_at: string;
+            /** Event Id */
+            event_id: number;
+            /** Payload */
+            payload: {
+                [key: string]: unknown;
+            };
+            /** Turn Id */
+            turn_id: string;
+            /**
+             * Type
+             * @enum {string}
+             */
+            type: "turn_started" | "thinking" | "tool_started" | "tool_finished" | "dataset_ready" | "answer_block" | "answer" | "view_intents" | "error" | "turn_finished" | "job_update" | "jobs_settled" | "jobs_cancelled";
+        };
+        /** CreatedRef */
+        CreatedRef: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "branch" | "run" | "report" | "analysis" | "comparison";
+            /** Label */
+            label: string;
+            /** Ref Id */
+            ref_id: string;
+        };
+        /**
          * Crop
          * @enum {string}
          */
         Crop: "wheat" | "cotton";
+        /** DatasetSource */
+        DatasetSource: {
+            /** Analysis Ids */
+            analysis_ids?: string[];
+            /** Call Id */
+            call_id?: string | null;
+            /** Comparison Ids */
+            comparison_ids?: string[];
+            /**
+             * Endpoint
+             * @description The /api/v2 resource the rows were copied from
+             */
+            endpoint?: string | null;
+            /** Revision Ids */
+            revision_ids?: string[];
+            /** Run Ids */
+            run_ids?: string[];
+            /** Tool */
+            tool: string;
+        };
+        /** Delta */
+        Delta: {
+            /** A */
+            a?: number | null;
+            /**
+             * A Run Id
+             * @description Run of the 'a' value (multi-run comparisons are pairwise)
+             */
+            a_run_id?: string | null;
+            /** B */
+            b?: number | null;
+            /** B Run Id */
+            b_run_id?: string | null;
+            /** Delta */
+            delta?: number | null;
+            /** Metric Id */
+            metric_id: string;
+            /** Status */
+            status?: string | null;
+            /** Unit */
+            unit?: string | null;
+        };
+        /** DemoAnalyses */
+        DemoAnalyses: {
+            /** Frontier */
+            frontier: string;
+            /** Stress */
+            stress: string;
+        };
+        /** DemoApi */
+        DemoApi: {
+            /** Base Url */
+            base_url: string;
+            /** Contract Version */
+            contract_version: string;
+            /** Versions */
+            versions: {
+                [key: string]: string | null;
+            };
+        };
+        /** DemoBudgetChange */
+        DemoBudgetChange: {
+            /**
+             * Changes
+             * @description RevisionChange body used to derive the child
+             */
+            changes: {
+                [key: string]: unknown;
+            };
+            /** Parent Revision Id */
+            parent_revision_id: string;
+            /** Revision Id */
+            revision_id: string;
+            /**
+             * Runs
+             * @description plan kind (B0, B1, P, R) -> run_id
+             */
+            runs: {
+                [key: string]: string;
+            };
+            /**
+             * Selection Reason
+             * @description Why this budget was used (it changed the selected P portfolio)
+             */
+            selection_reason: string;
+            /** Tried Capital Budgets Pkr */
+            tried_capital_budgets_pkr?: number[];
+        };
+        /** DemoHeadline */
+        DemoHeadline: {
+            budget_used_fraction: components["schemas"]["Figure"];
+            capital_budget_pkr: components["schemas"]["Figure"];
+            /**
+             * Groundwater Above B0
+             * @description True when P pumps more groundwater than B0 (shown as a secondary line)
+             */
+            groundwater_above_b0: boolean | null;
+            /** Pilot Id */
+            pilot_id: string;
+            /** Pilot Version */
+            pilot_version: string;
+            /**
+             * Plans
+             * @description B0, B1, P
+             */
+            plans: {
+                [key: string]: components["schemas"]["PlanFigures"];
+            };
+            /**
+             * Production Gain Pct Vs B0
+             * @description B1, P vs B0 (%)
+             */
+            production_gain_pct_vs_b0: {
+                [key: string]: components["schemas"]["Figure"];
+            };
+            /**
+             * Run Created At
+             * @description run_id -> computed time
+             */
+            run_created_at: {
+                [key: string]: string;
+            };
+            /** Scenario Revision Id */
+            scenario_revision_id: string;
+            /** Season Id */
+            season_id: string;
+            /**
+             * Story
+             * @enum {string}
+             */
+            story: "tail_tradeoff" | "budget_efficiency" | "plain_gain";
+            /**
+             * Tail Service Change Pts
+             * @description B1, P vs B0 (percentage points)
+             */
+            tail_service_change_pts: {
+                [key: string]: components["schemas"]["Figure"];
+            };
+        };
+        /** DemoRevision */
+        DemoRevision: {
+            /** Revision Id */
+            revision_id: string;
+            /**
+             * Runs
+             * @description plan kind (B0, B1, P, R) -> run_id
+             */
+            runs: {
+                [key: string]: string;
+            };
+        };
+        /**
+         * DemoRunDetail
+         * @description As returned by ``GET /runs/{id}`` when the seed ran; the run record stays authoritative.
+         */
+        DemoRunDetail: {
+            /** Capital Commitment Pkr */
+            capital_commitment_pkr?: number | null;
+            /** Created At */
+            created_at: string;
+            /** Outcome */
+            outcome: string;
+            /** Plan Kind */
+            plan_kind: string;
+            /** Production Kg */
+            production_kg?: number | null;
+            /** Selected Intervention Instance Ids */
+            selected_intervention_instance_ids?: string[];
+            /** Solver Status */
+            solver_status: string;
+        };
+        /**
+         * DemoSession
+         * @description The seeded manifest plus a read-only availability check against this server's database.
+         */
+        DemoSession: {
+            analyses: components["schemas"]["DemoAnalyses"];
+            api: components["schemas"]["DemoApi"];
+            /**
+             * Available
+             * @description referenced ID -> present in this database
+             */
+            available: {
+                [key: string]: boolean;
+            };
+            base: components["schemas"]["DemoRevision"];
+            budget_change: components["schemas"]["DemoBudgetChange"];
+            /** Comparison Id */
+            comparison_id?: string | null;
+            /** Complete */
+            complete: boolean;
+            /** Created At */
+            created_at: string;
+            /** Decisive Date */
+            decisive_date: string | null;
+            /** Decisive Date Reason */
+            decisive_date_reason: string;
+            /** Focus Field Id */
+            focus_field_id: string;
+            /** Focus Field Reason */
+            focus_field_reason: string;
+            /**
+             * Manifest Version
+             * @default 1
+             * @constant
+             */
+            manifest_version: 1;
+            /** Missing Ids */
+            missing_ids: string[];
+            /**
+             * Notes
+             * @description Seed-time events, e.g. jobs resubmitted after a restart
+             */
+            notes?: string[];
+            /** Pilot Id */
+            pilot_id: string;
+            /** Pilot Version */
+            pilot_version: string;
+            /**
+             * Run Details
+             * @description run_id -> details at seed time
+             */
+            run_details: {
+                [key: string]: components["schemas"]["DemoRunDetail"];
+            };
+            /** Scenario Id */
+            scenario_id: string;
+            /** Scenario Request */
+            scenario_request: {
+                [key: string]: unknown;
+            };
+            /** Season Id */
+            season_id: string;
+            /** Timings S */
+            timings_s: {
+                [key: string]: number;
+            };
+        };
         /** Edge */
         Edge: {
             /** Capacities */
@@ -1140,6 +1962,29 @@ export interface components {
             source_feature_ids?: string[];
             /** Upstream Node Id */
             upstream_node_id: string;
+        };
+        /** Encoding */
+        Encoding: {
+            /** Color */
+            color?: string | null;
+            /** Id */
+            id?: string | null;
+            /** Label */
+            label?: string | null;
+            /** Series */
+            series?: string | null;
+            /** Source */
+            source?: string | null;
+            /** Status */
+            status?: string | null;
+            /** Target */
+            target?: string | null;
+            /** Value */
+            value?: string | null;
+            /** X */
+            x?: string | null;
+            /** Y */
+            y?: string[];
         };
         /** EvidenceDetail */
         EvidenceDetail: {
@@ -1231,6 +2076,58 @@ export interface components {
              */
             status: "available" | "not_available" | "partial" | "blocked";
         };
+        /** FieldChange */
+        FieldChange: {
+            /** Baseline Production Kg */
+            baseline_production_kg?: number | null;
+            /** Baseline Run Id */
+            baseline_run_id?: string | null;
+            /**
+             * Causal
+             * @default false
+             */
+            causal: boolean;
+            /** Crop */
+            crop?: string | null;
+            /** Definition Id */
+            definition_id: string;
+            /** Delta Kg */
+            delta_kg?: number | null;
+            /** Field Id */
+            field_id: string;
+            /** Production Kg */
+            production_kg: number | null;
+            /** Reason */
+            reason?: string | null;
+            /** Run Id */
+            run_id: string;
+            status: components["schemas"]["MetricStatus"];
+            /**
+             * Unit
+             * @default kg
+             * @constant
+             */
+            unit: "kg";
+        };
+        /** FieldChangeSummary */
+        FieldChangeSummary: {
+            /** Fields Better Off */
+            fields_better_off: number;
+            /** Fields Not Comparable */
+            fields_not_comparable: number;
+            /** Fields Unchanged */
+            fields_unchanged: number;
+            /** Fields Worse Off */
+            fields_worse_off: number;
+            /** Quantum Kg */
+            quantum_kg: number;
+            /**
+             * Unit
+             * @default kg
+             * @constant
+             */
+            unit: "kg";
+        };
         /** FieldDetail */
         FieldDetail: {
             /** Assets */
@@ -1257,6 +2154,28 @@ export interface components {
             /** Service References */
             service_references: components["schemas"]["ServiceReference"][];
             soil: components["schemas"]["SoilProfile"] | null;
+        };
+        /** FieldEdit */
+        FieldEdit: {
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "reject" | "replace_geometry" | "split" | "merge_with";
+            /** Geometry Wgs84 */
+            geometry_wgs84?: {
+                [key: string]: unknown;
+            } | null;
+            /** Model Id */
+            model_id: string;
+            /** Other Model Ids */
+            other_model_ids?: string[];
+            /** Parts Wgs84 */
+            parts_wgs84?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Reason */
+            reason: string;
         };
         /**
          * Field_
@@ -1301,6 +2220,33 @@ export interface components {
             /** Supersedes */
             supersedes?: string[];
         };
+        /**
+         * Figure
+         * @description One number shown on screen: a stored metric or a value derived from stored metrics.
+         */
+        Figure: {
+            /** Reason */
+            reason?: string | null;
+            /**
+             * Run Ids
+             * @description the run(s) this figure is read or derived from
+             */
+            run_ids: string[];
+            /** Unit */
+            unit: string;
+            /** Value */
+            value: number | null;
+        };
+        /** FollowUpsBlock */
+        FollowUpsBlock: {
+            /** Questions */
+            questions: string[];
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "follow_ups";
+        };
         /** FrontierRequest */
         FrontierRequest: {
             /** Base Revision Id */
@@ -1343,6 +2289,23 @@ export interface components {
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /** HeadlineBlock */
+        HeadlineBlock: {
+            /** Citations */
+            citations?: components["schemas"]["Citation"][];
+            /** Text */
+            text: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "headline";
+            /**
+             * Withheld
+             * @default false
+             */
+            withheld: boolean;
         };
         /** Health */
         Health: {
@@ -1407,11 +2370,92 @@ export interface components {
             /** Scene Id */
             scene_id: string;
         };
+        /** ImpactRequest */
+        ImpactRequest: {
+            /** Baseline Run Id */
+            baseline_run_id?: string | null;
+            /**
+             * Contract Version
+             * @default 2.0.0
+             * @constant
+             */
+            contract_version: "2.0.0";
+            /** Run Id */
+            run_id: string;
+            /** Stress Analysis Id */
+            stress_analysis_id?: string | null;
+        };
+        /** ImpactResponse */
+        ImpactResponse: {
+            /** Available */
+            available: boolean;
+            /** Baseline Run Id */
+            baseline_run_id?: string | null;
+            /** Cards */
+            cards?: components["schemas"]["SdgCard"][];
+            co2: components["schemas"]["Co2Estimate"];
+            /** Compatibility Label */
+            compatibility_label?: string | null;
+            /** Compatible */
+            compatible?: boolean | null;
+            /** Distribution */
+            distribution?: components["schemas"]["FieldChange"][];
+            field_change_summary: components["schemas"]["FieldChangeSummary"];
+            /** Reason */
+            reason?: string | null;
+            /** Run Id */
+            run_id: string;
+        };
         /**
          * InfeasibilityKind
          * @enum {string}
          */
         InfeasibilityKind: "missing_input" | "empty_option_set" | "finite_candidate_incompatibility" | "bound_contradiction";
+        /** IntakeCreate */
+        IntakeCreate: {
+            /** Aoi */
+            aoi: {
+                [key: string]: unknown;
+            };
+            /**
+             * Contract Version
+             * @default 2.0.0
+             * @constant
+             */
+            contract_version: "2.0.0";
+            /** Geographic Name Basis */
+            geographic_name_basis?: string | null;
+            /** Name */
+            name?: string | null;
+            /** Parent Canal Feature Id */
+            parent_canal_feature_id?: string | null;
+            /** Pilot Id */
+            pilot_id?: string | null;
+            /** Raw Package Id */
+            raw_package_id?: string | null;
+            /** Raw Package Ref */
+            raw_package_ref?: string | null;
+            /**
+             * Source Mode
+             * @enum {string}
+             */
+            source_mode: "online" | "raw_package";
+        };
+        /** Interaction */
+        Interaction: {
+            /** Column */
+            column: string;
+            /**
+             * Intent
+             * @enum {string}
+             */
+            intent: "open_run" | "open_field" | "open_analysis" | "open_comparison" | "open_branch";
+            /**
+             * On
+             * @enum {string}
+             */
+            on: "select_row" | "select_point" | "select_cell" | "select_field";
+        };
         /** InterventionEligibility */
         InterventionEligibility: {
             category: components["schemas"]["ActionCategory"];
@@ -1682,6 +2726,41 @@ export interface components {
             contract_version: "2.0.0";
             /** Message */
             message: string;
+        };
+        /**
+         * MetricBlock
+         * @description One metric card; value resolved server-side from the run's stored metrics.
+         */
+        MetricBlock: {
+            /** Basis */
+            basis: string;
+            /** Definition Id */
+            definition_id?: string | null;
+            /** Field Id */
+            field_id?: string | null;
+            /** Label */
+            label?: string | null;
+            /** Metric Id */
+            metric_id: string;
+            /** Plan Kind */
+            plan_kind?: string | null;
+            /** Reason */
+            reason?: string | null;
+            /** Run Id */
+            run_id: string;
+            /** Solver Status */
+            solver_status?: string | null;
+            /** Status */
+            status?: string | null;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "metric";
+            /** Unit */
+            unit?: string | null;
+            /** Value */
+            value?: number | null;
         };
         /** MetricDefinitions */
         MetricDefinitions: {
@@ -1974,6 +3053,15 @@ export interface components {
             /** Timezone */
             timezone: string;
         };
+        /** PlanFigures */
+        PlanFigures: {
+            capital_commitment_pkr: components["schemas"]["Figure"];
+            groundwater_m3: components["schemas"]["Figure"];
+            production_kg: components["schemas"]["Figure"];
+            /** Run Id */
+            run_id: string;
+            tail_min_service_ratio: components["schemas"]["Figure"];
+        };
         /**
          * PlanKind
          * @description Baseline ladder (PRD §6.4).
@@ -2073,6 +3161,11 @@ export interface components {
              */
             domain_status: "in_domain" | "out_of_domain";
             /**
+             * Elapsed Ms
+             * @description Server-measured time to compute this preview (create only; null on read)
+             */
+            elapsed_ms?: number | null;
+            /**
              * Estimate Kind
              * @default surrogate_preview
              * @constant
@@ -2120,6 +3213,28 @@ export interface components {
             /** Verify Job Id */
             verify_job_id: string | null;
         };
+        /** ProcessRequest */
+        ProcessRequest: {
+            /**
+             * Contract Version
+             * @default 2.0.0
+             * @constant
+             */
+            contract_version: "2.0.0";
+        };
+        /** PublishRequest */
+        PublishRequest: {
+            /**
+             * Contract Version
+             * @default 2.0.0
+             * @constant
+             */
+            contract_version: "2.0.0";
+            /** Pilot Id */
+            pilot_id?: string | null;
+            /** Pilot Version */
+            pilot_version?: string | null;
+        };
         /** Readiness */
         Readiness: {
             /** Blockers */
@@ -2136,6 +3251,69 @@ export interface components {
             ready: boolean;
             /** Warnings */
             warnings: components["schemas"]["Issue"][];
+        };
+        /** ReportAccepted */
+        ReportAccepted: {
+            job: components["schemas"]["Job"];
+            /** Job Id */
+            job_id: string;
+            /** Report Id */
+            report_id: string;
+        };
+        /**
+         * ReportCreate
+         * @description Body reserved by copilot ``create_report``: run ids, analysis ids, report type.
+         */
+        ReportCreate: {
+            /** Analysis Ids */
+            analysis_ids?: string[];
+            /**
+             * Contract Version
+             * @default 2.0.0
+             * @constant
+             */
+            contract_version: "2.0.0";
+            /**
+             * Report Type
+             * @default one_page_plan
+             * @enum {string}
+             */
+            report_type: "one_page_plan" | "full_report";
+            /** Run Ids */
+            run_ids: string[];
+        };
+        /** ReportView */
+        ReportView: {
+            /** Analysis Ids */
+            analysis_ids: string[];
+            /** Artifact Kind */
+            artifact_kind: string | null;
+            /** Created At */
+            created_at: string;
+            /** Download Url */
+            download_url: string | null;
+            /** Final Self Contained Report */
+            final_self_contained_report: boolean;
+            /** Job Error */
+            job_error: {
+                [key: string]: unknown;
+            } | null;
+            /** Job Id */
+            job_id: string | null;
+            /** Job State */
+            job_state: string | null;
+            /** Report Hash */
+            report_hash: string | null;
+            /** Report Hash Scope */
+            report_hash_scope: string | null;
+            /** Report Id */
+            report_id: string;
+            /** Report Type */
+            report_type: string;
+            /** Run Ids */
+            run_ids: string[];
+            /** Status */
+            status: string;
         };
         /**
          * ReviewFlags
@@ -2170,6 +3348,27 @@ export interface components {
              * @default false
              */
             topology_structurally_valid: boolean;
+        };
+        /** ReviewRequest */
+        ReviewRequest: {
+            /**
+             * Contract Version
+             * @default 2.0.0
+             * @constant
+             */
+            contract_version: "2.0.0";
+            /** Expected Version */
+            expected_version: number;
+            /** Field Edits */
+            field_edits?: components["schemas"]["FieldEdit"][];
+            /** Parent Canal Feature Id */
+            parent_canal_feature_id?: string | null;
+            /** Review Config */
+            review_config?: {
+                [key: string]: unknown;
+            } | null;
+            /** Reviewer */
+            reviewer?: string | null;
         };
         /**
          * RevisionChange
@@ -2314,6 +3513,40 @@ export interface components {
              * @default m3
              */
             unit: string;
+        };
+        /**
+         * RunBadgeBlock
+         * @description Identity of a run the answer is about (AT13: same run IDs as UI and report).
+         */
+        RunBadgeBlock: {
+            /** Label */
+            label?: string | null;
+            /** Outcome */
+            outcome?: string | null;
+            /** Pilot Id */
+            pilot_id: string;
+            /** Pilot Version */
+            pilot_version: string;
+            /** Plan Kind */
+            plan_kind?: string | null;
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "context" | "created";
+            /** Run Id */
+            run_id: string;
+            /** Scenario Revision Id */
+            scenario_revision_id?: string | null;
+            /** Season Id */
+            season_id?: string | null;
+            /** Solver Status */
+            solver_status?: string | null;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "run_badge";
         };
         /** RunList */
         RunList: {
@@ -2492,6 +3725,56 @@ export interface components {
             /** Scenario Id */
             scenario_id: string;
         };
+        /** SdgCard */
+        SdgCard: {
+            /** Baseline Run Id */
+            baseline_run_id?: string | null;
+            /**
+             * Card
+             * @enum {string}
+             */
+            card: "SDG 2.4" | "SDG 6.4/6.5" | "SDG 13.1";
+            /** Crop */
+            crop?: string | null;
+            denominator?: components["schemas"]["Term"] | null;
+            difference_from_typical?: components["schemas"]["Term"] | null;
+            /** Formula */
+            formula: string;
+            /** Formulas */
+            formulas: {
+                [key: string]: string;
+            };
+            /** Interpretation */
+            interpretation: string;
+            /** Limitations */
+            limitations: string[];
+            /** Metrics */
+            metrics: string[];
+            numerator?: components["schemas"]["Term"] | null;
+            /**
+             * Official Indicator
+             * @default false
+             * @constant
+             */
+            official_indicator: false;
+            /** Official Target Text */
+            official_target_text: string;
+            /** Reason */
+            reason?: string | null;
+            /** Run Id */
+            run_id: string;
+            /** Run Ids */
+            run_ids: string[];
+            /** Source Records */
+            source_records: string[];
+            status: components["schemas"]["MetricStatus"];
+            /** Target Url */
+            target_url: string;
+            /** Values */
+            values: {
+                [key: string]: unknown;
+            }[];
+        };
         /** Season */
         Season: {
             crop: components["schemas"]["Crop"];
@@ -2614,6 +3897,11 @@ export interface components {
              */
             role: "planner" | "viewer";
         };
+        /** SessionList */
+        SessionList: {
+            /** Sessions */
+            sessions: components["schemas"]["SessionSummary"][];
+        };
         /** SessionOut */
         SessionOut: {
             /** Role */
@@ -2624,6 +3912,21 @@ export interface components {
             status: {
                 [key: string]: unknown;
             };
+        };
+        /** SessionSummary */
+        SessionSummary: {
+            /** Created At */
+            created_at: string;
+            /** Last Turn At */
+            last_turn_at?: string | null;
+            /** Role */
+            role: string;
+            /** Session Id */
+            session_id: string;
+            /** Title */
+            title?: string | null;
+            /** Turns */
+            turns: number;
         };
         /** SoilProfile */
         SoilProfile: {
@@ -2750,6 +4053,51 @@ export interface components {
              */
             time_limit_per_arm_s: number;
         };
+        /** Term */
+        Term: {
+            /** Definition Id */
+            definition_id?: string | null;
+            /** Evidence Ids */
+            evidence_ids?: string[];
+            /** Formula */
+            formula?: string | null;
+            /** Label */
+            label: string;
+            /** Metric Id */
+            metric_id?: string | null;
+            /** Reason */
+            reason?: string | null;
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "numerator" | "denominator" | "difference" | "component";
+            /** Run Id */
+            run_id?: string | null;
+            status: components["schemas"]["MetricStatus"];
+            /** Unit */
+            unit: string;
+            /** Value */
+            value: number | null;
+        };
+        /** TextBlock */
+        TextBlock: {
+            /** Citations */
+            citations?: components["schemas"]["Citation"][];
+            /** Text */
+            text: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "text";
+            /**
+             * Withheld
+             * @description A sentence with an unsupported figure was removed
+             * @default false
+             */
+            withheld: boolean;
+        };
         /** Timeline */
         Timeline: {
             /** Dates */
@@ -2791,6 +4139,72 @@ export interface components {
             /** Turn Id */
             turn_id: string;
         };
+        /** TurnView */
+        TurnView: {
+            answer?: components["schemas"]["CopilotAnswer"] | null;
+            /** Context */
+            context: {
+                [key: string]: unknown;
+            };
+            /** Created At */
+            created_at: string;
+            /** Created Refs */
+            created_refs?: components["schemas"]["CreatedRef"][];
+            /** Error */
+            error?: {
+                [key: string]: unknown;
+            } | null;
+            /** Events */
+            events?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Finished At */
+            finished_at?: string | null;
+            /** Idem Namespace */
+            idem_namespace?: string | null;
+            /** Job Ids */
+            job_ids?: string[];
+            /** Language */
+            language?: ("en" | "ur" | "roman_ur") | null;
+            /** Latency Ms */
+            latency_ms?: number | null;
+            /** Model */
+            model?: string | null;
+            /** Prompt Version */
+            prompt_version?: string | null;
+            /** Request Ids */
+            request_ids?: string[];
+            /**
+             * Rounds
+             * @default 0
+             */
+            rounds: number;
+            /** Seq */
+            seq: number;
+            /** Session Id */
+            session_id: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "running" | "completed" | "clarification" | "failed" | "cancelled" | "provider_unavailable" | "budget_exhausted";
+            /** Timings */
+            timings?: {
+                [key: string]: unknown;
+            } | null;
+            /** Tool Calls */
+            tool_calls?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Tool Schema Version */
+            tool_schema_version?: string | null;
+            /** Turn Id */
+            turn_id: string;
+            /** User Message */
+            user_message: string;
+            /** View Intents */
+            view_intents?: components["schemas"]["ViewIntent"][];
+        };
         /**
          * UIContext
          * @description What the client says it is showing when the user sends a message.
@@ -2826,6 +4240,26 @@ export interface components {
             units: "metric";
             /** View */
             view?: string | null;
+        };
+        /**
+         * UncertaintyBlock
+         * @description Caveat / limitation / running-job / unavailable notice (always shown, never collapsed away).
+         */
+        UncertaintyBlock: {
+            /** Citations */
+            citations?: components["schemas"]["Citation"][];
+            /** Text */
+            text: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "uncertainty";
+            /**
+             * Withheld
+             * @default false
+             */
+            withheld: boolean;
         };
         /** UncertaintySet */
         UncertaintySet: {
@@ -2881,6 +4315,77 @@ export interface components {
             job_id: string;
             /** Preview Id */
             preview_id: string;
+        };
+        /**
+         * ViewIntent
+         * @description Typed UI intent from navigate_view, applied after the turn finishes.
+         */
+        ViewIntent: {
+            /** Target */
+            target: string;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * VisualBlock
+         * @description A chart/table/map block whose values were copied from a server dataset.
+         */
+        VisualBlock: {
+            /**
+             * Auto
+             * @description Added by the server (no model explanation available)
+             * @default false
+             */
+            auto: boolean;
+            /** Basis */
+            basis?: ("model_output" | "computed_from_inputs" | "assumption" | "observed" | "surrogate_preview" | "solver_result")[];
+            /** Caption */
+            caption?: string | null;
+            /**
+             * Chart
+             * @enum {string}
+             */
+            chart: "kpi" | "table" | "bar" | "grouped_bar" | "stacked_bar" | "delta_bar" | "line" | "area" | "scatter" | "frontier" | "heatmap" | "sankey" | "map" | "steps";
+            /** Columns */
+            columns: components["schemas"]["Column"][];
+            /** Dataset Id */
+            dataset_id: string;
+            /** Dataset Kind */
+            dataset_kind: string;
+            encoding: components["schemas"]["Encoding"];
+            /** Highlight Ids */
+            highlight_ids?: string[];
+            /** Interactions */
+            interactions?: components["schemas"]["Interaction"][];
+            /** Notes */
+            notes?: string[];
+            /** Row Count */
+            row_count: number;
+            /** Rows */
+            rows: {
+                [key: string]: unknown;
+            }[];
+            source: components["schemas"]["DatasetSource"];
+            /**
+             * Table Fallback
+             * @description Always true: the UI must offer the rows as an accessible table
+             * @default true
+             */
+            table_fallback: boolean;
+            /** Title */
+            title: string;
+            /**
+             * Truncated
+             * @default false
+             */
+            truncated: boolean;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "visual";
+            /** Visual Id */
+            visual_id: string;
         };
         /**
          * WeatherScenario
@@ -2982,6 +4487,26 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    ai_stack_api_v2_ai_stack_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AiStack"];
+                };
+            };
+        };
+    };
     list_analyses_api_v2_analyses_get: {
         parameters: {
             query?: {
@@ -3310,6 +4835,37 @@ export interface operations {
             };
         };
     };
+    list_sessions_api_v2_copilot_sessions_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionList"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     create_session_api_v2_copilot_sessions_post: {
         parameters: {
             query?: never;
@@ -3452,9 +5008,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["TurnView"];
                 };
             };
             /** @description Validation Error */
@@ -3488,6 +5042,39 @@ export interface operations {
                     "application/json": {
                         [key: string]: unknown;
                     };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    turn_event_log_api_v2_copilot_turns__turn_id__event_log_get: {
+        parameters: {
+            query?: {
+                after?: number;
+            };
+            header?: never;
+            path: {
+                turn_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CopilotEvent"][];
                 };
             };
             /** @description Validation Error */
@@ -3567,6 +5154,46 @@ export interface operations {
             };
         };
     };
+    demo_headline_api_v2_demo_headline_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DemoHeadline"];
+                };
+            };
+        };
+    };
+    demo_session_api_v2_demo_session_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DemoSession"];
+                };
+            };
+        };
+    };
     evidence_search_api_v2_evidence_search_get: {
         parameters: {
             query: {
@@ -3603,7 +5230,10 @@ export interface operations {
     };
     evidence_detail_api_v2_evidence__evidence_id__get: {
         parameters: {
-            query?: never;
+            query?: {
+                pilot_id?: string | null;
+                pilot_version?: string | null;
+            };
             header?: never;
             path: {
                 evidence_id: string;
@@ -3682,6 +5312,41 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Health"];
+                };
+            };
+        };
+    };
+    create_impact_api_v2_impact_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "Idempotency-Key"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ImpactRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImpactResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -3838,6 +5503,309 @@ export interface operations {
             };
         };
     };
+    create_intake_api_v2_onboarding_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "Idempotency-Key"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IntakeCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    aoi_check_api_v2_onboarding_aoi_check_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AoiCheckRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    raw_packages_api_v2_onboarding_raw_packages_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    get_intake_api_v2_onboarding__onboarding_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                onboarding_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    intake_layers_api_v2_onboarding__onboarding_id__layers_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                onboarding_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    intake_layer_api_v2_onboarding__onboarding_id__layers__layer_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                onboarding_id: string;
+                layer_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    process_intake_api_v2_onboarding__onboarding_id__process_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "Idempotency-Key"?: string | null;
+            };
+            path: {
+                onboarding_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ProcessRequest"] | null;
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    publish_intake_api_v2_onboarding__onboarding_id__publish_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "Idempotency-Key"?: string | null;
+            };
+            path: {
+                onboarding_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PublishRequest"] | null;
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    review_intake_api_v2_onboarding__onboarding_id__review_patch: {
+        parameters: {
+            query?: never;
+            header?: {
+                "Idempotency-Key"?: string | null;
+            };
+            path: {
+                onboarding_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReviewRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_pilots_api_v2_pilots_get: {
         parameters: {
             query?: never;
@@ -3909,6 +5877,170 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PilotMap"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    export_pilot_package_api_v2_pilots__pilot_id__versions__version__package_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                pilot_id: string;
+                version: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    import_pilot_package_api_v2_pilots__pilot_id__versions__version__package_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "Idempotency-Key"?: string | null;
+            };
+            path: {
+                pilot_id: string;
+                version: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_report_api_v2_reports_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "Idempotency-Key"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReportCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportAccepted"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_report_api_v2_reports__report_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                report_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportView"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    report_file_api_v2_reports__report_id__files__rel__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                report_id: string;
+                rel: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
             /** @description Validation Error */
@@ -4207,9 +6339,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ImpactResponse"];
                 };
             };
             /** @description Validation Error */

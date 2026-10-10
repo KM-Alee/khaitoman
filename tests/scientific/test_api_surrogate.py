@@ -49,6 +49,8 @@ def test_preview_then_exact_confirmation(client):
     assert (
         pv["estimate_kind"] == "surrogate_preview" and pv["physical_precheck_status"] == "not_run"
     )
+    assert isinstance(pv["elapsed_ms"], float) and pv["elapsed_ms"] >= 0
+    assert client.get(f"/api/v2/surrogate/previews/{pv['preview_id']}").json()["elapsed_ms"] is None
     again = client.post("/api/v2/surrogate/previews", json=body()).json()
     assert again["preview_id"] == pv["preview_id"]
     v = client.post(f"/api/v2/surrogate/previews/{pv['preview_id']}/verify")

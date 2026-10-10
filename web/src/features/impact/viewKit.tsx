@@ -18,25 +18,34 @@ export function ViewGate<T>({
   title,
   children,
   skeleton = "h-72",
+  testId,
 }: {
   q: UseQueryResult<RunView<T>, unknown>;
   title: string;
   children: (d: T & { available: true }) => ReactNode;
   skeleton?: string;
+  testId?: string;
 }) {
   if (q.isLoading)
     return (
-      <div className="grid gap-3 md:grid-cols-2" aria-busy>
+      <div className="grid gap-3 md:grid-cols-2" aria-busy="true" role="status" aria-label={`${title} loading`} data-testid={testId ? `${testId}-loading` : undefined}>
         <Skeleton className={skeleton} />
         <Skeleton className={skeleton} />
       </div>
     );
-  if (q.error || !q.data) return <StatePanel state="error" error={q.error} title={`${title} unavailable`} />;
+  if (q.error || !q.data)
+    return (
+      <div data-testid={testId ? `${testId}-error` : undefined}>
+        <StatePanel state="error" error={q.error} title={`${title} unavailable`} />
+      </div>
+    );
   if (q.data.available === false)
     return (
-      <StatePanel state="unknown" title={`${title}: unavailable`}>
-        {q.data.reason || "The server did not return a reason."}
-      </StatePanel>
+      <div data-testid={testId ? `${testId}-unavailable` : undefined}>
+        <StatePanel state="unknown" title={`${title}: unavailable`}>
+          {q.data.reason || "The server did not return a reason."}
+        </StatePanel>
+      </div>
     );
   return <>{children(q.data)}</>;
 }
@@ -68,7 +77,7 @@ export function StatusReasonView({ v, className }: { v: StatusReason | null | un
 
 export function Panel({ title, children, className, aside }: { title: ReactNode; children: ReactNode; className?: string; aside?: ReactNode }) {
   return (
-    <section className={cn("min-w-0 rounded-[14px] border border-border bg-surface p-4 shadow-1", className)}>
+    <section className={cn("min-w-0 rounded-[18px] border border-border bg-surface p-5 shadow-1", className)}>
       <div className="mb-2 flex items-center justify-between gap-2">
         <Eyebrow>{title}</Eyebrow>
         {aside}

@@ -3,7 +3,7 @@
 .NOTPARALLEL:
 .PHONY: help setup build deps up down logs shell lock doctor provider-check test lint science-smoke \
         contracts web-test web-build ui-checks demo vision-weights vision-shell \
-        water-tests pilot-a pilot-b candidates train-surrogate library-adequacy domain-tests core-acceptance copilot-evals release-check
+        water-tests pilot-a pilot-b candidates analyses-evidence demo-seed train-surrogate library-adequacy domain-tests core-acceptance evidence-pack print-brief copilot-evals release-check
 
 DC   := docker compose
 ifeq ($(GPU),1)
@@ -103,5 +103,20 @@ library-adequacy: ## denser exact libraries and objective/investment stability o
 domain-tests:     ## AT02–AT04 crop/ledger gates, water properties, both pilots' published libraries (run candidates first)
 	$(API) pytest -v tests/scientific/test_crop_gates.py tests/scientific/test_published_libraries.py tests/scientific/test_library_adequacy.py tests/unit/test_candidate_publication.py tests/unit/test_candidate_density.py tests/unit/test_water_ledger.py tests/unit/test_water_network.py tests/unit/test_water_pond.py tests/property
 
-core-acceptance copilot-evals release-check:
+analyses-evidence: ## AT09/AT10: one six-setting frontier and nine-cell stress through the running API (make up first)
+	docker compose exec -T api python scripts/analysis_evidence.py
+
+demo-seed:        ## guided demo: solve B0/B1/P/R + budget change, frontier, stress via the running API -> data/demo/session.json (make up first)
+	docker compose exec -T api python scripts/seed_demo_session.py
+
+core-acceptance: ## v1: run each existing AT test once; fail on failures; list AT ids with no test. Not G-CORE.
+	$(API) python scripts/core_acceptance.py
+
+evidence-pack:    ## PRD §13.3 proof package -> evidence/pack/<UTC ts>/ (manifest, capability report); reads only existing artifacts
+	$(API) python scripts/build_evidence_pack.py
+
+print-brief:      ## W6: PDF of the seeded plan's action-plan report -> evidence/print/brief-<UTC>.pdf (make up + make demo-seed first)
+	$(DC) --profile test run --rm --no-deps -e BASE_URL=$${BASE_URL:-http://web:5173} e2e node ../scripts/print_brief.mjs
+
+copilot-evals release-check:
 	@echo "make $@: not implemented yet" >&2; exit 1
