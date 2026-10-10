@@ -104,7 +104,7 @@ export function JobTray({ className, scopeKey }: { className?: string; scopeKey?
   return (
     <section
       aria-label="Jobs"
-      className={cn("pointer-events-auto w-[320px] max-w-[calc(100vw-24px)] overflow-hidden rounded-[14px] border border-border bg-surface/97 shadow-3 backdrop-blur", className)}
+      className={cn("pointer-events-auto w-[320px] max-w-[calc(100vw-24px)] overflow-hidden rounded-[18px] border border-border bg-surface/97 shadow-3 backdrop-blur", className)}
       data-testid="job-tray"
     >
       <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} className="flex w-full items-center justify-between px-3.5 py-2.5 text-left">

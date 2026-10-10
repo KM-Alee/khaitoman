@@ -229,8 +229,38 @@ export function useScenario() {
     activeJobs,
     patch: (p: Partial<ScenarioDraft>) => patchDraft(key, p),
     reset: () => active && setDraft(key, { ...active.basis }),
+    /**
+     * Copy a stored revision's settings into the editable draft (e.g. a saved tour result).
+     * The next "Find the best plan" creates a NEW scenario and solves it live; the stored
+     * revision and its runs stay untouched.
+     */
+    adopt: (req: ScenarioRequest) => {
+      setDraft(key, draftFromRequest(req));
+      setActive(key, null);
+    },
     run,
     busy: createScenario.isPending || deriveRevision.isPending || solve.isPending,
+  };
+}
+
+export function draftFromRequest(r: ScenarioRequest): ScenarioDraft {
+  return {
+    season_id: r.season_id,
+    planning_mode: r.planning_mode,
+    decision_at: r.decision_at,
+    weather_scenario_ids: [...r.weather_scenario_ids],
+    supply_profile_id: r.supply_profile_id,
+    uniform_reduction_fraction: r.uniform_reduction_fraction ?? 0,
+    capital_budget_pkr: r.capital_budget_pkr,
+    operating_budget_pkr: r.operating_budget_pkr,
+    objective: r.objective ?? "production_kg",
+    optimization_mode: r.optimization_mode ?? "typical",
+    uncertainty_set_id: r.uncertainty_set_id ?? null,
+    minimum_service_ratio: r.minimum_service_ratio ?? null,
+    service_group: r.service_group ?? null,
+    permit_groundwater: r.permit_groundwater ?? true,
+    forced_instance_ids: [...(r.forced_instance_ids ?? [])],
+    excluded_instance_ids: [...(r.excluded_instance_ids ?? [])],
   };
 }
 

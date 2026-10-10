@@ -108,7 +108,7 @@ export function NewIntake({ context, onDraftChange }: { context: ContextLayer[];
 
   return (
     <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_380px]" data-testid="onboarding-new">
-      <section className="self-start overflow-hidden rounded-[14px] border border-border bg-surface shadow-1" aria-labelledby="aoi-h">
+      <section className="self-start overflow-hidden rounded-[18px] border border-border bg-surface shadow-1" aria-labelledby="aoi-h">
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-4 py-2.5">
           <h2 id="aoi-h" className="text-[13px] font-semibold text-ink">
             1 · Draw the area of interest

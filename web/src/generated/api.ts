@@ -341,6 +341,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v2/demo/session": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Demo Session */
+        get: operations["demo_session_api_v2_demo_session_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v2/evidence/search": {
         parameters: {
             query?: never;
@@ -1613,6 +1630,151 @@ export interface components {
             status?: string | null;
             /** Unit */
             unit?: string | null;
+        };
+        /** DemoAnalyses */
+        DemoAnalyses: {
+            /** Frontier */
+            frontier: string;
+            /** Stress */
+            stress: string;
+        };
+        /** DemoApi */
+        DemoApi: {
+            /** Base Url */
+            base_url: string;
+            /** Contract Version */
+            contract_version: string;
+            /** Versions */
+            versions: {
+                [key: string]: string | null;
+            };
+        };
+        /** DemoBudgetChange */
+        DemoBudgetChange: {
+            /**
+             * Changes
+             * @description RevisionChange body used to derive the child
+             */
+            changes: {
+                [key: string]: unknown;
+            };
+            /** Parent Revision Id */
+            parent_revision_id: string;
+            /** Revision Id */
+            revision_id: string;
+            /**
+             * Runs
+             * @description plan kind (B0, B1, P, R) -> run_id
+             */
+            runs: {
+                [key: string]: string;
+            };
+            /**
+             * Selection Reason
+             * @description Why this budget was used (it changed the selected P portfolio)
+             */
+            selection_reason: string;
+            /** Tried Capital Budgets Pkr */
+            tried_capital_budgets_pkr?: number[];
+        };
+        /** DemoRevision */
+        DemoRevision: {
+            /** Revision Id */
+            revision_id: string;
+            /**
+             * Runs
+             * @description plan kind (B0, B1, P, R) -> run_id
+             */
+            runs: {
+                [key: string]: string;
+            };
+        };
+        /**
+         * DemoRunDetail
+         * @description As returned by ``GET /runs/{id}`` when the seed ran; the run record stays authoritative.
+         */
+        DemoRunDetail: {
+            /** Capital Commitment Pkr */
+            capital_commitment_pkr?: number | null;
+            /** Created At */
+            created_at: string;
+            /** Outcome */
+            outcome: string;
+            /** Plan Kind */
+            plan_kind: string;
+            /** Production Kg */
+            production_kg?: number | null;
+            /** Selected Intervention Instance Ids */
+            selected_intervention_instance_ids?: string[];
+            /** Solver Status */
+            solver_status: string;
+        };
+        /**
+         * DemoSession
+         * @description The seeded manifest plus a read-only availability check against this server's database.
+         */
+        DemoSession: {
+            analyses: components["schemas"]["DemoAnalyses"];
+            api: components["schemas"]["DemoApi"];
+            /**
+             * Available
+             * @description referenced ID -> present in this database
+             */
+            available: {
+                [key: string]: boolean;
+            };
+            base: components["schemas"]["DemoRevision"];
+            budget_change: components["schemas"]["DemoBudgetChange"];
+            /** Comparison Id */
+            comparison_id?: string | null;
+            /** Complete */
+            complete: boolean;
+            /** Created At */
+            created_at: string;
+            /** Decisive Date */
+            decisive_date: string | null;
+            /** Decisive Date Reason */
+            decisive_date_reason: string;
+            /** Focus Field Id */
+            focus_field_id: string;
+            /** Focus Field Reason */
+            focus_field_reason: string;
+            /**
+             * Manifest Version
+             * @default 1
+             * @constant
+             */
+            manifest_version: 1;
+            /** Missing Ids */
+            missing_ids: string[];
+            /**
+             * Notes
+             * @description Seed-time events, e.g. jobs resubmitted after a restart
+             */
+            notes?: string[];
+            /** Pilot Id */
+            pilot_id: string;
+            /** Pilot Version */
+            pilot_version: string;
+            /**
+             * Run Details
+             * @description run_id -> details at seed time
+             */
+            run_details: {
+                [key: string]: components["schemas"]["DemoRunDetail"];
+            };
+            /** Scenario Id */
+            scenario_id: string;
+            /** Scenario Request */
+            scenario_request: {
+                [key: string]: unknown;
+            };
+            /** Season Id */
+            season_id: string;
+            /** Timings S */
+            timings_s: {
+                [key: string]: number;
+            };
         };
         /** Edge */
         Edge: {
@@ -4776,6 +4938,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    demo_session_api_v2_demo_session_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DemoSession"];
                 };
             };
         };

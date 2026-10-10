@@ -22,7 +22,8 @@ import { IconButton } from "@/components/ui/Button";
 import { Segmented } from "@/components/ui/primitives";
 import { useShell } from "@/components/layout/AppShell";
 import { CompareTabs } from "./CompareTabs";
-import { useLadderRuns } from "./CompareScreen";
+import { GROUP_LABEL, planName } from "@/lib/glossary";
+import { useLadderRuns } from "./useLadder";
 import { PLAN_LABEL } from "@/features/workspace/useScenario";
 
 type Panel = { key: string; title: string; summary: string; ids: string[]; lines: string[] };
@@ -153,8 +154,8 @@ export function ReplayScreen() {
         <CompareTabs />
         <div className="grid flex-1 place-items-center p-6">
           <div className="max-w-[520px]">
-            <StatePanel state="empty" title="No run to replay" action={{ label: "Go to Workspace", onClick: () => sel.go("workspace") }}>
-              Replay needs a completed run. Solve a plan first; replay then shows its dated receipts, storage and crop traces.
+            <StatePanel state="empty" art="chart" title="Nothing to replay yet" action={{ label: "Find the best plan first", onClick: () => sel.go("workspace") }}>
+              The replay steps through a solved season day by day: when canal water arrived, when it was applied, pond levels and how the crop grew.
             </StatePanel>
           </div>
         </div>
@@ -166,28 +167,31 @@ export function ReplayScreen() {
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-y-auto" data-testid="replay">
       <CompareTabs />
-      <div className="sticky top-0 z-30 border-b border-border bg-surface/95 px-3 py-2 backdrop-blur md:px-4">
+      <div className="sticky top-0 z-30 border-b border-border bg-surface/95 px-3 py-3 backdrop-blur md:px-6" data-tour="timeline">
         <div className="flex flex-wrap items-center gap-3">
           <div className="min-w-0">
-            <div className="text-[11px] font-medium uppercase tracking-[0.06em] text-ink-tertiary">Replaying</div>
+            <div className="eyebrow">Season replay · one field, day by day</div>
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-              <span className="shrink-0 text-[15px] font-semibold text-ink">{field?.label ?? fieldId ?? "Select a field"}</span>
-              <Chip size="sm" tone="info">{k ? `${k} · ${PLAN_LABEL[k]}` : "run"} {shortId(runId)}</Chip>
+              <span className="display shrink-0 text-[20px] leading-tight text-ink">{field?.label ?? fieldId ?? "Select a field"}</span>
+              {field?.group ? <Chip size="sm" tone={field.group === "tail" ? "wheat" : "neutral"}>{GROUP_LABEL[field.group] ?? field.group}</Chip> : null}
+              <Chip size="sm" tone="info" title={run?.run_id ?? runId}>
+                {k ? planName(k) : "run"} · {shortId(runId)}
+              </Chip>
               <EstimateBadge kind="exact" />
             </div>
           </div>
           {kinds.length > 1 ? (
-            <Segmented label="Run to replay" size="sm" value={k ?? "P"} onChange={(v) => setKind(v as PlanKind)} options={kinds.map((x) => ({ value: x, label: x, title: PLAN_LABEL[x] }))} />
+            <Segmented label="Plan to replay" size="sm" value={k ?? "P"} onChange={(v) => setKind(v as PlanKind)} options={kinds.map((x) => ({ value: x, label: planName(x), title: `${x} · ${PLAN_LABEL[x]}` }))} />
           ) : null}
           <select
             aria-label="Field to replay"
-            className="h-8 rounded-[8px] border border-border-strong/60 bg-surface px-2 text-[13px] text-ink"
+            className="h-9 rounded-[9px] border border-border-strong/55 bg-surface-raised px-2 text-[13px] text-ink"
             value={fieldId ?? ""}
             onChange={(e) => sel.setParams({ field: e.target.value || null })}
           >
             {sortedFields.map((f) => (
               <option key={f.id} value={f.id}>
-                {f.label} {f.group ? `· ${f.group}` : ""}
+                {f.label} {f.group ? `· ${GROUP_LABEL[f.group] ?? f.group}` : ""}
               </option>
             ))}
           </select>
@@ -195,8 +199,8 @@ export function ReplayScreen() {
         <TimelineController dates={dates} idx={idx} onIdx={setIdx} markers={timeline?.markers ?? []} loading={tl.isLoading && net.isLoading} />
       </div>
 
-      <div className="grid gap-3 p-3 md:p-4 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
-        <div className={mobile ? "relative h-[52vh] overflow-hidden rounded-[14px] border border-border" : "relative h-[min(68vh,720px)] overflow-hidden rounded-[14px] border border-border xl:sticky xl:top-[124px]"}>
+      <div className="grid gap-4 p-3 md:p-6 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
+        <div className={mobile ? "relative h-[52vh] overflow-hidden rounded-[18px] border border-border" : "relative h-[min(68vh,720px)] overflow-hidden rounded-[18px] border border-border shadow-1 xl:sticky xl:top-[140px]"}>
           <MapSlot
             runId={runId}
             className="absolute inset-0"
@@ -211,7 +215,7 @@ export function ReplayScreen() {
             label="Replay map: field canopy, canal activity and pond levels at the cursor date"
           >
             <div className="pointer-events-none absolute left-3 top-3 z-20 rounded-[12px] bg-ink/90 px-3 py-2 text-canvas shadow-2">
-              <div className="text-[11px] opacity-75">Cursor</div>
+              <div className="text-[11px] opacity-75">Day shown</div>
               <div className="num text-[17px] font-semibold leading-tight" data-testid="replay-date">{cursor ? formatDate(cursor) : "—"}</div>
               {activeEdges ? (
                 <div className="num mt-0.5 text-[11px] opacity-80">
@@ -303,7 +307,7 @@ function FieldDay({ timeline, cursorIdx, run, fieldId }: { timeline: Timeline; c
     { label: "Applied", id: "field_application_m3" },
   ];
   return (
-    <section className="rounded-[14px] border border-border bg-surface px-4 py-3 shadow-1" aria-label="Selected field on the cursor date" data-testid="field-day">
+    <section className="rounded-[18px] border border-border bg-surface px-4 py-3 shadow-1" aria-label="Selected field on the cursor date" data-testid="field-day">
       <div className="grid grid-cols-2 gap-x-4 gap-y-2 sm:grid-cols-3 lg:grid-cols-6">
         {cells.map((c) => {
           const { v, unit } = get(c.id);

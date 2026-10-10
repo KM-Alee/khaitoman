@@ -31,6 +31,8 @@ export interface MapSlotProps {
   className?: string;
   /** Hide the metric switcher (e.g. replay drives its own). */
   compactControls?: boolean;
+  /** The screen renders <MetricSwitcher/> itself (e.g. inside its intro card). */
+  ownMetricSwitcher?: boolean;
   showLegend?: boolean;
   children?: ReactNode;
   label?: string;
@@ -54,6 +56,7 @@ export function MapSlot({
   sharedDomain,
   className,
   compactControls,
+  ownMetricSwitcher,
   showLegend = true,
   children,
   label = "Pilot map",
@@ -134,7 +137,7 @@ export function MapSlot({
           {visualsOverride && legendOverride ? legendOverride : <MapLegend metric={metric} visuals={visuals} />}
         </div>
       ) : null}
-      <MapControls compact={compactControls} metric={metric} metricControlled={!!metricProp} />
+      <MapControls compact={compactControls} metricControlled={!!metricProp || !!ownMetricSwitcher} />
       {children}
     </div>
   );
@@ -211,7 +214,23 @@ function HoverCard({ visuals, override }: { visuals: FieldVisualResult; override
   );
 }
 
-function MapControls({ compact, metric, metricControlled }: { compact?: boolean; metric: MapMetric; metricControlled: boolean }) {
+/** "Colour fields by" control bound to the stored map metric. */
+export function MetricSwitcher({ className }: { className?: string }) {
+  const metric = useUI((s) => s.mapMetric);
+  const set = useUI((s) => s.set);
+  return (
+    <Segmented<MapMetric>
+      label="Colour fields by"
+      size="sm"
+      value={metric === "none" ? "yield" : metric}
+      onChange={(v) => set({ mapMetric: v })}
+      className={className}
+      options={(["yield", "service", "change", "group"] as const).map((k) => ({ value: k, label: METRIC_DEFS[k].short, title: METRIC_DEFS[k].label }))}
+    />
+  );
+}
+
+function MapControls({ compact, metricControlled }: { compact?: boolean; metricControlled: boolean }) {
   const mode = useUI((s) => s.mapMode);
   const set = useUI((s) => s.set);
   const toggle = useUI((s) => s.toggle);
@@ -230,14 +249,7 @@ function MapControls({ compact, metric, metricControlled }: { compact?: boolean;
     <>
       {!compact && !metricControlled ? (
         <div className="absolute left-3 top-3 z-10 max-w-[calc(100%-72px)] overflow-x-auto rounded-[12px] shadow-2">
-          <Segmented<MapMetric>
-            label="Colour fields by"
-            size="sm"
-            value={metric}
-            onChange={(v) => set({ mapMetric: v })}
-            className="bg-surface/95 backdrop-blur"
-            options={(["yield", "service", "change", "group"] as const).map((k) => ({ value: k, label: METRIC_DEFS[k].short, title: METRIC_DEFS[k].label }))}
-          />
+          <MetricSwitcher className="bg-surface/95 backdrop-blur" />
         </div>
       ) : null}
       <div className="absolute right-3 top-3 z-10 flex flex-col gap-1.5">

@@ -148,7 +148,7 @@ export function formatDelta(value: number, unit: string): string {
 }
 
 export function shortUnit(unit: string): string {
-  return unit === "fraction" ? "pp" : unit.replace("m3", "m³");
+  return unit === "fraction" || unit === "ratio" ? "pp" : unit.replace("m3", "m³");
 }
 
 const dateFmt = new Intl.DateTimeFormat("en-GB", { timeZone: TZ, day: "numeric", month: "short", year: "numeric" });

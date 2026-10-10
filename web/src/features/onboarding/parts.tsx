@@ -130,7 +130,7 @@ export function IssueList({ items, kind, empty }: { items: string[]; kind: "bloc
 
 export function Card({ id, title, aside, description, children, className, testId }: { id?: string; title: ReactNode; aside?: ReactNode; description?: ReactNode; children: ReactNode; className?: string; testId?: string }) {
   return (
-    <section id={id} data-testid={testId} aria-labelledby={id ? `${id}-h` : undefined} className={cn("scroll-mt-4 rounded-[14px] border border-border bg-surface shadow-1", className)}>
+    <section id={id} data-testid={testId} aria-labelledby={id ? `${id}-h` : undefined} className={cn("scroll-mt-4 rounded-[18px] border border-border bg-surface shadow-1", className)}>
       <header className="flex flex-wrap items-start justify-between gap-2 px-4 pb-2 pt-3.5">
         <div className="min-w-0">
           <h2 id={id ? `${id}-h` : undefined} className="text-[14px] font-semibold text-ink">

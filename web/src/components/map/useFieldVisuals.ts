@@ -11,22 +11,22 @@ export const METRIC_DEFS: Record<
   Exclude<MapMetric, "none">,
   { label: string; short: string; ids: string[]; unit: string; scale: "sequential-yield" | "sequential-service" | "diverging" | "categorical" }
 > = {
-  yield: { label: "Modeled yield", short: "Yield", ids: ["yield_kg_ha", "field_yield_kg_ha", "exact_yield_kg_ha"], unit: "kg/ha", scale: "sequential-yield" },
+  yield: { label: "Harvest per hectare (modeled yield)", short: "Harvest", ids: ["yield_kg_ha", "field_yield_kg_ha", "exact_yield_kg_ha"], unit: "kg/ha", scale: "sequential-yield" },
   service: {
-    label: "Service ratio (receipt / reference allowance)",
-    short: "Service",
+    label: "Fair share received (service ratio: receipt / reference allowance)",
+    short: "Fair share",
     ids: ["field_service_ratio", "service_ratio"],
     unit: "fraction",
     scale: "sequential-service",
   },
   change: {
-    label: "Yield change vs baseline",
+    label: "Harvest change vs baseline",
     short: "Change",
     ids: ["yield_kg_ha", "field_yield_kg_ha", "production_kg", "field_production_kg"],
     unit: "kg/ha",
     scale: "diverging",
   },
-  group: { label: "Head / middle / tail group", short: "Group", ids: [], unit: "", scale: "categorical" },
+  group: { label: "Head-end, middle and tail-end fields", short: "Head / tail", ids: [], unit: "", scale: "categorical" },
 };
 
 export interface FieldVisualResult {

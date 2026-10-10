@@ -1,5 +1,8 @@
 import { useMemo, useState } from "react";
-import { FileDown, Info } from "lucide-react";
+import { Coins, Droplets, FileDown, Globe2, Info, Scale } from "lucide-react";
+import { NextStep, PageHeader } from "@/components/ui/PageHeader";
+import { Provenance } from "@/components/status";
+import { planName } from "@/lib/glossary";
 import { usePilotData } from "@/app/pilotData";
 import { useMediaQuery } from "@/app/environment";
 import {
@@ -19,24 +22,31 @@ import { Chip, MetricValueView, Skeleton, StatePanel } from "@/components/status
 import { Button } from "@/components/ui/Button";
 import { Segmented } from "@/components/ui/primitives";
 import { SubTabs } from "@/features/compare/CompareTabs";
-import { useLadderRuns } from "@/features/compare/CompareScreen";
+import { useLadderRuns } from "@/features/compare/useLadder";
 import { cn } from "@/lib/cn";
 import { SdgCards } from "./SdgCards";
 import { BudgetMeter, Panel, Rows, StatusReasonView, ViewGate, isStatusReason, useFieldLabel } from "./viewKit";
 
 const TABS = [
-  { value: "water", label: "Water accounting" },
-  { value: "economics", label: "Economics" },
-  { value: "equity", label: "Equity" },
-  { value: "sdg", label: "SDG proxies" },
+  { value: "water", label: "Water", hint: "Water accounting: where every cubic metre goes", icon: <Droplets size={15} /> },
+  { value: "economics", label: "Money", hint: "Economics: costs, budgets and payback", icon: <Coins size={15} /> },
+  { value: "equity", label: "Fairness", hint: "Equity: who receives their fair share, who is worse off", icon: <Scale size={15} /> },
+  { value: "sdg", label: "Global goals", hint: "SDG proxies (2.4, 6.4/6.5, 13.1)", icon: <Globe2 size={15} /> },
 ];
+
+const TAB_COPY: Record<string, { title: string; lead: string }> = {
+  water: { title: "Where does the water go?", lead: "From the canal head to the crop: withdrawals, losses on the way, ponds, pumping and what reaches each field, on one accounting boundary at a time." },
+  economics: { title: "What does it cost, and is it worth it?", lead: "One-time works and this season's running costs against the budgets you set. Missing prices stay missing; nothing is filled in." },
+  equity: { title: "Who benefits, and is anyone left behind?", lead: "Each field's fair share of water and change in harvest, from head-end to tail-end, with every field that ends up worse off named." },
+  sdg: { title: "How does this relate to the global goals?", lead: "Three planning indicators linked to UN goals for food (2.4), water (6.4/6.5) and climate resilience (13.1). They are project proxies, not official scores." },
+};
 
 export function ImpactNav() {
   const { sel } = usePilotData();
   return (
-    <nav aria-label="Impact views" className="no-print flex h-11 shrink-0 items-center gap-1 border-b border-border bg-surface px-3">
+    <nav aria-label="Impact views" className="no-print flex h-14 shrink-0 items-center gap-1 overflow-x-auto border-b border-border bg-surface/80 px-3 backdrop-blur md:px-6">
       {[
-        { s: "impact" as const, l: "Impact" },
+        { s: "impact" as const, l: "Costs & benefits" },
         { s: "report" as const, l: "Action plan & report" },
       ].map((t) => (
         <a
@@ -48,8 +58,8 @@ export function ImpactNav() {
           }}
           aria-current={sel.screen === t.s ? "page" : undefined}
           className={cn(
-            "relative inline-flex h-11 items-center px-3 text-[13px] font-medium text-ink-secondary hover:text-ink",
-            sel.screen === t.s && "text-ink after:absolute after:inset-x-2 after:bottom-0 after:h-[2px] after:rounded-full after:bg-water",
+            "relative inline-flex h-9 shrink-0 items-center rounded-[10px] px-3.5 text-[13.5px] font-medium transition-[background-color,color,box-shadow] duration-150",
+            sel.screen === t.s ? "bg-surface text-ink shadow-2 ring-1 ring-border" : "text-ink-secondary hover:bg-surface-muted hover:text-ink",
           )}
         >
           {t.l}
@@ -91,48 +101,58 @@ export function ImpactScreen() {
     <div className="flex min-h-0 flex-1 flex-col" data-testid="impact">
       <ImpactNav />
       <SubTabs label="Impact sections" tabs={TABS} value={tab} onChange={(v) => sel.setParams({ tab: v })} />
-      <div className="min-h-0 flex-1 overflow-y-auto p-3 md:p-4">
-        {!sel.runId ? (
-          <div className="mx-auto max-w-[560px] pt-10" data-testid="impact-empty">
-            <StatePanel state="empty" title="Impact needs a run" action={{ label: "Go to Workspace", onClick: () => sel.go("workspace") }}>
-              Water accounting, economics, equity and SDG proxies are computed by the server for a completed run.
-            </StatePanel>
-          </div>
-        ) : run.isLoading ? (
-          <div className="grid gap-3 md:grid-cols-2" aria-busy="true" role="status" aria-label="Impact loading" data-testid="impact-loading">
-            <Skeleton className="h-72" />
-            <Skeleton className="h-72" />
-          </div>
-        ) : run.error || !run.data ? (
-          <div data-testid="impact-error">
-            <StatePanel state="error" error={run.error} title="Run unavailable" />
-          </div>
-        ) : run.data.outcome !== "plan" ? (
-          <div data-testid="impact-infeasible">
-            <StatePanel state={run.data.solver_status === "INFEASIBLE" ? "infeasible" : "unknown"} title={`No plan (${run.data.solver_status})`}>
-              Impact views exist only for runs with a validated plan.
-            </StatePanel>
-          </div>
-        ) : (
-          <div className="mx-auto max-w-[1600px]">
-            <div className="mb-3 flex flex-wrap items-center gap-2 text-[12px] text-ink-secondary">
-              <Chip size="sm" tone="ink">
-                {run.data.plan_kind} · run {shortId(run.data.run_id)}
-              </Chip>
-              <span className="min-w-0">Every number below is returned by the server for this run; nothing is re-derived in the browser.</span>
-              <div className="ml-auto flex flex-wrap items-center gap-2">
-                {tab === "equity" || tab === "sdg" ? baselinePicker : null}
-                <Button size="sm" variant="secondary" icon={<FileDown size={14} />} onClick={() => sel.go("report")}>
-                  Action plan & report
-                </Button>
-              </div>
+      <div className="min-h-0 flex-1 overflow-y-auto">
+        <div className="mx-auto flex max-w-[1600px] flex-col gap-5 p-4 md:p-8">
+          <PageHeader
+            compact
+            title={TAB_COPY[tab].title}
+            lead={TAB_COPY[tab].lead}
+            meta={run.data ? <Provenance run={run.data} /> : null}
+            actions={
+              sel.runId ? (
+                <>
+                  {tab === "equity" || tab === "sdg" ? baselinePicker : null}
+                  <Button variant="secondary" icon={<FileDown size={15} />} onClick={() => sel.go("report")}>
+                    Action plan & report
+                  </Button>
+                </>
+              ) : null
+            }
+          />
+          {!sel.runId ? (
+            <div className="max-w-[620px]" data-testid="impact-empty">
+              <StatePanel state="empty" art="chart" title="Impact needs a plan" action={{ label: "Go to Plan", onClick: () => sel.go("workspace") }}>
+                Water accounts, money, fairness and global-goal indicators are computed by the server for a completed plan. Find a plan first, or open a shared link.
+              </StatePanel>
             </div>
-            {tab === "water" ? <WaterTab runId={run.data.run_id} /> : null}
-            {tab === "economics" ? <EconomicsTab runId={run.data.run_id} /> : null}
-            {tab === "equity" ? <EquityTab runId={run.data.run_id} baseline={baseline} /> : null}
-            {tab === "sdg" ? <SdgTab runId={run.data.run_id} baseline={baseline} /> : null}
-          </div>
-        )}
+          ) : run.isLoading ? (
+            <div className="grid gap-3 md:grid-cols-2" aria-busy="true" role="status" aria-label="Impact loading" data-testid="impact-loading">
+              <Skeleton className="h-72" />
+              <Skeleton className="h-72" />
+            </div>
+          ) : run.error || !run.data ? (
+            <div data-testid="impact-error">
+              <StatePanel state="error" error={run.error} title="Run unavailable" />
+            </div>
+          ) : run.data.outcome !== "plan" ? (
+            <div data-testid="impact-infeasible">
+              <StatePanel state={run.data.solver_status === "INFEASIBLE" ? "infeasible" : "unknown"} title={`No plan (${run.data.solver_status})`}>
+                Costs and benefits exist only for runs with a validated plan. Go back to Plan and loosen a rule or raise a budget.
+              </StatePanel>
+            </div>
+          ) : (
+            <div className="animate-rise" key={tab}>
+              <p className="mb-3 flex items-center gap-1.5 text-[12px] text-ink-tertiary">
+                <Info size={13} aria-hidden /> Showing {planName(run.data.plan_kind).toLowerCase()} ({run.data.plan_kind} · run {shortId(run.data.run_id)}). Every number is returned by the server for this run; nothing is re-derived in the browser.
+              </p>
+              {tab === "water" ? <WaterTab runId={run.data.run_id} /> : null}
+              {tab === "economics" ? <EconomicsTab runId={run.data.run_id} /> : null}
+              {tab === "equity" ? <EquityTab runId={run.data.run_id} baseline={baseline} /> : null}
+              {tab === "sdg" ? <SdgTab runId={run.data.run_id} baseline={baseline} /> : null}
+            </div>
+          )}
+          <NextStep />
+        </div>
       </div>
     </div>
   );
@@ -490,7 +510,7 @@ function Economics({ d }: { d: RunEconomics }) {
 
 function Kpi({ label, value, sub, children }: { label: string; value: string | null; sub?: string; children?: React.ReactNode }) {
   return (
-    <section className="min-w-0 rounded-[14px] border border-border bg-surface p-4 shadow-1">
+    <section className="min-w-0 rounded-[18px] border border-border bg-surface p-4 shadow-1">
       <div className="text-[12px] text-ink-secondary">{label}</div>
       {value ? <div className="num mt-1 text-[22px] font-semibold tracking-[-0.01em] text-ink">{value}</div> : null}
       {sub ? <div className="num mt-0.5 text-[12px] text-ink-tertiary">{sub}</div> : null}
@@ -576,7 +596,7 @@ function Equity({ d, baselineKind }: { d: RunEquity; baselineKind: PlanKind | nu
   );
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-[14px] border border-border bg-surface px-4 py-2.5 text-[12px] shadow-1">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-[18px] border border-border bg-surface px-4 py-2.5 text-[12px] shadow-1">
         <span>
           <span className="text-ink-secondary">Measure </span>
           <span className="font-medium text-ink">{d.measure_label}</span>
@@ -604,7 +624,7 @@ function Equity({ d, baselineKind }: { d: RunEquity; baselineKind: PlanKind | nu
         {GROUPS.map((g) => {
           const s = d.groups[g];
           return (
-            <section key={g} className="min-w-0 rounded-[14px] border border-border bg-surface p-4 shadow-1">
+            <section key={g} className="min-w-0 rounded-[18px] border border-border bg-surface p-4 shadow-1">
               <div className="flex items-center gap-2 text-[12px] font-medium text-ink-secondary">
                 <span className="inline-block size-2.5 rounded-[3px]" style={{ background: groupColour[g] }} aria-hidden />
                 {titleCase(g)} fields

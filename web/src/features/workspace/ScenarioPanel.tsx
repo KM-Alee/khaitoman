@@ -1,34 +1,38 @@
+/**
+ * Plan settings (PRD §4.2 default view): season, water, money and fairness as plain
+ * questions; everything else behind "Planning assumptions". Editing creates a draft;
+ * "Find the best plan" creates an immutable revision and solves B0, B1 and P on it.
+ */
 import { useMemo, useState } from "react";
-import {
-  AlertTriangle,
-  ChevronRight,
-  Droplets,
-  Hammer,
-  PanelLeftClose,
-  Play,
-  RotateCcw,
-  Tractor,
-  Waves,
-  Wrench,
-  Clock3,
-} from "lucide-react";
+import { AlertTriangle, ChevronRight, CloudSun, Coins, Hammer, PanelLeftClose, RotateCcw, Scale, Sparkles, Sprout } from "lucide-react";
 import { defaultDecisionAt, useScenario } from "./useScenario";
 import { useRevision } from "@/lib/api/queries";
 import type { ActionCategory, InterventionInstance } from "@/lib/api/types";
 import { formatDate, formatPKR, formatPKRCompact, formatPercent, titleCase } from "@/lib/formatting";
 import { parsePKR, fractionToPercent, percentToFraction } from "@/lib/units";
+import { GROUP_LABEL, PLANNING_MODE_LABEL } from "@/lib/glossary";
 import { Button, IconButton } from "@/components/ui/Button";
-import { Eyebrow, Segmented, Select, SliderField, Switch } from "@/components/ui/primitives";
+import { Segmented, Select, SliderField, Switch } from "@/components/ui/primitives";
+import { TermHint } from "@/components/ui/Term";
 import { Chip, StatePanel, Skeleton } from "@/components/status";
 import { cn } from "@/lib/cn";
+import { CATEGORY_META } from "./categories";
 
-export const CATEGORY_META: Record<ActionCategory, { label: string; icon: React.ReactNode }> = {
-  timing: { label: "Timing with existing assets", icon: <Clock3 size={14} aria-hidden /> },
-  leveling: { label: "Leveling service", icon: <Tractor size={14} aria-hidden /> },
-  pond: { label: "New pond", icon: <Waves size={14} aria-hidden /> },
-  shared_repair: { label: "Shared repair", icon: <Wrench size={14} aria-hidden /> },
-  pump_supplement: { label: "Existing-pump supplement", icon: <Droplets size={14} aria-hidden /> },
-};
+export { CATEGORY_META };
+
+function Group({ icon, title, children, tour }: { icon: React.ReactNode; title: React.ReactNode; children: React.ReactNode; tour?: string }) {
+  return (
+    <fieldset className="flex flex-col gap-3.5" data-tour={tour}>
+      <legend className="mb-1 flex items-center gap-2 text-[13.5px] font-semibold text-ink">
+        <span className="grid h-6 w-6 place-items-center rounded-[8px] bg-water-soft text-water-deep" aria-hidden>
+          {icon}
+        </span>
+        {title}
+      </legend>
+      {children}
+    </fieldset>
+  );
+}
 
 export function ScenarioPanel({ onCollapse, className }: { onCollapse?: () => void; className?: string }) {
   const s = useScenario();
@@ -47,46 +51,39 @@ export function ScenarioPanel({ onCollapse, className }: { onCollapse?: () => vo
   const readiness = revision.data?.readiness ?? undefined;
 
   return (
-    <aside
-      aria-label="Scenario inputs"
-      className={cn("flex h-full min-h-0 flex-col border-r border-border bg-surface", className)}
-      data-testid="scenario-panel"
-    >
-      <div className="flex h-12 shrink-0 items-center justify-between gap-2 border-b border-border px-4">
+    <aside aria-label="Plan settings" className={cn("flex h-full min-h-0 flex-col border-r border-border bg-surface", className)} data-testid="scenario-panel" data-tour="settings">
+      <div className="flex h-14 shrink-0 items-center justify-between gap-2 border-b border-border px-5">
         <div className="flex items-center gap-2">
-          <h2 className="text-[13px] font-semibold text-ink">Scenario</h2>
+          <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-ink">Plan settings</h2>
           <PhaseChip phase={s.phase} />
         </div>
         {onCollapse ? (
-          <IconButton label="Collapse scenario panel" size="sm" onClick={onCollapse}>
+          <IconButton label="Hide plan settings" size="sm" onClick={onCollapse}>
             <PanelLeftClose size={16} />
           </IconButton>
         ) : null}
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
+      <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5">
         {catalog.seasons.error ? (
-          <StatePanel state="error" error={catalog.seasons.error} title="Season catalog unavailable">
-            The API could not list crop/season configurations for this pilot. Planning inputs stay disabled until it does.
+          <StatePanel compact state="error" error={catalog.seasons.error} title="Season list unavailable">
+            The API could not list crop seasons for this pilot. Settings stay disabled until it does.
           </StatePanel>
         ) : !draft ? (
           catalog.seasons.data && !catalog.seasons.data.length ? (
-            <StatePanel state="empty" title="No season configurations">
-              This pilot version has no published crop/season configuration yet, so no plan can be run.
+            <StatePanel compact state="empty" title="No crop season configured">
+              This pilot version has no published crop season yet, so no plan can be run.
             </StatePanel>
           ) : (
             <div className="flex flex-col gap-4" aria-busy>
               {[0, 1, 2, 3].map((i) => (
-                <Skeleton key={i} className="h-14 w-full" />
+                <Skeleton key={i} className="h-16 w-full" />
               ))}
             </div>
           )
         ) : (
-          <div className="flex flex-col gap-5">
-            <fieldset className="flex flex-col gap-3">
-              <legend className="mb-1">
-                <Eyebrow>Season</Eyebrow>
-              </legend>
+          <div className="flex flex-col gap-7">
+            <Group icon={<Sprout size={14} />} title="Which season?" tour="settings-season">
               <Select
                 label="Crop and season"
                 value={draft.season_id}
@@ -103,68 +100,40 @@ export function ScenarioPanel({ onCollapse, className }: { onCollapse?: () => vo
               >
                 {seasons.map((x) => (
                   <option key={x.season_id} value={x.season_id}>
-                    {titleCase(x.crop)} · {x.label ?? x.season_id}
-                    {x.library_ready === false ? " (library not ready)" : ""}
+                    {titleCase(x.crop)} · {(x.label ?? x.season_id).replace(/\s*\(.*\)$/, "")}
+                    {x.library_ready === false ? " (not ready)" : ""}
                   </option>
                 ))}
               </Select>
               {season ? (
-                <>
-                  <div>
-                    <div className="mb-1 text-[12px] font-medium text-ink-secondary">Planning mode</div>
+                <div className="rounded-[12px] bg-surface-muted/70 px-3 py-2.5">
+                  <div className="text-[12.5px] font-semibold text-ink">{PLANNING_MODE_LABEL[draft.planning_mode]?.plain ?? titleCase(draft.planning_mode)}</div>
+                  <div className="text-[12px] leading-snug text-ink-secondary">{PLANNING_MODE_LABEL[draft.planning_mode]?.hint}</div>
+                  {season.planning_modes.length > 1 ? (
                     <Segmented
                       label="Planning mode"
                       size="sm"
+                      className="mt-2"
                       value={draft.planning_mode}
                       onChange={(v) => s.patch({ planning_mode: v })}
                       options={(season.planning_modes as (typeof draft.planning_mode)[]).map((m) => ({
                         value: m,
-                        label: m === "historical_replay" ? "Replay" : m === "season_response" ? "Season" : "Capital",
-                        title: titleCase(m),
+                        label: m === "historical_replay" ? "Past" : m === "season_response" ? "Coming" : "New works",
+                        title: PLANNING_MODE_LABEL[m]?.plain ?? titleCase(m),
                       }))}
                     />
+                  ) : null}
+                  <div className="num mt-1.5 text-[11.5px] text-ink-tertiary">
+                    {formatDate(season.start)} – {formatDate(season.end)} · deciding on {formatDate(draft.decision_at.slice(0, 10))}
                   </div>
-                  <p className="num text-[12px] text-ink-secondary">
-                    {formatDate(season.start)} – {formatDate(season.end)} · decision {formatDate(draft.decision_at.slice(0, 10))}
-                  </p>
-                </>
+                </div>
               ) : null}
-            </fieldset>
+            </Group>
 
-            <fieldset className="flex flex-col gap-3">
-              <legend className="mb-1">
-                <Eyebrow>Weather and supply</Eyebrow>
-              </legend>
-              {catalog.weather.isLoading ? (
-                <Skeleton className="h-9 w-full" />
-              ) : weather.length ? (
-                <Select
-                  label="Weather analog"
-                  value={draft.weather_scenario_ids[0] ?? ""}
-                  onChange={(e) => s.patch({ weather_scenario_ids: [e.target.value] })}
-                  hint={weather.find((w) => w.weather_scenario_id === draft.weather_scenario_ids[0])?.selection_basis}
-                >
-                  {!draft.weather_scenario_ids.length ? <option value="">Choose…</option> : null}
-                  {weather.map((w) => (
-                    <option key={w.weather_scenario_id} value={w.weather_scenario_id}>
-                      {w.label} · analog {w.analog_season_start.slice(0, 4)}
-                      {w.is_typical ? " (typical)" : ""}
-                    </option>
-                  ))}
-                </Select>
-              ) : (
-                <p className="text-[12px] text-warning">No weather scenarios published for this season.</p>
-              )}
-              <Select label="Supply profile" value={draft.supply_profile_id} onChange={(e) => s.patch({ supply_profile_id: e.target.value })}>
-                {supplyIds.length ? null : <option value={draft.supply_profile_id}>{draft.supply_profile_id}</option>}
-                {supplyIds.map((id) => (
-                  <option key={id} value={id}>
-                    {supply.find((p) => p.supply_profile_id === id)?.label ?? titleCase(id)}
-                  </option>
-                ))}
-              </Select>
+            <Group icon={<CloudSun size={14} />} title="How much water?" tour="settings-water">
               <SliderField
-                label="Uniform shortage"
+                label="Canal water cut"
+                help={<TermHint id="shortage" />}
                 unit="%"
                 value={fractionToPercent(draft.uniform_reduction_fraction)}
                 onChange={(v) => s.patch({ uniform_reduction_fraction: percentToFraction(v) })}
@@ -173,29 +142,51 @@ export function ScenarioPanel({ onCollapse, className }: { onCollapse?: () => vo
                 step={1}
                 format={(v) => String(Math.round(v * 10) / 10)}
                 parse={(t) => (Number.isFinite(Number(t)) && t.trim() !== "" ? Number(t) : null)}
-                inputWidth="w-[76px]"
-                hint="Proportional curtailment of every roster window's cap."
+                inputWidth="w-[78px]"
+                hint="0% is a normal year; 22% matches this season's projected shortage."
               />
-            </fieldset>
+              {catalog.weather.isLoading ? (
+                <Skeleton className="h-10 w-full" />
+              ) : weather.length ? (
+                <Select
+                  label="Weather year"
+                  help={<TermHint id="weather" />}
+                  value={draft.weather_scenario_ids[0] ?? ""}
+                  onChange={(e) => s.patch({ weather_scenario_ids: [e.target.value] })}
+                  hint="A real past season's weather, used as a scenario (not a forecast)."
+                >
+                  {!draft.weather_scenario_ids.length ? <option value="">Choose…</option> : null}
+                  {weather.map((w) => (
+                    <option key={w.weather_scenario_id} value={w.weather_scenario_id}>
+                      {titleCase(w.label.replace(/\s*analog.*$/i, ""))} · like {w.analog_season_start.slice(0, 4)}
+                      {w.is_typical ? " (typical)" : ""}
+                    </option>
+                  ))}
+                </Select>
+              ) : (
+                <p className="text-[12px] text-warning">No weather scenarios published for this season.</p>
+              )}
+            </Group>
 
-            <fieldset className="flex flex-col gap-4">
-              <legend className="mb-1">
-                <Eyebrow>Budgets</Eyebrow>
-              </legend>
+            <Group icon={<Coins size={14} />} title="How much money?" tour="settings-money">
+              <div data-tour="capital-budget">
+                <SliderField
+                  label="Budget for new works"
+                  help={<TermHint id="capitalBudget" />}
+                  value={draft.capital_budget_pkr}
+                  onChange={(v) => s.patch({ capital_budget_pkr: Math.floor(v) })}
+                  min={0}
+                  max={10_000_000}
+                  step={50_000}
+                  format={(v) => formatPKR(v).replace("PKR ", "")}
+                  parse={parsePKR}
+                  unit="PKR"
+                  hint={`${formatPKRCompact(draft.capital_budget_pkr)} one-time · 0 means no new works.`}
+                />
+              </div>
               <SliderField
-                label="Capital budget (gross project commitment)"
-                value={draft.capital_budget_pkr}
-                onChange={(v) => s.patch({ capital_budget_pkr: Math.floor(v) })}
-                min={0}
-                max={10_000_000}
-                step={50_000}
-                format={(v) => formatPKR(v).replace("PKR ", "")}
-                parse={parsePKR}
-                unit="PKR"
-                hint={`${formatPKRCompact(draft.capital_budget_pkr)} · zero capital means no new assets.`}
-              />
-              <SliderField
-                label="Seasonal operating budget"
+                label="Budget for running costs"
+                help={<TermHint id="operatingBudget" />}
                 value={draft.operating_budget_pkr}
                 onChange={(v) => s.patch({ operating_budget_pkr: Math.floor(v) })}
                 min={0}
@@ -204,31 +195,29 @@ export function ScenarioPanel({ onCollapse, className }: { onCollapse?: () => vo
                 format={(v) => formatPKR(v).replace("PKR ", "")}
                 parse={parsePKR}
                 unit="PKR"
-                hint={`${formatPKRCompact(draft.operating_budget_pkr)} · pumping and upkeep.`}
+                hint={`${formatPKRCompact(draft.operating_budget_pkr)} this season · pumping and upkeep.`}
               />
-            </fieldset>
+            </Group>
 
-            <fieldset className="flex flex-col gap-3">
-              <legend className="mb-1">
-                <Eyebrow>Service target</Eyebrow>
-              </legend>
+            <Group icon={<Scale size={14} />} title="Who must be protected?" tour="settings-fair">
               <Switch
-                label="Minimum service floor"
-                description="Hard floor on receipt ÷ reference allowance"
+                label="Guarantee a fair share to a group of fields"
+                description="Tail-end fields lose most water on the way. A guarantee protects them even if total harvest drops."
                 checked={draft.minimum_service_ratio !== null}
                 onChange={(on) => s.patch(on ? { minimum_service_ratio: 0.5, service_group: "tail" } : { minimum_service_ratio: null, service_group: null })}
               />
               {draft.minimum_service_ratio !== null ? (
                 <>
                   <Segmented
-                    label="Service group"
+                    label="Protected group"
                     size="sm"
                     value={draft.service_group ?? "all"}
                     onChange={(v) => s.patch({ service_group: v })}
-                    options={(["all", "head", "middle", "tail"] as const).map((g) => ({ value: g, label: titleCase(g) }))}
+                    options={(["tail", "middle", "head", "all"] as const).map((g) => ({ value: g, label: GROUP_LABEL[g] }))}
                   />
                   <SliderField
-                    label="Floor"
+                    label="Minimum fair share"
+                    help={<TermHint id="service" />}
                     unit="%"
                     value={fractionToPercent(draft.minimum_service_ratio)}
                     onChange={(v) => s.patch({ minimum_service_ratio: percentToFraction(v) })}
@@ -237,35 +226,46 @@ export function ScenarioPanel({ onCollapse, className }: { onCollapse?: () => vo
                     step={1}
                     format={(v) => String(Math.round(v))}
                     parse={(t) => (Number.isFinite(Number(t)) && t.trim() !== "" ? Number(t) : null)}
-                    inputWidth="w-[76px]"
+                    inputWidth="w-[78px]"
                     warning={serviceWarning(readiness?.max_attainable_service, draft.service_group ?? "all", draft.minimum_service_ratio, s.dirty)}
-                    hint="Maximum attainable service per group appears after the inputs validate."
+                    hint="The highest reachable share for each group appears once these settings are checked."
                   />
                 </>
               ) : null}
-            </fieldset>
+            </Group>
 
-            <div className="rounded-[12px] border border-border">
+            <div className="rounded-[14px] border border-border">
               <button
                 type="button"
-                className="flex w-full items-center justify-between px-3 py-2.5 text-left text-[13px] font-medium text-ink"
+                className="flex w-full items-center justify-between px-3.5 py-3 text-left text-[13px] font-semibold text-ink"
                 aria-expanded={advanced}
                 onClick={() => setAdvanced((a) => !a)}
               >
-                Planning assumptions
-                <ChevronRight size={14} className={cn("transition-transform", advanced && "rotate-90")} aria-hidden />
+                <span>
+                  Planning assumptions
+                  <span className="block text-[11.5px] font-normal text-ink-tertiary">Supply pattern, pumping, objective, specific works</span>
+                </span>
+                <ChevronRight size={15} className={cn("shrink-0 transition-transform duration-150", advanced && "rotate-90")} aria-hidden />
               </button>
               {advanced ? (
-                <div className="flex flex-col gap-4 border-t border-border px-3 py-3">
+                <div className="flex animate-rise flex-col gap-4 border-t border-border px-3.5 py-3.5">
+                  <Select label="Canal supply pattern" help={<TermHint id="supply" />} value={draft.supply_profile_id} onChange={(e) => s.patch({ supply_profile_id: e.target.value })}>
+                    {supplyIds.length ? null : <option value={draft.supply_profile_id}>{draft.supply_profile_id}</option>}
+                    {supplyIds.map((id) => (
+                      <option key={id} value={id}>
+                        {supply.find((p) => p.supply_profile_id === id)?.label ?? titleCase(id)}
+                      </option>
+                    ))}
+                  </Select>
                   <Switch
-                    label="Permit existing-pump groundwater"
-                    description="Finite seasonal cap and operating cost apply"
+                    label="Allow pumping from existing wells"
+                    description="Limited by each pump's seasonal cap and the running-cost budget"
                     checked={draft.permit_groundwater}
                     onChange={(v) => s.patch({ permit_groundwater: v })}
                   />
-                  <Select label="Objective" value={draft.objective} onChange={(e) => s.patch({ objective: e.target.value as typeof draft.objective })} hint="Contribution needs a dated crop price and all variable costs.">
-                    <option value="production_kg">Modeled production (kg)</option>
-                    <option value="irrigation_contribution_pkr">Irrigation contribution (PKR)</option>
+                  <Select label="Aim for" value={draft.objective} onChange={(e) => s.patch({ objective: e.target.value as typeof draft.objective })} hint="Contribution needs a dated crop price and all variable costs.">
+                    <option value="production_kg">Most crop harvested (kg)</option>
+                    <option value="irrigation_contribution_pkr">Most irrigation contribution (PKR)</option>
                   </Select>
                   <InterventionPicker
                     items={catalog.interventions.data ?? []}
@@ -279,7 +279,7 @@ export function ScenarioPanel({ onCollapse, className }: { onCollapse?: () => vo
             </div>
 
             {readiness && (readiness.blockers?.length || readiness.warnings?.length) ? (
-              <div className="flex flex-col gap-1.5 rounded-[12px] bg-warning-soft p-3 text-[12px] text-warning">
+              <div className="flex flex-col gap-1.5 rounded-[12px] bg-warning-soft p-3 text-[12px] text-warning" role="status">
                 {[...(readiness.blockers ?? []), ...(readiness.warnings ?? [])].map((b, i) => (
                   <div key={i} className="flex gap-1.5">
                     <AlertTriangle size={13} className="mt-0.5 shrink-0" aria-hidden />
@@ -292,31 +292,33 @@ export function ScenarioPanel({ onCollapse, className }: { onCollapse?: () => vo
         )}
       </div>
 
-      <div className="shrink-0 border-t border-border bg-surface px-4 py-3">
+      <div className="shrink-0 border-t border-border bg-surface px-5 py-4">
         {s.phase === "dirty" ? (
-          <p className="mb-2 flex items-center gap-1.5 text-[12px] font-medium text-warning" role="status">
-            <AlertTriangle size={13} aria-hidden /> Inputs changed — run again
+          <p className="mb-2 flex items-center gap-1.5 text-[12.5px] font-medium text-warning" role="status">
+            <AlertTriangle size={13} aria-hidden /> Settings changed: run again for a new answer
           </p>
         ) : null}
         <div className="flex items-center gap-2">
           <Button
-            variant="primary"
+            variant="hero"
+            size="lg"
             className="flex-1"
-            icon={<Play size={15} />}
+            icon={<Sparkles size={16} />}
             busy={s.busy || s.phase === "running"}
             disabled={!draft || !draft.weather_scenario_ids.length || s.phase === "running"}
             onClick={() => void s.run()}
             data-testid="run-plan"
+            data-tour="run"
           >
-            {s.phase === "running" ? "Solving B0 · B1 · P" : s.phase === "dirty" ? "Run again" : "Run plan"}
+            {s.phase === "running" ? "Solving three plans…" : s.phase === "dirty" ? "Run again" : "Find the best plan"}
           </Button>
           {s.phase === "dirty" ? (
-            <IconButton label="Discard changes since last run" variant="secondary" onClick={s.reset}>
-              <RotateCcw size={15} />
+            <IconButton label="Undo changes since the last run" variant="secondary" size="lg" onClick={s.reset}>
+              <RotateCcw size={16} />
             </IconButton>
           ) : null}
         </div>
-        <p className="mt-2 text-[11px] leading-snug text-ink-tertiary">Runs fixed-roster (B0), no-new-capital (B1) and integrated (P) plans under identical conditions.</p>
+        <p className="mt-2 text-[11.5px] leading-snug text-ink-tertiary">Solves today's routine, smarter timing and the recommended plan under identical conditions.</p>
       </div>
     </aside>
   );
@@ -330,7 +332,7 @@ function serviceWarning(max: Record<string, number | null> | undefined, group: s
   return (
     <span className="inline-flex items-start gap-1">
       <AlertTriangle size={12} className="mt-0.5 shrink-0" aria-hidden />
-      Floor {formatPercent(floor)} exceeds the maximum attainable {group} service ({formatPercent(m)}) under this supply and repair set. The solve will be infeasible.
+      {formatPercent(floor)} is more than the {GROUP_LABEL[group]?.toLowerCase() ?? group} fields can reach ({formatPercent(m)}) with this water and these repairs. No plan will fit; lower it or add repairs.
     </span>
   );
 }
@@ -339,9 +341,9 @@ function PhaseChip({ phase }: { phase: string }) {
   const m: Record<string, [string, "neutral" | "warning" | "water" | "vegetation" | "danger"]> = {
     loading: ["Loading", "neutral"],
     unavailable: ["Unavailable", "danger"],
-    draft: ["Draft", "neutral"],
-    dirty: ["Edited", "warning"],
-    current: ["Current", "vegetation"],
+    draft: ["Not run yet", "neutral"],
+    dirty: ["Changed", "warning"],
+    current: ["Up to date", "vegetation"],
     running: ["Solving", "water"],
   };
   const [t, tone] = m[phase] ?? m.draft;
@@ -372,7 +374,7 @@ function InterventionPicker({
     return m;
   }, [items]);
   if (loading) return <Skeleton className="h-24 w-full" />;
-  if (!items.length) return <p className="text-[12px] text-ink-secondary">No intervention catalog for this season.</p>;
+  if (!items.length) return <p className="text-[12px] text-ink-secondary">No works catalog for this season.</p>;
   const stateOf = (id: string) => (forced.includes(id) ? "force" : excluded.includes(id) ? "exclude" : "auto");
   const setState = (id: string, st: "auto" | "force" | "exclude") => {
     const f = forced.filter((x) => x !== id);
@@ -384,7 +386,7 @@ function InterventionPicker({
   return (
     <div>
       <div className="mb-1.5 flex items-center gap-1.5 text-[12px] font-medium text-ink-secondary">
-        <Hammer size={13} aria-hidden /> Interventions ({items.length})
+        <Hammer size={13} aria-hidden /> Specific works ({items.length}): let the optimiser choose, force or rule out
       </div>
       <ul className="flex flex-col gap-1">
         {(Object.keys(CATEGORY_META) as ActionCategory[]).map((c) => {
@@ -394,38 +396,30 @@ function InterventionPicker({
           const nEx = list.filter((x) => excluded.includes(x.instance_id)).length;
           return (
             <li key={c} className="rounded-[10px] bg-surface-muted/70">
-              <button
-                type="button"
-                className="flex w-full items-center gap-2 px-2.5 py-2 text-left text-[12px] text-ink"
-                aria-expanded={open}
-                onClick={() => setCat(open ? null : c)}
-                disabled={!list.length}
-              >
+              <button type="button" className="flex w-full items-center gap-2 px-2.5 py-2 text-left text-[12.5px] text-ink" aria-expanded={open} onClick={() => setCat(open ? null : c)} disabled={!list.length}>
                 {CATEGORY_META[c].icon}
-                <span className="flex-1 font-medium">{CATEGORY_META[c].label}</span>
+                <span className="flex-1 font-medium" title={CATEGORY_META[c].precise}>
+                  {CATEGORY_META[c].label}
+                </span>
                 {nForced ? <Chip size="sm" tone="water">{nForced} forced</Chip> : null}
-                {nEx ? <Chip size="sm" tone="warning">{nEx} excluded</Chip> : null}
+                {nEx ? <Chip size="sm" tone="warning">{nEx} ruled out</Chip> : null}
                 <span className="num text-ink-tertiary">{list.length}</span>
               </button>
               {open ? (
                 <ul className="flex flex-col gap-1 px-2 pb-2">
                   {list.map((it) => (
                     <li key={it.instance_id} className="rounded-[8px] bg-surface px-2.5 py-2">
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="min-w-0">
-                          <div className="truncate text-[12px] font-medium text-ink" title={it.instance_id}>
-                            {it.label ?? it.instance_id.split(":").slice(1).join(" · ")}
-                          </div>
-                          <div className="num text-[11px] text-ink-secondary">
-                            {it.capex_pkr ? formatPKRCompact(it.capex_pkr) : "No capex"}
-                            {it.seasonal_opex_pkr ? ` · ${formatPKRCompact(it.seasonal_opex_pkr)}/season` : ""}
-                            {it.lead_time_days ? ` · ${it.lead_time_days} d lead` : ""}
-                            {it.shared ? " · shared" : ""}
-                          </div>
-                          {it.eligible === false && it.eligibility_reasons?.length ? (
-                            <div className="mt-0.5 text-[11px] text-warning">{it.eligibility_reasons.join("; ")}</div>
-                          ) : null}
+                      <div className="min-w-0">
+                        <div className="truncate text-[12px] font-medium text-ink" title={it.instance_id}>
+                          {it.label ?? it.instance_id.split(":").slice(1).join(" · ")}
                         </div>
+                        <div className="num text-[11px] text-ink-secondary">
+                          {it.capex_pkr ? formatPKRCompact(it.capex_pkr) : "No capex"}
+                          {it.seasonal_opex_pkr ? ` · ${formatPKRCompact(it.seasonal_opex_pkr)}/season` : ""}
+                          {it.lead_time_days ? ` · ${it.lead_time_days} days to build` : ""}
+                          {it.shared ? " · shared" : ""}
+                        </div>
+                        {it.eligible === false && it.eligibility_reasons?.length ? <div className="mt-0.5 text-[11px] text-warning">{it.eligibility_reasons.join("; ")}</div> : null}
                       </div>
                       <Segmented
                         label={`Treatment of ${it.instance_id}`}
@@ -434,9 +428,9 @@ function InterventionPicker({
                         value={stateOf(it.instance_id)}
                         onChange={(v) => setState(it.instance_id, v)}
                         options={[
-                          { value: "auto", label: "Optimizer" },
-                          { value: "force", label: "Force", disabled: it.eligible === false, title: it.eligible === false ? "Ineligible" : undefined },
-                          { value: "exclude", label: "Exclude" },
+                          { value: "auto", label: "Optimiser" },
+                          { value: "force", label: "Force", disabled: it.eligible === false, title: it.eligible === false ? "Not eligible" : undefined },
+                          { value: "exclude", label: "Rule out" },
                         ]}
                       />
                     </li>

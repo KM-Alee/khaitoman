@@ -17,8 +17,10 @@ import { Eyebrow, Segmented } from "@/components/ui/primitives";
 import { useScenario, PLAN_LABEL } from "@/features/workspace/useScenario";
 import { CATEGORY_META } from "@/features/workspace/ScenarioPanel";
 import { HEADLINE, headlineMetrics } from "@/features/workspace/ResultStrip";
-import { useLadderRuns } from "@/features/compare/CompareScreen";
+import { useLadderRuns } from "@/features/compare/useLadder";
 import { ImpactNav } from "./ImpactScreen";
+import { useRunContext } from "@/features/workspace/useRunContext";
+import { useSelection } from "@/app/selection";
 import { toast } from "@/components/ui/Toast";
 
 type Decision = "proposed" | "reviewed" | "accepted" | "rejected";
@@ -28,6 +30,7 @@ const useDecisions = create<{ d: Record<string, Decision>; set: (k: string, v: D
 );
 
 export function ReportScreen() {
+  const rc = useRunContext(useSelection().runId);
   const { sel, pilot } = usePilotData();
   const run = useRun(sel.runId);
   const s = useScenario();
@@ -74,8 +77,8 @@ export function ReportScreen() {
       <div className="min-h-0 flex-1 overflow-y-auto bg-canvas">
         {!sel.runId ? (
           <div className="mx-auto max-w-[560px] p-6 pt-10">
-            <StatePanel state="empty" title="No run to report" action={{ label: "Go to Workspace", onClick: () => sel.go("workspace") }}>
-              The action plan is generated from a completed, validated run.
+            <StatePanel state="empty" art="plan" title="No plan to report yet" action={{ label: "Find the best plan first", onClick: () => sel.go("workspace") }}>
+              The action plan for the committee is generated from a completed, validated plan: what to do, when, what it costs and who it affects.
             </StatePanel>
           </div>
         ) : run.isLoading ? (
@@ -88,13 +91,13 @@ export function ReportScreen() {
             <StatePanel state="error" error={run.error} title="Run unavailable" />
           </div>
         ) : (
-          <article className="mx-auto my-4 max-w-[920px] rounded-[16px] border border-border bg-surface px-6 py-6 shadow-1 print:my-0 print:max-w-none print:rounded-none print:border-0 print:shadow-none md:px-10 md:py-9">
+          <article data-tour="report" className="mx-auto my-6 max-w-[960px] rounded-[22px] border border-border bg-surface px-6 py-6 shadow-2 print:my-0 print:max-w-none print:rounded-none print:border-0 print:shadow-none md:px-10 md:py-9">
             <header className="flex flex-wrap items-start justify-between gap-4 border-b border-border pb-5">
               <div>
                 <Eyebrow>Decision package · action plan</Eyebrow>
                 <h1 className="mt-1 font-display text-[30px] font-[560] leading-tight tracking-[-0.015em] text-ink">{pilot.data?.pilot?.name ?? sel.pilotId}</h1>
                 <p className="num mt-1 text-[13px] text-ink-secondary">
-                  {sel.pilotId} · {sel.version} · {s.draft ? titleCase(s.draft.season_id) : ""} · run <span className="font-mono">{r.run_id}</span> · generated {formatDateTime(new Date())}
+                  {sel.pilotId} · {sel.version} · {titleCase(rc.request?.season_id ?? s.draft?.season_id ?? "")} · run <span className="font-mono">{r.run_id}</span> · generated {formatDateTime(new Date())}
                 </p>
                 <ReviewFlagChips flags={pilot.data?.pilot?.review_flags} className="mt-3" />
               </div>
