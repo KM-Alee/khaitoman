@@ -322,16 +322,17 @@ def test_job_copies_stored_metrics_and_ids(tmp_path, monkeypatch):
         assert queued["final_self_contained_report"] is False
         ctx = JobContext(settings, job_id, "unit-test", conn)
         result = svc.report_job(ctx, {"report_id": report_id})
-        assert result["final_self_contained_report"] is False
-        assert result["artifact"] == "placeholder.json"
+        assert result["final_self_contained_report"] is True
+        assert result["artifact"] == "report.html"
         queue.finish(conn, job_id, JobState.succeeded, result_ref=dumps(result))
         view = svc.get_report(conn, settings, report_id)
         assert view["status"] == "succeeded"
-        assert view["download_url"].endswith("/files/placeholder.json")
-        document = json.loads((settings.reports_dir / report_id / "placeholder.json").read_text())
-        assert document["artifact_kind"] == "p05-api-placeholder"
-        assert document["final_self_contained_report"] is False
-        assert "http://" not in json.dumps(document) and "https://" not in json.dumps(document)
+        assert view["download_url"].endswith("/files/report.html")
+        document = json.loads((settings.reports_dir / report_id / "metrics.json").read_text())
+        html = (settings.reports_dir / report_id / "report.html").read_text()
+        assert document["artifact_kind"] == "self-contained-report"
+        assert document["final_self_contained_report"] is True
+        assert "http://" not in html and "https://" not in html
         assert document["runs"][0]["metrics"][0]["value"] == METRIC
         assert document["runs"][0]["metrics"][0]["definition_id"] == STORED_DEFINITION
         assert document["runs"][0]["metrics"][1]["value"] is None
@@ -344,7 +345,15 @@ def test_job_copies_stored_metrics_and_ids(tmp_path, monkeypatch):
         assert document["runs"][1]["metrics"][0]["value"] == 3456.0
         assert document["analyses"][0]["stored_result"]["sentinel_metric"] == 42.0
         names = sorted(path.name for path in (settings.reports_dir / report_id).iterdir())
-        assert names == ["placeholder.json"]
+        assert "report.html" in names and "manifest.json" in names
+        manifest = json.loads((settings.reports_dir / report_id / "manifest.json").read_text())
+        assert {item["path"] for item in manifest["files"]} >= {
+            "report.html",
+            "metrics.csv",
+            "actions.csv",
+            "fields.geojson",
+            "metrics.json",
+        }
     finally:
         conn.close()
 

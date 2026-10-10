@@ -30,8 +30,14 @@ from aabflow.services.runs import LoadedRun, load_run, run_row, verify_bundle
 
 PLACEHOLDER_NAME = "placeholder.json"
 PLACEHOLDER_KIND = "p05-api-placeholder"
-ARTIFACT_KIND = PLACEHOLDER_KIND
-HASH_SCOPE = "sha256 of placeholder.json; not a self-contained report manifest"
+REPORT_HTML = "report.html"
+METRICS_JSON = "metrics.json"
+METRICS_CSV = "metrics.csv"
+ACTIONS_CSV = "actions.csv"
+FIELDS_GEOJSON = "fields.geojson"
+MANIFEST_NAME = "manifest.json"
+ARTIFACT_KIND = "self-contained-report"
+HASH_SCOPE = "sha256 of manifest.json, which lists sha256 for every report file"
 NOTE = (
     "Minimal P05-api placeholder. Not the self-contained report. "
     "HTML, CSV, GeoJSON, and the manifest are a later step."
@@ -282,6 +288,9 @@ def copy_run_snapshot(loaded: LoadedRun) -> dict[str, Any]:
         "metrics_version": meta.get("metrics_version"),
         "metrics": metrics,
         "definitions": definition_snapshots(metrics),
+        "selected_intervention_instance_ids": list(
+            getattr(result, "selected_intervention_instance_ids", []) or []
+        ),
     }
 
 
@@ -326,6 +335,161 @@ def _safe_report_id(report_id: str) -> None:
         or report_id.startswith(".")
     ):
         raise invalid("report_id is not a safe path segment", {"report_id": report_id})
+
+
+def _esc(value: Any) -> str:
+    text = "" if value is None else str(value)
+    return (
+        text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
+    )
+
+
+def _metrics_csv(runs: list[dict[str, Any]]) -> str:
+    lines = ["run_id,metric_id,definition_id,value,unit,status,reason"]
+    for run in runs:
+        for metric in run.get("metrics") or []:
+            value = "" if metric.get("value") is None else metric.get("value")
+            reason = (metric.get("reason") or "").replace('"', "'")
+            lines.append(
+                f"{run['run_id']},{metric.get('metric_id')},"
+                f"{metric.get('definition_id')},{value},{metric.get('unit')},"
+                f'{metric.get("status")},"{reason}"'
+            )
+    return "\n".join(lines) + "\n"
+
+
+def _actions_csv(runs: list[dict[str, Any]]) -> str:
+    lines = ["run_id,plan_kind,outcome,solver_status,action_id,source"]
+    for run in runs:
+        actions = run.get("selected_intervention_instance_ids") or []
+        if not actions:
+            lines.append(
+                f"{run['run_id']},{run.get('plan_kind')},{run.get('outcome')},"
+                f"{run.get('solver_status')},,not_estimated"
+            )
+            continue
+        for action_id in actions:
+            lines.append(
+                f"{run['run_id']},{run.get('plan_kind')},{run.get('outcome')},"
+                f"{run.get('solver_status')},{action_id},stored_run"
+            )
+    return "\n".join(lines) + "\n"
+
+
+def _fields_geojson(runs: list[dict[str, Any]]) -> str:
+    features = []
+    for run in runs:
+        for metric in run.get("metrics") or []:
+            field_id = metric.get("field_id")
+            if not field_id:
+                continue
+            features.append(
+                {
+                    "type": "Feature",
+                    "geometry": None,
+                    "properties": {
+                        "field_id": field_id,
+                        "run_id": run["run_id"],
+                        "metric_id": metric.get("metric_id"),
+                        "value": metric.get("value"),
+                        "unit": metric.get("unit"),
+                        "status": metric.get("status"),
+                        "note": "stored metric; geometry is not recomputed",
+                    },
+                }
+            )
+    return (
+        json.dumps({"type": "FeatureCollection", "features": features}, indent=1, allow_nan=False)
+        + "\n"
+    )
+
+
+def _report_html(document: dict[str, Any]) -> str:
+    rows = []
+    for run in document["runs"]:
+        for metric in run.get("metrics") or []:
+            rows.append(
+                "<tr>"
+                f"<td>{_esc(run['run_id'])}</td>"
+                f"<td>{_esc(metric.get('metric_id'))}</td>"
+                f"<td>{_esc(metric.get('value'))}</td>"
+                f"<td>{_esc(metric.get('unit'))}</td>"
+                f"<td>{_esc(metric.get('status'))}</td>"
+                f"<td>{_esc(metric.get('definition_id'))}</td>"
+                "</tr>"
+            )
+    body = "\n".join(rows) or "<tr><td colspan='6'>no stored metrics</td></tr>"
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>AabFlow report {_esc(document["report_id"])}</title>
+<style>
+body {{ font-family: sans-serif; margin: 1.5rem; }}
+table {{ border-collapse: collapse; width: 100%; }}
+td, th {{ border: 1px solid #ccc; padding: 0.3rem; text-align: left; }}
+</style>
+</head>
+<body>
+<h1>AabFlow local report</h1>
+<p>Report {_esc(document["report_id"])} · {_esc(document["report_type"])}</p>
+<p>Pilot {_esc(document["pilot_id"])} {_esc(document["pilot_version"])}</p>
+<p>Values are copied from stored runs. Nothing here is recomputed.</p>
+<table>
+<thead><tr><th>Run</th><th>Metric</th><th>Value</th><th>Unit</th><th>Status</th><th>Definition</th></tr></thead>
+<tbody>
+{body}
+</tbody>
+</table>
+</body>
+</html>
+"""
+
+
+def publish_bundle(
+    settings: Settings, report_id: str, document: dict[str, Any]
+) -> tuple[Path, str]:
+    """Write the self-contained files and a sha256 manifest. No external URLs."""
+    _safe_report_id(report_id)
+    root = settings.reports_dir.resolve()
+    root.mkdir(parents=True, exist_ok=True)
+    final = (root / report_id).resolve()
+    if final.parent != root:
+        raise invalid("report directory escapes the reports store", {"report_id": report_id})
+    if final.exists():
+        shutil.rmtree(final)
+    tmp = root / f".tmp-{report_id}"
+    if tmp.exists():
+        shutil.rmtree(tmp)
+    tmp.mkdir()
+    files = {
+        METRICS_JSON: json.dumps(document, indent=1, sort_keys=True, allow_nan=False) + "\n",
+        METRICS_CSV: _metrics_csv(document["runs"]),
+        ACTIONS_CSV: _actions_csv(document["runs"]),
+        FIELDS_GEOJSON: _fields_geojson(document["runs"]),
+        REPORT_HTML: _report_html(document),
+    }
+    listed = []
+    for name, text in files.items():
+        if "http://" in text or "https://" in text:
+            raise invalid("report file contains an external URL", {"file": name})
+        path = tmp / name
+        path.write_text(text)
+        _fsync(path)
+        listed.append(
+            {"path": name, "sha256": file_sha256(path), "size_bytes": path.stat().st_size}
+        )
+    manifest = {
+        "report_id": report_id,
+        "artifact_kind": ARTIFACT_KIND,
+        "files": listed,
+    }
+    manifest_path = tmp / MANIFEST_NAME
+    manifest_path.write_text(json.dumps(manifest, indent=1, sort_keys=True) + "\n")
+    _fsync(manifest_path)
+    digest = file_sha256(manifest_path)
+    os.replace(tmp, final)
+    return final, digest
 
 
 def publish_placeholder(
@@ -391,9 +555,9 @@ def report_job(ctx, payload: dict[str, Any]) -> dict[str, Any]:
         done += 1
         ctx.progress(done / total)
     document = {
-        "artifact_kind": PLACEHOLDER_KIND,
-        "final_self_contained_report": False,
-        "note": NOTE,
+        "artifact_kind": ARTIFACT_KIND,
+        "final_self_contained_report": True,
+        "note": "Stored metrics copied into local files. Analytics are not recomputed.",
         "report_id": report_id,
         "report_type": body.report_type,
         "contract_version": body.contract_version,
@@ -403,18 +567,18 @@ def report_job(ctx, payload: dict[str, Any]) -> dict[str, Any]:
         "analyses": analyses,
     }
     ctx.check_cancel()
-    directory, digest = publish_placeholder(ctx.settings, report_id, document)
+    directory, digest = publish_bundle(ctx.settings, report_id, document)
     with tx(ctx.conn):
         ctx.conn.execute(
             "UPDATE reports SET report_dir = ?, report_hash = ? WHERE report_id = ?",
             (str(directory), digest, report_id),
         )
-    ctx.stage("published_placeholder", progress=1.0)
+    ctx.stage("published_report", progress=1.0)
     return {
         "report_id": report_id,
-        "artifact": PLACEHOLDER_NAME,
-        "artifact_kind": PLACEHOLDER_KIND,
-        "final_self_contained_report": False,
+        "artifact": REPORT_HTML,
+        "artifact_kind": ARTIFACT_KIND,
+        "final_self_contained_report": True,
         "report_hash": digest,
         "report_hash_scope": HASH_SCOPE,
     }
@@ -432,17 +596,30 @@ def contained_report_dir(settings: Settings, row: sqlite3.Row) -> Path | None:
 
 
 def artifact_ready(settings: Settings, row: sqlite3.Row) -> bool:
-    """A succeeded job still needs the recorded placeholder bytes."""
+    """A succeeded job still needs every manifest file at its recorded hash."""
     digest = row["report_hash"]
     directory = contained_report_dir(settings, row)
     if not isinstance(digest, str) or not digest or directory is None:
         return False
-    path = directory / PLACEHOLDER_NAME
-    if not path.is_file():
+    manifest_path = directory / MANIFEST_NAME
+    if not manifest_path.is_file() or file_sha256(manifest_path) != digest:
         return False
-    if file_sha256(path) != digest:
+    try:
+        manifest = json.loads(manifest_path.read_text())
+    except (OSError, UnicodeError, json.JSONDecodeError):
         return False
-    return _placeholder_document(path, row["report_id"]) is not None
+    if not isinstance(manifest, dict) or manifest.get("report_id") != row["report_id"]:
+        return False
+    for entry in manifest.get("files") or []:
+        if not isinstance(entry, dict):
+            return False
+        rel = entry.get("path")
+        if not isinstance(rel, str) or rel != Path(rel).name or rel in _UNSAFE_PARTS:
+            return False
+        path = directory / rel
+        if not path.is_file() or file_sha256(path) != entry.get("sha256"):
+            return False
+    return (directory / REPORT_HTML).is_file()
 
 
 def _job_error(job: sqlite3.Row | None) -> dict[str, Any] | None:
@@ -470,13 +647,13 @@ def get_report(conn: sqlite3.Connection, settings: Settings, report_id: str) -> 
         status = "failed"
         job_error = {
             "code": "ASSET_UNAVAILABLE",
-            "detail": "report job has no intact placeholder; success is not claimed",
+            "detail": "report job has no intact manifest; success is not claimed",
         }
     else:
         status = job_state or "failed"
     download_url = None
     if ready:
-        download_url = f"/api/v2/reports/{report_id}/files/{PLACEHOLDER_NAME}"
+        download_url = f"/api/v2/reports/{report_id}/files/{REPORT_HTML}"
     return {
         "report_id": row["report_id"],
         "status": status,
@@ -491,7 +668,7 @@ def get_report(conn: sqlite3.Connection, settings: Settings, report_id: str) -> 
         "report_hash": row["report_hash"],
         "report_hash_scope": HASH_SCOPE if row["report_hash"] else None,
         "artifact_kind": ARTIFACT_KIND if ready else None,
-        "final_self_contained_report": False,
+        "final_self_contained_report": ready,
     }
 
 

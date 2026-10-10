@@ -264,22 +264,17 @@ def test_dispatcher_copies_metrics_and_files_route_rejects_escapes(live):
     assert view.status_code == 200
     body = view.json()
     assert body["status"] == "succeeded"
-    assert body["download_url"] == f"/api/v2/reports/{report_id}/files/placeholder.json"
-    assert body["final_self_contained_report"] is False
-    assert body["artifact_kind"] == "p05-api-placeholder"
-    assert (
-        "manifest" not in (body["report_hash_scope"] or "")
-        or "not a self-contained" in body["report_hash_scope"]
-    )
+    assert body["download_url"] == f"/api/v2/reports/{report_id}/files/report.html"
+    assert body["final_self_contained_report"] is True
+    assert body["artifact_kind"] == "self-contained-report"
+    assert "manifest.json" in (body["report_hash_scope"] or "")
     downloaded = client.get(body["download_url"])
     assert downloaded.status_code == 200
     assert downloaded.headers["x-content-type-options"] == "nosniff"
-    document = downloaded.json()
-    assert document["final_self_contained_report"] is False
-    assert document["artifact_kind"] == "p05-api-placeholder"
     text = downloaded.text
     assert "http://" not in text and "https://" not in text
-    stored = client.get(body["download_url"]).json()
+    assert report_id in text
+    stored = client.get(f"/api/v2/reports/{report_id}/files/metrics.json").json()
     metrics = stored["runs"][0]["metrics"]
     assert metrics[0]["value"] == METRIC
     assert metrics[0]["definition_id"] == "production_kg@stored-fixture-do-not-replace"
@@ -288,8 +283,17 @@ def test_dispatcher_copies_metrics_and_files_route_rejects_escapes(live):
     assert stored["runs"][0]["candidate_library_hash"] == "b" * 64
     assert stored["runs"][1]["metrics"][0]["value"] == 3456.0
     assert stored["analyses"][0]["stored_result"]["sentinel_metric"] == 42.0
-    names = sorted(path.name for path in (settings.reports_dir / report_id).iterdir())
-    assert names == ["placeholder.json"]
+    names = sorted(
+        path.name for path in (settings.reports_dir / report_id).iterdir() if path.is_file()
+    )
+    assert names == [
+        "actions.csv",
+        "fields.geojson",
+        "manifest.json",
+        "metrics.csv",
+        "metrics.json",
+        "report.html",
+    ]
 
     secret = settings.reports_dir / "secret.txt"
     secret.write_text("OUTSIDE-SECRET")
@@ -304,11 +308,11 @@ def test_dispatcher_copies_metrics_and_files_route_rejects_escapes(live):
         escaped = client.get(f"/api/v2/reports/{report_id}/files/{rel}")
         assert escaped.status_code == 404, rel
         assert b"OUTSIDE-SECRET" not in escaped.content
-    missing = client.get(f"/api/v2/reports/{report_id}/files/report.html")
+    missing = client.get(f"/api/v2/reports/{report_id}/files/not-a-report.bin")
     assert missing.status_code == 404
 
-    path = settings.reports_dir / report_id / "placeholder.json"
-    path.unlink()
+    path = settings.reports_dir / report_id / "report.html"
+    path.write_text(path.read_text() + "<!-- tampered -->")
     withdrawn = client.get(f"/api/v2/reports/{report_id}").json()
     assert withdrawn["job_state"] == "succeeded"
     assert withdrawn["status"] == "failed"
