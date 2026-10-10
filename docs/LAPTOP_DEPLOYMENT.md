@@ -347,6 +347,45 @@ It uses the real seeded demo and verifies browser API/preflight requests, native
 EventSource, map assets and the rendered workspace. It writes
 `evidence/screenshots/laptop-split-origin.png` and fails on unexpected request failures.
 
+## Public mode activation — 10 October 2026
+
+The owner explicitly confirmed removal of backend authentication. Cloudflare
+saved the Everyone bypass on the existing all-path API application, preserving
+the owner-only policy. No DNS, tunnel token, source package or development data
+was changed for this activation. The Vercel Production flag
+`VITE_BACKEND_ACCESS_REQUIRED=false` was saved before pushing frontend code
+`2a87378` on `codex/laptop-serving`. Production deployment
+`dpl_DAybN3JM5DceXgDPTLns8v8cA6w6` reached READY with `app.khmanan.site`
+assigned and the exact source SHA verified through the Vercel connector.
+
+Executed checks without cookies, Authorization or Access service-token headers:
+
+- Health, pilot list, real 30-field GeoJSON, satellite WebP, terrain PNG and the
+  existing 150,622-byte full report returned HTTP 200. All six responses exposed
+  the exact frontend CORS origin and Cloudflare reported DYNAMIC, without cache hits.
+- POST `/api/v2/reports` returned HTTP 202 for real saved run
+  `run_5f2a5629def1436c8f8181f34188d783`, creating
+  `rpt_b8ee035b15604c16ab683a6051bb11b0` / job
+  `job_f277edd681eb413abbdc8172f275e5d3`. Its SSE stream returned HTTP 200,
+  `text/event-stream`, and a succeeded event. The new one-page HTML download
+  returned HTTP 200, 38,217 bytes, containing the actual run ID.
+- Allowed preflight returned HTTP 200; an unrelated origin returned HTTP 400.
+- Docker validation: 645 Python tests passed (8 warnings); 19 frontend files /
+  118 tests passed; TypeScript and Vite production build passed. Public-mode
+  regression coverage checks that failed health fetches show Retry without a
+  sign-in link or authentication advice, and recover after a successful retry.
+- The serving database/dispatcher health passed. Docker boot enablement, active
+  enabled guard, Linger=yes and sleep/idle/lid inhibitor were checked again.
+- The live compiled bundle contains public retry advice and omits the Access
+  sign-in copy. Reloaded browser workspace shows Backend API online, the real
+  30-field map, saved plan results and Esri HD imagery; its error/warning scan
+  was empty. Screenshot: `evidence/screenshots/laptop-anonymous-public-20261010.png`.
+  Anonymous HTTP checks above establish access without a session independently
+  of the browser's existing cookies.
+
+The preceding protected-login checks below are historical; public mode now
+supersedes their expected unauthenticated HTTP 302 results.
+
 ## Earlier protected deployment validation
 
 Latest `main` at `3cc65e3` was fast-forwarded into the serving branch. The report

@@ -63,3 +63,27 @@ Connection recovery update (8262ae9)
 - Browser opened Vercel production workspace URL and landed on app.khmanan.site with selected real run, Backend API online, 30 fields, computed results and Esri attribution.
 - Browser error/warning scan empty. Screenshot evidence/screenshots/laptop-connection-fixed-20261010.png.
 - Allowed public origin preflight still 200 with exact origin + credentials. Access protection remains in place.
+
+Public mode activation (owner confirmed at action time, 10 October 2026)
+- Cloudflare existing app 06429ebd-2d6e-4ad5-9b96-5517f9114a6d saved successfully.
+- All-path Bypass / Everyone policy df12efcc-4ca9-4ebd-a079-8dcf18b2ecfd: AabFlow public access.
+- Owner-only policy retained for restoring private access; no DNS/source/token changes.
+- Vercel Production VITE_BACKEND_ACCESS_REQUIRED=false saved before code 2a87378 push.
+- Anonymous curl requests supplied no cookies, Authorization or Access service tokens.
+- Health 200 / 269 bytes; pilots 200 / 3628 bytes; fields GeoJSON 200 / 413416 bytes / 30 features.
+- Sentinel-2 WebP 200 / 56610 bytes; DEM PNG 200 / 37359 bytes; saved full report 200 / 150622 bytes.
+- All six responses had exact app.khmanan.site CORS origin and CF-Cache-Status DYNAMIC.
+- Anonymous POST reports 202: rpt_b8ee035b15604c16ab683a6051bb11b0, job_f277edd681eb413abbdc8172f275e5d3.
+- Anonymous SSE 200 / text/event-stream / 1580 bytes / succeeded event verified.
+- Anonymous new one-page report download 200 / 38217 bytes / real run_5f2a5629def1436c8f8181f34188d783 verified.
+- Allowed OPTIONS 200; other-origin OPTIONS 400.
+- Docker make test: 645 passed, 8 warnings in 71.86s.
+- Docker make web-test: 19 files / 118 tests passed. TypeScript/Vite build: passed in 6.24s.
+- Self-review and React checklist: no actionable findings; hooks, keyboard retry control and labelled alert retained; no domain/science/source edits.
+- Serving check: schema 4, database ok, dispatcher running, 3 pilots, 12 ready libraries, 2 workers.
+- Docker enabled boot; user guard enabled/active; Linger=yes; AabFlow sleep/idle/lid inhibitor block active.
+- Earlier authenticated/HTTP 302 evidence above is historical and superseded by public mode.
+- Vercel dpl_DAybN3JM5DceXgDPTLns8v8cA6w6 READY production at 2a87378a17aaff80c5357066b43c67facf421733; app.khmanan.site assigned.
+- Live production bundle public retry copy verified; Access sign-in copy absent.
+- Reloaded browser workspace: Backend API online, real 30 fields, saved results, Esri HD attribution; warning/error scan empty.
+- Screenshot evidence/screenshots/laptop-anonymous-public-20261010.png; browser cookies were not used by the anonymous curl checks.
