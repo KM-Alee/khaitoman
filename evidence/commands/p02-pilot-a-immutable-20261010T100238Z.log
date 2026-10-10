@@ -1,0 +1,9 @@
+=== make pilot-a 2026-10-10T10:02:38Z ===
+./scripts/agent_runtime.sh compose run --rm --no-deps api python scripts/publish_pilot.py --pilot pilot-a --version reviewed-v1
+ Container aabflow-worker-p02-run1-api-run-17a86769bfab Creating 
+ Container aabflow-worker-p02-run1-api-run-17a86769bfab Created 
+pilot-a/reviewed-v1 does not match the current builder; the published version is immutable and was left unchanged
+
+make: *** [Makefile:92: pilot-a] Error 2
+EXIT:
+## feat/p02-provenance

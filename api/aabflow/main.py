@@ -28,6 +28,7 @@ def _routers() -> list[APIRouter]:
         analyses,
         impact,
         jobs,
+        onboarding,
         packages,
         pilots,
         reports,
@@ -41,6 +42,7 @@ def _routers() -> list[APIRouter]:
     return [
         system.router,
         pilots.router,
+        onboarding.router,
         packages.router,
         jobs.router,
         scenarios.router,

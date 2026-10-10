@@ -484,6 +484,159 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v2/onboarding": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Intake */
+        post: operations["create_intake_api_v2_onboarding_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/onboarding/aoi-check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Aoi Check */
+        post: operations["aoi_check_api_v2_onboarding_aoi_check_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/onboarding/raw-packages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Raw Packages */
+        get: operations["raw_packages_api_v2_onboarding_raw_packages_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/onboarding/{onboarding_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Intake */
+        get: operations["get_intake_api_v2_onboarding__onboarding_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/onboarding/{onboarding_id}/layers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Intake Layers */
+        get: operations["intake_layers_api_v2_onboarding__onboarding_id__layers_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/onboarding/{onboarding_id}/layers/{layer_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Intake Layer */
+        get: operations["intake_layer_api_v2_onboarding__onboarding_id__layers__layer_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/onboarding/{onboarding_id}/process": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Process Intake */
+        post: operations["process_intake_api_v2_onboarding__onboarding_id__process_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/onboarding/{onboarding_id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Publish Intake */
+        post: operations["publish_intake_api_v2_onboarding__onboarding_id__publish_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/onboarding/{onboarding_id}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Review Intake */
+        patch: operations["review_intake_api_v2_onboarding__onboarding_id__review_patch"];
+        trace?: never;
+    };
     "/api/v2/pilots": {
         parameters: {
             query?: never;
@@ -547,6 +700,57 @@ export interface paths {
         put?: never;
         /** Import Pilot Package */
         post: operations["import_pilot_package_api_v2_pilots__pilot_id__versions__version__package_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Report */
+        post: operations["create_report_api_v2_reports_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/reports/{report_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Report */
+        get: operations["get_report_api_v2_reports__report_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/reports/{report_id}/files/{rel}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Report File */
+        get: operations["report_file_api_v2_reports__report_id__files__rel__get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1006,6 +1210,19 @@ export interface components {
             /** Updated At */
             updated_at: string;
         };
+        /** AoiCheckRequest */
+        AoiCheckRequest: {
+            /** Aoi */
+            aoi: {
+                [key: string]: unknown;
+            };
+            /**
+             * Contract Version
+             * @default 2.0.0
+             * @constant
+             */
+            contract_version: "2.0.0";
+        };
         /** Asset */
         Asset: {
             /**
@@ -1366,6 +1583,28 @@ export interface components {
             service_references: components["schemas"]["ServiceReference"][];
             soil: components["schemas"]["SoilProfile"] | null;
         };
+        /** FieldEdit */
+        FieldEdit: {
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "reject" | "replace_geometry" | "split" | "merge_with";
+            /** Geometry Wgs84 */
+            geometry_wgs84?: {
+                [key: string]: unknown;
+            } | null;
+            /** Model Id */
+            model_id: string;
+            /** Other Model Ids */
+            other_model_ids?: string[];
+            /** Parts Wgs84 */
+            parts_wgs84?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Reason */
+            reason: string;
+        };
         /**
          * Field_
          * @description A reviewed field. Named Field_ to avoid shadowing pydantic.Field; exported as FieldRecord.
@@ -1556,6 +1795,36 @@ export interface components {
          * @enum {string}
          */
         InfeasibilityKind: "missing_input" | "empty_option_set" | "finite_candidate_incompatibility" | "bound_contradiction";
+        /** IntakeCreate */
+        IntakeCreate: {
+            /** Aoi */
+            aoi: {
+                [key: string]: unknown;
+            };
+            /**
+             * Contract Version
+             * @default 2.0.0
+             * @constant
+             */
+            contract_version: "2.0.0";
+            /** Geographic Name Basis */
+            geographic_name_basis?: string | null;
+            /** Name */
+            name?: string | null;
+            /** Parent Canal Feature Id */
+            parent_canal_feature_id?: string | null;
+            /** Pilot Id */
+            pilot_id?: string | null;
+            /** Raw Package Id */
+            raw_package_id?: string | null;
+            /** Raw Package Ref */
+            raw_package_ref?: string | null;
+            /**
+             * Source Mode
+             * @enum {string}
+             */
+            source_mode: "online" | "raw_package";
+        };
         /** InterventionEligibility */
         InterventionEligibility: {
             category: components["schemas"]["ActionCategory"];
@@ -2264,6 +2533,28 @@ export interface components {
             /** Verify Job Id */
             verify_job_id: string | null;
         };
+        /** ProcessRequest */
+        ProcessRequest: {
+            /**
+             * Contract Version
+             * @default 2.0.0
+             * @constant
+             */
+            contract_version: "2.0.0";
+        };
+        /** PublishRequest */
+        PublishRequest: {
+            /**
+             * Contract Version
+             * @default 2.0.0
+             * @constant
+             */
+            contract_version: "2.0.0";
+            /** Pilot Id */
+            pilot_id?: string | null;
+            /** Pilot Version */
+            pilot_version?: string | null;
+        };
         /** Readiness */
         Readiness: {
             /** Blockers */
@@ -2280,6 +2571,69 @@ export interface components {
             ready: boolean;
             /** Warnings */
             warnings: components["schemas"]["Issue"][];
+        };
+        /** ReportAccepted */
+        ReportAccepted: {
+            job: components["schemas"]["Job"];
+            /** Job Id */
+            job_id: string;
+            /** Report Id */
+            report_id: string;
+        };
+        /**
+         * ReportCreate
+         * @description Body reserved by copilot ``create_report``: run ids, analysis ids, report type.
+         */
+        ReportCreate: {
+            /** Analysis Ids */
+            analysis_ids?: string[];
+            /**
+             * Contract Version
+             * @default 2.0.0
+             * @constant
+             */
+            contract_version: "2.0.0";
+            /**
+             * Report Type
+             * @default one_page_plan
+             * @enum {string}
+             */
+            report_type: "one_page_plan" | "full_report";
+            /** Run Ids */
+            run_ids: string[];
+        };
+        /** ReportView */
+        ReportView: {
+            /** Analysis Ids */
+            analysis_ids: string[];
+            /** Artifact Kind */
+            artifact_kind: string | null;
+            /** Created At */
+            created_at: string;
+            /** Download Url */
+            download_url: string | null;
+            /** Final Self Contained Report */
+            final_self_contained_report: boolean;
+            /** Job Error */
+            job_error: {
+                [key: string]: unknown;
+            } | null;
+            /** Job Id */
+            job_id: string | null;
+            /** Job State */
+            job_state: string | null;
+            /** Report Hash */
+            report_hash: string | null;
+            /** Report Hash Scope */
+            report_hash_scope: string | null;
+            /** Report Id */
+            report_id: string;
+            /** Report Type */
+            report_type: string;
+            /** Run Ids */
+            run_ids: string[];
+            /** Status */
+            status: string;
         };
         /**
          * ReviewFlags
@@ -2314,6 +2668,27 @@ export interface components {
              * @default false
              */
             topology_structurally_valid: boolean;
+        };
+        /** ReviewRequest */
+        ReviewRequest: {
+            /**
+             * Contract Version
+             * @default 2.0.0
+             * @constant
+             */
+            contract_version: "2.0.0";
+            /** Expected Version */
+            expected_version: number;
+            /** Field Edits */
+            field_edits?: components["schemas"]["FieldEdit"][];
+            /** Parent Canal Feature Id */
+            parent_canal_feature_id?: string | null;
+            /** Review Config */
+            review_config?: {
+                [key: string]: unknown;
+            } | null;
+            /** Reviewer */
+            reviewer?: string | null;
         };
         /**
          * RevisionChange
@@ -4094,6 +4469,309 @@ export interface operations {
             };
         };
     };
+    create_intake_api_v2_onboarding_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "Idempotency-Key"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IntakeCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    aoi_check_api_v2_onboarding_aoi_check_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AoiCheckRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    raw_packages_api_v2_onboarding_raw_packages_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    get_intake_api_v2_onboarding__onboarding_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                onboarding_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    intake_layers_api_v2_onboarding__onboarding_id__layers_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                onboarding_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    intake_layer_api_v2_onboarding__onboarding_id__layers__layer_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                onboarding_id: string;
+                layer_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    process_intake_api_v2_onboarding__onboarding_id__process_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "Idempotency-Key"?: string | null;
+            };
+            path: {
+                onboarding_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ProcessRequest"] | null;
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    publish_intake_api_v2_onboarding__onboarding_id__publish_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "Idempotency-Key"?: string | null;
+            };
+            path: {
+                onboarding_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PublishRequest"] | null;
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    review_intake_api_v2_onboarding__onboarding_id__review_patch: {
+        parameters: {
+            query?: never;
+            header?: {
+                "Idempotency-Key"?: string | null;
+            };
+            path: {
+                onboarding_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReviewRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_pilots_api_v2_pilots_get: {
         parameters: {
             query?: never;
@@ -4226,6 +4904,104 @@ export interface operations {
         responses: {
             /** @description Successful Response */
             201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_report_api_v2_reports_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "Idempotency-Key"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReportCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportAccepted"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_report_api_v2_reports__report_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                report_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportView"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    report_file_api_v2_reports__report_id__files__rel__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                report_id: string;
+                rel: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
