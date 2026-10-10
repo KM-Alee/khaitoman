@@ -1,6 +1,51 @@
 {
   "components": {
     "schemas": {
+      "ActionBlock": {
+        "additionalProperties": false,
+        "description": "A button: selecting it updates the existing workspace (never operates anything physical).",
+        "properties": {
+          "action": {
+            "enum": [
+              "open_run",
+              "open_branch",
+              "open_field",
+              "open_report",
+              "open_analysis",
+              "open_comparison"
+            ],
+            "title": "Action",
+            "type": "string"
+          },
+          "auto": {
+            "default": false,
+            "description": "Added by the server for an object created this turn",
+            "title": "Auto",
+            "type": "boolean"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "ref_id": {
+            "title": "Ref Id",
+            "type": "string"
+          },
+          "type": {
+            "const": "action",
+            "default": "action",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "action",
+          "ref_id",
+          "label"
+        ],
+        "title": "ActionBlock",
+        "type": "object"
+      },
       "ActionCategory": {
         "description": "Five action categories (PRD \u00a76.2).",
         "enum": [
@@ -536,6 +581,32 @@
         "title": "CapacityInterval",
         "type": "object"
       },
+      "Citation": {
+        "additionalProperties": false,
+        "properties": {
+          "auto": {
+            "default": false,
+            "description": "Added by the server because the text quotes its numbers",
+            "title": "Auto",
+            "type": "boolean"
+          },
+          "kind": {
+            "description": "run, comparison, analysis, evidence, scenario_revision, field, ...",
+            "title": "Kind",
+            "type": "string"
+          },
+          "ref_id": {
+            "title": "Ref Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ref_id",
+          "kind"
+        ],
+        "title": "Citation",
+        "type": "object"
+      },
       "Co2Estimate": {
         "additionalProperties": false,
         "properties": {
@@ -568,6 +639,165 @@
           "reason"
         ],
         "title": "Co2Estimate",
+        "type": "object"
+      },
+      "Column": {
+        "additionalProperties": false,
+        "properties": {
+          "basis": {
+            "anyOf": [
+              {
+                "enum": [
+                  "model_output",
+                  "computed_from_inputs",
+                  "assumption",
+                  "observed",
+                  "surrogate_preview",
+                  "solver_result"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Basis"
+          },
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "kind": {
+            "default": "number",
+            "enum": [
+              "category",
+              "number",
+              "id",
+              "date",
+              "text",
+              "bool",
+              "status"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "label_ur": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label Ur"
+          },
+          "ref": {
+            "anyOf": [
+              {
+                "enum": [
+                  "run",
+                  "field",
+                  "analysis",
+                  "instance",
+                  "comparison",
+                  "revision",
+                  "report"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "ID column kind: selecting a row opens this entity in the workspace",
+            "title": "Ref"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Unit of every value in this column (kg, PKR, m3, ratio, ...)",
+            "title": "Unit"
+          },
+          "unit_column": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "For mixed-unit columns (metric cards): the column holding each row's unit",
+            "title": "Unit Column"
+          }
+        },
+        "required": [
+          "key",
+          "label"
+        ],
+        "title": "Column",
+        "type": "object"
+      },
+      "ComparisonBlock": {
+        "additionalProperties": false,
+        "properties": {
+          "comparison_id": {
+            "title": "Comparison Id",
+            "type": "string"
+          },
+          "compatible": {
+            "title": "Compatible",
+            "type": "boolean"
+          },
+          "deltas": {
+            "items": {
+              "$ref": "#/components/schemas/Delta"
+            },
+            "title": "Deltas",
+            "type": "array"
+          },
+          "fields_worse_off": {
+            "items": {},
+            "title": "Fields Worse Off",
+            "type": "array"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "run_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Run Ids",
+            "type": "array"
+          },
+          "type": {
+            "const": "comparison",
+            "default": "comparison",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "comparison_id",
+          "run_ids",
+          "compatible",
+          "label",
+          "deltas"
+        ],
+        "title": "ComparisonBlock",
         "type": "object"
       },
       "ComparisonRequest": {
@@ -640,6 +870,193 @@
         "title": "ConfigurationStatus",
         "type": "object"
       },
+      "CopilotAnswer": {
+        "additionalProperties": false,
+        "description": "The validated answer of one turn, rendered top to bottom in block order.",
+        "properties": {
+          "blocks": {
+            "items": {
+              "discriminator": {
+                "mapping": {
+                  "action": "#/components/schemas/ActionBlock",
+                  "comparison": "#/components/schemas/ComparisonBlock",
+                  "follow_ups": "#/components/schemas/FollowUpsBlock",
+                  "headline": "#/components/schemas/HeadlineBlock",
+                  "metric": "#/components/schemas/MetricBlock",
+                  "run_badge": "#/components/schemas/RunBadgeBlock",
+                  "text": "#/components/schemas/TextBlock",
+                  "uncertainty": "#/components/schemas/UncertaintyBlock",
+                  "visual": "#/components/schemas/VisualBlock"
+                },
+                "propertyName": "type"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/RunBadgeBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/HeadlineBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/TextBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/MetricBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/VisualBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/ComparisonBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/UncertaintyBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/ActionBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/FollowUpsBlock"
+                }
+              ]
+            },
+            "title": "Blocks",
+            "type": "array"
+          },
+          "clarification_question": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Clarification Question"
+          },
+          "deterministic": {
+            "default": false,
+            "description": "Server-written (provider unavailable / budget exhausted); not a model answer",
+            "title": "Deterministic",
+            "type": "boolean"
+          },
+          "issues": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Issues",
+            "type": "array"
+          },
+          "language": {
+            "enum": [
+              "en",
+              "ur",
+              "roman_ur"
+            ],
+            "title": "Language",
+            "type": "string"
+          },
+          "needs_clarification": {
+            "default": false,
+            "title": "Needs Clarification",
+            "type": "boolean"
+          },
+          "validated": {
+            "description": "True when every reference and number passed validation",
+            "title": "Validated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "language",
+          "blocks",
+          "validated"
+        ],
+        "title": "CopilotAnswer",
+        "type": "object"
+      },
+      "CopilotEvent": {
+        "additionalProperties": false,
+        "description": "One server-sent event (``id`` = event_id; resume with Last-Event-ID or ?after=).",
+        "properties": {
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "event_id": {
+            "title": "Event Id",
+            "type": "integer"
+          },
+          "payload": {
+            "additionalProperties": true,
+            "title": "Payload",
+            "type": "object"
+          },
+          "turn_id": {
+            "title": "Turn Id",
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "turn_started",
+              "thinking",
+              "tool_started",
+              "tool_finished",
+              "dataset_ready",
+              "answer_block",
+              "answer",
+              "view_intents",
+              "error",
+              "turn_finished",
+              "job_update",
+              "jobs_settled",
+              "jobs_cancelled"
+            ],
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "event_id",
+          "turn_id",
+          "created_at",
+          "type",
+          "payload"
+        ],
+        "title": "CopilotEvent",
+        "type": "object"
+      },
+      "CreatedRef": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "enum": [
+              "branch",
+              "run",
+              "report",
+              "analysis",
+              "comparison"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "ref_id": {
+            "title": "Ref Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "ref_id",
+          "label"
+        ],
+        "title": "CreatedRef",
+        "type": "object"
+      },
       "Crop": {
         "enum": [
           "wheat",
@@ -647,6 +1064,140 @@
         ],
         "title": "Crop",
         "type": "string"
+      },
+      "DatasetSource": {
+        "additionalProperties": false,
+        "properties": {
+          "analysis_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Analysis Ids",
+            "type": "array"
+          },
+          "call_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Call Id"
+          },
+          "comparison_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Comparison Ids",
+            "type": "array"
+          },
+          "endpoint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The /api/v2 resource the rows were copied from",
+            "title": "Endpoint"
+          },
+          "revision_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Revision Ids",
+            "type": "array"
+          },
+          "run_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Run Ids",
+            "type": "array"
+          },
+          "tool": {
+            "title": "Tool",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tool"
+        ],
+        "title": "DatasetSource",
+        "type": "object"
+      },
+      "Delta": {
+        "additionalProperties": false,
+        "properties": {
+          "a": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "A"
+          },
+          "b": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "B"
+          },
+          "delta": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delta"
+          },
+          "metric_id": {
+            "title": "Metric Id",
+            "type": "string"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          }
+        },
+        "required": [
+          "metric_id"
+        ],
+        "title": "Delta",
+        "type": "object"
       },
       "Edge": {
         "additionalProperties": false,
@@ -740,6 +1291,119 @@
           "delivery_factor"
         ],
         "title": "Edge",
+        "type": "object"
+      },
+      "Encoding": {
+        "additionalProperties": false,
+        "properties": {
+          "color": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Color"
+          },
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "series": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Series"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "target": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "x": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "X"
+          },
+          "y": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Y",
+            "type": "array"
+          }
+        },
+        "title": "Encoding",
         "type": "object"
       },
       "EvidenceDetail": {
@@ -1508,6 +2172,29 @@
         "title": "Field_",
         "type": "object"
       },
+      "FollowUpsBlock": {
+        "additionalProperties": false,
+        "properties": {
+          "questions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Questions",
+            "type": "array"
+          },
+          "type": {
+            "const": "follow_ups",
+            "default": "follow_ups",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "questions"
+        ],
+        "title": "FollowUpsBlock",
+        "type": "object"
+      },
       "FrontierRequest": {
         "additionalProperties": false,
         "properties": {
@@ -1617,6 +2304,38 @@
           }
         },
         "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "HeadlineBlock": {
+        "additionalProperties": false,
+        "properties": {
+          "citations": {
+            "items": {
+              "$ref": "#/components/schemas/Citation"
+            },
+            "title": "Citations",
+            "type": "array"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "type": {
+            "const": "headline",
+            "default": "headline",
+            "title": "Type",
+            "type": "string"
+          },
+          "withheld": {
+            "default": false,
+            "title": "Withheld",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "title": "HeadlineBlock",
         "type": "object"
       },
       "Health": {
@@ -1999,6 +2718,43 @@
           "source_mode"
         ],
         "title": "IntakeCreate",
+        "type": "object"
+      },
+      "Interaction": {
+        "additionalProperties": false,
+        "properties": {
+          "column": {
+            "title": "Column",
+            "type": "string"
+          },
+          "intent": {
+            "enum": [
+              "open_run",
+              "open_field",
+              "open_analysis",
+              "open_comparison",
+              "open_branch"
+            ],
+            "title": "Intent",
+            "type": "string"
+          },
+          "on": {
+            "enum": [
+              "select_row",
+              "select_point",
+              "select_cell",
+              "select_field"
+            ],
+            "title": "On",
+            "type": "string"
+          }
+        },
+        "required": [
+          "on",
+          "column",
+          "intent"
+        ],
+        "title": "Interaction",
         "type": "object"
       },
       "InterventionEligibility": {
@@ -2749,6 +3505,136 @@
           "context"
         ],
         "title": "MessageIn",
+        "type": "object"
+      },
+      "MetricBlock": {
+        "additionalProperties": false,
+        "description": "One metric card; value resolved server-side from the run's stored metrics.",
+        "properties": {
+          "basis": {
+            "title": "Basis",
+            "type": "string"
+          },
+          "definition_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Definition Id"
+          },
+          "field_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Field Id"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "metric_id": {
+            "title": "Metric Id",
+            "type": "string"
+          },
+          "plan_kind": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Kind"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "solver_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Solver Status"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "type": {
+            "const": "metric",
+            "default": "metric",
+            "title": "Type",
+            "type": "string"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "metric_id",
+          "run_id",
+          "basis"
+        ],
+        "title": "MetricBlock",
         "type": "object"
       },
       "MetricDefinitions": {
@@ -4786,6 +5672,112 @@
         "title": "RuleResidual",
         "type": "object"
       },
+      "RunBadgeBlock": {
+        "additionalProperties": false,
+        "description": "Identity of a run the answer is about (AT13: same run IDs as UI and report).",
+        "properties": {
+          "label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "outcome": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcome"
+          },
+          "pilot_id": {
+            "title": "Pilot Id",
+            "type": "string"
+          },
+          "pilot_version": {
+            "title": "Pilot Version",
+            "type": "string"
+          },
+          "plan_kind": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Kind"
+          },
+          "role": {
+            "enum": [
+              "context",
+              "created"
+            ],
+            "title": "Role",
+            "type": "string"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "scenario_revision_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scenario Revision Id"
+          },
+          "season_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Season Id"
+          },
+          "solver_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Solver Status"
+          },
+          "type": {
+            "const": "run_badge",
+            "default": "run_badge",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "role",
+          "run_id",
+          "pilot_id",
+          "pilot_version"
+        ],
+        "title": "RunBadgeBlock",
+        "type": "object"
+      },
       "RunList": {
         "additionalProperties": false,
         "properties": {
@@ -5827,6 +6819,23 @@
         "title": "SessionCreate",
         "type": "object"
       },
+      "SessionList": {
+        "additionalProperties": false,
+        "properties": {
+          "sessions": {
+            "items": {
+              "$ref": "#/components/schemas/SessionSummary"
+            },
+            "title": "Sessions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "sessions"
+        ],
+        "title": "SessionList",
+        "type": "object"
+      },
       "SessionOut": {
         "additionalProperties": false,
         "properties": {
@@ -5850,6 +6859,57 @@
           "status"
         ],
         "title": "SessionOut",
+        "type": "object"
+      },
+      "SessionSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "last_turn_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Turn At"
+          },
+          "role": {
+            "title": "Role",
+            "type": "string"
+          },
+          "session_id": {
+            "title": "Session Id",
+            "type": "string"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "turns": {
+            "title": "Turns",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "session_id",
+          "created_at",
+          "role",
+          "turns"
+        ],
+        "title": "SessionSummary",
         "type": "object"
       },
       "SoilProfile": {
@@ -6285,6 +7345,39 @@
         "title": "Term",
         "type": "object"
       },
+      "TextBlock": {
+        "additionalProperties": false,
+        "properties": {
+          "citations": {
+            "items": {
+              "$ref": "#/components/schemas/Citation"
+            },
+            "title": "Citations",
+            "type": "array"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "type": {
+            "const": "text",
+            "default": "text",
+            "title": "Type",
+            "type": "string"
+          },
+          "withheld": {
+            "default": false,
+            "description": "A sentence with an unsupported figure was removed",
+            "title": "Withheld",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "title": "TextBlock",
+        "type": "object"
+      },
       "Timeline": {
         "additionalProperties": false,
         "properties": {
@@ -6399,6 +7492,239 @@
           "events_url"
         ],
         "title": "TurnAccepted",
+        "type": "object"
+      },
+      "TurnView": {
+        "additionalProperties": false,
+        "properties": {
+          "answer": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CopilotAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "context": {
+            "additionalProperties": true,
+            "title": "Context",
+            "type": "object"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "created_refs": {
+            "items": {
+              "$ref": "#/components/schemas/CreatedRef"
+            },
+            "title": "Created Refs",
+            "type": "array"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "events": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Events"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished At"
+          },
+          "idem_namespace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Idem Namespace"
+          },
+          "job_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Job Ids",
+            "type": "array"
+          },
+          "language": {
+            "anyOf": [
+              {
+                "enum": [
+                  "en",
+                  "ur",
+                  "roman_ur"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Language"
+          },
+          "latency_ms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latency Ms"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
+          },
+          "prompt_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prompt Version"
+          },
+          "request_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Request Ids",
+            "type": "array"
+          },
+          "rounds": {
+            "default": 0,
+            "title": "Rounds",
+            "type": "integer"
+          },
+          "seq": {
+            "title": "Seq",
+            "type": "integer"
+          },
+          "session_id": {
+            "title": "Session Id",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "running",
+              "completed",
+              "clarification",
+              "failed",
+              "cancelled",
+              "provider_unavailable",
+              "budget_exhausted"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "timings": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timings"
+          },
+          "tool_calls": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Calls"
+          },
+          "tool_schema_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Schema Version"
+          },
+          "turn_id": {
+            "title": "Turn Id",
+            "type": "string"
+          },
+          "user_message": {
+            "title": "User Message",
+            "type": "string"
+          },
+          "view_intents": {
+            "items": {
+              "$ref": "#/components/schemas/ViewIntent"
+            },
+            "title": "View Intents",
+            "type": "array"
+          }
+        },
+        "required": [
+          "turn_id",
+          "session_id",
+          "seq",
+          "status",
+          "user_message",
+          "context",
+          "created_at"
+        ],
+        "title": "TurnView",
         "type": "object"
       },
       "UIContext": {
@@ -6523,6 +7849,39 @@
           }
         },
         "title": "UIContext",
+        "type": "object"
+      },
+      "UncertaintyBlock": {
+        "additionalProperties": false,
+        "description": "Caveat / limitation / running-job / unavailable notice (always shown, never collapsed away).",
+        "properties": {
+          "citations": {
+            "items": {
+              "$ref": "#/components/schemas/Citation"
+            },
+            "title": "Citations",
+            "type": "array"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "type": {
+            "const": "uncertainty",
+            "default": "uncertainty",
+            "title": "Type",
+            "type": "string"
+          },
+          "withheld": {
+            "default": false,
+            "title": "Withheld",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "title": "UncertaintyBlock",
         "type": "object"
       },
       "UncertaintySet": {
@@ -6683,6 +8042,172 @@
           "job"
         ],
         "title": "VerifyAccepted",
+        "type": "object"
+      },
+      "ViewIntent": {
+        "additionalProperties": true,
+        "description": "Typed UI intent from navigate_view, applied after the turn finishes.",
+        "properties": {
+          "target": {
+            "title": "Target",
+            "type": "string"
+          }
+        },
+        "required": [
+          "target"
+        ],
+        "title": "ViewIntent",
+        "type": "object"
+      },
+      "VisualBlock": {
+        "additionalProperties": false,
+        "description": "A chart/table/map block whose values were copied from a server dataset.",
+        "properties": {
+          "auto": {
+            "default": false,
+            "description": "Added by the server (no model explanation available)",
+            "title": "Auto",
+            "type": "boolean"
+          },
+          "basis": {
+            "items": {
+              "enum": [
+                "model_output",
+                "computed_from_inputs",
+                "assumption",
+                "observed",
+                "surrogate_preview",
+                "solver_result"
+              ],
+              "type": "string"
+            },
+            "title": "Basis",
+            "type": "array"
+          },
+          "caption": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Caption"
+          },
+          "chart": {
+            "enum": [
+              "kpi",
+              "table",
+              "bar",
+              "grouped_bar",
+              "stacked_bar",
+              "delta_bar",
+              "line",
+              "area",
+              "scatter",
+              "frontier",
+              "heatmap",
+              "sankey",
+              "map",
+              "steps"
+            ],
+            "title": "Chart",
+            "type": "string"
+          },
+          "columns": {
+            "items": {
+              "$ref": "#/components/schemas/Column"
+            },
+            "title": "Columns",
+            "type": "array"
+          },
+          "dataset_id": {
+            "title": "Dataset Id",
+            "type": "string"
+          },
+          "dataset_kind": {
+            "title": "Dataset Kind",
+            "type": "string"
+          },
+          "encoding": {
+            "$ref": "#/components/schemas/Encoding"
+          },
+          "highlight_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Highlight Ids",
+            "type": "array"
+          },
+          "interactions": {
+            "items": {
+              "$ref": "#/components/schemas/Interaction"
+            },
+            "title": "Interactions",
+            "type": "array"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Notes",
+            "type": "array"
+          },
+          "row_count": {
+            "title": "Row Count",
+            "type": "integer"
+          },
+          "rows": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Rows",
+            "type": "array"
+          },
+          "source": {
+            "$ref": "#/components/schemas/DatasetSource"
+          },
+          "table_fallback": {
+            "default": true,
+            "description": "Always true: the UI must offer the rows as an accessible table",
+            "title": "Table Fallback",
+            "type": "boolean"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "truncated": {
+            "default": false,
+            "title": "Truncated",
+            "type": "boolean"
+          },
+          "type": {
+            "const": "visual",
+            "default": "visual",
+            "title": "Type",
+            "type": "string"
+          },
+          "visual_id": {
+            "title": "Visual Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "visual_id",
+          "chart",
+          "title",
+          "dataset_id",
+          "dataset_kind",
+          "columns",
+          "rows",
+          "row_count",
+          "encoding",
+          "source"
+        ],
+        "title": "VisualBlock",
         "type": "object"
       },
       "WeatherScenario": {
@@ -7479,6 +9004,50 @@
       }
     },
     "/api/v2/copilot/sessions": {
+      "get": {
+        "description": "Recent conversations (restorable after a restart).",
+        "operationId": "list_sessions_api_v2_copilot_sessions_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Sessions",
+        "tags": [
+          "copilot"
+        ]
+      },
       "post": {
         "operationId": "create_session_api_v2_copilot_sessions_post",
         "requestBody": {
@@ -7640,6 +9209,7 @@
     },
     "/api/v2/copilot/turns/{turn_id}": {
       "get": {
+        "description": "A turn with its validated answer (CopilotAnswer), created objects, view intents and timings.",
         "operationId": "get_turn_api_v2_copilot_turns__turn_id__get",
         "parameters": [
           {
@@ -7667,9 +9237,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": true,
-                  "title": "Response Get Turn Api V2 Copilot Turns  Turn Id  Get",
-                  "type": "object"
+                  "$ref": "#/components/schemas/TurnView"
                 }
               }
             },
@@ -7731,6 +9299,64 @@
           }
         },
         "summary": "Cancel Turn",
+        "tags": [
+          "copilot"
+        ]
+      }
+    },
+    "/api/v2/copilot/turns/{turn_id}/event-log": {
+      "get": {
+        "description": "The same events as the SSE stream, as JSON (restore a finished turn's activity log).",
+        "operationId": "turn_event_log_api_v2_copilot_turns__turn_id__event_log_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "turn_id",
+            "required": true,
+            "schema": {
+              "title": "Turn Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "after",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "After",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CopilotEvent"
+                  },
+                  "title": "Response Turn Event Log Api V2 Copilot Turns  Turn Id  Event Log Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Turn Event Log",
         "tags": [
           "copilot"
         ]

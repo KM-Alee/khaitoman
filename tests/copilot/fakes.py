@@ -20,8 +20,32 @@ Step = Callable[[dict[str, Any]], list[tuple[str, dict[str, Any]]] | dict[str, A
 _ids = itertools.count(1)
 
 
+def vis(dataset_id: str, chart: str, **kw: Any) -> dict[str, Any]:
+    """A strict-mode visual spec (unspecified keys null)."""
+    spec = {
+        "dataset_id": dataset_id,
+        "chart": chart,
+        "title": kw.pop("title", "Chart"),
+        "caption": None,
+        "x": None,
+        "y": None,
+        "series": None,
+        "sort": None,
+        "limit": None,
+        "highlight_ids": None,
+    }
+    spec.update(kw)
+    return spec
+
+
 def final(
-    blocks: list[dict[str, Any]], language: str = "en", clarify: str | None = None
+    blocks: list[dict[str, Any]],
+    language: str = "en",
+    clarify: str | None = None,
+    *,
+    headline: str | None = None,
+    visuals: list[dict[str, Any]] | None = None,
+    follow_ups: list[str] | None = None,
 ) -> dict[str, Any]:
     full = []
     for b in blocks:
@@ -41,6 +65,9 @@ def final(
         full.append(base)
     return {
         "language": language,
+        "headline": headline,
+        "visuals": visuals or [],
+        "follow_ups": follow_ups or [],
         "blocks": full,
         "needs_clarification": clarify is not None,
         "clarification_question": clarify,

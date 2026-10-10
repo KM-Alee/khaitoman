@@ -27,11 +27,26 @@ SPEC_TOOLS = {
     "create_report",
     "navigate_view",
 }
+# Plain-language read tools and the one-step what-if added for lay questions (each wraps one service).
+INSIGHT_TOOLS = {
+    "get_plan_ladder",
+    "read_analysis",
+    "water_accounting",
+    "economics",
+    "equity",
+    "impact_sdg",
+    "action_plan",
+    "field_timeline",
+    "explain_decisions",
+    "methodology",
+    "run_what_if",
+}
 
 
 def test_registry_has_exactly_the_spec_tools():
     tools_for_role("planner")
-    assert set(REGISTRY) == SPEC_TOOLS
+    assert set(REGISTRY) == SPEC_TOOLS | INSIGHT_TOOLS
+    assert {n for n, t in REGISTRY.items() if t.mutation} & INSIGHT_TOOLS == {"run_what_if"}
 
 
 def test_every_schema_is_strict():

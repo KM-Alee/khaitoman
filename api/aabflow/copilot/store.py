@@ -1,71 +1,40 @@
-"""Copilot persistence in the app SQLite database (own tables, created on first use).
+"""Copilot persistence in the app SQLite database (tables in ``schema.sql``, v3).
 
-Sessions, turns (pinned context, answer, audit fields), the resumable event log for
-SSE and every tool call with its arguments, idempotency key and result. API keys
-and provider credentials are never stored; request IDs are.
+Sessions, turns (pinned context, answer, language, timings, audit fields), the
+resumable event log for SSE and every tool call with its arguments, idempotency key
+and result. API keys and provider credentials are never stored (anything that looks
+like one is redacted before writing); provider request IDs are.
 """
 
 from __future__ import annotations
 
+import os
+import re
 import sqlite3
 from typing import Any
 
-from aabflow.repositories.sqlite import dumps, loads, tx, utcnow
+from aabflow.repositories.sqlite import SCHEMA_PATH, loads, tx, utcnow
+from aabflow.repositories.sqlite import dumps as _dumps
 
-SCHEMA = """
-CREATE TABLE IF NOT EXISTS copilot_sessions (
-    session_id TEXT PRIMARY KEY,
-    created_at TEXT NOT NULL,
-    role TEXT NOT NULL,
-    ui_context TEXT NOT NULL,
-    preferences TEXT NOT NULL DEFAULT '{}'
-);
-CREATE TABLE IF NOT EXISTS copilot_turns (
-    turn_id TEXT PRIMARY KEY,
-    session_id TEXT NOT NULL REFERENCES copilot_sessions(session_id),
-    seq INTEGER NOT NULL,
-    created_at TEXT NOT NULL,
-    finished_at TEXT,
-    status TEXT NOT NULL,
-    user_message TEXT NOT NULL,
-    context TEXT NOT NULL,
-    answer TEXT,
-    view_intents TEXT NOT NULL DEFAULT '[]',
-    created_refs TEXT NOT NULL DEFAULT '[]',
-    job_ids TEXT NOT NULL DEFAULT '[]',
-    error TEXT,
-    model TEXT,
-    prompt_version TEXT,
-    tool_schema_version TEXT,
-    request_ids TEXT NOT NULL DEFAULT '[]',
-    rounds INTEGER NOT NULL DEFAULT 0,
-    latency_ms INTEGER,
-    idem_namespace TEXT
-);
-CREATE INDEX IF NOT EXISTS copilot_turns_session ON copilot_turns(session_id, seq);
-CREATE TABLE IF NOT EXISTS copilot_events (
-    event_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    turn_id TEXT NOT NULL,
-    created_at TEXT NOT NULL,
-    type TEXT NOT NULL,
-    payload TEXT NOT NULL
-);
-CREATE INDEX IF NOT EXISTS copilot_events_turn ON copilot_events(turn_id, event_id);
-CREATE TABLE IF NOT EXISTS copilot_tool_calls (
-    pk INTEGER PRIMARY KEY AUTOINCREMENT,
-    turn_id TEXT NOT NULL,
-    call_id TEXT NOT NULL,
-    round INTEGER NOT NULL,
-    tool TEXT NOT NULL,
-    arguments TEXT NOT NULL,
-    idempotency_key TEXT,
-    status TEXT NOT NULL,
-    result TEXT,
-    started_at TEXT NOT NULL,
-    finished_at TEXT
-);
-CREATE INDEX IF NOT EXISTS copilot_tool_calls_turn ON copilot_tool_calls(turn_id);
-"""
+_SECRET = re.compile(r"(sk-[A-Za-z0-9_\-]{16,}|Bearer\s+[A-Za-z0-9._\-]{16,})")
+
+
+def _redact(obj: Any) -> Any:
+    key = os.environ.get("OPENAI_API_KEY") or ""
+    if isinstance(obj, str):
+        out = _SECRET.sub("[redacted]", obj)
+        return out.replace(key, "[redacted]") if len(key) >= 8 else out
+    if isinstance(obj, dict):
+        return {k: _redact(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_redact(v) for v in obj]
+    return obj
+
+
+def dumps(obj: Any) -> str:
+    """JSON for storage with secrets redacted (transcripts never store keys)."""
+    return _dumps(_redact(obj))
+
 
 TERMINAL_TURN = {
     "completed",
@@ -78,7 +47,12 @@ TERMINAL_TURN = {
 
 
 def ensure(conn: sqlite3.Connection) -> None:
-    conn.executescript(SCHEMA)
+    """Tables come from schema.sql (init_db at startup); apply it if this database predates that."""
+    row = conn.execute(
+        "SELECT 1 FROM sqlite_master WHERE type='table' AND name='copilot_turns'"
+    ).fetchone()
+    if row is None:
+        conn.executescript(SCHEMA_PATH.read_text())
 
 
 def create_session(conn: sqlite3.Connection, session_id: str, role: str, ui_context: dict) -> None:
@@ -120,7 +94,7 @@ def create_turn(
                 seq,
                 utcnow(),
                 "running",
-                message,
+                _redact(message),
                 dumps(context),
                 model,
                 prompt_version,
@@ -144,11 +118,14 @@ def finish_turn(
     request_ids: list,
     rounds: int,
     latency_ms: int,
+    timings: dict | None = None,
+    language: str | None = None,
 ) -> None:
     with tx(conn):
         conn.execute(
             "UPDATE copilot_turns SET status=?, finished_at=?, answer=?, view_intents=?, created_refs=?, job_ids=?, "
-            "error=?, request_ids=?, rounds=?, latency_ms=? WHERE turn_id=?",
+            "error=?, request_ids=?, rounds=?, latency_ms=?, timings=?, language=COALESCE(?, language) "
+            "WHERE turn_id=?",
             (
                 status,
                 utcnow(),
@@ -160,6 +137,8 @@ def finish_turn(
                 dumps(request_ids),
                 rounds,
                 latency_ms,
+                dumps(timings) if timings is not None else None,
+                language,
                 turn_id,
             ),
         )
@@ -178,8 +157,9 @@ def get_turn(conn: sqlite3.Connection, turn_id: str) -> dict[str, Any] | None:
         "job_ids",
         "error",
         "request_ids",
+        "timings",
     ):
-        d[k] = loads(d[k])
+        d[k] = loads(d.get(k))
     return d
 
 
@@ -191,6 +171,28 @@ def session_turns(
         (session_id, limit),
     ).fetchall()
     return [t for r in reversed(rows) if (t := get_turn(conn, r[0]))]
+
+
+def list_sessions(conn: sqlite3.Connection, limit: int = 50) -> list[dict[str, Any]]:
+    """Recent sessions with their turn count and first question (title), newest first."""
+    rows = conn.execute(
+        "SELECT s.session_id, s.created_at, s.role, COUNT(t.turn_id) AS turns, MAX(t.created_at) AS last_turn_at, "
+        "(SELECT user_message FROM copilot_turns f WHERE f.session_id = s.session_id ORDER BY seq LIMIT 1) "
+        "AS title FROM copilot_sessions s LEFT JOIN copilot_turns t ON t.session_id = s.session_id "
+        "GROUP BY s.session_id ORDER BY COALESCE(MAX(t.created_at), s.created_at) DESC LIMIT ?",
+        (limit,),
+    ).fetchall()
+    return [
+        {
+            "session_id": r["session_id"],
+            "created_at": r["created_at"],
+            "role": r["role"],
+            "title": (r["title"] or "")[:120] or None,
+            "turns": r["turns"],
+            "last_turn_at": r["last_turn_at"],
+        }
+        for r in rows
+    ]
 
 
 def append_event(conn: sqlite3.Connection, turn_id: str, type_: str, payload: dict) -> int:
@@ -265,6 +267,20 @@ def session_known_ids(conn: sqlite3.Connection, session_id: str) -> set[str]:
             ids.add(c["ref_id"])
         ids.update(t.get("job_ids") or [])
     return ids
+
+
+def interrupt_turn(conn: sqlite3.Connection, turn_id: str) -> None:
+    """A turn recorded as running that no live process owns (server restarted): mark it honestly."""
+    with tx(conn):
+        conn.execute(
+            "UPDATE copilot_turns SET status='failed', finished_at=?, error=? "
+            "WHERE turn_id=? AND status='running'",
+            (
+                utcnow(),
+                dumps({"code": "INTERRUPTED", "detail": "the server restarted during this turn"}),
+                turn_id,
+            ),
+        )
 
 
 def interrupt_running(conn: sqlite3.Connection) -> int:

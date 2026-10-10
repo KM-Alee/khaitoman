@@ -181,7 +181,11 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /**
+         * List Sessions
+         * @description Recent conversations (restorable after a restart).
+         */
+        get: operations["list_sessions_api_v2_copilot_sessions_get"];
         put?: never;
         /** Create Session */
         post: operations["create_session_api_v2_copilot_sessions_post"];
@@ -249,7 +253,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Turn */
+        /**
+         * Get Turn
+         * @description A turn with its validated answer (CopilotAnswer), created objects, view intents and timings.
+         */
         get: operations["get_turn_api_v2_copilot_turns__turn_id__get"];
         put?: never;
         post?: never;
@@ -270,6 +277,26 @@ export interface paths {
         put?: never;
         /** Cancel Turn */
         post: operations["cancel_turn_api_v2_copilot_turns__turn_id__cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/copilot/turns/{turn_id}/event-log": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Turn Event Log
+         * @description The same events as the SSE stream, as JSON (restore a finished turn's activity log).
+         */
+        get: operations["turn_event_log_api_v2_copilot_turns__turn_id__event_log_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1157,6 +1184,32 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         /**
+         * ActionBlock
+         * @description A button: selecting it updates the existing workspace (never operates anything physical).
+         */
+        ActionBlock: {
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "open_run" | "open_branch" | "open_field" | "open_report" | "open_analysis" | "open_comparison";
+            /**
+             * Auto
+             * @description Added by the server for an object created this turn
+             * @default false
+             */
+            auto: boolean;
+            /** Label */
+            label: string;
+            /** Ref Id */
+            ref_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "action";
+        };
+        /**
          * ActionCategory
          * @description Five action categories (PRD §6.2).
          * @enum {string}
@@ -1343,6 +1396,22 @@ export interface components {
              */
             start: string;
         };
+        /** Citation */
+        Citation: {
+            /**
+             * Auto
+             * @description Added by the server because the text quotes its numbers
+             * @default false
+             */
+            auto: boolean;
+            /**
+             * Kind
+             * @description run, comparison, analysis, evidence, scenario_revision, field, ...
+             */
+            kind: string;
+            /** Ref Id */
+            ref_id: string;
+        };
         /** Co2Estimate */
         Co2Estimate: {
             /**
@@ -1363,6 +1432,58 @@ export interface components {
             unit?: null;
             /** Value */
             value?: null;
+        };
+        /** Column */
+        Column: {
+            /** Basis */
+            basis?: ("model_output" | "computed_from_inputs" | "assumption" | "observed" | "surrogate_preview" | "solver_result") | null;
+            /** Key */
+            key: string;
+            /**
+             * Kind
+             * @default number
+             * @enum {string}
+             */
+            kind: "category" | "number" | "id" | "date" | "text" | "bool" | "status";
+            /** Label */
+            label: string;
+            /** Label Ur */
+            label_ur?: string | null;
+            /**
+             * Ref
+             * @description ID column kind: selecting a row opens this entity in the workspace
+             */
+            ref?: ("run" | "field" | "analysis" | "instance" | "comparison" | "revision" | "report") | null;
+            /**
+             * Unit
+             * @description Unit of every value in this column (kg, PKR, m3, ratio, ...)
+             */
+            unit?: string | null;
+            /**
+             * Unit Column
+             * @description For mixed-unit columns (metric cards): the column holding each row's unit
+             */
+            unit_column?: string | null;
+        };
+        /** ComparisonBlock */
+        ComparisonBlock: {
+            /** Comparison Id */
+            comparison_id: string;
+            /** Compatible */
+            compatible: boolean;
+            /** Deltas */
+            deltas: components["schemas"]["Delta"][];
+            /** Fields Worse Off */
+            fields_worse_off?: unknown[];
+            /** Label */
+            label: string;
+            /** Run Ids */
+            run_ids: string[];
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "comparison";
         };
         /** ComparisonRequest */
         ComparisonRequest: {
@@ -1388,10 +1509,111 @@ export interface components {
             wall_ms: number;
         };
         /**
+         * CopilotAnswer
+         * @description The validated answer of one turn, rendered top to bottom in block order.
+         */
+        CopilotAnswer: {
+            /** Blocks */
+            blocks: (components["schemas"]["RunBadgeBlock"] | components["schemas"]["HeadlineBlock"] | components["schemas"]["TextBlock"] | components["schemas"]["MetricBlock"] | components["schemas"]["VisualBlock"] | components["schemas"]["ComparisonBlock"] | components["schemas"]["UncertaintyBlock"] | components["schemas"]["ActionBlock"] | components["schemas"]["FollowUpsBlock"])[];
+            /** Clarification Question */
+            clarification_question?: string | null;
+            /**
+             * Deterministic
+             * @description Server-written (provider unavailable / budget exhausted); not a model answer
+             * @default false
+             */
+            deterministic: boolean;
+            /** Issues */
+            issues?: string[];
+            /**
+             * Language
+             * @enum {string}
+             */
+            language: "en" | "ur" | "roman_ur";
+            /**
+             * Needs Clarification
+             * @default false
+             */
+            needs_clarification: boolean;
+            /**
+             * Validated
+             * @description True when every reference and number passed validation
+             */
+            validated: boolean;
+        };
+        /**
+         * CopilotEvent
+         * @description One server-sent event (``id`` = event_id; resume with Last-Event-ID or ?after=).
+         */
+        CopilotEvent: {
+            /** Created At */
+            created_at: string;
+            /** Event Id */
+            event_id: number;
+            /** Payload */
+            payload: {
+                [key: string]: unknown;
+            };
+            /** Turn Id */
+            turn_id: string;
+            /**
+             * Type
+             * @enum {string}
+             */
+            type: "turn_started" | "thinking" | "tool_started" | "tool_finished" | "dataset_ready" | "answer_block" | "answer" | "view_intents" | "error" | "turn_finished" | "job_update" | "jobs_settled" | "jobs_cancelled";
+        };
+        /** CreatedRef */
+        CreatedRef: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "branch" | "run" | "report" | "analysis" | "comparison";
+            /** Label */
+            label: string;
+            /** Ref Id */
+            ref_id: string;
+        };
+        /**
          * Crop
          * @enum {string}
          */
         Crop: "wheat" | "cotton";
+        /** DatasetSource */
+        DatasetSource: {
+            /** Analysis Ids */
+            analysis_ids?: string[];
+            /** Call Id */
+            call_id?: string | null;
+            /** Comparison Ids */
+            comparison_ids?: string[];
+            /**
+             * Endpoint
+             * @description The /api/v2 resource the rows were copied from
+             */
+            endpoint?: string | null;
+            /** Revision Ids */
+            revision_ids?: string[];
+            /** Run Ids */
+            run_ids?: string[];
+            /** Tool */
+            tool: string;
+        };
+        /** Delta */
+        Delta: {
+            /** A */
+            a?: number | null;
+            /** B */
+            b?: number | null;
+            /** Delta */
+            delta?: number | null;
+            /** Metric Id */
+            metric_id: string;
+            /** Status */
+            status?: string | null;
+            /** Unit */
+            unit?: string | null;
+        };
         /** Edge */
         Edge: {
             /** Capacities */
@@ -1417,6 +1639,29 @@ export interface components {
             source_feature_ids?: string[];
             /** Upstream Node Id */
             upstream_node_id: string;
+        };
+        /** Encoding */
+        Encoding: {
+            /** Color */
+            color?: string | null;
+            /** Id */
+            id?: string | null;
+            /** Label */
+            label?: string | null;
+            /** Series */
+            series?: string | null;
+            /** Source */
+            source?: string | null;
+            /** Status */
+            status?: string | null;
+            /** Target */
+            target?: string | null;
+            /** Value */
+            value?: string | null;
+            /** X */
+            x?: string | null;
+            /** Y */
+            y?: string[];
         };
         /** EvidenceDetail */
         EvidenceDetail: {
@@ -1652,6 +1897,16 @@ export interface components {
             /** Supersedes */
             supersedes?: string[];
         };
+        /** FollowUpsBlock */
+        FollowUpsBlock: {
+            /** Questions */
+            questions: string[];
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "follow_ups";
+        };
         /** FrontierRequest */
         FrontierRequest: {
             /** Base Revision Id */
@@ -1694,6 +1949,23 @@ export interface components {
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /** HeadlineBlock */
+        HeadlineBlock: {
+            /** Citations */
+            citations?: components["schemas"]["Citation"][];
+            /** Text */
+            text: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "headline";
+            /**
+             * Withheld
+             * @default false
+             */
+            withheld: boolean;
         };
         /** Health */
         Health: {
@@ -1828,6 +2100,21 @@ export interface components {
              * @enum {string}
              */
             source_mode: "online" | "raw_package";
+        };
+        /** Interaction */
+        Interaction: {
+            /** Column */
+            column: string;
+            /**
+             * Intent
+             * @enum {string}
+             */
+            intent: "open_run" | "open_field" | "open_analysis" | "open_comparison" | "open_branch";
+            /**
+             * On
+             * @enum {string}
+             */
+            on: "select_row" | "select_point" | "select_cell" | "select_field";
         };
         /** InterventionEligibility */
         InterventionEligibility: {
@@ -2099,6 +2386,41 @@ export interface components {
             contract_version: "2.0.0";
             /** Message */
             message: string;
+        };
+        /**
+         * MetricBlock
+         * @description One metric card; value resolved server-side from the run's stored metrics.
+         */
+        MetricBlock: {
+            /** Basis */
+            basis: string;
+            /** Definition Id */
+            definition_id?: string | null;
+            /** Field Id */
+            field_id?: string | null;
+            /** Label */
+            label?: string | null;
+            /** Metric Id */
+            metric_id: string;
+            /** Plan Kind */
+            plan_kind?: string | null;
+            /** Reason */
+            reason?: string | null;
+            /** Run Id */
+            run_id: string;
+            /** Solver Status */
+            solver_status?: string | null;
+            /** Status */
+            status?: string | null;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "metric";
+            /** Unit */
+            unit?: string | null;
+            /** Value */
+            value?: number | null;
         };
         /** MetricDefinitions */
         MetricDefinitions: {
@@ -2838,6 +3160,40 @@ export interface components {
              */
             unit: string;
         };
+        /**
+         * RunBadgeBlock
+         * @description Identity of a run the answer is about (AT13: same run IDs as UI and report).
+         */
+        RunBadgeBlock: {
+            /** Label */
+            label?: string | null;
+            /** Outcome */
+            outcome?: string | null;
+            /** Pilot Id */
+            pilot_id: string;
+            /** Pilot Version */
+            pilot_version: string;
+            /** Plan Kind */
+            plan_kind?: string | null;
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "context" | "created";
+            /** Run Id */
+            run_id: string;
+            /** Scenario Revision Id */
+            scenario_revision_id?: string | null;
+            /** Season Id */
+            season_id?: string | null;
+            /** Solver Status */
+            solver_status?: string | null;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "run_badge";
+        };
         /** RunList */
         RunList: {
             /** Runs */
@@ -3187,6 +3543,11 @@ export interface components {
              */
             role: "planner" | "viewer";
         };
+        /** SessionList */
+        SessionList: {
+            /** Sessions */
+            sessions: components["schemas"]["SessionSummary"][];
+        };
         /** SessionOut */
         SessionOut: {
             /** Role */
@@ -3197,6 +3558,21 @@ export interface components {
             status: {
                 [key: string]: unknown;
             };
+        };
+        /** SessionSummary */
+        SessionSummary: {
+            /** Created At */
+            created_at: string;
+            /** Last Turn At */
+            last_turn_at?: string | null;
+            /** Role */
+            role: string;
+            /** Session Id */
+            session_id: string;
+            /** Title */
+            title?: string | null;
+            /** Turns */
+            turns: number;
         };
         /** SoilProfile */
         SoilProfile: {
@@ -3350,6 +3726,24 @@ export interface components {
             /** Value */
             value: number | null;
         };
+        /** TextBlock */
+        TextBlock: {
+            /** Citations */
+            citations?: components["schemas"]["Citation"][];
+            /** Text */
+            text: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "text";
+            /**
+             * Withheld
+             * @description A sentence with an unsupported figure was removed
+             * @default false
+             */
+            withheld: boolean;
+        };
         /** Timeline */
         Timeline: {
             /** Dates */
@@ -3391,6 +3785,72 @@ export interface components {
             /** Turn Id */
             turn_id: string;
         };
+        /** TurnView */
+        TurnView: {
+            answer?: components["schemas"]["CopilotAnswer"] | null;
+            /** Context */
+            context: {
+                [key: string]: unknown;
+            };
+            /** Created At */
+            created_at: string;
+            /** Created Refs */
+            created_refs?: components["schemas"]["CreatedRef"][];
+            /** Error */
+            error?: {
+                [key: string]: unknown;
+            } | null;
+            /** Events */
+            events?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Finished At */
+            finished_at?: string | null;
+            /** Idem Namespace */
+            idem_namespace?: string | null;
+            /** Job Ids */
+            job_ids?: string[];
+            /** Language */
+            language?: ("en" | "ur" | "roman_ur") | null;
+            /** Latency Ms */
+            latency_ms?: number | null;
+            /** Model */
+            model?: string | null;
+            /** Prompt Version */
+            prompt_version?: string | null;
+            /** Request Ids */
+            request_ids?: string[];
+            /**
+             * Rounds
+             * @default 0
+             */
+            rounds: number;
+            /** Seq */
+            seq: number;
+            /** Session Id */
+            session_id: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "running" | "completed" | "clarification" | "failed" | "cancelled" | "provider_unavailable" | "budget_exhausted";
+            /** Timings */
+            timings?: {
+                [key: string]: unknown;
+            } | null;
+            /** Tool Calls */
+            tool_calls?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Tool Schema Version */
+            tool_schema_version?: string | null;
+            /** Turn Id */
+            turn_id: string;
+            /** User Message */
+            user_message: string;
+            /** View Intents */
+            view_intents?: components["schemas"]["ViewIntent"][];
+        };
         /**
          * UIContext
          * @description What the client says it is showing when the user sends a message.
@@ -3426,6 +3886,26 @@ export interface components {
             units: "metric";
             /** View */
             view?: string | null;
+        };
+        /**
+         * UncertaintyBlock
+         * @description Caveat / limitation / running-job / unavailable notice (always shown, never collapsed away).
+         */
+        UncertaintyBlock: {
+            /** Citations */
+            citations?: components["schemas"]["Citation"][];
+            /** Text */
+            text: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "uncertainty";
+            /**
+             * Withheld
+             * @default false
+             */
+            withheld: boolean;
         };
         /** UncertaintySet */
         UncertaintySet: {
@@ -3481,6 +3961,77 @@ export interface components {
             job_id: string;
             /** Preview Id */
             preview_id: string;
+        };
+        /**
+         * ViewIntent
+         * @description Typed UI intent from navigate_view, applied after the turn finishes.
+         */
+        ViewIntent: {
+            /** Target */
+            target: string;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * VisualBlock
+         * @description A chart/table/map block whose values were copied from a server dataset.
+         */
+        VisualBlock: {
+            /**
+             * Auto
+             * @description Added by the server (no model explanation available)
+             * @default false
+             */
+            auto: boolean;
+            /** Basis */
+            basis?: ("model_output" | "computed_from_inputs" | "assumption" | "observed" | "surrogate_preview" | "solver_result")[];
+            /** Caption */
+            caption?: string | null;
+            /**
+             * Chart
+             * @enum {string}
+             */
+            chart: "kpi" | "table" | "bar" | "grouped_bar" | "stacked_bar" | "delta_bar" | "line" | "area" | "scatter" | "frontier" | "heatmap" | "sankey" | "map" | "steps";
+            /** Columns */
+            columns: components["schemas"]["Column"][];
+            /** Dataset Id */
+            dataset_id: string;
+            /** Dataset Kind */
+            dataset_kind: string;
+            encoding: components["schemas"]["Encoding"];
+            /** Highlight Ids */
+            highlight_ids?: string[];
+            /** Interactions */
+            interactions?: components["schemas"]["Interaction"][];
+            /** Notes */
+            notes?: string[];
+            /** Row Count */
+            row_count: number;
+            /** Rows */
+            rows: {
+                [key: string]: unknown;
+            }[];
+            source: components["schemas"]["DatasetSource"];
+            /**
+             * Table Fallback
+             * @description Always true: the UI must offer the rows as an accessible table
+             * @default true
+             */
+            table_fallback: boolean;
+            /** Title */
+            title: string;
+            /**
+             * Truncated
+             * @default false
+             */
+            truncated: boolean;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "visual";
+            /** Visual Id */
+            visual_id: string;
         };
         /**
          * WeatherScenario
@@ -3910,6 +4461,37 @@ export interface operations {
             };
         };
     };
+    list_sessions_api_v2_copilot_sessions_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionList"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     create_session_api_v2_copilot_sessions_post: {
         parameters: {
             query?: never;
@@ -4052,9 +4634,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["TurnView"];
                 };
             };
             /** @description Validation Error */
@@ -4088,6 +4668,39 @@ export interface operations {
                     "application/json": {
                         [key: string]: unknown;
                     };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    turn_event_log_api_v2_copilot_turns__turn_id__event_log_get: {
+        parameters: {
+            query?: {
+                after?: number;
+            };
+            header?: never;
+            path: {
+                turn_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CopilotEvent"][];
                 };
             };
             /** @description Validation Error */

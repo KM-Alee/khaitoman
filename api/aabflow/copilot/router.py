@@ -21,6 +21,7 @@ from aabflow.api.errors import DomainError, not_found
 from aabflow.api.state import AppState, get_state
 from aabflow.copilot import store
 from aabflow.copilot.context import UIContext, resolve
+from aabflow.copilot.contract import CopilotEvent, SessionList, TurnView
 from aabflow.copilot.orchestrator import Turn, TurnLimits, memory_from
 from aabflow.copilot.prompts import PROMPT_VERSION
 from aabflow.copilot.provider import (
@@ -80,8 +81,13 @@ def _conn(state: AppState):
 
 def status_view(state: AppState) -> dict[str, Any]:
     factory = state.extras.get("copilot_provider_factory")
+    configured = factory is not None or key_configured()
     return {
-        "configured": factory is not None or key_configured(),
+        "configured": configured,
+        "state": "ready" if configured else "unavailable",
+        "reason": None
+        if configured
+        else "No hosted-model key is configured on the server, so the conversational copilot is unavailable.",
         "model": state.extras.get("copilot_model") or configured_model(),
         "prompt_version": PROMPT_VERSION,
         "tool_schema_version": tool_schema_version(),
@@ -93,6 +99,16 @@ def status_view(state: AppState) -> dict[str, Any]:
 @router.get("/status")
 def copilot_status(state: State) -> dict[str, Any]:
     return status_view(state)
+
+
+@router.get("/sessions", response_model=SessionList)
+def list_sessions(state: State, limit: Annotated[int, Query(ge=1, le=200)] = 50) -> SessionList:
+    """Recent conversations (restorable after a restart)."""
+    c = _conn(state)
+    try:
+        return SessionList(sessions=store.list_sessions(c, limit))
+    finally:
+        c.close()
 
 
 @router.post("/sessions", status_code=201, response_model=SessionOut)
@@ -113,25 +129,29 @@ def get_session(session_id: str, state: State) -> dict[str, Any]:
         row = store.get_session(c, session_id)
         if row is None:
             raise not_found("session_id", session_id)
-        turns = store.session_turns(c, session_id)
+        turns = [_reap(state, c, t) for t in store.session_turns(c, session_id)]
     finally:
         c.close()
     return {
         "session_id": session_id,
         "role": row["role"],
+        "created_at": row["created_at"],
         "turns": [
             {
-                k: t[k]
+                k: t.get(k)
                 for k in (
                     "turn_id",
                     "seq",
                     "status",
                     "user_message",
+                    "language",
                     "answer",
                     "view_intents",
                     "created_refs",
                     "job_ids",
                     "error",
+                    "rounds",
+                    "latency_ms",
                     "created_at",
                     "finished_at",
                 )
@@ -139,6 +159,14 @@ def get_session(session_id: str, state: State) -> dict[str, Any]:
             for t in turns
         ],
     }
+
+
+def _reap(state: AppState, conn, t: dict[str, Any]) -> dict[str, Any]:
+    """A turn stored as running that this process does not own was interrupted by a restart (AT18)."""
+    if t["status"] == "running" and t["turn_id"] not in _hub(state)["turns"]:
+        store.interrupt_turn(conn, t["turn_id"])
+        return store.get_turn(conn, t["turn_id"]) or t
+    return t
 
 
 def _call_hook(fn, *args):
@@ -211,7 +239,7 @@ async def _start_turn(
         row = store.get_session(c, session_id)
         if row is None:
             raise not_found("session_id", session_id)
-        prior = store.session_turns(c, session_id)
+        prior = [_reap(state, c, t) for t in store.session_turns(c, session_id)]
         known = store.session_known_ids(c, session_id)
     finally:
         c.close()
@@ -306,19 +334,35 @@ async def _start_turn(
     )
 
 
-@router.get("/turns/{turn_id}")
+@router.get("/turns/{turn_id}", response_model=TurnView)
 def get_turn(turn_id: str, state: State, include_tools: bool = False) -> dict[str, Any]:
+    """A turn with its validated answer (CopilotAnswer), created objects, view intents and timings."""
     c = _conn(state)
     try:
         t = store.get_turn(c, turn_id)
         if t is None:
             raise not_found("turn_id", turn_id)
+        t = _reap(state, c, t)
         if include_tools:
             t["tool_calls"] = store.tool_calls(c, turn_id)
         t["events"] = store.events_after(c, turn_id, 0)[-200:] if include_tools else None
     finally:
         c.close()
     return t
+
+
+@router.get("/turns/{turn_id}/event-log", response_model=list[CopilotEvent])
+def turn_event_log(
+    turn_id: str, state: State, after: Annotated[int, Query(ge=0)] = 0
+) -> list[dict[str, Any]]:
+    """The same events as the SSE stream, as JSON (restore a finished turn's activity log)."""
+    c = _conn(state)
+    try:
+        if store.get_turn(c, turn_id) is None:
+            raise not_found("turn_id", turn_id)
+        return store.events_after(c, turn_id, after)
+    finally:
+        c.close()
 
 
 @router.post("/turns/{turn_id}/cancel")

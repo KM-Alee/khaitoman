@@ -245,5 +245,6 @@ def tool_schema_version() -> str:
 
 def _ensure_loaded() -> None:
     import aabflow.copilot.tools.compute
+    import aabflow.copilot.tools.insight
     import aabflow.copilot.tools.read
     import aabflow.copilot.tools.view  # noqa: F401

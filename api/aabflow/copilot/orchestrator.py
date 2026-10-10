@@ -2,12 +2,12 @@
 
 receive message + pinned context -> provider -> validate and dispatch completed
 function calls (reads concurrently, mutations one at a time) -> function outputs by
-call_id -> ... -> validated final answer with server-rendered cards.
+call_id -> ... -> validated final answer with server-rendered cards and visuals.
 
 Limits per turn: 8 model rounds, 12 tool calls, 3 new analytical jobs, 90 s wall
 time. Provider failures end the turn with a typed error and no invented result.
 Cancellation stops the loop, cancels jobs this turn started and discards its view
-intents.
+intents. Progress is published as events (see ``contract.EventType``) for SSE.
 """
 
 from __future__ import annotations
@@ -29,18 +29,23 @@ from aabflow.copilot.answer_validation import (
     Facts,
     FinalAnswer,
     apply_fallback,
-    public_blocks,
+    order_blocks,
     validate_answer,
 )
-from aabflow.copilot.context import PinnedContext
+from aabflow.copilot.context import PinnedContext, detect_language, workspace_digest
+from aabflow.copilot.contract import CopilotAnswer
 from aabflow.copilot.prompts import PROMPT_VERSION, build_instructions
 from aabflow.copilot.provider import Provider, ProviderError
 from aabflow.copilot.registry import REGISTRY, openai_tools, tool_schema_version
 from aabflow.copilot.tools.backend import Backend, ToolFailure
-from aabflow.copilot.tools.base import TERMINAL_JOB_STATES, ToolCtx, TurnBudget
+from aabflow.copilot.tools.base import CURRENT_CALL, TERMINAL_JOB_STATES, ToolCtx, TurnBudget
+from aabflow.copilot.visuals import Dataset, default_visual
 from aabflow.domain.hashes import content_hash
 
 log = logging.getLogger("aabflow.copilot")
+
+# A final answer with visuals takes the hosted model ~15-25 s; start it with this much time left.
+FINAL_RESERVE_S = 28.0
 
 
 @dataclass(frozen=True)
@@ -64,6 +69,7 @@ class TurnResult:
     tool_calls: list[dict[str, Any]] = field(default_factory=list)
     request_ids: list[str] = field(default_factory=list)
     latency_ms: int = 0
+    timings: dict[str, Any] = field(default_factory=dict)
 
 
 ACTION_FOR = {
@@ -71,6 +77,12 @@ ACTION_FOR = {
     "run": "open_run",
     "report": "open_report",
     "analysis": "open_analysis",
+    "comparison": "open_comparison",
+}
+
+THINKING = {
+    1: "Reading your question and planning",
+    2: "Looking at the results",
 }
 
 
@@ -88,17 +100,25 @@ def _compact(o: Any, max_list: int | None = None) -> Any:
 
 
 def _fit(result: dict[str, Any], limit: int) -> str:
-    """Serialize within the tool's size limit, trimming long lists structurally (never mid-JSON)."""
+    """Serialize within the tool's size limit, trimming long lists structurally (never mid-JSON).
+
+    Dataset descriptors are kept intact so the model can always reference them."""
+    ds = result.get("datasets") if isinstance(result, dict) else None
     for max_list in (None, 24, 12, 6, 3, 1):
-        s = json.dumps(_compact(result, max_list), default=str, ensure_ascii=False)
+        body = _compact(result, max_list)
+        if ds is not None:
+            body["datasets"] = ds
+        s = json.dumps(body, default=str, ensure_ascii=False)
         if len(s) <= limit:
             return s
     return json.dumps(
         {
             "ok": result.get("ok", True),
             "truncated": True,
+            "datasets": ds or [],
             "note": "result too large for this tool; ask a narrower question",
-        }
+        },
+        default=str,
     )
 
 
@@ -107,7 +127,9 @@ def memory_from(turns: list[dict[str, Any]], limit: int = 4) -> list[dict[str, A
     for t in turns[-limit:]:
         ans = t.get("answer") or {}
         text = " ".join(
-            b.get("text", "") for b in ans.get("blocks", []) if b.get("type") == "text"
+            b.get("text", "")
+            for b in ans.get("blocks", [])
+            if b.get("type") in ("headline", "text")
         )[:400]
         refs = [c["ref_id"] for c in t.get("created_refs") or []]
         mem.append(
@@ -154,12 +176,20 @@ class Turn:
         self.conn = connect()
         store.ensure(self.conn)
         self._seen_calls: dict[str, dict[str, Any]] = {}
+        self.timings: dict[str, Any] = {"provider_calls": [], "tools": []}
+        self._t0 = time.monotonic()
 
     def emit(self, type_: str, payload: dict[str, Any]) -> None:
         store.append_event(self.conn, self.turn_id, type_, payload)
 
+    def _elapsed_ms(self) -> int:
+        return int((time.monotonic() - self._t0) * 1000)
+
     async def run(self) -> TurnResult:
-        t0 = time.monotonic()
+        self._t0 = t0 = time.monotonic()
+        lang, lang_note = detect_language(self.message, self.context.language)
+        if lang != self.context.language:
+            self.context = self.context.model_copy(update={"language": lang})
         ctx = self.context
         store.create_turn(
             self.conn,
@@ -177,10 +207,12 @@ class Turn:
             {
                 "turn_id": self.turn_id,
                 "context": ctx.prompt_view(),
+                "language": ctx.language,
                 "badge": {
                     "pilot_id": ctx.pilot_id,
                     "pilot_version": ctx.pilot_version,
                     "run_id": ctx.selected_run_id,
+                    "plan_kind": ctx.selected_run_plan_kind,
                     "season_id": ctx.season_id,
                 },
             },
@@ -208,8 +240,35 @@ class Turn:
             cancel=self.cancel,
             idem_namespace=self.idem_namespace,
         )
+
+        def on_dataset(ds: Dataset) -> None:
+            ref = (ds.source.run_ids or ds.source.analysis_ids or [None])[0]
+            facts.add(ds.rows, ref)
+            for rid in ds.source.run_ids:
+                facts.add_id(rid, "run")
+            for aid in ds.source.analysis_ids:
+                facts.add_id(aid, "analysis")
+            for cid in ds.source.comparison_ids:
+                facts.add_id(cid, "comparison")
+            self.emit(
+                "dataset_ready",
+                {
+                    "dataset_id": ds.dataset_id,
+                    "kind": ds.kind,
+                    "title": ds.title,
+                    "rows": len(ds.rows),
+                    "charts": ds.charts,
+                    "call_id": ds.source.call_id,
+                    "tool": ds.source.tool,
+                },
+            )
+
+        tctx.datasets.on_add = on_dataset
+        self.tctx = tctx
         tools = openai_tools(ctx.role, [FINAL_ANSWER_TOOL])
-        instructions = build_instructions(ctx.prompt_view(), self.memory, ctx.notes)
+        digest = await workspace_digest(self.backend, ctx)
+        notes = list(ctx.notes) + ([lang_note] if lang_note else [])
+        instructions = build_instructions(ctx.prompt_view(), self.memory, notes, digest)
         items: list[dict[str, Any]] = [{"role": "user", "content": self.message}]
         prev: str | None = None
         rounds = calls_made = 0
@@ -226,8 +285,22 @@ class Turn:
             if remaining < 4:
                 status = "budget_exhausted"
                 break
-            force_final = rounds == self.limits.max_rounds - 1 or remaining < 22
+            force_final = rounds == self.limits.max_rounds - 1 or (
+                rounds > 0 and remaining < FINAL_RESERVE_S
+            )
             choice: Any = {"type": "function", "name": "final_answer"} if force_final else "auto"
+            self.emit(
+                "thinking",
+                {
+                    "round": rounds + 1,
+                    "label": "Writing the answer"
+                    if force_final
+                    else THINKING.get(rounds + 1, "Checking the results"),
+                    "elapsed_ms": self._elapsed_ms(),
+                    "remaining_s": round(remaining, 1),
+                },
+            )
+            t_call = time.monotonic()
             try:
                 resp = await self._respond(instructions, items, tools, prev, choice, remaining)
             except asyncio.CancelledError:
@@ -243,6 +316,15 @@ class Turn:
                 error = {"code": "TURN_TIMEOUT", "detail": "the turn reached its time budget"}
                 break
             rounds += 1
+            self.timings["provider_calls"].append(
+                {
+                    "round": rounds,
+                    "latency_ms": int((time.monotonic() - t_call) * 1000),
+                    "calls": [c.name for c in resp.calls],
+                    "usage": resp.usage,
+                    "forced_final": bool(force_final),
+                }
+            )
             prev = resp.response_id
             request_ids.append(resp.response_id)
             if self.cancel.is_set():
@@ -251,6 +333,7 @@ class Turn:
             if not resp.calls:
                 ans = FinalAnswer(
                     language=ctx.language,
+                    headline=None,
                     needs_clarification=False,
                     blocks=[AnswerBlock(type="text", text=resp.text or "")],
                 )
@@ -293,13 +376,24 @@ class Turn:
                     items = outputs
                     continue
                 last_try = (
-                    regen_used or tctx.remaining_s() < 20 or rounds >= self.limits.max_rounds - 1
+                    regen_used
+                    or tctx.remaining_s() < FINAL_RESERVE_S
+                    or rounds >= self.limits.max_rounds - 1
                 )
                 v_or_final = await self._finalize(ans, facts, tctx, last_try=last_try)
                 if isinstance(v_or_final, dict):
                     final = v_or_final
                     break
                 regen_used = True
+                self.emit(
+                    "thinking",
+                    {
+                        "round": rounds + 1,
+                        "label": "Double-checking the numbers",
+                        "elapsed_ms": self._elapsed_ms(),
+                        "problems": len(v_or_final),
+                    },
+                )
                 outputs.append(
                     {
                         "type": "function_call_output",
@@ -309,7 +403,8 @@ class Turn:
                                 "accepted": False,
                                 "problems": v_or_final,
                                 "instruction": "Call final_answer again: quote only numbers present in tool results "
-                                "(or use metric/comparison blocks) and cite only returned IDs.",
+                                "(or use metric/comparison blocks and visuals), cite only returned IDs and use "
+                                "only dataset_ids and chart kinds the tools returned.",
                             }
                         ),
                     }
@@ -332,11 +427,12 @@ class Turn:
             final = None
             tctx.view_intents.clear()
         elif final is None:
-            final = self._fallback_answer(tctx, status)
+            final = await self._fallback_answer(tctx, status, error)
         if final is not None:
-            self._attach_created(final, tctx)
             if final.get("needs_clarification") and status == "completed":
                 status = "clarification"
+            for i, b in enumerate(final["blocks"]):
+                self.emit("answer_block", {"index": i, "block": b})
             self.emit("answer", final)
         pending = []
         if status != "cancelled":
@@ -344,6 +440,9 @@ class Turn:
                 self.emit("view_intents", {"intents": tctx.view_intents})
             pending = await self._pending_jobs(tctx)
         latency = int((time.monotonic() - t0) * 1000)
+        self.timings["total_ms"] = latency
+        self.timings["provider_ms"] = sum(p["latency_ms"] for p in self.timings["provider_calls"])
+        self.timings["tool_ms"] = sum(t["ms"] for t in self.timings["tools"])
         store.finish_turn(
             self.conn,
             self.turn_id,
@@ -356,6 +455,8 @@ class Turn:
             request_ids=request_ids,
             rounds=rounds,
             latency_ms=latency,
+            timings=self.timings,
+            language=ctx.language,
         )
         self.emit(
             "turn_finished",
@@ -364,6 +465,7 @@ class Turn:
                 "rounds": rounds,
                 "tool_calls": calls_made,
                 "latency_ms": latency,
+                "provider_ms": self.timings["provider_ms"],
                 "pending_job_ids": pending,
                 "error": error,
             },
@@ -380,9 +482,9 @@ class Turn:
             store.tool_calls(self.conn, self.turn_id),
             request_ids,
             latency,
+            self.timings,
         )
         self.pending_jobs = pending
-        self.tctx = tctx
         return result
 
     async def _respond(self, instructions, items, tools, prev, choice, remaining):
@@ -456,6 +558,7 @@ class Turn:
                 "ok": False,
                 "error": out["error"],
                 "activity": "Rejected tool call",
+                "duration_ms": 0,
             },
         )
         return json.dumps(out)
@@ -493,6 +596,7 @@ class Turn:
                     "ok": result.get("ok", True),
                     "reused": True,
                     "activity": activity,
+                    "duration_ms": 0,
                 },
             )
             return _fit(result, spec.max_result_chars)
@@ -504,9 +608,12 @@ class Turn:
                 "tool": c.name,
                 "activity": activity,
                 "semantics": spec.semantics,
+                "round": rnd,
             },
         )
         status = "succeeded"
+        t_tool = time.monotonic()
+        token = CURRENT_CALL.set((c.call_id, c.name))
         try:
             result = await asyncio.wait_for(
                 spec.handler(tctx, args), timeout=min(spec.timeout_s, max(5.0, tctx.remaining_s()))
@@ -534,6 +641,12 @@ class Turn:
                 },
             }
             status = "failed"
+        finally:
+            CURRENT_CALL.reset(token)
+        ms = int((time.monotonic() - t_tool) * 1000)
+        self.timings["tools"].append(
+            {"tool": c.name, "call_id": c.call_id, "round": rnd, "ms": ms, "status": status}
+        )
         facts.add(result)
         self._seen_calls[dedupe] = result
         store.finish_call(self.conn, pk, status, result)
@@ -545,6 +658,8 @@ class Turn:
                 "ok": result.get("ok", False),
                 "activity": activity,
                 "error": result.get("error"),
+                "duration_ms": ms,
+                "datasets": [d.get("dataset_id") for d in result.get("datasets") or []],
                 "job_ids": list(tctx.job_ids),
                 "created": list(tctx.created),
             },
@@ -553,64 +668,135 @@ class Turn:
 
     async def _finalize(self, ans: FinalAnswer, facts: Facts, tctx: ToolCtx, *, last_try: bool):
         v = await validate_answer(ans, facts, tctx)
-        if v.ok:
-            blocks = v.blocks
-        elif not last_try:
-            probs = list(v.issues) + [
-                f"block {i}: unsupported numbers {bad}" for i, bad in v.numeric_issues
+        if not v.ok and not last_try:
+            return list(v.issues) + [
+                f"{where}: unsupported numbers {bad}" for where, bad in v.numeric_issues
             ]
-            return probs
-        else:
+        blocks = v.blocks
+        extra: list[dict[str, Any]] = []
+        if not v.ok:
             blocks = apply_fallback(v, ans.language)
             if v.issues:
-                blocks.append(
+                extra.append(
                     {
                         "type": "uncertainty",
                         "citations": [],
-                        "text": "Some references in the draft answer could not be verified and were removed.",
+                        "text": "Some references or charts in the draft answer could not be verified against "
+                        "this turn's tool results and were left out.",
                     }
                 )
-        return {
-            "language": ans.language,
-            "blocks": public_blocks(blocks),
+        language = ans.language
+        out = {
+            "language": language,
+            "blocks": order_blocks(
+                badges=await self._badges(tctx),
+                headline=v.headline,
+                blocks=blocks + extra + self._created_actions(blocks, tctx),
+                visuals=v.visuals,
+                follow_ups=v.follow_ups,
+            ),
             "needs_clarification": ans.needs_clarification,
             "clarification_question": ans.clarification_question
             if ans.needs_clarification
             else None,
             "validated": v.ok,
-            "issues": v.issues + [f"unsupported numbers {b}" for _, b in v.numeric_issues],
+            "issues": v.issues + [f"{w}: unsupported numbers {b}" for w, b in v.numeric_issues],
         }
+        return self._checked(out)
 
-    def _fallback_answer(self, tctx: ToolCtx, status: str) -> dict[str, Any]:
+    def _checked(self, out: dict[str, Any]) -> dict[str, Any]:
+        """Every answer leaves through the public contract model (drops nothing silently)."""
+        return CopilotAnswer.model_validate(out).model_dump(mode="json")
+
+    async def _badges(self, tctx: ToolCtx) -> list[dict[str, Any]]:
+        c = self.context
+        wanted: list[tuple[str, str]] = []
+        if c.selected_run_id:
+            wanted.append(("context", c.selected_run_id))
+        for x in tctx.created:
+            if x["kind"] == "run":
+                wanted.append(("created", x["ref_id"]))
+        out = []
+        for role, rid in wanted:
+            try:
+                view = await tctx.run_in_pilot(rid)
+            except ToolFailure:
+                continue
+            run = view["run"]
+            out.append(
+                {
+                    "type": "run_badge",
+                    "role": role,
+                    "run_id": rid,
+                    "plan_kind": run.get("plan_kind"),
+                    "solver_status": run.get("solver_status"),
+                    "outcome": run.get("outcome"),
+                    "scenario_revision_id": run.get("scenario_revision_id"),
+                    "pilot_id": c.pilot_id,
+                    "pilot_version": c.pilot_version,
+                    "season_id": (view.get("meta") or {}).get("season_id"),
+                    "label": view.get("label"),
+                }
+            )
+        return out
+
+    @staticmethod
+    def _created_actions(blocks: list[dict[str, Any]], tctx: ToolCtx) -> list[dict[str, Any]]:
+        have = {b.get("ref_id") for b in blocks if b["type"] == "action"}
+        return [
+            {
+                "type": "action",
+                "action": ACTION_FOR[c["kind"]],
+                "ref_id": c["ref_id"],
+                "label": c["label"],
+                "auto": True,
+            }
+            for c in tctx.created
+            if c["ref_id"] not in have and c["kind"] in ACTION_FOR
+        ]
+
+    async def _fallback_answer(
+        self, tctx: ToolCtx, status: str, error: dict[str, Any] | None
+    ) -> dict[str, Any]:
+        """Server-written, honest answer when the model could not finish: no invented text or numbers.
+
+        Results the tools already produced are shown as plain (unexplained) visuals and links."""
         msg = {
             "provider_unavailable": "The hosted assistant is unavailable right now, so this answer is incomplete. "
             "No result was invented; saved results, controls and evidence still work.",
-            "budget_exhausted": "I reached this turn's time or step limit before finishing the explanation.",
+            "budget_exhausted": "I reached this turn's time or step limit before I could finish the explanation.",
         }.get(status, "I could not finish this answer.")
-        blocks = [{"type": "uncertainty", "text": msg, "citations": []}]
-        return {
+        blocks: list[dict[str, Any]] = [{"type": "uncertainty", "text": msg, "citations": []}]
+        visuals = []
+        for ds in list(tctx.datasets.items.values())[:2]:
+            vb = default_visual(ds, f"v{len(visuals) + 1}")
+            if vb is not None:
+                visuals.append(vb.model_dump(mode="json"))
+        if visuals:
+            blocks.append(
+                {
+                    "type": "uncertainty",
+                    "text": "The charts below show results the tools already returned in this turn, without an "
+                    "explanation.",
+                    "citations": [],
+                }
+            )
+        out = {
             "language": self.context.language,
-            "blocks": blocks,
+            "blocks": order_blocks(
+                badges=await self._badges(tctx),
+                headline=None,
+                blocks=blocks + self._created_actions([], tctx),
+                visuals=visuals,
+                follow_ups=[],
+            ),
             "needs_clarification": False,
             "clarification_question": None,
             "validated": True,
             "issues": [],
             "deterministic": True,
         }
-
-    def _attach_created(self, final: dict[str, Any], tctx: ToolCtx) -> None:
-        have = {b.get("ref_id") for b in final["blocks"] if b["type"] == "action"}
-        for c in tctx.created:
-            if c["ref_id"] not in have and c["kind"] in ACTION_FOR:
-                final["blocks"].append(
-                    {
-                        "type": "action",
-                        "action": ACTION_FOR[c["kind"]],
-                        "ref_id": c["ref_id"],
-                        "label": c["label"],
-                        "auto": True,
-                    }
-                )
+        return self._checked(out)
 
     async def _pending_jobs(self, tctx: ToolCtx) -> list[str]:
         pending = []
