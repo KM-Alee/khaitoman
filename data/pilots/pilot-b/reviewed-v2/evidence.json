@@ -1,0 +1,1220 @@
+[
+  {
+    "evidence_id": "ev:aoi",
+    "source_title": "Lower Chenab representative pilot B AOI selection",
+    "kind": "derived",
+    "verification_state": "artifact_checked",
+    "source_url": null,
+    "source_asset_id": null,
+    "retrieved_at": "2026-10-10T11:40:36Z",
+    "source_period": null,
+    "geographic_scope": "bbox (72.234, 30.657, 72.256, 30.677)",
+    "license_id": null,
+    "raw_sha256": null,
+    "transformation": "Inside the published Mungi study search extent (doi:10.3390/w14030405); no Mungi waterway identified. The AOI lies along the canal mapped in OSM as 'R-1' (way 488499235) about 12 km south-west of pilot A in the same broader Lower Chenab irrigated region, so it is named a Lower Chenab representative pilot.",
+    "parent_evidence_ids": [
+      "ev:discovery-extent",
+      "ev:osm-canals",
+      "ev:s2:S2C_43RBQ_20250223_0_L2A"
+    ],
+    "units": "EPSG:4326; area m² in EPSG:32643",
+    "method_version": "aabflow-ingestion-1.0.0",
+    "limitations": [
+      "AOI chosen for visible parcels and mapped canal context; not an administrative or command boundary"
+    ],
+    "assumption_range": null,
+    "allowed_use": null,
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "ev:discovery-extent",
+    "source_title": "Mungi hydrology study search extent",
+    "kind": "literature",
+    "verification_state": "unchecked",
+    "source_url": "https://doi.org/10.3390/w14030405",
+    "source_asset_id": null,
+    "retrieved_at": null,
+    "source_period": null,
+    "geographic_scope": "bbox (72.133333, 30.55, 72.8, 31.033333) (published_search_extent)",
+    "license_id": null,
+    "raw_sha256": null,
+    "transformation": null,
+    "parent_evidence_ids": [],
+    "units": null,
+    "method_version": null,
+    "limitations": [
+      "Coordinates transcribed from the specification (T2.2); paper not re-read"
+    ],
+    "assumption_range": null,
+    "allowed_use": "AOI discovery only; does not identify the pilot boundary or reach",
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "ev:s2:S2C_43RBQ_20250223_0_L2A",
+    "source_title": "Sentinel-2 L2A scene S2C_43RBQ_20250223_0_L2A",
+    "kind": "observed_remote_sensing",
+    "verification_state": "artifact_checked",
+    "source_url": "https://earth-search.aws.element84.com/v1/collections/sentinel-2-l2a/items/S2C_43RBQ_20250223_0_L2A",
+    "source_asset_id": "S2C_43RBQ_20250223_0_L2A",
+    "retrieved_at": "2026-10-10T00:38:57Z",
+    "source_period": "2025-02-23T06:00:51.949000Z",
+    "geographic_scope": "COG windows 337x348 px in EPSG:32643",
+    "license_id": "copernicus-sentinel-data-terms",
+    "raw_sha256": "df6884aa78a6910d353b7d2cc35e50fa7c88a9124591bfbcdf21369c5aaa28a7",
+    "transformation": "bounded COG window reads of blue, green, nir, red, scl; SCL classes [0, 1, 3, 8, 9, 10, 11] invalid; AOI valid fraction 1.0000; published offset NOT applied: it would make valid pixels negative, so DNs are treated as offset-free (scale only)",
+    "parent_evidence_ids": [],
+    "units": "reflectance (scale 1e-4)",
+    "method_version": "aabflow-ingestion-1.0.0",
+    "limitations": [
+      "10 m sampling; parcel boundaries below ~2 pixels are not resolved",
+      "single acquisition date; clouds screened by SCL only"
+    ],
+    "assumption_range": null,
+    "allowed_use": null,
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "ev:s2-display:S2C_43RBQ_20250223_0_L2A",
+    "source_title": "Display image S2C_43RBQ_20250223_0_L2A",
+    "kind": "derived",
+    "verification_state": "unchecked",
+    "source_url": null,
+    "source_asset_id": null,
+    "retrieved_at": null,
+    "source_period": null,
+    "geographic_scope": null,
+    "license_id": null,
+    "raw_sha256": null,
+    "transformation": "stretch s2-rgb-shared-p2-p98-gamma1.4-v1; reprojected to EPSG:3857 north-up; WGS84 corners",
+    "parent_evidence_ids": [
+      "ev:s2:S2C_43RBQ_20250223_0_L2A"
+    ],
+    "units": null,
+    "method_version": "s2-rgb-shared-p2-p98-gamma1.4-v1",
+    "limitations": [],
+    "assumption_range": null,
+    "allowed_use": "map display only; not reflectance data",
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "ev:ndvi:S2C_43RBQ_20250223_0_L2A",
+    "source_title": "NDVI observation S2C_43RBQ_20250223_0_L2A",
+    "kind": "derived",
+    "verification_state": "unchecked",
+    "source_url": null,
+    "source_asset_id": null,
+    "retrieved_at": null,
+    "source_period": null,
+    "geographic_scope": null,
+    "license_id": null,
+    "raw_sha256": null,
+    "transformation": "(NIR-red)/(NIR+red) on surface reflectance (scale/offset from STAC); SCL-invalid pixels and NIR+red<=0 are NaN",
+    "parent_evidence_ids": [
+      "ev:s2:S2C_43RBQ_20250223_0_L2A"
+    ],
+    "units": "NDVI (unitless)",
+    "method_version": null,
+    "limitations": [],
+    "assumption_range": null,
+    "allowed_use": "observation context; never water stress, crop identity or yield",
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "ev:s2:S2B_43RBP_20241210_0_L2A",
+    "source_title": "Sentinel-2 L2A scene S2B_43RBP_20241210_0_L2A",
+    "kind": "observed_remote_sensing",
+    "verification_state": "artifact_checked",
+    "source_url": "https://earth-search.aws.element84.com/v1/collections/sentinel-2-l2a/items/S2B_43RBP_20241210_0_L2A",
+    "source_asset_id": "S2B_43RBP_20241210_0_L2A",
+    "retrieved_at": "2026-10-10T00:39:30Z",
+    "source_period": "2024-12-10T06:00:40.147000Z",
+    "geographic_scope": "COG windows 337x348 px in EPSG:32643",
+    "license_id": "copernicus-sentinel-data-terms",
+    "raw_sha256": "da46feb9df4fbcbc186b9872615f0aeaa070568eadb8616a61912c871d2bdcd7",
+    "transformation": "bounded COG window reads of blue, green, nir, red, scl; SCL classes [0, 1, 3, 8, 9, 10, 11] invalid; AOI valid fraction 1.0000; published offset NOT applied: it would make valid pixels negative, so DNs are treated as offset-free (scale only)",
+    "parent_evidence_ids": [],
+    "units": "reflectance (scale 1e-4)",
+    "method_version": "aabflow-ingestion-1.0.0",
+    "limitations": [
+      "10 m sampling; parcel boundaries below ~2 pixels are not resolved",
+      "single acquisition date; clouds screened by SCL only"
+    ],
+    "assumption_range": null,
+    "allowed_use": null,
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "ev:s2-display:S2B_43RBP_20241210_0_L2A",
+    "source_title": "Display image S2B_43RBP_20241210_0_L2A",
+    "kind": "derived",
+    "verification_state": "unchecked",
+    "source_url": null,
+    "source_asset_id": null,
+    "retrieved_at": null,
+    "source_period": null,
+    "geographic_scope": null,
+    "license_id": null,
+    "raw_sha256": null,
+    "transformation": "stretch s2-rgb-shared-p2-p98-gamma1.4-v1; reprojected to EPSG:3857 north-up; WGS84 corners",
+    "parent_evidence_ids": [
+      "ev:s2:S2B_43RBP_20241210_0_L2A"
+    ],
+    "units": null,
+    "method_version": "s2-rgb-shared-p2-p98-gamma1.4-v1",
+    "limitations": [],
+    "assumption_range": null,
+    "allowed_use": "map display only; not reflectance data",
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "ev:ndvi:S2B_43RBP_20241210_0_L2A",
+    "source_title": "NDVI observation S2B_43RBP_20241210_0_L2A",
+    "kind": "derived",
+    "verification_state": "unchecked",
+    "source_url": null,
+    "source_asset_id": null,
+    "retrieved_at": null,
+    "source_period": null,
+    "geographic_scope": null,
+    "license_id": null,
+    "raw_sha256": null,
+    "transformation": "(NIR-red)/(NIR+red) on surface reflectance (scale/offset from STAC); SCL-invalid pixels and NIR+red<=0 are NaN",
+    "parent_evidence_ids": [
+      "ev:s2:S2B_43RBP_20241210_0_L2A"
+    ],
+    "units": "NDVI (unitless)",
+    "method_version": null,
+    "limitations": [],
+    "assumption_range": null,
+    "allowed_use": "observation context; never water stress, crop identity or yield",
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "ev:osm-canals",
+    "source_title": "OpenStreetMap waterways (Overpass bounded query)",
+    "kind": "public_geography",
+    "verification_state": "artifact_checked",
+    "source_url": "https://overpass-api.de/api/interpreter",
+    "source_asset_id": null,
+    "retrieved_at": "2026-10-10T00:39:37Z",
+    "source_period": "OSM base 2026-10-10T00:37:56Z",
+    "geographic_scope": "AOI bbox + 0.01°",
+    "license_id": "ODbL-1.0",
+    "raw_sha256": "3df11e7c763149585ad5c324033b1ea39fdfa185ee2b5704aaf41852ecbd73d0",
+    "transformation": "ways with waterway=canal|ditch|drain → GeoJSON; ids osm:way/<id>; tags kept",
+    "parent_evidence_ids": [],
+    "units": null,
+    "method_version": "aabflow-ingestion-1.0.0",
+    "limitations": [
+      "minor watercourses are incompletely mapped in rural Punjab",
+      "geometry/classification only; no hydraulic capacity or connectivity"
+    ],
+    "assumption_range": null,
+    "allowed_use": null,
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "ev:grain",
+    "source_title": "GRAIN v1.0 Pakistan canals (GeoParquet member)",
+    "kind": "public_geography",
+    "verification_state": "artifact_checked",
+    "source_url": "https://zenodo.org/records/16786488/files/GRAIN_v.1.0.zip?download=1",
+    "source_asset_id": null,
+    "retrieved_at": "2026-10-10T00:37:25Z",
+    "source_period": null,
+    "geographic_scope": null,
+    "license_id": "CC-BY-4.0",
+    "raw_sha256": "23128cf11cb52265e0d5bed82828d9c323fdeee981b7bb61384cd87394adfca7",
+    "transformation": "zip member GRAIN_v.1.0/GeoParquet/pakistan_GRAIN_v.1.0.parquet via HTTP range reads; CRC-32 e969780d verified; clipped to AOI bbox + 0.01°: 13 features",
+    "parent_evidence_ids": [],
+    "units": null,
+    "method_version": null,
+    "limitations": [
+      "archive-level MD5 not verifiable from a partial read"
+    ],
+    "assumption_range": null,
+    "allowed_use": null,
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "ev:weather:openmeteo-archive-30.7000N-72.2000E-20140101-20251231",
+    "source_title": "Open-Meteo historical archive (historical gridded weather)",
+    "kind": "gridded_reanalysis",
+    "verification_state": "artifact_checked",
+    "source_url": "https://archive-api.open-meteo.com/v1/archive?latitude=30.66700&longitude=72.24500&start_date=2014-01-01&end_date=2025-12-31&daily=temperature_2m_min%2Ctemperature_2m_max%2Cprecipitation_sum%2Cet0_fao_evapotranspiration&timezone=Asia%2FKarachi&temperature_unit=celsius&precipitation_unit=mm&timeformat=iso8601&models=era5_seamless",
+    "source_asset_id": null,
+    "retrieved_at": "2026-10-10T00:39:39Z",
+    "source_period": "2014-01-01..2025-12-31 (12 complete years)",
+    "geographic_scope": "grid point [30.700005, 72.2] (requested [30.667, 72.245]), elevation 142.0 m",
+    "license_id": "CC-BY-4.0",
+    "raw_sha256": "c49501f2132cc2ae4389e5af2646352d3771d7e5abf3d572f1defc5cb4d98b37",
+    "transformation": "daily temperature_2m_min/max, precipitation_sum, et0_fao_evapotranspiration → MinTemp, MaxTemp, Precipitation, ReferenceET; complete daily index asserted; no interpolation",
+    "parent_evidence_ids": [],
+    "units": "°C, mm/day",
+    "method_version": "aabflow-ingestion-1.0.0",
+    "limitations": [
+      "reanalysis grid estimate (~10-25 km), not a station in each field",
+      "pilots in the same cell share weather; no climate diversity claim"
+    ],
+    "assumption_range": null,
+    "allowed_use": null,
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "ev:dem",
+    "source_title": "Copernicus DEM GLO-30 (AWS open data)",
+    "kind": "observed_remote_sensing",
+    "verification_state": "artifact_checked",
+    "source_url": "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N30_00_E072_00_DEM/Copernicus_DSM_COG_10_N30_00_E072_00_DEM.tif",
+    "source_asset_id": null,
+    "retrieved_at": "2026-10-10T00:39:41Z",
+    "source_period": null,
+    "geographic_scope": null,
+    "license_id": "copernicus-dem-glo30-licence",
+    "raw_sha256": "ef822fdcc1c133b27e9a1d502ed1abdc1e693267e27e3512ce16d5802418759b",
+    "transformation": "window read; Terrarium PNG encoding",
+    "parent_evidence_ids": [],
+    "units": "m above EGM2008 geoid",
+    "method_version": null,
+    "limitations": [
+      "30 m DSM includes trees/buildings; does not verify flow direction"
+    ],
+    "assumption_range": null,
+    "allowed_use": "3D display context only",
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "ev:delineate",
+    "source_title": "Delineate Anything v2 field-boundary inference",
+    "kind": "model_output",
+    "verification_state": "artifact_checked",
+    "source_url": "https://github.com/Lavreniuk/Delineate-Anything",
+    "source_asset_id": "MykolaL/DelineateAnything:DelineateAnythingv2.pt",
+    "retrieved_at": "2026-10-10T00:52:22.608146Z",
+    "source_period": null,
+    "geographic_scope": null,
+    "license_id": "AGPL-3.0 (code); weights per Hugging Face model card",
+    "raw_sha256": "34c4f40f3968d573232fcc6a71d62048941a89917380c86b33f1293ad41dceaa",
+    "transformation": "python delineate.py -b vision/batches/50ca220c256bbf74.yaml (upstream ); config /app/vision/configs/conf_pilot_s2_sr4.yaml sha256 b0ce2227ca6fc5db731e28504d2689e8533463f8971e72c1ba48270947df54ef; input sha256 4733c68cfc3a1dcd45070824d38b8890323f005a0f349e261a707c0e85db205e; 303 raw polygons; cpu wall 100.125 s; cache_hit=True",
+    "parent_evidence_ids": [
+      "ev:s2:S2C_43RBQ_20250223_0_L2A"
+    ],
+    "units": null,
+    "method_version": "checkpoint sha256 46700b8a279b07922953a11adaeb5e658d9a2384b6334c8e0a3090886218915a",
+    "limitations": [
+      "estimated boundaries, not ownership",
+      "10 m imagery merges/splits small parcels"
+    ],
+    "assumption_range": null,
+    "allowed_use": null,
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "ev:field-review",
+    "source_title": "Field boundary review and selection",
+    "kind": "derived",
+    "verification_state": "artifact_checked",
+    "source_url": null,
+    "source_asset_id": null,
+    "retrieved_at": null,
+    "source_period": null,
+    "geographic_scope": null,
+    "license_id": null,
+    "raw_sha256": null,
+    "transformation": "{\n  \"rules_version\": \"field-review-rules-1.1.0\",\n  \"config\": {\n    \"target_count\": 30,\n    \"min_area_m2\": 5000.0,\n    \"max_area_m2\": 150000.0,\n    \"min_compactness\": 0.3,\n    \"min_width_m\": 45.0,\n    \"min_rectangularity\": 0.7,\n    \"fill_hole_m2\": 1500.0,\n    \"minor_part_fraction\": 0.05,\n    \"aoi_inside_fraction\": 0.98,\n    \"overlap_tolerance\": 0.01,\n    \"edge_buffer_m\": 0.0\n  },\n  \"raw_polygons\": 303,\n  \"rejected\": 261,\n  \"eligible\": 42,\n  \"selected\": 30,\n  \"selected_corrected\": 1,\n  \"selected_correction_rate\": 0.0333,\n  \"overlap_pairs_resolved\": 0,\n  \"manual_edits\": 3,\n  \"selection_method\": \"top-ranked eligible polygons by quality score (0.5·rectangularity + 0.3·compactness/0.785 + 0.2·log10(area)/5)\",\n  \"accuracy_metrics\": \"not_estimated: no independent reference boundaries\",\n  \"review_started_at\": \"2026-10-10T11:40:36Z\",\n  \"review_finished_at\": \"2026-10-10T11:40:36Z\"\n}",
+    "parent_evidence_ids": [
+      "ev:delineate"
+    ],
+    "units": null,
+    "method_version": "field-review-rules-1.1.0",
+    "limitations": [
+      "accuracy not estimated (no independent reference boundaries)",
+      "selection favours clean parcels; not a population accuracy sample"
+    ],
+    "assumption_range": null,
+    "allowed_use": null,
+    "reviewer": "aabflow lead (rule-based review + visual overlay check of S2C_43RBQ_20250223_0_L2A)",
+    "reviewed_at": "2026-10-10T11:40:36Z"
+  },
+  {
+    "evidence_id": "ev:network",
+    "source_title": "Declared operational graph",
+    "kind": "assumption",
+    "verification_state": "artifact_checked",
+    "source_url": null,
+    "source_asset_id": null,
+    "retrieved_at": null,
+    "source_period": null,
+    "geographic_scope": null,
+    "license_id": null,
+    "raw_sha256": null,
+    "transformation": "two-watercourse-three-reach-v1: Graph is a declared operational assumption; watercourse reaches are not in OSM and have geometry_ref=null (rendered dashed). Parent canal geometry osm:way/488499235 is observed; flow direction along it is assumed. Moghas are placed at the nearest parent-canal point to each command area (assumption).",
+    "parent_evidence_ids": [
+      "ev:osm-canals"
+    ],
+    "units": null,
+    "method_version": "two-watercourse-three-reach-v1",
+    "limitations": [
+      "fractional-loss model; no hydraulics, backwater or gate response",
+      "field-to-outlet associations are proposals, not legal connections"
+    ],
+    "assumption_range": {
+      "low": 0.7,
+      "high": 0.97,
+      "unit": "delivery factor"
+    },
+    "allowed_use": null,
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "asm:water-allowance",
+    "source_title": "Canal water allowance at the mogha",
+    "kind": "assumption",
+    "verification_state": "unchecked",
+    "source_url": null,
+    "source_asset_id": null,
+    "retrieved_at": null,
+    "source_period": null,
+    "geographic_scope": null,
+    "license_id": null,
+    "raw_sha256": null,
+    "transformation": "declared value 0.21 L/s per ha CCA",
+    "parent_evidence_ids": [],
+    "units": "L/s per ha CCA",
+    "method_version": "aabflow-ingestion-1.0.0",
+    "limitations": [
+      "≈3 cusec per 1000 acres, a typical Punjab perennial-canal allowance; local design discharge not available",
+      "editable scenario assumption; no dated local quote or record"
+    ],
+    "assumption_range": {
+      "low": 0.15,
+      "high": 0.3,
+      "unit": "L/s per ha CCA"
+    },
+    "allowed_use": "scenario input; label as assumed",
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "asm:watercourse-cca",
+    "source_title": "Culturable command area of each watercourse",
+    "kind": "assumption",
+    "verification_state": "unchecked",
+    "source_url": null,
+    "source_asset_id": null,
+    "retrieved_at": null,
+    "source_period": null,
+    "geographic_scope": null,
+    "license_id": null,
+    "raw_sha256": null,
+    "transformation": "declared value 120.0 ha",
+    "parent_evidence_ids": [],
+    "units": "ha",
+    "method_version": "aabflow-ingestion-1.0.0",
+    "limitations": [
+      "Typical Punjab watercourse command; the 15 reviewed fields are a subset and the other shareholders' turns are not modelled",
+      "editable scenario assumption; no dated local quote or record"
+    ],
+    "assumption_range": {
+      "low": 60.0,
+      "high": 250.0,
+      "unit": "ha"
+    },
+    "allowed_use": "scenario input; label as assumed",
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "asm:warabandi-cycle",
+    "source_title": "Warabandi rotation length",
+    "kind": "assumption",
+    "verification_state": "unchecked",
+    "source_url": null,
+    "source_asset_id": null,
+    "retrieved_at": null,
+    "source_period": null,
+    "geographic_scope": null,
+    "license_id": null,
+    "raw_sha256": null,
+    "transformation": "declared value 168 h",
+    "parent_evidence_ids": [],
+    "units": "h",
+    "method_version": "aabflow-ingestion-1.0.0",
+    "limitations": [
+      "Fixed weekly rotation (warabandi) with turn time proportional to field area",
+      "editable scenario assumption; no dated local quote or record"
+    ],
+    "assumption_range": {
+      "low": 168.0,
+      "high": 168.0,
+      "unit": "h"
+    },
+    "allowed_use": "scenario input; label as assumed",
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "asm:canal-closure",
+    "source_title": "Annual Rabi canal closure",
+    "kind": "assumption",
+    "verification_state": "unchecked",
+    "source_url": null,
+    "source_asset_id": null,
+    "retrieved_at": null,
+    "source_period": null,
+    "geographic_scope": null,
+    "license_id": null,
+    "raw_sha256": null,
+    "transformation": "declared value 30 days",
+    "parent_evidence_ids": [],
+    "units": "days",
+    "method_version": "aabflow-ingestion-1.0.0",
+    "limitations": [
+      "Late-December to late-January maintenance closure; exact dates vary by year",
+      "editable scenario assumption; no dated local quote or record"
+    ],
+    "assumption_range": {
+      "low": 15.0,
+      "high": 40.0,
+      "unit": "days"
+    },
+    "allowed_use": "scenario input; label as assumed",
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "asm:reach-delivery",
+    "source_title": "Watercourse reach delivery factor (earthen)",
+    "kind": "assumption",
+    "verification_state": "unchecked",
+    "source_url": null,
+    "source_asset_id": null,
+    "retrieved_at": null,
+    "source_period": null,
+    "geographic_scope": null,
+    "license_id": null,
+    "raw_sha256": null,
+    "transformation": "declared value 0.86 fraction",
+    "parent_evidence_ids": [],
+    "units": "fraction",
+    "method_version": "aabflow-ingestion-1.0.0",
+    "limitations": [
+      "Fractional conveyance loss per reach; uncalibrated, literature range for unlined Punjab watercourses",
+      "editable scenario assumption; no dated local quote or record"
+    ],
+    "assumption_range": {
+      "low": 0.7,
+      "high": 0.97,
+      "unit": "fraction"
+    },
+    "allowed_use": "scenario input; label as assumed",
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "asm:parent-delivery",
+    "source_title": "Parent canal reach delivery factor",
+    "kind": "assumption",
+    "verification_state": "unchecked",
+    "source_url": null,
+    "source_asset_id": null,
+    "retrieved_at": null,
+    "source_period": null,
+    "geographic_scope": null,
+    "license_id": null,
+    "raw_sha256": null,
+    "transformation": "declared value 0.97 fraction",
+    "parent_evidence_ids": [],
+    "units": "fraction",
+    "method_version": "aabflow-ingestion-1.0.0",
+    "limitations": [
+      "Short reach of a lined/large canal",
+      "editable scenario assumption; no dated local quote or record"
+    ],
+    "assumption_range": {
+      "low": 0.93,
+      "high": 0.99,
+      "unit": "fraction"
+    },
+    "allowed_use": "scenario input; label as assumed",
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "asm:source-capacity",
+    "source_title": "Parent canal intake capacity available to the pilot",
+    "kind": "assumption",
+    "verification_state": "unchecked",
+    "source_url": null,
+    "source_asset_id": null,
+    "retrieved_at": null,
+    "source_period": null,
+    "geographic_scope": null,
+    "license_id": null,
+    "raw_sha256": null,
+    "transformation": "declared value 0.1 m3/s",
+    "parent_evidence_ids": [],
+    "units": "m3/s",
+    "method_version": "aabflow-ingestion-1.0.0",
+    "limitations": [
+      "Share of the distributary flow serving both watercourses",
+      "editable scenario assumption; no dated local quote or record"
+    ],
+    "assumption_range": {
+      "low": 0.05,
+      "high": 0.2,
+      "unit": "m3/s"
+    },
+    "allowed_use": "scenario input; label as assumed",
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "asm:app-eff-existing",
+    "source_title": "Existing field application efficiency",
+    "kind": "assumption",
+    "verification_state": "unchecked",
+    "source_url": null,
+    "source_asset_id": null,
+    "retrieved_at": null,
+    "source_period": null,
+    "geographic_scope": null,
+    "license_id": null,
+    "raw_sha256": null,
+    "transformation": "declared value 0.6 fraction",
+    "parent_evidence_ids": [],
+    "units": "fraction",
+    "method_version": "aabflow-ingestion-1.0.0",
+    "limitations": [
+      "Basin/border irrigation on unlevelled fields",
+      "editable scenario assumption; no dated local quote or record"
+    ],
+    "assumption_range": {
+      "low": 0.45,
+      "high": 0.7,
+      "unit": "fraction"
+    },
+    "allowed_use": "scenario input; label as assumed",
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "asm:app-eff-leveled",
+    "source_title": "Application efficiency after laser leveling",
+    "kind": "assumption",
+    "verification_state": "unchecked",
+    "source_url": null,
+    "source_asset_id": null,
+    "retrieved_at": null,
+    "source_period": null,
+    "geographic_scope": null,
+    "license_id": null,
+    "raw_sha256": null,
+    "transformation": "declared value 0.75 fraction",
+    "parent_evidence_ids": [],
+    "units": "fraction",
+    "method_version": "aabflow-ingestion-1.0.0",
+    "limitations": [
+      "Laser land leveling evidence range",
+      "editable scenario assumption; no dated local quote or record"
+    ],
+    "assumption_range": {
+      "low": 0.65,
+      "high": 0.85,
+      "unit": "fraction"
+    },
+    "allowed_use": "scenario input; label as assumed",
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "asm:leveling-cost",
+    "source_title": "Laser leveling service cost",
+    "kind": "assumption",
+    "verification_state": "unchecked",
+    "source_url": null,
+    "source_asset_id": null,
+    "retrieved_at": null,
+    "source_period": null,
+    "geographic_scope": null,
+    "license_id": null,
+    "raw_sha256": null,
+    "transformation": "declared value 14000 PKR/ha",
+    "parent_evidence_ids": [],
+    "units": "PKR/ha",
+    "method_version": "aabflow-ingestion-1.0.0",
+    "limitations": [
+      "Hired laser leveler, about 5,600 PKR/acre; quote not obtained",
+      "editable scenario assumption; no dated local quote or record"
+    ],
+    "assumption_range": {
+      "low": 9000.0,
+      "high": 22000.0,
+      "unit": "PKR/ha"
+    },
+    "allowed_use": "scenario input; label as assumed",
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "asm:leveling-lead",
+    "source_title": "Leveling lead time",
+    "kind": "assumption",
+    "verification_state": "unchecked",
+    "source_url": null,
+    "source_asset_id": null,
+    "retrieved_at": null,
+    "source_period": null,
+    "geographic_scope": null,
+    "license_id": null,
+    "raw_sha256": null,
+    "transformation": "declared value 10 days",
+    "parent_evidence_ids": [],
+    "units": "days",
+    "method_version": "aabflow-ingestion-1.0.0",
+    "limitations": [
+      "Service booking plus work; must finish before planting",
+      "editable scenario assumption; no dated local quote or record"
+    ],
+    "assumption_range": {
+      "low": 5.0,
+      "high": 21.0,
+      "unit": "days"
+    },
+    "allowed_use": "scenario input; label as assumed",
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "asm:pond-cost",
+    "source_title": "Farm pond earthwork cost",
+    "kind": "assumption",
+    "verification_state": "unchecked",
+    "source_url": null,
+    "source_asset_id": null,
+    "retrieved_at": null,
+    "source_period": null,
+    "geographic_scope": null,
+    "license_id": null,
+    "raw_sha256": null,
+    "transformation": "declared value 320 PKR/m3 storage",
+    "parent_evidence_ids": [],
+    "units": "PKR/m3 storage",
+    "method_version": "aabflow-ingestion-1.0.0",
+    "limitations": [
+      "Unlined excavated pond with embankment; plus fixed 40,000 PKR inlet/outlet works",
+      "editable scenario assumption; no dated local quote or record"
+    ],
+    "assumption_range": {
+      "low": 200.0,
+      "high": 600.0,
+      "unit": "PKR/m3 storage"
+    },
+    "allowed_use": "scenario input; label as assumed",
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "asm:pond-fixed-cost",
+    "source_title": "Farm pond fixed works",
+    "kind": "assumption",
+    "verification_state": "unchecked",
+    "source_url": null,
+    "source_asset_id": null,
+    "retrieved_at": null,
+    "source_period": null,
+    "geographic_scope": null,
+    "license_id": null,
+    "raw_sha256": null,
+    "transformation": "declared value 40000 PKR",
+    "parent_evidence_ids": [],
+    "units": "PKR",
+    "method_version": "aabflow-ingestion-1.0.0",
+    "limitations": [
+      "Inlet, outlet and small structures",
+      "editable scenario assumption; no dated local quote or record"
+    ],
+    "assumption_range": {
+      "low": 20000.0,
+      "high": 80000.0,
+      "unit": "PKR"
+    },
+    "allowed_use": "scenario input; label as assumed",
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "asm:pond-lead",
+    "source_title": "Pond construction lead time",
+    "kind": "assumption",
+    "verification_state": "unchecked",
+    "source_url": null,
+    "source_asset_id": null,
+    "retrieved_at": null,
+    "source_period": null,
+    "geographic_scope": null,
+    "license_id": null,
+    "raw_sha256": null,
+    "transformation": "declared value 90 days",
+    "parent_evidence_ids": [],
+    "units": "days",
+    "method_version": "aabflow-ingestion-1.0.0",
+    "limitations": [
+      "Procurement plus construction before commissioning",
+      "editable scenario assumption; no dated local quote or record"
+    ],
+    "assumption_range": {
+      "low": 60.0,
+      "high": 120.0,
+      "unit": "days"
+    },
+    "allowed_use": "scenario input; label as assumed",
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "asm:pond-seepage",
+    "source_title": "Pond seepage rate",
+    "kind": "assumption",
+    "verification_state": "unchecked",
+    "source_url": null,
+    "source_asset_id": null,
+    "retrieved_at": null,
+    "source_period": null,
+    "geographic_scope": null,
+    "license_id": null,
+    "raw_sha256": null,
+    "transformation": "declared value 4.0 mm/day",
+    "parent_evidence_ids": [],
+    "units": "mm/day",
+    "method_version": "aabflow-ingestion-1.0.0",
+    "limitations": [
+      "Unlined pond in silt loam",
+      "editable scenario assumption; no dated local quote or record"
+    ],
+    "assumption_range": {
+      "low": 2.0,
+      "high": 10.0,
+      "unit": "mm/day"
+    },
+    "allowed_use": "scenario input; label as assumed",
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "asm:pond-kevap",
+    "source_title": "Open-water evaporation coefficient on ET0",
+    "kind": "assumption",
+    "verification_state": "unchecked",
+    "source_url": null,
+    "source_asset_id": null,
+    "retrieved_at": null,
+    "source_period": null,
+    "geographic_scope": null,
+    "license_id": null,
+    "raw_sha256": null,
+    "transformation": "declared value 1.0 ratio",
+    "parent_evidence_ids": [],
+    "units": "ratio",
+    "method_version": "aabflow-ingestion-1.0.0",
+    "limitations": [
+      "k_evap applied to FAO ET0 (T4.4)",
+      "editable scenario assumption; no dated local quote or record"
+    ],
+    "assumption_range": {
+      "low": 0.8,
+      "high": 1.2,
+      "unit": "ratio"
+    },
+    "allowed_use": "scenario input; label as assumed",
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "asm:pond-upkeep",
+    "source_title": "Pond annual upkeep",
+    "kind": "assumption",
+    "verification_state": "unchecked",
+    "source_url": null,
+    "source_asset_id": null,
+    "retrieved_at": null,
+    "source_period": null,
+    "geographic_scope": null,
+    "license_id": null,
+    "raw_sha256": null,
+    "transformation": "declared value 15000 PKR/year",
+    "parent_evidence_ids": [],
+    "units": "PKR/year",
+    "method_version": "aabflow-ingestion-1.0.0",
+    "limitations": [
+      "Desilting",
+      "editable scenario assumption; no dated local quote or record"
+    ],
+    "assumption_range": {
+      "low": 5000.0,
+      "high": 30000.0,
+      "unit": "PKR/year"
+    },
+    "allowed_use": "scenario input; label as assumed",
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "asm:lining-cost",
+    "source_title": "Watercourse lining cost",
+    "kind": "assumption",
+    "verification_state": "unchecked",
+    "source_url": null,
+    "source_asset_id": null,
+    "retrieved_at": null,
+    "source_period": null,
+    "geographic_scope": null,
+    "license_id": null,
+    "raw_sha256": null,
+    "transformation": "declared value 6500 PKR/m",
+    "parent_evidence_ids": [],
+    "units": "PKR/m",
+    "method_version": "aabflow-ingestion-1.0.0",
+    "limitations": [
+      "Brick/concrete lining per metre; partial-lining programme scale",
+      "editable scenario assumption; no dated local quote or record"
+    ],
+    "assumption_range": {
+      "low": 4000.0,
+      "high": 10000.0,
+      "unit": "PKR/m"
+    },
+    "allowed_use": "scenario input; label as assumed",
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "asm:lining-factor",
+    "source_title": "Reach delivery factor after lining",
+    "kind": "assumption",
+    "verification_state": "unchecked",
+    "source_url": null,
+    "source_asset_id": null,
+    "retrieved_at": null,
+    "source_period": null,
+    "geographic_scope": null,
+    "license_id": null,
+    "raw_sha256": null,
+    "transformation": "declared value 0.95 fraction",
+    "parent_evidence_ids": [],
+    "units": "fraction",
+    "method_version": "aabflow-ingestion-1.0.0",
+    "limitations": [
+      "Lined watercourse reach",
+      "editable scenario assumption; no dated local quote or record"
+    ],
+    "assumption_range": {
+      "low": 0.92,
+      "high": 0.98,
+      "unit": "fraction"
+    },
+    "allowed_use": "scenario input; label as assumed",
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "asm:lining-lead",
+    "source_title": "Repair lead time",
+    "kind": "assumption",
+    "verification_state": "unchecked",
+    "source_url": null,
+    "source_asset_id": null,
+    "retrieved_at": null,
+    "source_period": null,
+    "geographic_scope": null,
+    "license_id": null,
+    "raw_sha256": null,
+    "transformation": "declared value 120 days",
+    "parent_evidence_ids": [],
+    "units": "days",
+    "method_version": "aabflow-ingestion-1.0.0",
+    "limitations": [
+      "Design, procurement and construction",
+      "editable scenario assumption; no dated local quote or record"
+    ],
+    "assumption_range": {
+      "low": 90.0,
+      "high": 180.0,
+      "unit": "days"
+    },
+    "allowed_use": "scenario input; label as assumed",
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "asm:lining-downtime",
+    "source_title": "Repair construction downtime",
+    "kind": "assumption",
+    "verification_state": "unchecked",
+    "source_url": null,
+    "source_asset_id": null,
+    "retrieved_at": null,
+    "source_period": null,
+    "geographic_scope": null,
+    "license_id": null,
+    "raw_sha256": null,
+    "transformation": "declared value 14 days",
+    "parent_evidence_ids": [],
+    "units": "days",
+    "method_version": "aabflow-ingestion-1.0.0",
+    "limitations": [
+      "Reach closed while lining is built",
+      "editable scenario assumption; no dated local quote or record"
+    ],
+    "assumption_range": {
+      "low": 7.0,
+      "high": 30.0,
+      "unit": "days"
+    },
+    "allowed_use": "scenario input; label as assumed",
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "asm:pump-rate",
+    "source_title": "Existing shared tubewell maximum rate",
+    "kind": "assumption",
+    "verification_state": "unchecked",
+    "source_url": null,
+    "source_asset_id": null,
+    "retrieved_at": null,
+    "source_period": null,
+    "geographic_scope": null,
+    "license_id": null,
+    "raw_sha256": null,
+    "transformation": "declared value 100.0 m3/h",
+    "parent_evidence_ids": [],
+    "units": "m3/h",
+    "method_version": "aabflow-ingestion-1.0.0",
+    "limitations": [
+      "≈1 cusec diesel tubewell",
+      "editable scenario assumption; no dated local quote or record"
+    ],
+    "assumption_range": {
+      "low": 60.0,
+      "high": 140.0,
+      "unit": "m3/h"
+    },
+    "allowed_use": "scenario input; label as assumed",
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "asm:pump-cost",
+    "source_title": "Tubewell operating cost",
+    "kind": "assumption",
+    "verification_state": "unchecked",
+    "source_url": null,
+    "source_asset_id": null,
+    "retrieved_at": null,
+    "source_period": null,
+    "geographic_scope": null,
+    "license_id": null,
+    "raw_sha256": null,
+    "transformation": "declared value 8.5 PKR/m3",
+    "parent_evidence_ids": [],
+    "units": "PKR/m3",
+    "method_version": "aabflow-ingestion-1.0.0",
+    "limitations": [
+      "Diesel at ~270 PKR/L, ~3 L/h at 100 m3/h",
+      "editable scenario assumption; no dated local quote or record"
+    ],
+    "assumption_range": {
+      "low": 4.0,
+      "high": 14.0,
+      "unit": "PKR/m3"
+    },
+    "allowed_use": "scenario input; label as assumed",
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "asm:pump-cap",
+    "source_title": "Seasonal groundwater cap for the shared tubewell",
+    "kind": "assumption",
+    "verification_state": "unchecked",
+    "source_url": null,
+    "source_asset_id": null,
+    "retrieved_at": null,
+    "source_period": null,
+    "geographic_scope": null,
+    "license_id": null,
+    "raw_sha256": null,
+    "transformation": "declared value 40000.0 m3",
+    "parent_evidence_ids": [],
+    "units": "m3",
+    "method_version": "aabflow-ingestion-1.0.0",
+    "limitations": [
+      "Scenario aquifer-use cap; no permit record",
+      "editable scenario assumption; no dated local quote or record"
+    ],
+    "assumption_range": {
+      "low": 20000.0,
+      "high": 80000.0,
+      "unit": "m3"
+    },
+    "allowed_use": "scenario input; label as assumed",
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "asm:pump-head",
+    "source_title": "Tubewell total head",
+    "kind": "assumption",
+    "verification_state": "unchecked",
+    "source_url": null,
+    "source_asset_id": null,
+    "retrieved_at": null,
+    "source_period": null,
+    "geographic_scope": null,
+    "license_id": null,
+    "raw_sha256": null,
+    "transformation": "declared value 20.0 m",
+    "parent_evidence_ids": [],
+    "units": "m",
+    "method_version": "aabflow-ingestion-1.0.0",
+    "limitations": [
+      "Water table depth",
+      "editable scenario assumption; no dated local quote or record"
+    ],
+    "assumption_range": {
+      "low": 12.0,
+      "high": 35.0,
+      "unit": "m"
+    },
+    "allowed_use": "scenario input; label as assumed",
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "asm:pump-eff",
+    "source_title": "Tubewell pumping efficiency",
+    "kind": "assumption",
+    "verification_state": "unchecked",
+    "source_url": null,
+    "source_asset_id": null,
+    "retrieved_at": null,
+    "source_period": null,
+    "geographic_scope": null,
+    "license_id": null,
+    "raw_sha256": null,
+    "transformation": "declared value 0.45 fraction",
+    "parent_evidence_ids": [],
+    "units": "fraction",
+    "method_version": "aabflow-ingestion-1.0.0",
+    "limitations": [
+      "Diesel set",
+      "editable scenario assumption; no dated local quote or record"
+    ],
+    "assumption_range": {
+      "low": 0.3,
+      "high": 0.6,
+      "unit": "fraction"
+    },
+    "allowed_use": "scenario input; label as assumed",
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "asm:soil-archetypes",
+    "source_title": "Soil archetypes by watercourse",
+    "kind": "assumption",
+    "verification_state": "unchecked",
+    "source_url": null,
+    "source_asset_id": null,
+    "retrieved_at": null,
+    "source_period": null,
+    "geographic_scope": null,
+    "license_id": null,
+    "raw_sha256": null,
+    "transformation": "declared value 2 classes",
+    "parent_evidence_ids": [],
+    "units": "classes",
+    "method_version": "aabflow-ingestion-1.0.0",
+    "limitations": [
+      "AquaCrop predefined SiltLoam/Loam priors for Rechna doab alluvium; no local soil survey",
+      "editable scenario assumption; no dated local quote or record"
+    ],
+    "assumption_range": {
+      "low": 2.0,
+      "high": 3.0,
+      "unit": "classes"
+    },
+    "allowed_use": "scenario input; label as assumed",
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "asm:initial-soil-water",
+    "source_title": "Initial soil water at simulation start",
+    "kind": "assumption",
+    "verification_state": "unchecked",
+    "source_url": null,
+    "source_asset_id": null,
+    "retrieved_at": null,
+    "source_period": null,
+    "geographic_scope": null,
+    "license_id": null,
+    "raw_sha256": null,
+    "transformation": "declared value 50 % TAW",
+    "parent_evidence_ids": [],
+    "units": "% TAW",
+    "method_version": "aabflow-ingestion-1.0.0",
+    "limitations": [
+      "Post-kharif/pre-rabi depletion assumption",
+      "editable scenario assumption; no dated local quote or record"
+    ],
+    "assumption_range": {
+      "low": 30.0,
+      "high": 80.0,
+      "unit": "% TAW"
+    },
+    "allowed_use": "scenario input; label as assumed",
+    "reviewer": null,
+    "reviewed_at": null
+  },
+  {
+    "evidence_id": "asm:existing-assets",
+    "source_title": "Existing pond and shared tubewell",
+    "kind": "assumption",
+    "verification_state": "unchecked",
+    "source_url": null,
+    "source_asset_id": null,
+    "retrieved_at": null,
+    "source_period": null,
+    "geographic_scope": null,
+    "license_id": null,
+    "raw_sha256": null,
+    "transformation": "existing pond on pilot-b:field-002 sized to one 75 mm irrigation; shared tubewell at the WC1 tail outlet serving 10 fields",
+    "parent_evidence_ids": [],
+    "units": null,
+    "method_version": null,
+    "limitations": [
+      "explicitly assumed (PRD §6.4); not observed in imagery or records",
+      "pond footprint lies inside the field's gross area and is already out of baseline cropping (not subtracted again)"
+    ],
+    "assumption_range": null,
+    "allowed_use": null,
+    "reviewer": null,
+    "reviewed_at": null
+  }
+]

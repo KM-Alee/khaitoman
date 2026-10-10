@@ -25,6 +25,7 @@ from aabflow.ingestion.packages.validate import PackageValidationError
 from aabflow.jobs import queue
 
 from . import store
+from .jobs import enqueue_readiness
 
 _SEGMENT = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,80}$")
 _ACTIVE = {"queued", "running", "cancel_requested"}
@@ -264,6 +265,8 @@ def apply_review(
             str(exc),
             {"review_version": current, "expected_version": expected_version},
         ) from exc
+    except pipeline.ReviewRejected as exc:
+        raise invalid(str(exc), {"review": str(exc)}) from exc
     except pipeline.StageError as exc:
         raise invalid(str(exc), {"state": row["state"]}) from exc
     except ValueError as exc:
@@ -342,21 +345,39 @@ def publish(
             f"{pilot}/{version} is already published and cannot be replaced",
             {"pilot_id": pilot, "pilot_version": version, "immutable": True},
         ) from exc
+    except pipeline.StructuralBlock as exc:
+        raise invalid(str(exc), {"publish": "; ".join(exc.blockers)}) from exc
     except PackageValidationError as exc:
         raise invalid(str(exc), {"publish": "structural validation failed"}) from exc
     except pipeline.StageError as exc:
         raise invalid(str(exc), {"state": st["state"]}) from exc
+    published = pipeline.status(workdir)
+    readiness = published.get("library_readiness") or {}
+    jobs = enqueue_readiness(conn, onboarding_id, pilot, version, readiness)
     store.patch(
         conn,
         onboarding_id,
         state="published",
         pilot_id=pilot,
         pilot_version=version,
-        status={"stage": "published", "published_ref": f"data/pilots/{pilot}/{version}"},
+        status={
+            "stage": "published",
+            "published_ref": f"data/pilots/{pilot}/{version}",
+            "library_readiness": readiness,
+            "readiness_jobs": jobs,
+        },
     )
     return {
         "onboarding_id": onboarding_id,
         "pilot_id": pilot,
         "pilot_version": version,
         "state": manifest.state.value,
+        "immutable": True,
+        "libraries": readiness.get("libraries") or [],
+        "readiness": {
+            "baseline": readiness.get("baseline"),
+            "candidates": readiness.get("candidates"),
+            "reused_as_current": False,
+        },
+        "jobs": jobs,
     }

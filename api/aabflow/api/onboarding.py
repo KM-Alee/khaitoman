@@ -1,8 +1,8 @@
-"""Onboarding routes (PRD §5.3, T2.6, T9.1, T9.4).
+"""Onboarding routes (PRD §5.3, T2.6, T9.1, T9.3, T9.4).
 
-AOI check, raw-bundle intake, process jobs, and layer reads. Review conflicts
-and immutable publish are enforced here; publishing ``reviewed-v2`` is a later
-step and this module never replaces an existing pilot version.
+AOI check, raw-bundle intake, process jobs, versioned review and immutable
+publish. A stale review version is a 409. Structural review errors block
+publish, and an existing pilot version is never replaced.
 """
 
 from __future__ import annotations
@@ -85,6 +85,12 @@ class FieldEdit(StrictModel):
     geometry_wgs84: dict[str, Any] | None = None
     parts_wgs84: list[dict[str, Any]] | None = None
     other_model_ids: list[str] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def _numbers(self) -> FieldEdit:
+        _finite(self.geometry_wgs84, "geometry_wgs84")
+        _finite(self.parts_wgs84, "parts_wgs84")
+        return self
 
 
 class ReviewRequest(StrictModel):

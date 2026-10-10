@@ -192,6 +192,7 @@ def build_package(
     parent_canal_id: str,
     created_at: datetime | None = None,
     warabandi: Literal["declared_cca", "selected_area"] = "declared_cca",
+    source_capacity_m3_s: float | None = None,
 ) -> Path:
     """Write the complete package into ``stage_dir`` and return it."""
     now = created_at or utc_now()
@@ -548,7 +549,11 @@ def build_package(
         CapacityInterval(
             start=ops._pkt(s.start),
             end=ops._pkt(s.end + __import__("datetime").timedelta(days=1)),
-            max_rate_m3_s=ops.ASSUMPTIONS["asm:source-capacity"].value,
+            max_rate_m3_s=(
+                ops.ASSUMPTIONS["asm:source-capacity"].value
+                if source_capacity_m3_s is None
+                else source_capacity_m3_s
+            ),
         )
         for s in ops.SEASONS
     ]
