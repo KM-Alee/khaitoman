@@ -24,12 +24,13 @@ from aabflow.services.pilots import PilotRepository
 
 
 def _routers() -> list[APIRouter]:
-    from aabflow.api import analyses, impact, jobs, pilots, runs, scenarios, surrogate, system
+    from aabflow.api import analyses, impact, jobs, packages, pilots, runs, scenarios, surrogate, system
     from aabflow.copilot.router import router as copilot_router
 
     return [
         system.router,
         pilots.router,
+        packages.router,
         jobs.router,
         scenarios.router,
         impact.router,

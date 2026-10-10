@@ -535,6 +535,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v2/pilots/{pilot_id}/versions/{version}/package": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Export Pilot Package */
+        get: operations["export_pilot_package_api_v2_pilots__pilot_id__versions__version__package_get"];
+        put?: never;
+        /** Import Pilot Package */
+        post: operations["import_pilot_package_api_v2_pilots__pilot_id__versions__version__package_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v2/runs": {
         parameters: {
             query?: never;
@@ -4147,6 +4165,72 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PilotMap"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    export_pilot_package_api_v2_pilots__pilot_id__versions__version__package_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                pilot_id: string;
+                version: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    import_pilot_package_api_v2_pilots__pilot_id__versions__version__package_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "Idempotency-Key"?: string | null;
+            };
+            path: {
+                pilot_id: string;
+                version: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
             /** @description Validation Error */
