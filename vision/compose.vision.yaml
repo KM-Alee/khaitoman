@@ -1,0 +1,8 @@
+# Compose override for Delineate Anything runs (data stream, vision/ configs).
+# Root cause of the first sample failure: Docker's default /dev/shm is 64 MB and
+# the upstream post-processing workers pass torch tensors through shared memory
+# ("unable to allocate shared memory(shm) ... No space left on device").
+# Use:  docker compose -f compose.yaml -f vision/compose.vision.yaml --profile vision run --rm --no-deps -T vision ...
+services:
+  vision:
+    shm_size: "4gb"

@@ -1,6 +1,376 @@
 @import "tailwindcss";
 
-/* PRD §9.2 design tokens land here as CSS custom properties. */
+/* ---------------------------------------------------------------- fonts (local, OFL; see public/fonts/LICENSE-*) */
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("/fonts/inter-latin-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("/fonts/inter-latin-ext-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1D00-1DBF, U+1E00-1E9F,
+    U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Fraunces";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("/fonts/fraunces-latin-opsz-normal.woff2") format("woff2-variations");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2122;
+}
+@font-face {
+  font-family: "Noto Naskh Arabic";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url("/fonts/noto-naskh-arabic-arabic-400-normal.woff2") format("woff2");
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E,
+    U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC;
+}
+@font-face {
+  font-family: "Noto Naskh Arabic";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 600;
+  src: url("/fonts/noto-naskh-arabic-arabic-600-normal.woff2") format("woff2");
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E,
+    U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC;
+}
+
+/* ---------------------------------------------------------------- PRD §9.2 tokens (light) */
 :root {
-  color-scheme: light dark;
+  color-scheme: light;
+  --canvas: #f4f2eb;
+  --surface: #ffffff;
+  --surface-muted: #ebefe9;
+  --surface-sunken: #e4e8e1;
+  --ink: #172b2a;
+  --ink-secondary: #4b6260;
+  --ink-tertiary: #5d7270; /* >= 4.5:1 on surface and canvas */
+  --water: #087f8c;
+  --water-deep: #075e68;
+  --water-soft: #d6ecec;
+  --vegetation: #386a4b;
+  --vegetation-soft: #dde9df;
+  --warning: #a35b08;
+  --warning-soft: #f6e7d2;
+  --danger: #a63e32;
+  --danger-soft: #f5dfdb;
+  --border: #cfdad5;
+  --border-strong: #8fa5a0; /* >= 3:1 non-text contrast on surface */
+  --focus: #245fbd;
+  --on-water: #ffffff;
+  --scrim: rgb(23 43 42 / 0.42);
+  --map-bg: #dfe3da;
+
+  /* Data palettes (shared by map legends and charts) */
+  --seq-0: #f1ede0;
+  --seq-1: #d9e3c7;
+  --seq-2: #a9c79a;
+  --seq-3: #6e9f72;
+  --seq-4: #386a4b;
+  --seq-5: #1f4532;
+  --svc-0: #f3e3c9;
+  --svc-1: #c9dfd9;
+  --svc-2: #8cc4c4;
+  --svc-3: #3e9ea8;
+  --svc-4: #087f8c;
+  --svc-5: #064b53;
+  --div-neg-2: #a63e32;
+  --div-neg-1: #d99a8b;
+  --div-zero: #ece9df;
+  --div-pos-1: #86bfc2;
+  --div-pos-2: #075e68;
+  --series-1: #087f8c;
+  --series-2: #a35b08;
+  --series-3: #386a4b;
+  --series-4: #6b4ea0;
+  --series-5: #4b6260;
+  --series-6: #b0476c;
+
+  /* Spacing 4/8/12/16/24/32, radius 10–16, elevation, motion */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 16px;
+  --shadow-1: 0 1px 2px rgb(23 43 42 / 0.06), 0 1px 1px rgb(23 43 42 / 0.04);
+  --shadow-2: 0 4px 14px -4px rgb(23 43 42 / 0.16), 0 2px 4px rgb(23 43 42 / 0.05);
+  --shadow-3: 0 18px 48px -12px rgb(23 43 42 / 0.32), 0 4px 10px rgb(23 43 42 / 0.08);
+  --dur-control: 150ms;
+  --dur-panel: 220ms;
+  --dur-camera: 400ms;
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  --rail-w: 64px;
+  --header-h: 64px;
+  --scenario-w: 288px;
+  --inspector-w: 360px;
+  --copilot-w: 400px;
+}
+
+/* ---------------------------------------------------------------- dark */
+/* "system" theme is resolved in JS (lib/theme) to data-theme="light" | "dark" */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --canvas: #0e1716;
+  --surface: #142120;
+  --surface-muted: #1a2a28;
+  --surface-sunken: #0b1312;
+  --ink: #e7eeea;
+  --ink-secondary: #a9bbb7;
+  --ink-tertiary: #93a8a4;
+  --water: #3fb3bf;
+  --water-deep: #2c96a2;
+  --water-soft: #143b3e;
+  --vegetation: #86b996;
+  --vegetation-soft: #1b3326;
+  --warning: #e3a453;
+  --warning-soft: #3a2a14;
+  --danger: #ec8a7c;
+  --danger-soft: #3d1f1b;
+  --border: #2a3e3b;
+  --border-strong: #5f7975;
+  --focus: #86adf5;
+  --on-water: #06201f;
+  --scrim: rgb(0 0 0 / 0.55);
+  --map-bg: #1a2321;
+  --seq-0: #2b2a22;
+  --seq-1: #3b4a33;
+  --seq-2: #4f7350;
+  --seq-3: #6f9f72;
+  --seq-4: #9cc79d;
+  --seq-5: #d0ecc9;
+  --svc-0: #3d3020;
+  --svc-1: #234240;
+  --svc-2: #26636a;
+  --svc-3: #2f8f9a;
+  --svc-4: #4fbcc6;
+  --svc-5: #a6e4e7;
+  --div-neg-2: #ec8a7c;
+  --div-neg-1: #8f554b;
+  --div-zero: #3a3d37;
+  --div-pos-1: #3f7f84;
+  --div-pos-2: #8fd6db;
+  --series-1: #3fb3bf;
+  --series-2: #e3a453;
+  --series-3: #86b996;
+  --series-4: #ad97de;
+  --series-5: #a9bbb7;
+  --series-6: #e27fa3;
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-2: 0 4px 14px -4px rgb(0 0 0 / 0.55);
+  --shadow-3: 0 18px 48px -12px rgb(0 0 0 / 0.7);
+}
+
+/* Tailwind 4 theme bridge: utilities resolve to the live tokens */
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-ink: var(--ink);
+  --color-ink-secondary: var(--ink-secondary);
+  --color-ink-tertiary: var(--ink-tertiary);
+  --color-water: var(--water);
+  --color-water-deep: var(--water-deep);
+  --color-water-soft: var(--water-soft);
+  --color-vegetation: var(--vegetation);
+  --color-vegetation-soft: var(--vegetation-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-focus: var(--focus);
+  --color-on-water: var(--on-water);
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-urdu: "Noto Naskh Arabic", "Inter", serif;
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 16px;
+  --shadow-1: var(--shadow-1);
+  --shadow-2: var(--shadow-2);
+  --shadow-3: var(--shadow-3);
+}
+
+/* ---------------------------------------------------------------- base */
+html,
+body,
+#root {
+  height: 100%;
+}
+body {
+  margin: 0;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.45;
+  font-feature-settings: "cv11", "ss01";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+.tabular,
+.num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum", "cv11";
+}
+[lang="ur"],
+.urdu {
+  font-family: var(--font-urdu);
+  line-height: 1.9;
+}
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+::selection {
+  background: var(--water-soft);
+  color: var(--ink);
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+
+/* Presentation mode: enlarged essentials, ≥16px labels (PRD §9.2, T10.6) */
+:root[data-presentation="on"] body {
+  font-size: 16px;
+}
+:root[data-presentation="on"] .present-hide {
+  display: none !important;
+}
+:root[data-presentation="on"] .present-lg {
+  font-size: 1.2em;
+}
+
+/* Skeleton: layout only, never fake numbers */
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-muted) 0%, var(--surface-sunken) 50%, var(--surface-muted) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s linear infinite;
+  border-radius: 8px;
+}
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes pulse-dot {
+  50% {
+    opacity: 0.35;
+  }
+}
+.indeterminate {
+  position: relative;
+  overflow: hidden;
+}
+.indeterminate::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  background: var(--water);
+  border-radius: inherit;
+  animation: indet 1.3s var(--ease-out) infinite;
+}
+@keyframes indet {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(260%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+:root[data-motion="reduced"] *,
+:root[data-motion="reduced"] *::before,
+:root[data-motion="reduced"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+}
+
+/* MapLibre chrome harmonised with the tokens */
+.maplibregl-ctrl-attrib {
+  background: color-mix(in srgb, var(--surface) 78%, transparent) !important;
+  color: var(--ink-secondary);
+  font-size: 11px;
+  border-radius: 8px 0 0 0;
+  backdrop-filter: blur(6px);
+}
+.maplibregl-ctrl-attrib a {
+  color: var(--ink-secondary);
+}
+.maplibregl-ctrl-attrib-button {
+  filter: none;
+}
+.maplibregl-canvas:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
+}
+.map-label {
+  pointer-events: none;
+  font: 600 12px/1.2 var(--font-sans);
+  color: var(--ink);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  border: 1px solid var(--border);
+  padding: 3px 7px;
+  border-radius: 999px;
+  box-shadow: var(--shadow-2);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  transform: translateY(-6px);
+}
+.map-label[data-kind="selected"] {
+  background: var(--ink);
+  color: var(--canvas);
+  border-color: var(--ink);
+}
+.map-label[data-kind="asset"] {
+  font-weight: 500;
+  font-size: 11px;
+  padding: 2px 6px;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #fff;
+  }
 }

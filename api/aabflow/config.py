@@ -1,8 +1,14 @@
-"""Runtime configuration read from the environment (.env is loaded by main)."""
+"""Runtime configuration read from the environment (.env is loaded by main).
+
+Module constants keep their original names for other streams. The API builds a
+``Settings`` object at app creation so tests can point every store at a
+temporary directory (and at labelled fixture bindings) without touching ``data/``.
+"""
 
 from __future__ import annotations
 
 import os
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -12,6 +18,60 @@ DB_PATH = Path(os.environ.get("AABFLOW_DB_PATH", DATA_DIR / "app.sqlite"))
 WEB_DIST = ROOT / "web" / "dist"
 OPENAI_MODEL = os.environ.get("AABFLOW_OPENAI_MODEL", "gpt-6.1-sol")
 
+# Production science bindings (library loading, ledger reconstruction, trajectories).
+DEFAULT_SCIENCE_BINDINGS = "aabflow.services.science:bindings"
+
 
 def openai_key_configured() -> bool:
     return bool(os.environ.get("OPENAI_API_KEY"))
+
+
+@dataclass(frozen=True)
+class Settings:
+    data_dir: Path
+    db_path: Path
+    web_dist: Path = WEB_DIST
+    workers: int = 2
+    solver_workers: int = 2
+    science_bindings: str = DEFAULT_SCIENCE_BINDINGS
+    start_dispatcher: bool = True
+    heartbeat_s: float = 2.0
+    lease_s: float = 15.0
+    extra: dict = field(default_factory=dict)
+
+    @property
+    def pilots_dir(self) -> Path:
+        return self.data_dir / "pilots"
+
+    @property
+    def libraries_dir(self) -> Path:
+        return self.data_dir / "libraries"
+
+    @property
+    def runs_dir(self) -> Path:
+        return self.data_dir / "runs"
+
+    @property
+    def reports_dir(self) -> Path:
+        return self.data_dir / "reports"
+
+    @property
+    def onboarding_dir(self) -> Path:
+        return self.data_dir / "onboarding"
+
+    @property
+    def raw_dir(self) -> Path:
+        return self.data_dir / "raw"
+
+    def with_(self, **kw) -> Settings:
+        return replace(self, **kw)
+
+
+def settings_from_env() -> Settings:
+    data = Path(os.environ.get("AABFLOW_DATA_DIR", ROOT / "data"))
+    return Settings(
+        data_dir=data,
+        db_path=Path(os.environ.get("AABFLOW_DB_PATH", data / "app.sqlite")),
+        workers=int(os.environ.get("AABFLOW_WORKERS", "2")),
+        solver_workers=int(os.environ.get("AABFLOW_SOLVER_WORKERS", "2")),
+    )

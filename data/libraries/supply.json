@@ -1,0 +1,203 @@
+{
+  "version": "supply-v1",
+  "supply_profile_ids": [
+    "nominal-roster-v1",
+    "shortage-22pct-v1",
+    "interruption-14d-v1"
+  ],
+  "seasons": {
+    "wheat-rabi-2026-27": {
+      "generic": [
+        {
+          "supply_profile_id": "nominal-roster-v1",
+          "base_profile_hash": "de510920551972a170fe961615509db564f5bfa7d70f8314e56bbe841896b30d",
+          "label": "Nominal roster (declared rates, no curtailment)",
+          "transformations": [],
+          "resolved_hash": "c7ea2fa4f01f8c6fa0da93ffe5c40a6b2ec234298bfbf5db3342cf95f4c7d00c",
+          "pre_reduced": false
+        },
+        {
+          "supply_profile_id": "shortage-22pct-v1",
+          "base_profile_hash": "de510920551972a170fe961615509db564f5bfa7d70f8314e56bbe841896b30d",
+          "label": "22% uniform supply shortage (absolute multiplier 0.78)",
+          "transformations": [
+            {
+              "transformation_id": "shortage-22pct",
+              "kind": "absolute_multiplier",
+              "multiplier": 0.78,
+              "start": null,
+              "end": null,
+              "edge_ids": []
+            }
+          ],
+          "resolved_hash": "fabcdcbe7de3af54d1bcf29c580b69992a8fff9d5445ccb82fa23de43a590102",
+          "pre_reduced": false
+        },
+        {
+          "supply_profile_id": "interruption-14d-v1",
+          "base_profile_hash": "de510920551972a170fe961615509db564f5bfa7d70f8314e56bbe841896b30d",
+          "label": "14-day whole-source closure from 2027-02-13 (DAP 90)",
+          "transformations": [
+            {
+              "transformation_id": "interruption-14d",
+              "kind": "closure",
+              "multiplier": null,
+              "start": "2027-02-12T19:00:00Z",
+              "end": "2027-02-26T19:00:00Z",
+              "edge_ids": []
+            }
+          ],
+          "resolved_hash": "0ac96c0fa4ac3f7e7d52d2d5d85c562783a449ddbad3954b0c25f9efe3465e63",
+          "pre_reduced": false
+        }
+      ],
+      "by_pilot": {}
+    },
+    "wheat-rabi-2027-28": {
+      "generic": [
+        {
+          "supply_profile_id": "nominal-roster-v1",
+          "base_profile_hash": "3bcf4dec413acc1a51e28176490d029ab29c0ea8dd37f27c437dbc869f3ca1ea",
+          "label": "Nominal roster (declared rates, no curtailment)",
+          "transformations": [],
+          "resolved_hash": "0d1d4c90e198815614d3e26459efefc6d311b3a361d64e120ac3c8e4f2b2f6ed",
+          "pre_reduced": false
+        },
+        {
+          "supply_profile_id": "shortage-22pct-v1",
+          "base_profile_hash": "3bcf4dec413acc1a51e28176490d029ab29c0ea8dd37f27c437dbc869f3ca1ea",
+          "label": "22% uniform supply shortage (absolute multiplier 0.78)",
+          "transformations": [
+            {
+              "transformation_id": "shortage-22pct",
+              "kind": "absolute_multiplier",
+              "multiplier": 0.78,
+              "start": null,
+              "end": null,
+              "edge_ids": []
+            }
+          ],
+          "resolved_hash": "b805f50b6eb4bc781bc2bdf9d3feacdd718ff50724216194afe300b3f5ed680c",
+          "pre_reduced": false
+        },
+        {
+          "supply_profile_id": "interruption-14d-v1",
+          "base_profile_hash": "3bcf4dec413acc1a51e28176490d029ab29c0ea8dd37f27c437dbc869f3ca1ea",
+          "label": "14-day whole-source closure from 2028-02-13 (DAP 90)",
+          "transformations": [
+            {
+              "transformation_id": "interruption-14d",
+              "kind": "closure",
+              "multiplier": null,
+              "start": "2028-02-12T19:00:00Z",
+              "end": "2028-02-26T19:00:00Z",
+              "edge_ids": []
+            }
+          ],
+          "resolved_hash": "54b262d635474fe974bf5e52e1719323ff0a33c564773e0bfa3cf84bb0c44522",
+          "pre_reduced": false
+        }
+      ],
+      "by_pilot": {}
+    },
+    "cotton-kharif-2027": {
+      "generic": [
+        {
+          "supply_profile_id": "nominal-roster-v1",
+          "base_profile_hash": "70c60fc5a6e86359efb5e3dcdedfc7622f0aa0217df205ee7a10004e4b95018c",
+          "label": "Nominal roster (declared rates, no curtailment)",
+          "transformations": [],
+          "resolved_hash": "a464bfd830e9f529952f773f8d2382dffda8ffa263788f2d768199c3d9a987a1",
+          "pre_reduced": false
+        },
+        {
+          "supply_profile_id": "shortage-22pct-v1",
+          "base_profile_hash": "70c60fc5a6e86359efb5e3dcdedfc7622f0aa0217df205ee7a10004e4b95018c",
+          "label": "22% uniform supply shortage (absolute multiplier 0.78)",
+          "transformations": [
+            {
+              "transformation_id": "shortage-22pct",
+              "kind": "absolute_multiplier",
+              "multiplier": 0.78,
+              "start": null,
+              "end": null,
+              "edge_ids": []
+            }
+          ],
+          "resolved_hash": "a0136b58084670d00a79382535d9d43d23f4e857f8a19561d9caddbdce808c57",
+          "pre_reduced": false
+        },
+        {
+          "supply_profile_id": "interruption-14d-v1",
+          "base_profile_hash": "70c60fc5a6e86359efb5e3dcdedfc7622f0aa0217df205ee7a10004e4b95018c",
+          "label": "14-day whole-source closure from 2027-07-15 (DAP 75)",
+          "transformations": [
+            {
+              "transformation_id": "interruption-14d",
+              "kind": "closure",
+              "multiplier": null,
+              "start": "2027-07-14T19:00:00Z",
+              "end": "2027-07-28T19:00:00Z",
+              "edge_ids": []
+            }
+          ],
+          "resolved_hash": "6af69768b7398ea4006cc886c840144cd174a30df1a44ab6cf6a04b4a32f9299",
+          "pre_reduced": false
+        }
+      ],
+      "by_pilot": {}
+    },
+    "wheat-rabi-2024-25": {
+      "generic": [
+        {
+          "supply_profile_id": "nominal-roster-v1",
+          "base_profile_hash": "4fb15081e0b5773310a9d714c739b679ab268510161116fa4bea74f9d143ef00",
+          "label": "Nominal roster (declared rates, no curtailment)",
+          "transformations": [],
+          "resolved_hash": "d6b51a1c2b73ef529d32a238ad16b621cb356451b703966867079b162aeba4a5",
+          "pre_reduced": false
+        },
+        {
+          "supply_profile_id": "shortage-22pct-v1",
+          "base_profile_hash": "4fb15081e0b5773310a9d714c739b679ab268510161116fa4bea74f9d143ef00",
+          "label": "22% uniform supply shortage (absolute multiplier 0.78)",
+          "transformations": [
+            {
+              "transformation_id": "shortage-22pct",
+              "kind": "absolute_multiplier",
+              "multiplier": 0.78,
+              "start": null,
+              "end": null,
+              "edge_ids": []
+            }
+          ],
+          "resolved_hash": "1c03c414c035f88b557e6cedcd2c127e5d79446e82489f92dcdc94483de0955a",
+          "pre_reduced": false
+        },
+        {
+          "supply_profile_id": "interruption-14d-v1",
+          "base_profile_hash": "4fb15081e0b5773310a9d714c739b679ab268510161116fa4bea74f9d143ef00",
+          "label": "14-day whole-source closure from 2025-02-13 (DAP 90)",
+          "transformations": [
+            {
+              "transformation_id": "interruption-14d",
+              "kind": "closure",
+              "multiplier": null,
+              "start": "2025-02-12T19:00:00Z",
+              "end": "2025-02-26T19:00:00Z",
+              "edge_ids": []
+            }
+          ],
+          "resolved_hash": "dab28110e9560dfdece7eaa961bc1ebdaa19c84581ad83c73603380dbebc639c",
+          "pre_reduced": false
+        }
+      ],
+      "by_pilot": {}
+    }
+  },
+  "uncertainty_sets": [],
+  "notes": [
+    "A scalar request reduction multiplies the named base schedule once; pre-reduced profiles reject an additional reduction (aabflow.water.roster.resolve_supply).",
+    "Worst case means worst within the nine tested states, not a probability."
+  ]
+}

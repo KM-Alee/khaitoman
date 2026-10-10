@@ -1,0 +1,86 @@
+ Container aabflow-vision-run-03fa08db058f Creating 
+ Container aabflow-vision-run-03fa08db058f Created 
+2026-10-09T21:59:03Z
+INFO:__main__:Sample is queued for delineation.
+Creating new Ultralytics Settings v0.0.6 file ✅ 
+View Ultralytics Settings with 'yolo settings' or at '/tmp/ultralytics/settings.json'
+Update Settings with 'yolo settings key=value', i.e. 'yolo settings runs_dir=path/to/dir'. For help see https://docs.ultralytics.com/quickstart/#ultralytics-settings.
+INFO:methods.main.inference:Device: cpu
+INFO:methods.main.inference:Creating output folder: /tmp/delineate-temp
+INFO:methods.main.inference:Creating output folder: /app/vision/runs/upstream-sample/delineated
+INFO:methods.main.inference:['/opt/delineate/data/images/Sample/part_1.tif', '/opt/delineate/data/images/Sample/part_2.tif', '/opt/delineate/data/images/Sample/part_3.tif']
+INFO:methods.main.inference:Estimating normalization bounds...
+  0%|          | 0/3 [00:00<?, ?it/s]  0%|          | 0/3 [00:00<?, ?it/s]
+INFO:methods.main.inference:Selected area scale: 1.0
+INFO:methods.main.inference:Selected batch size: 4
+INFO:methods.main.inference:Selected region size: 3584x3584
+INFO:methods.main.inference:Selected num workers: [3, 3]
+INFO:methods.main.inference:Simplification resolution: [3584, 3584]
+INFO:methods.main.inference:Loading the model...
+Warping LCLU:   0%|          | 0/100 [00:00<?, ?%/s]Warping LCLU:   0%|          | 0/100 [00:00<?, ?%/s]Warping LCLU:   0%|          | 0/100 [00:00<?, ?%/s]Warping LCLU:   1%|          | 1/100 [00:00<00:00, 132.90%/s]Warping LCLU:   2%|▏         | 2/100 [00:00<00:00, 260.92%/s]Warping LCLU:   3%|▎         | 3/100 [00:00<00:00, 384.06%/s]Warping LCLU:   4%|▍         | 4/100 [00:00<00:00, 502.70%/s]Warping LCLU:   5%|▌         | 5/100 [00:00<00:00, 617.95%/s]Warping LCLU:   6%|▌         | 6/100 [00:00<00:00, 729.08%/s]Warping LCLU:   7%|▋         | 7/100 [00:00<00:00, 837.02%/s]Warping LCLU:   8%|▊         | 8/100 [00:00<00:00, 941.59%/s]Warping LCLU:   9%|▉         | 9/100 [00:00<00:00, 1043.47%/s]Warping LCLU:  10%|█         | 10/100 [00:00<00:00, 1142.68%/s]Warping LCLU:  11%|█         | 11/100 [00:00<00:00, 1237.99%/s]Warping LCLU:  12%|█▏        | 12/100 [00:00<00:00, 1331.74%/s]Warping LCLU:  13%|█▎        | 13/100 [00:00<00:00, 1421.84%/s]Warping LCLU:  14%|█▍        | 14/100 [00:00<00:00, 1510.45%/s]Warping LCLU:  15%|█▌        | 15/100 [00:00<00:00, 1595.56%/s]Warping LCLU:  16%|█▌        | 16/100 [00:00<00:00, 1678.31%/s]Warping LCLU:  17%|█▋        | 17/100 [00:00<00:00, 1760.27%/s]Warping LCLU:  18%|█▊        | 18/100 [00:00<00:00, 1838.67%/s]Warping LCLU:  19%|█▉        | 19/100 [00:00<00:00, 1916.50%/s]Warping LCLU:  20%|██        | 20/100 [00:00<00:00, 1992.21%/s]Warping LCLU:  21%|██        | 21/100 [00:00<00:00, 2064.61%/s]Warping LCLU:  22%|██▏       | 22/100 [00:00<00:00, 2136.43%/s]Warping LCLU:  23%|██▎       | 23/100 [00:00<00:00, 2204.15%/s]Warping LCLU:  24%|██▍       | 24/100 [00:00<00:00, 2272.87%/s]Warping LCLU:  25%|██▌       | 25/100 [00:00<00:00, 2339.94%/s]Warping LCLU:  26%|██▌       | 26/100 [00:00<00:00, 2404.09%/s]Warping LCLU:  27%|██▋       | 27/100 [00:00<00:00, 2468.31%/s]Warping LCLU:  28%|██▊       | 28/100 [00:00<00:00, 2529.41%/s]Warping LCLU:  29%|██▉       | 29/100 [00:00<00:00, 2590.73%/s]Warping LCLU:  30%|███       | 30/100 [00:00<00:00, 2650.04%/s]Warping LCLU:  31%|███       | 31/100 [00:00<00:00, 2706.45%/s]Warping LCLU:  32%|███▏      | 32/100 [00:00<00:00, 2762.99%/s]Warping LCLU:  33%|███▎      | 33/100 [00:00<00:00, 2817.32%/s]Warping LCLU:  34%|███▍      | 34/100 [00:00<00:00, 2872.41%/s]Warping LCLU:  35%|███▌      | 35/100 [00:00<00:00, 2926.36%/s]Warping LCLU:  36%|███▌      | 36/100 [00:00<00:00, 2976.68%/s]Warping LCLU:  37%|███▋      | 37/100 [00:00<00:00, 3028.32%/s]Warping LCLU:  38%|███▊      | 38/100 [00:00<00:00, 3076.31%/s]Warping LCLU:  39%|███▉      | 39/100 [00:00<00:00, 3125.89%/s]Warping LCLU:  40%|████      | 40/100 [00:00<00:00, 3173.24%/s]Warping LCLU:  41%|████      | 41/100 [00:00<00:00, 3218.48%/s]Warping LCLU:  42%|████▏     | 42/100 [00:00<00:00, 3265.32%/s]Warping LCLU:  43%|████▎     | 43/100 [00:00<00:00, 3309.27%/s]Warping LCLU:  44%|████▍     | 44/100 [00:00<00:00, 3353.74%/s]Warping LCLU:  45%|████▌     | 45/100 [00:00<00:00, 3397.66%/s]Warping LCLU:  46%|████▌     | 46/100 [00:00<00:00, 3438.20%/s]Warping LCLU:  47%|████▋     | 47/100 [00:00<00:00, 3480.32%/s]Warping LCLU:  48%|████▊     | 48/100 [00:00<00:00, 3517.30%/s]Warping LCLU:  49%|████▉     | 49/100 [00:00<00:00, 3558.00%/s]Warping LCLU:  50%|█████     | 50/100 [00:00<00:00, 3597.42%/s]Warping LCLU:  51%|█████     | 51/100 [00:00<00:00, 3634.95%/s]Warping LCLU:  52%|█████▏    | 52/100 [00:00<00:00, 3673.39%/s]Warping LCLU:  53%|█████▎    | 53/100 [00:00<00:00, 3708.80%/s]Warping LCLU:  54%|█████▍    | 54/100 [00:00<00:00, 3746.34%/s]Warping LCLU:  55%|█████▌    | 55/100 [00:00<00:00, 3783.05%/s]Warping LCLU:  56%|█████▌    | 56/100 [00:00<00:00, 3817.22%/s]Warping LCLU:  57%|█████▋    | 57/100 [00:00<00:00, 3850.84%/s]Warping LCLU:  58%|█████▊    | 58/100 [00:00<00:00, 3883.74%/s]Warping LCLU:  59%|█████▉    | 59/100 [00:00<00:00, 3918.11%/s]Warping LCLU:  60%|██████    | 60/100 [00:00<00:00, 3952.04%/s]Warping LCLU:  61%|██████    | 61/100 [00:00<00:00, 3982.39%/s]Warping LCLU:  62%|██████▏   | 62/100 [00:00<00:00, 4015.11%/s]Warping LCLU:  63%|██████▎   | 63/100 [00:00<00:00, 4045.46%/s]Warping LCLU:  64%|██████▍   | 64/100 [00:00<00:00, 4076.78%/s]Warping LCLU:  65%|██████▌   | 65/100 [00:00<00:00, 4107.23%/s]Warping LCLU:  66%|██████▌   | 66/100 [00:00<00:00, 4136.09%/s]Warping LCLU:  67%|██████▋   | 67/100 [00:00<00:00, 4165.95%/s]Warping LCLU:  68%|██████▊   | 68/100 [00:00<00:00, 4193.81%/s]Warping LCLU:  69%|██████▉   | 69/100 [00:00<00:00, 4222.15%/s]Warping LCLU:  70%|███████   | 70/100 [00:00<00:00, 4251.21%/s]Warping LCLU:  71%|███████   | 71/100 [00:00<00:00, 4277.38%/s]Warping LCLU:  72%|███████▏  | 72/100 [00:00<00:00, 4305.78%/s]Warping LCLU:  73%|███████▎  | 73/100 [00:00<00:00, 4330.38%/s]Warping LCLU:  74%|███████▍  | 74/100 [00:00<00:00, 4356.80%/s]Warping LCLU:  75%|███████▌  | 75/100 [00:00<00:00, 4383.01%/s]Warping LCLU:  76%|███████▌  | 76/100 [00:00<00:00, 4407.12%/s]Warping LCLU:  77%|███████▋  | 77/100 [00:00<00:00, 4432.26%/s]Warping LCLU:  78%|███████▊  | 78/100 [00:00<00:00, 4455.77%/s]Warping LCLU:  79%|███████▉  | 79/100 [00:00<00:00, 4480.73%/s]Warping LCLU:  80%|████████  | 80/100 [00:00<00:00, 4505.34%/s]Warping LCLU:  81%|████████  | 81/100 [00:00<00:00, 4526.47%/s]Warping LCLU:  82%|████████▏ | 82/100 [00:00<00:00, 4550.40%/s]Warping LCLU:  83%|████████▎ | 83/100 [00:00<00:00, 4571.96%/s]Warping LCLU:  84%|████████▍ | 84/100 [00:00<00:00, 4595.24%/s]Warping LCLU:  85%|████████▌ | 85/100 [00:00<00:00, 4617.78%/s]Warping LCLU:  86%|████████▌ | 86/100 [00:00<00:00, 4638.40%/s]Warping LCLU:  87%|████████▋ | 87/100 [00:00<00:00, 4660.75%/s]Warping LCLU:  88%|████████▊ | 88/100 [00:00<00:00, 4680.73%/s]Warping LCLU:  89%|████████▉ | 89/100 [00:00<00:00, 4701.96%/s]Warping LCLU:  90%|█████████ | 90/100 [00:00<00:00, 4723.08%/s]Warping LCLU:  91%|█████████ | 91/100 [00:00<00:00, 4742.27%/s]Warping LCLU:  92%|█████████▏| 92/100 [00:00<00:00, 4762.84%/s]Warping LCLU:  93%|█████████▎| 93/100 [00:00<00:00, 4781.56%/s]Warping LCLU:  94%|█████████▍| 94/100 [00:00<00:00, 4802.01%/s]Warping LCLU:  95%|█████████▌| 95/100 [00:00<00:00, 4821.97%/s]Warping LCLU:  96%|█████████▌| 96/100 [00:00<00:00, 4839.76%/s]Warping LCLU:  97%|█████████▋| 97/100 [00:00<00:00, 4859.51%/s]Warping LCLU:  98%|█████████▊| 98/100 [00:00<00:00, 4876.00%/s]Warping LCLU:  99%|█████████▉| 99/100 [00:00<00:00, 4894.98%/s]Warping LCLU: 100%|██████████| 100/100 [00:00<00:00, 4912.86%/s]Warping LCLU: 100%|██████████| 100/100 [00:00<00:00, 4346.79%/s]
+INFO:methods.main.inference:Starting delineation...
+Delineating:   0%|          | 0.00/1 [00:00<?]Delineating:   0%|          | 0.00/1 [00:00<?]Delineating:   3%|▎         | 0.03/1 [00:09<05:57]Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/multiprocessing/queues.py", line 244, in _feed
+    obj = _ForkingPickler.dumps(obj)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/multiprocessing/reduction.py", line 51, in dumps
+    cls(buf, protocol).dump(obj)
+  File "/opt/vision/lib/python3.11/site-packages/torch/multiprocessing/reductions.py", line 613, in reduce_storage
+    fd, size = storage._share_fd_cpu_()
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/vision/lib/python3.11/site-packages/torch/storage.py", line 458, in wrapper
+    return fn(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/vision/lib/python3.11/site-packages/torch/storage.py", line 536, in _share_fd_cpu_
+    return super()._share_fd_cpu_(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Traceback (most recent call last):
+RuntimeError: unable to allocate shared memory(shm) for file </torch_8_1792594415_5>: No space left on device (28)
+  File "/usr/local/lib/python3.11/multiprocessing/queues.py", line 244, in _feed
+    obj = _ForkingPickler.dumps(obj)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/multiprocessing/reduction.py", line 51, in dumps
+    cls(buf, protocol).dump(obj)
+  File "/opt/vision/lib/python3.11/site-packages/torch/multiprocessing/reductions.py", line 613, in reduce_storage
+    fd, size = storage._share_fd_cpu_()
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/vision/lib/python3.11/site-packages/torch/storage.py", line 458, in wrapper
+    return fn(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/vision/lib/python3.11/site-packages/torch/storage.py", line 536, in _share_fd_cpu_
+    return super()._share_fd_cpu_(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: unable to allocate shared memory(shm) for file </torch_8_3476291219_3>: No space left on device (28)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/multiprocessing/queues.py", line 244, in _feed
+    obj = _ForkingPickler.dumps(obj)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/multiprocessing/reduction.py", line 51, in dumps
+    cls(buf, protocol).dump(obj)
+  File "/opt/vision/lib/python3.11/site-packages/torch/multiprocessing/reductions.py", line 613, in reduce_storage
+    fd, size = storage._share_fd_cpu_()
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/vision/lib/python3.11/site-packages/torch/storage.py", line 458, in wrapper
+    return fn(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/vision/lib/python3.11/site-packages/torch/storage.py", line 536, in _share_fd_cpu_
+    return super()._share_fd_cpu_(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: unable to allocate shared memory(shm) for file </torch_8_3109461725_9>: No space left on device (28)
+Delineating:   4%|▍         | 0.04/1 [00:16<07:01]Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/multiprocessing/queues.py", line 244, in _feed
+    obj = _ForkingPickler.dumps(obj)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/multiprocessing/reduction.py", line 51, in dumps
+    cls(buf, protocol).dump(obj)
+  File "/opt/vision/lib/python3.11/site-packages/torch/multiprocessing/reductions.py", line 613, in reduce_storage
+    fd, size = storage._share_fd_cpu_()
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/vision/lib/python3.11/site-packages/torch/storage.py", line 458, in wrapper
+    return fn(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/vision/lib/python3.11/site-packages/torch/storage.py", line 536, in _share_fd_cpu_
+    return super()._share_fd_cpu_(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: unable to allocate shared memory(shm) for file </torch_8_2959628741_11>: No space left on device (28)
+Delineating:   5%|▌         | 0.05/1 [00:24<07:29]

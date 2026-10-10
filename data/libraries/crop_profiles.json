@@ -1,0 +1,36 @@
+[
+  {
+    "crop_profile_id": "wheat-punjab-gdd-v1",
+    "crop": "wheat",
+    "engine_crop_name": "WheatGDD",
+    "parameter_set_version": "aquacrop-3.1.0-default-WheatGDD",
+    "planting_date": "2026-11-15",
+    "earliest_planting": "2026-11-01",
+    "latest_harvest": "2027-05-31",
+    "yield_basis": "dry_grain",
+    "calibration_status": "uncalibrated",
+    "parameter_overrides": {},
+    "max_daily_irrigation_mm": 150.0,
+    "max_season_irrigation_mm": 1200.0,
+    "evidence_ids": [
+      "ev-science-crop-wheat-profile"
+    ]
+  },
+  {
+    "crop_profile_id": "cotton-punjab-v1",
+    "crop": "cotton",
+    "engine_crop_name": "Cotton",
+    "parameter_set_version": "aquacrop-3.1.0-default-Cotton",
+    "planting_date": "2027-05-01",
+    "earliest_planting": "2027-04-15",
+    "latest_harvest": "2027-12-15",
+    "yield_basis": "dry_seed_cotton_model",
+    "calibration_status": "uncalibrated",
+    "parameter_overrides": {},
+    "max_daily_irrigation_mm": 150.0,
+    "max_season_irrigation_mm": 1600.0,
+    "evidence_ids": [
+      "ev-science-crop-cotton-profile"
+    ]
+  }
+]

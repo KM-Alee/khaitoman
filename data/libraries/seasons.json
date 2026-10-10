@@ -1,0 +1,81 @@
+[
+  {
+    "season_id": "wheat-rabi-2026-27",
+    "crop": "wheat",
+    "crop_profile_id": "wheat-punjab-gdd-v1",
+    "start": "2026-11-01",
+    "end": "2027-05-31",
+    "planning_modes": [
+      "season_response"
+    ],
+    "planting_date": "2026-11-15",
+    "sim_start": "2026-11-01",
+    "sim_end": "2027-05-31",
+    "decision_at": "2026-10-10T03:00:00Z",
+    "weather_basis": "analog",
+    "label": "Rabi wheat 2026-27 (season response)",
+    "notes": [
+      "Scenario calendar until locally reviewed (PRD \u00a72.2).",
+      "Decision 10 Oct 2026: 90-day ponds and 120-day repairs cannot commission before 15 Nov planting; availability follows commissioning dates."
+    ]
+  },
+  {
+    "season_id": "wheat-rabi-2027-28",
+    "crop": "wheat",
+    "crop_profile_id": "wheat-punjab-gdd-v1",
+    "start": "2027-11-01",
+    "end": "2028-05-31",
+    "planning_modes": [
+      "capital_planning"
+    ],
+    "planting_date": "2027-11-15",
+    "sim_start": "2027-11-01",
+    "sim_end": "2028-05-31",
+    "decision_at": "2026-10-10T03:00:00Z",
+    "weather_basis": "analog",
+    "label": "Rabi wheat 2027-28 (capital planning)",
+    "notes": [
+      "Future investment season leaving construction time (PRD \u00a72.2)."
+    ]
+  },
+  {
+    "season_id": "cotton-kharif-2027",
+    "crop": "cotton",
+    "crop_profile_id": "cotton-punjab-v1",
+    "start": "2027-04-17",
+    "end": "2027-12-15",
+    "planning_modes": [
+      "season_response",
+      "capital_planning"
+    ],
+    "planting_date": "2027-05-01",
+    "sim_start": "2027-04-17",
+    "sim_end": "2027-12-15",
+    "decision_at": "2026-10-10T03:00:00Z",
+    "weather_basis": "analog",
+    "label": "Kharif cotton 2027",
+    "notes": [
+      "Planting ~1 May 2027 leaves time to commission ponds and repairs (PRD \u00a72.2); new assets may legitimately appear."
+    ]
+  },
+  {
+    "season_id": "wheat-rabi-2024-25",
+    "crop": "wheat",
+    "crop_profile_id": "wheat-punjab-gdd-v1",
+    "start": "2024-11-01",
+    "end": "2025-05-31",
+    "planning_modes": [
+      "historical_replay"
+    ],
+    "planting_date": "2024-11-15",
+    "sim_start": "2024-11-01",
+    "sim_end": "2025-05-31",
+    "decision_at": "2024-10-01T03:00:00Z",
+    "weather_basis": "actual",
+    "label": "Rabi wheat 2024-25 (historical replay)",
+    "notes": [
+      "Retrospective replay under actual archived gridded weather; no forecast claim.",
+      "Counterfactual proposed assets are dated from a 1 Oct 2024 decision."
+    ]
+  }
+]

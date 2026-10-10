@@ -1,0 +1,14 @@
+# Upstream sample run (T2.4: "Test Delineate on the upstream sample first").
+# Same inputs as /opt/delineate/batch_sample.yaml; only paths change so that
+# the read-only image is untouched and outputs land in the repo, and the model
+# resolves to the locally pinned checkpoint instead of a Hugging Face download.
+base_config: /app/vision/configs/conf_cpu_v2.yaml
+data_root: /opt/delineate/data/images
+output_root: /app/vision/runs/upstream-sample/delineated
+temp_root: /tmp/delineate-temp
+keep_temp: false
+mask_root: /opt/delineate/data/masks
+include:
+  - Sample
+exclude: null
+override: null

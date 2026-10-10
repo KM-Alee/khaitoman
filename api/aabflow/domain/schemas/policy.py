@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Any
 
 from pydantic import Field
 
@@ -31,6 +32,32 @@ class StateOutcome(StrictModel):
     groundwater_m3: NonNegFloat = 0.0
     canal_receipt_m3: NonNegFloat = 0.0
     validation_ref: str | None = None
+    # Additions (science stream, backwards compatible):
+    weather_scenario_id: str | None = None
+    supply_profile_id: str | None = None
+    violations: list[str] = Field(default_factory=list)  # why undeliverable
+    pond_loss_m3: NonNegFloat = 0.0
+    pond_spill_m3: NonNegFloat = 0.0
+    pond_rain_m3: NonNegFloat = 0.0
+    terminal_pond_m3: NonNegFloat = 0.0
+
+
+class AtomicInterval(StrictModel):
+    """Smallest non-overlapping delivery interval (T4.1)."""
+
+    interval_id: str
+    start: datetime
+    end: datetime
+
+
+class ResourceCapacity(StrictModel):
+    """Upper bound of a shared resource in one interval; None ids = applies to all."""
+
+    resource_id: str
+    interval_id: str  # atomic interval, local day ("d2026-12-01") or "season"
+    capacity_m3: NonNegFloat
+    state_id: str | None = None
+    shared_configuration_id: str | None = None
 
 
 class CandidatePolicy(StrictModel):
@@ -52,6 +79,14 @@ class CandidatePolicy(StrictModel):
     seasonal_opex_pkr: PKR = 0
     outcomes: list[StateOutcome]
     generator_version: str
+    # Additions (science stream, backwards compatible):
+    resources: list[ResourceUse] = Field(default_factory=list)  # state-invariant use
+    template_id: str | None = None
+    uses_asset_ids: list[str] = Field(default_factory=list)  # existing assets operated
+    receipt_volume_m3: NonNegFloat = 0.0
+    pump_volume_m3: NonNegFloat = 0.0
+    gross_application_mm: NonNegFloat = 0.0
+    attributes: dict[str, Any] = Field(default_factory=dict)
 
 
 class LibraryCoverage(StrictModel):
@@ -82,3 +117,12 @@ class CandidateLibrary(StrictModel):
     coverage: list[LibraryCoverage]
     generator_version: str
     created_at: datetime
+    # Additions (science stream, backwards compatible):
+    intervals: list[AtomicInterval] = Field(default_factory=list)
+    capacities: list[ResourceCapacity] = Field(default_factory=list)
+    typical_state_id: str | None = None
+    supply_profile_ids: list[str] = Field(default_factory=list)
+    weather_scenario_ids: list[str] = Field(default_factory=list)
+    decision_at: datetime | None = None
+    excluded_instances: dict[str, str] = Field(default_factory=dict)  # instance -> reason
+    build_stats: dict[str, Any] = Field(default_factory=dict)

@@ -65,6 +65,19 @@ class WeatherScenario(StrictModel):
     transformed_sha256: Sha256
     is_typical: bool = False
     selection_basis: str  # e.g. "seasonal precipitation tercile over 2015-2024"
+    # Additions (science stream, backwards compatible):
+    analog_season_label: str | None = None  # e.g. "2015-16"
+    original_start: date | None = None
+    original_end: date | None = None
+    scenario_start: date | None = None
+    scenario_end: date | None = None
+    offset_days: int | None = None
+    leap_rule: str | None = None
+    leap_note: str | None = None
+    source_sha256: Sha256 | None = None  # untransformed source window
+    grid_cell: str | None = None  # returned archive grid point "lat,lon"
+    statistics: dict[str, float] = Field(default_factory=dict)  # P, ET0, P-ET0, heat days...
+    kind: Literal["analog", "actual"] = "analog"
 
 
 class Season(StrictModel):
@@ -74,6 +87,14 @@ class Season(StrictModel):
     start: date
     end: date
     planning_modes: list[str]
+    # Additions (science stream, backwards compatible):
+    planting_date: date | None = None
+    sim_start: date | None = None  # crop simulation window; must cover maturity
+    sim_end: date | None = None
+    decision_at: datetime | None = None  # declared decision instant used for commissioning
+    weather_basis: Literal["analog", "actual"] | None = None
+    label: str | None = None
+    notes: list[str] = Field(default_factory=list)
 
 
 class IrrigationEvent(StrictModel):

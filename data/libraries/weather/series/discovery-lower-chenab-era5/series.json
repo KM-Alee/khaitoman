@@ -1,0 +1,32 @@
+{
+  "weather_series_id": "discovery-lower-chenab-era5",
+  "point_requested": [
+    30.8,
+    72.5
+  ],
+  "point_returned": [
+    30.75,
+    72.5
+  ],
+  "elevation_m": 152.0,
+  "start": "2000-01-01",
+  "end": "2026-09-30",
+  "source": "open-meteo-archive",
+  "source_model": "era5",
+  "timezone": "Asia/Karachi",
+  "daily_units": {
+    "time": "iso8601",
+    "temperature_2m_min": "\u00b0C",
+    "temperature_2m_max": "\u00b0C",
+    "precipitation_sum": "mm",
+    "et0_fao_evapotranspiration": "mm"
+  },
+  "raw_ref": "series/discovery-lower-chenab-era5/raw.json",
+  "normalized_ref": "series/discovery-lower-chenab-era5/normalized.parquet",
+  "source_sha256": "e91ba245a78194830c14f0444b811435cbfd897c0339318f30aa465536ad4274",
+  "normalized_sha256": "de94bada28d711a56255b3dc70237e01c92fe5e0797fcc4f97441d90bf091d7a",
+  "content_sha256": "819adab736730fe0bcaf1533a5a46217e2b0251b2cf1fdafd660e1fc88d7fd1f",
+  "normalization_version": "weather-normalize-v1",
+  "retrieved_at": "2026-10-09T22:15:57.932648+00:00",
+  "label": "historical gridded weather (ERA5 reanalysis via Open-Meteo), not a field station"
+}
