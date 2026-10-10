@@ -1,0 +1,42 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "aoi",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              72.33,
+              30.776
+            ],
+            [
+              72.33,
+              30.798
+            ],
+            [
+              72.306,
+              30.798
+            ],
+            [
+              72.306,
+              30.776
+            ],
+            [
+              72.33,
+              30.776
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "pilot_id": "pilot-a",
+        "name": "Lower Chenab representative pilot A",
+        "area_m2": 5607559.6,
+        "metric_crs": "EPSG:32643"
+      }
+    }
+  ]
+}

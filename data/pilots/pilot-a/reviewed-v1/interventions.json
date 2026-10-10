@@ -1,0 +1,1872 @@
+{
+  "types": [
+    {
+      "type_id": "timing-existing-assets",
+      "category": "timing",
+      "effect_model": "ledger-timing",
+      "effect_model_version": "1",
+      "applicability_schema": {
+        "targets": "existing pond/pump asset ids"
+      },
+      "required_parameters": []
+    },
+    {
+      "type_id": "laser-leveling",
+      "category": "leveling",
+      "effect_model": "application-efficiency-change",
+      "effect_model_version": "1",
+      "applicability_schema": {
+        "targets": "one field",
+        "before": "planting"
+      },
+      "required_parameters": [
+        "application_efficiency_after"
+      ]
+    },
+    {
+      "type_id": "farm-pond",
+      "category": "pond",
+      "effect_model": "pond-storage",
+      "effect_model_version": "1",
+      "applicability_schema": {
+        "targets": "one field",
+        "before": "planting",
+        "sizing": "irrigations of 75 mm over the field"
+      },
+      "required_parameters": [
+        "irrigations_held",
+        "usable_capacity_m3",
+        "surface_area_m2",
+        "footprint_m2"
+      ]
+    },
+    {
+      "type_id": "watercourse-lining",
+      "category": "shared_repair",
+      "effect_model": "edge-delivery-factor",
+      "effect_model_version": "1",
+      "applicability_schema": {
+        "targets": "one assumed watercourse reach edge"
+      },
+      "required_parameters": [
+        "delivery_factor_after",
+        "downtime_days"
+      ]
+    },
+    {
+      "type_id": "pump-supplement",
+      "category": "pump_supplement",
+      "effect_model": "groundwater-injection",
+      "effect_model_version": "1",
+      "applicability_schema": {
+        "targets": "one existing pump asset"
+      },
+      "required_parameters": []
+    }
+  ],
+  "instances": [
+    {
+      "instance_id": "pilot-a:timing:existing-assets",
+      "type_id": "timing-existing-assets",
+      "category": "timing",
+      "target_ids": [
+        "pilot-a:asset-pond-existing",
+        "pilot-a:asset-pump-existing"
+      ],
+      "parameters": {},
+      "prerequisites": [],
+      "mutually_exclusive_group": null,
+      "capex_pkr": 0,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 0,
+      "lead_time_days": 0,
+      "shared": false,
+      "evidence_ids": [
+        "asm:existing-assets"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-001:leveling",
+      "type_id": "laser-leveling",
+      "category": "leveling",
+      "target_ids": [
+        "pilot-a:field-001"
+      ],
+      "parameters": {
+        "application_efficiency_after": 0.75
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": null,
+      "capex_pkr": 8891,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 4,
+      "lead_time_days": 10,
+      "shared": false,
+      "evidence_ids": [
+        "asm:leveling-cost",
+        "asm:leveling-lead",
+        "asm:app-eff-leveled"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-002:leveling",
+      "type_id": "laser-leveling",
+      "category": "leveling",
+      "target_ids": [
+        "pilot-a:field-002"
+      ],
+      "parameters": {
+        "application_efficiency_after": 0.75
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": null,
+      "capex_pkr": 8042,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 4,
+      "lead_time_days": 10,
+      "shared": false,
+      "evidence_ids": [
+        "asm:leveling-cost",
+        "asm:leveling-lead",
+        "asm:app-eff-leveled"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-003:leveling",
+      "type_id": "laser-leveling",
+      "category": "leveling",
+      "target_ids": [
+        "pilot-a:field-003"
+      ],
+      "parameters": {
+        "application_efficiency_after": 0.75
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": null,
+      "capex_pkr": 9162,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 4,
+      "lead_time_days": 10,
+      "shared": false,
+      "evidence_ids": [
+        "asm:leveling-cost",
+        "asm:leveling-lead",
+        "asm:app-eff-leveled"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-004:leveling",
+      "type_id": "laser-leveling",
+      "category": "leveling",
+      "target_ids": [
+        "pilot-a:field-004"
+      ],
+      "parameters": {
+        "application_efficiency_after": 0.75
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": null,
+      "capex_pkr": 9809,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 4,
+      "lead_time_days": 10,
+      "shared": false,
+      "evidence_ids": [
+        "asm:leveling-cost",
+        "asm:leveling-lead",
+        "asm:app-eff-leveled"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-005:leveling",
+      "type_id": "laser-leveling",
+      "category": "leveling",
+      "target_ids": [
+        "pilot-a:field-005"
+      ],
+      "parameters": {
+        "application_efficiency_after": 0.75
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": null,
+      "capex_pkr": 8567,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 4,
+      "lead_time_days": 10,
+      "shared": false,
+      "evidence_ids": [
+        "asm:leveling-cost",
+        "asm:leveling-lead",
+        "asm:app-eff-leveled"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-006:leveling",
+      "type_id": "laser-leveling",
+      "category": "leveling",
+      "target_ids": [
+        "pilot-a:field-006"
+      ],
+      "parameters": {
+        "application_efficiency_after": 0.75
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": null,
+      "capex_pkr": 12242,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 4,
+      "lead_time_days": 10,
+      "shared": false,
+      "evidence_ids": [
+        "asm:leveling-cost",
+        "asm:leveling-lead",
+        "asm:app-eff-leveled"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-007:leveling",
+      "type_id": "laser-leveling",
+      "category": "leveling",
+      "target_ids": [
+        "pilot-a:field-007"
+      ],
+      "parameters": {
+        "application_efficiency_after": 0.75
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": null,
+      "capex_pkr": 9879,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 4,
+      "lead_time_days": 10,
+      "shared": false,
+      "evidence_ids": [
+        "asm:leveling-cost",
+        "asm:leveling-lead",
+        "asm:app-eff-leveled"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-008:leveling",
+      "type_id": "laser-leveling",
+      "category": "leveling",
+      "target_ids": [
+        "pilot-a:field-008"
+      ],
+      "parameters": {
+        "application_efficiency_after": 0.75
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": null,
+      "capex_pkr": 13108,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 4,
+      "lead_time_days": 10,
+      "shared": false,
+      "evidence_ids": [
+        "asm:leveling-cost",
+        "asm:leveling-lead",
+        "asm:app-eff-leveled"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-009:leveling",
+      "type_id": "laser-leveling",
+      "category": "leveling",
+      "target_ids": [
+        "pilot-a:field-009"
+      ],
+      "parameters": {
+        "application_efficiency_after": 0.75
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": null,
+      "capex_pkr": 11358,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 4,
+      "lead_time_days": 10,
+      "shared": false,
+      "evidence_ids": [
+        "asm:leveling-cost",
+        "asm:leveling-lead",
+        "asm:app-eff-leveled"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-010:leveling",
+      "type_id": "laser-leveling",
+      "category": "leveling",
+      "target_ids": [
+        "pilot-a:field-010"
+      ],
+      "parameters": {
+        "application_efficiency_after": 0.75
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": null,
+      "capex_pkr": 11061,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 4,
+      "lead_time_days": 10,
+      "shared": false,
+      "evidence_ids": [
+        "asm:leveling-cost",
+        "asm:leveling-lead",
+        "asm:app-eff-leveled"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-011:leveling",
+      "type_id": "laser-leveling",
+      "category": "leveling",
+      "target_ids": [
+        "pilot-a:field-011"
+      ],
+      "parameters": {
+        "application_efficiency_after": 0.75
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": null,
+      "capex_pkr": 11883,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 4,
+      "lead_time_days": 10,
+      "shared": false,
+      "evidence_ids": [
+        "asm:leveling-cost",
+        "asm:leveling-lead",
+        "asm:app-eff-leveled"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-012:leveling",
+      "type_id": "laser-leveling",
+      "category": "leveling",
+      "target_ids": [
+        "pilot-a:field-012"
+      ],
+      "parameters": {
+        "application_efficiency_after": 0.75
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": null,
+      "capex_pkr": 8103,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 4,
+      "lead_time_days": 10,
+      "shared": false,
+      "evidence_ids": [
+        "asm:leveling-cost",
+        "asm:leveling-lead",
+        "asm:app-eff-leveled"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-013:leveling",
+      "type_id": "laser-leveling",
+      "category": "leveling",
+      "target_ids": [
+        "pilot-a:field-013"
+      ],
+      "parameters": {
+        "application_efficiency_after": 0.75
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": null,
+      "capex_pkr": 25201,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 4,
+      "lead_time_days": 10,
+      "shared": false,
+      "evidence_ids": [
+        "asm:leveling-cost",
+        "asm:leveling-lead",
+        "asm:app-eff-leveled"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-014:leveling",
+      "type_id": "laser-leveling",
+      "category": "leveling",
+      "target_ids": [
+        "pilot-a:field-014"
+      ],
+      "parameters": {
+        "application_efficiency_after": 0.75
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": null,
+      "capex_pkr": 10282,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 4,
+      "lead_time_days": 10,
+      "shared": false,
+      "evidence_ids": [
+        "asm:leveling-cost",
+        "asm:leveling-lead",
+        "asm:app-eff-leveled"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-015:leveling",
+      "type_id": "laser-leveling",
+      "category": "leveling",
+      "target_ids": [
+        "pilot-a:field-015"
+      ],
+      "parameters": {
+        "application_efficiency_after": 0.75
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": null,
+      "capex_pkr": 10772,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 4,
+      "lead_time_days": 10,
+      "shared": false,
+      "evidence_ids": [
+        "asm:leveling-cost",
+        "asm:leveling-lead",
+        "asm:app-eff-leveled"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-018:leveling",
+      "type_id": "laser-leveling",
+      "category": "leveling",
+      "target_ids": [
+        "pilot-a:field-018"
+      ],
+      "parameters": {
+        "application_efficiency_after": 0.75
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": null,
+      "capex_pkr": 10737,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 4,
+      "lead_time_days": 10,
+      "shared": false,
+      "evidence_ids": [
+        "asm:leveling-cost",
+        "asm:leveling-lead",
+        "asm:app-eff-leveled"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-019:leveling",
+      "type_id": "laser-leveling",
+      "category": "leveling",
+      "target_ids": [
+        "pilot-a:field-019"
+      ],
+      "parameters": {
+        "application_efficiency_after": 0.75
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": null,
+      "capex_pkr": 15584,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 4,
+      "lead_time_days": 10,
+      "shared": false,
+      "evidence_ids": [
+        "asm:leveling-cost",
+        "asm:leveling-lead",
+        "asm:app-eff-leveled"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-020:leveling",
+      "type_id": "laser-leveling",
+      "category": "leveling",
+      "target_ids": [
+        "pilot-a:field-020"
+      ],
+      "parameters": {
+        "application_efficiency_after": 0.75
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": null,
+      "capex_pkr": 31212,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 4,
+      "lead_time_days": 10,
+      "shared": false,
+      "evidence_ids": [
+        "asm:leveling-cost",
+        "asm:leveling-lead",
+        "asm:app-eff-leveled"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-021:leveling",
+      "type_id": "laser-leveling",
+      "category": "leveling",
+      "target_ids": [
+        "pilot-a:field-021"
+      ],
+      "parameters": {
+        "application_efficiency_after": 0.75
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": null,
+      "capex_pkr": 11454,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 4,
+      "lead_time_days": 10,
+      "shared": false,
+      "evidence_ids": [
+        "asm:leveling-cost",
+        "asm:leveling-lead",
+        "asm:app-eff-leveled"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-022:leveling",
+      "type_id": "laser-leveling",
+      "category": "leveling",
+      "target_ids": [
+        "pilot-a:field-022"
+      ],
+      "parameters": {
+        "application_efficiency_after": 0.75
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": null,
+      "capex_pkr": 15453,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 4,
+      "lead_time_days": 10,
+      "shared": false,
+      "evidence_ids": [
+        "asm:leveling-cost",
+        "asm:leveling-lead",
+        "asm:app-eff-leveled"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-023:leveling",
+      "type_id": "laser-leveling",
+      "category": "leveling",
+      "target_ids": [
+        "pilot-a:field-023"
+      ],
+      "parameters": {
+        "application_efficiency_after": 0.75
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": null,
+      "capex_pkr": 7027,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 4,
+      "lead_time_days": 10,
+      "shared": false,
+      "evidence_ids": [
+        "asm:leveling-cost",
+        "asm:leveling-lead",
+        "asm:app-eff-leveled"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-024:leveling",
+      "type_id": "laser-leveling",
+      "category": "leveling",
+      "target_ids": [
+        "pilot-a:field-024"
+      ],
+      "parameters": {
+        "application_efficiency_after": 0.75
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": null,
+      "capex_pkr": 12662,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 4,
+      "lead_time_days": 10,
+      "shared": false,
+      "evidence_ids": [
+        "asm:leveling-cost",
+        "asm:leveling-lead",
+        "asm:app-eff-leveled"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-025:leveling",
+      "type_id": "laser-leveling",
+      "category": "leveling",
+      "target_ids": [
+        "pilot-a:field-025"
+      ],
+      "parameters": {
+        "application_efficiency_after": 0.75
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": null,
+      "capex_pkr": 7307,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 4,
+      "lead_time_days": 10,
+      "shared": false,
+      "evidence_ids": [
+        "asm:leveling-cost",
+        "asm:leveling-lead",
+        "asm:app-eff-leveled"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-026:leveling",
+      "type_id": "laser-leveling",
+      "category": "leveling",
+      "target_ids": [
+        "pilot-a:field-026"
+      ],
+      "parameters": {
+        "application_efficiency_after": 0.75
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": null,
+      "capex_pkr": 8637,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 4,
+      "lead_time_days": 10,
+      "shared": false,
+      "evidence_ids": [
+        "asm:leveling-cost",
+        "asm:leveling-lead",
+        "asm:app-eff-leveled"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-027:leveling",
+      "type_id": "laser-leveling",
+      "category": "leveling",
+      "target_ids": [
+        "pilot-a:field-027"
+      ],
+      "parameters": {
+        "application_efficiency_after": 0.75
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": null,
+      "capex_pkr": 20204,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 4,
+      "lead_time_days": 10,
+      "shared": false,
+      "evidence_ids": [
+        "asm:leveling-cost",
+        "asm:leveling-lead",
+        "asm:app-eff-leveled"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-028:leveling",
+      "type_id": "laser-leveling",
+      "category": "leveling",
+      "target_ids": [
+        "pilot-a:field-028"
+      ],
+      "parameters": {
+        "application_efficiency_after": 0.75
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": null,
+      "capex_pkr": 9232,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 4,
+      "lead_time_days": 10,
+      "shared": false,
+      "evidence_ids": [
+        "asm:leveling-cost",
+        "asm:leveling-lead",
+        "asm:app-eff-leveled"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-029:leveling",
+      "type_id": "laser-leveling",
+      "category": "leveling",
+      "target_ids": [
+        "pilot-a:field-029"
+      ],
+      "parameters": {
+        "application_efficiency_after": 0.75
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": null,
+      "capex_pkr": 11489,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 4,
+      "lead_time_days": 10,
+      "shared": false,
+      "evidence_ids": [
+        "asm:leveling-cost",
+        "asm:leveling-lead",
+        "asm:app-eff-leveled"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-030:leveling",
+      "type_id": "laser-leveling",
+      "category": "leveling",
+      "target_ids": [
+        "pilot-a:field-030"
+      ],
+      "parameters": {
+        "application_efficiency_after": 0.75
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": null,
+      "capex_pkr": 12233,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 4,
+      "lead_time_days": 10,
+      "shared": false,
+      "evidence_ids": [
+        "asm:leveling-cost",
+        "asm:leveling-lead",
+        "asm:app-eff-leveled"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-031:leveling",
+      "type_id": "laser-leveling",
+      "category": "leveling",
+      "target_ids": [
+        "pilot-a:field-031"
+      ],
+      "parameters": {
+        "application_efficiency_after": 0.75
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": null,
+      "capex_pkr": 8050,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 4,
+      "lead_time_days": 10,
+      "shared": false,
+      "evidence_ids": [
+        "asm:leveling-cost",
+        "asm:leveling-lead",
+        "asm:app-eff-leveled"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-032:leveling",
+      "type_id": "laser-leveling",
+      "category": "leveling",
+      "target_ids": [
+        "pilot-a:field-032"
+      ],
+      "parameters": {
+        "application_efficiency_after": 0.75
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": null,
+      "capex_pkr": 8252,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 4,
+      "lead_time_days": 10,
+      "shared": false,
+      "evidence_ids": [
+        "asm:leveling-cost",
+        "asm:leveling-lead",
+        "asm:app-eff-leveled"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-003:pond-small",
+      "type_id": "farm-pond",
+      "category": "pond",
+      "target_ids": [
+        "pilot-a:field-003"
+      ],
+      "parameters": {
+        "irrigations_held": 0.5,
+        "irrigation_depth_mm": 75.0,
+        "usable_capacity_m3": 245.39,
+        "surface_area_m2": 122.7,
+        "footprint_m2": 165.64,
+        "max_fill_m3_day": 245.39,
+        "max_release_m3_day": 245.39,
+        "seepage_m3_day": 0.491,
+        "k_evap": 1.0,
+        "rain_capture_fraction": 1.0
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": "pilot-a:field-003:pond",
+      "capex_pkr": 118525,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 21,
+      "lead_time_days": 90,
+      "shared": false,
+      "evidence_ids": [
+        "asm:pond-cost",
+        "asm:pond-fixed-cost",
+        "asm:pond-lead",
+        "asm:pond-seepage",
+        "asm:pond-kevap"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-003:pond-medium",
+      "type_id": "farm-pond",
+      "category": "pond",
+      "target_ids": [
+        "pilot-a:field-003"
+      ],
+      "parameters": {
+        "irrigations_held": 1.0,
+        "irrigation_depth_mm": 75.0,
+        "usable_capacity_m3": 490.78,
+        "surface_area_m2": 245.39,
+        "footprint_m2": 331.28,
+        "max_fill_m3_day": 490.78,
+        "max_release_m3_day": 490.78,
+        "seepage_m3_day": 0.982,
+        "k_evap": 1.0,
+        "rain_capture_fraction": 1.0
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": "pilot-a:field-003:pond",
+      "capex_pkr": 197050,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 21,
+      "lead_time_days": 90,
+      "shared": false,
+      "evidence_ids": [
+        "asm:pond-cost",
+        "asm:pond-fixed-cost",
+        "asm:pond-lead",
+        "asm:pond-seepage",
+        "asm:pond-kevap"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-003:pond-large",
+      "type_id": "farm-pond",
+      "category": "pond",
+      "target_ids": [
+        "pilot-a:field-003"
+      ],
+      "parameters": {
+        "irrigations_held": 1.5,
+        "irrigation_depth_mm": 75.0,
+        "usable_capacity_m3": 736.17,
+        "surface_area_m2": 368.09,
+        "footprint_m2": 496.92,
+        "max_fill_m3_day": 736.17,
+        "max_release_m3_day": 736.17,
+        "seepage_m3_day": 1.472,
+        "k_evap": 1.0,
+        "rain_capture_fraction": 1.0
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": "pilot-a:field-003:pond",
+      "capex_pkr": 275575,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 21,
+      "lead_time_days": 90,
+      "shared": false,
+      "evidence_ids": [
+        "asm:pond-cost",
+        "asm:pond-fixed-cost",
+        "asm:pond-lead",
+        "asm:pond-seepage",
+        "asm:pond-kevap"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-004:pond-small",
+      "type_id": "farm-pond",
+      "category": "pond",
+      "target_ids": [
+        "pilot-a:field-004"
+      ],
+      "parameters": {
+        "irrigations_held": 0.5,
+        "irrigation_depth_mm": 75.0,
+        "usable_capacity_m3": 262.73,
+        "surface_area_m2": 131.37,
+        "footprint_m2": 177.35,
+        "max_fill_m3_day": 262.73,
+        "max_release_m3_day": 262.73,
+        "seepage_m3_day": 0.525,
+        "k_evap": 1.0,
+        "rain_capture_fraction": 1.0
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": "pilot-a:field-004:pond",
+      "capex_pkr": 124074,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 21,
+      "lead_time_days": 90,
+      "shared": false,
+      "evidence_ids": [
+        "asm:pond-cost",
+        "asm:pond-fixed-cost",
+        "asm:pond-lead",
+        "asm:pond-seepage",
+        "asm:pond-kevap"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-004:pond-medium",
+      "type_id": "farm-pond",
+      "category": "pond",
+      "target_ids": [
+        "pilot-a:field-004"
+      ],
+      "parameters": {
+        "irrigations_held": 1.0,
+        "irrigation_depth_mm": 75.0,
+        "usable_capacity_m3": 525.47,
+        "surface_area_m2": 262.73,
+        "footprint_m2": 354.69,
+        "max_fill_m3_day": 525.47,
+        "max_release_m3_day": 525.47,
+        "seepage_m3_day": 1.051,
+        "k_evap": 1.0,
+        "rain_capture_fraction": 1.0
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": "pilot-a:field-004:pond",
+      "capex_pkr": 208151,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 21,
+      "lead_time_days": 90,
+      "shared": false,
+      "evidence_ids": [
+        "asm:pond-cost",
+        "asm:pond-fixed-cost",
+        "asm:pond-lead",
+        "asm:pond-seepage",
+        "asm:pond-kevap"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-004:pond-large",
+      "type_id": "farm-pond",
+      "category": "pond",
+      "target_ids": [
+        "pilot-a:field-004"
+      ],
+      "parameters": {
+        "irrigations_held": 1.5,
+        "irrigation_depth_mm": 75.0,
+        "usable_capacity_m3": 788.2,
+        "surface_area_m2": 394.1,
+        "footprint_m2": 532.04,
+        "max_fill_m3_day": 788.2,
+        "max_release_m3_day": 788.2,
+        "seepage_m3_day": 1.576,
+        "k_evap": 1.0,
+        "rain_capture_fraction": 1.0
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": "pilot-a:field-004:pond",
+      "capex_pkr": 292224,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 21,
+      "lead_time_days": 90,
+      "shared": false,
+      "evidence_ids": [
+        "asm:pond-cost",
+        "asm:pond-fixed-cost",
+        "asm:pond-lead",
+        "asm:pond-seepage",
+        "asm:pond-kevap"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-006:pond-small",
+      "type_id": "farm-pond",
+      "category": "pond",
+      "target_ids": [
+        "pilot-a:field-006"
+      ],
+      "parameters": {
+        "irrigations_held": 0.5,
+        "irrigation_depth_mm": 75.0,
+        "usable_capacity_m3": 327.89,
+        "surface_area_m2": 163.95,
+        "footprint_m2": 221.33,
+        "max_fill_m3_day": 327.89,
+        "max_release_m3_day": 327.89,
+        "seepage_m3_day": 0.656,
+        "k_evap": 1.0,
+        "rain_capture_fraction": 1.0
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": "pilot-a:field-006:pond",
+      "capex_pkr": 144925,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 21,
+      "lead_time_days": 90,
+      "shared": false,
+      "evidence_ids": [
+        "asm:pond-cost",
+        "asm:pond-fixed-cost",
+        "asm:pond-lead",
+        "asm:pond-seepage",
+        "asm:pond-kevap"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-006:pond-medium",
+      "type_id": "farm-pond",
+      "category": "pond",
+      "target_ids": [
+        "pilot-a:field-006"
+      ],
+      "parameters": {
+        "irrigations_held": 1.0,
+        "irrigation_depth_mm": 75.0,
+        "usable_capacity_m3": 655.78,
+        "surface_area_m2": 327.89,
+        "footprint_m2": 442.65,
+        "max_fill_m3_day": 655.78,
+        "max_release_m3_day": 655.78,
+        "seepage_m3_day": 1.312,
+        "k_evap": 1.0,
+        "rain_capture_fraction": 1.0
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": "pilot-a:field-006:pond",
+      "capex_pkr": 249850,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 21,
+      "lead_time_days": 90,
+      "shared": false,
+      "evidence_ids": [
+        "asm:pond-cost",
+        "asm:pond-fixed-cost",
+        "asm:pond-lead",
+        "asm:pond-seepage",
+        "asm:pond-kevap"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-006:pond-large",
+      "type_id": "farm-pond",
+      "category": "pond",
+      "target_ids": [
+        "pilot-a:field-006"
+      ],
+      "parameters": {
+        "irrigations_held": 1.5,
+        "irrigation_depth_mm": 75.0,
+        "usable_capacity_m3": 983.67,
+        "surface_area_m2": 491.84,
+        "footprint_m2": 663.98,
+        "max_fill_m3_day": 983.67,
+        "max_release_m3_day": 983.67,
+        "seepage_m3_day": 1.967,
+        "k_evap": 1.0,
+        "rain_capture_fraction": 1.0
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": "pilot-a:field-006:pond",
+      "capex_pkr": 354775,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 21,
+      "lead_time_days": 90,
+      "shared": false,
+      "evidence_ids": [
+        "asm:pond-cost",
+        "asm:pond-fixed-cost",
+        "asm:pond-lead",
+        "asm:pond-seepage",
+        "asm:pond-kevap"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-008:pond-small",
+      "type_id": "farm-pond",
+      "category": "pond",
+      "target_ids": [
+        "pilot-a:field-008"
+      ],
+      "parameters": {
+        "irrigations_held": 0.5,
+        "irrigation_depth_mm": 75.0,
+        "usable_capacity_m3": 351.09,
+        "surface_area_m2": 175.55,
+        "footprint_m2": 236.99,
+        "max_fill_m3_day": 351.09,
+        "max_release_m3_day": 351.09,
+        "seepage_m3_day": 0.702,
+        "k_evap": 1.0,
+        "rain_capture_fraction": 1.0
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": "pilot-a:field-008:pond",
+      "capex_pkr": 152349,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 21,
+      "lead_time_days": 90,
+      "shared": false,
+      "evidence_ids": [
+        "asm:pond-cost",
+        "asm:pond-fixed-cost",
+        "asm:pond-lead",
+        "asm:pond-seepage",
+        "asm:pond-kevap"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-008:pond-medium",
+      "type_id": "farm-pond",
+      "category": "pond",
+      "target_ids": [
+        "pilot-a:field-008"
+      ],
+      "parameters": {
+        "irrigations_held": 1.0,
+        "irrigation_depth_mm": 75.0,
+        "usable_capacity_m3": 702.19,
+        "surface_area_m2": 351.09,
+        "footprint_m2": 473.98,
+        "max_fill_m3_day": 702.19,
+        "max_release_m3_day": 702.19,
+        "seepage_m3_day": 1.404,
+        "k_evap": 1.0,
+        "rain_capture_fraction": 1.0
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": "pilot-a:field-008:pond",
+      "capex_pkr": 264701,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 21,
+      "lead_time_days": 90,
+      "shared": false,
+      "evidence_ids": [
+        "asm:pond-cost",
+        "asm:pond-fixed-cost",
+        "asm:pond-lead",
+        "asm:pond-seepage",
+        "asm:pond-kevap"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-008:pond-large",
+      "type_id": "farm-pond",
+      "category": "pond",
+      "target_ids": [
+        "pilot-a:field-008"
+      ],
+      "parameters": {
+        "irrigations_held": 1.5,
+        "irrigation_depth_mm": 75.0,
+        "usable_capacity_m3": 1053.28,
+        "surface_area_m2": 526.64,
+        "footprint_m2": 710.96,
+        "max_fill_m3_day": 1053.28,
+        "max_release_m3_day": 1053.28,
+        "seepage_m3_day": 2.107,
+        "k_evap": 1.0,
+        "rain_capture_fraction": 1.0
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": "pilot-a:field-008:pond",
+      "capex_pkr": 377050,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 21,
+      "lead_time_days": 90,
+      "shared": false,
+      "evidence_ids": [
+        "asm:pond-cost",
+        "asm:pond-fixed-cost",
+        "asm:pond-lead",
+        "asm:pond-seepage",
+        "asm:pond-kevap"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-013:pond-small",
+      "type_id": "farm-pond",
+      "category": "pond",
+      "target_ids": [
+        "pilot-a:field-013"
+      ],
+      "parameters": {
+        "irrigations_held": 0.5,
+        "irrigation_depth_mm": 75.0,
+        "usable_capacity_m3": 675.0,
+        "surface_area_m2": 337.5,
+        "footprint_m2": 455.63,
+        "max_fill_m3_day": 675.0,
+        "max_release_m3_day": 675.0,
+        "seepage_m3_day": 1.35,
+        "k_evap": 1.0,
+        "rain_capture_fraction": 1.0
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": "pilot-a:field-013:pond",
+      "capex_pkr": 256000,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 21,
+      "lead_time_days": 90,
+      "shared": false,
+      "evidence_ids": [
+        "asm:pond-cost",
+        "asm:pond-fixed-cost",
+        "asm:pond-lead",
+        "asm:pond-seepage",
+        "asm:pond-kevap"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-013:pond-medium",
+      "type_id": "farm-pond",
+      "category": "pond",
+      "target_ids": [
+        "pilot-a:field-013"
+      ],
+      "parameters": {
+        "irrigations_held": 1.0,
+        "irrigation_depth_mm": 75.0,
+        "usable_capacity_m3": 1350.0,
+        "surface_area_m2": 675.0,
+        "footprint_m2": 911.25,
+        "max_fill_m3_day": 1350.0,
+        "max_release_m3_day": 1296.0,
+        "seepage_m3_day": 2.7,
+        "k_evap": 1.0,
+        "rain_capture_fraction": 1.0
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": "pilot-a:field-013:pond",
+      "capex_pkr": 472000,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 21,
+      "lead_time_days": 90,
+      "shared": false,
+      "evidence_ids": [
+        "asm:pond-cost",
+        "asm:pond-fixed-cost",
+        "asm:pond-lead",
+        "asm:pond-seepage",
+        "asm:pond-kevap"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-013:pond-large",
+      "type_id": "farm-pond",
+      "category": "pond",
+      "target_ids": [
+        "pilot-a:field-013"
+      ],
+      "parameters": {
+        "irrigations_held": 1.5,
+        "irrigation_depth_mm": 75.0,
+        "usable_capacity_m3": 2025.0,
+        "surface_area_m2": 1012.5,
+        "footprint_m2": 1366.88,
+        "max_fill_m3_day": 2025.0,
+        "max_release_m3_day": 1296.0,
+        "seepage_m3_day": 4.05,
+        "k_evap": 1.0,
+        "rain_capture_fraction": 1.0
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": "pilot-a:field-013:pond",
+      "capex_pkr": 688000,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 21,
+      "lead_time_days": 90,
+      "shared": false,
+      "evidence_ids": [
+        "asm:pond-cost",
+        "asm:pond-fixed-cost",
+        "asm:pond-lead",
+        "asm:pond-seepage",
+        "asm:pond-kevap"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-019:pond-small",
+      "type_id": "farm-pond",
+      "category": "pond",
+      "target_ids": [
+        "pilot-a:field-019"
+      ],
+      "parameters": {
+        "irrigations_held": 0.5,
+        "irrigation_depth_mm": 75.0,
+        "usable_capacity_m3": 417.42,
+        "surface_area_m2": 208.71,
+        "footprint_m2": 281.76,
+        "max_fill_m3_day": 417.42,
+        "max_release_m3_day": 417.42,
+        "seepage_m3_day": 0.835,
+        "k_evap": 1.0,
+        "rain_capture_fraction": 1.0
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": "pilot-a:field-019:pond",
+      "capex_pkr": 173575,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 21,
+      "lead_time_days": 90,
+      "shared": false,
+      "evidence_ids": [
+        "asm:pond-cost",
+        "asm:pond-fixed-cost",
+        "asm:pond-lead",
+        "asm:pond-seepage",
+        "asm:pond-kevap"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-019:pond-medium",
+      "type_id": "farm-pond",
+      "category": "pond",
+      "target_ids": [
+        "pilot-a:field-019"
+      ],
+      "parameters": {
+        "irrigations_held": 1.0,
+        "irrigation_depth_mm": 75.0,
+        "usable_capacity_m3": 834.84,
+        "surface_area_m2": 417.42,
+        "footprint_m2": 563.52,
+        "max_fill_m3_day": 834.84,
+        "max_release_m3_day": 834.84,
+        "seepage_m3_day": 1.67,
+        "k_evap": 1.0,
+        "rain_capture_fraction": 1.0
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": "pilot-a:field-019:pond",
+      "capex_pkr": 307149,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 21,
+      "lead_time_days": 90,
+      "shared": false,
+      "evidence_ids": [
+        "asm:pond-cost",
+        "asm:pond-fixed-cost",
+        "asm:pond-lead",
+        "asm:pond-seepage",
+        "asm:pond-kevap"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-019:pond-large",
+      "type_id": "farm-pond",
+      "category": "pond",
+      "target_ids": [
+        "pilot-a:field-019"
+      ],
+      "parameters": {
+        "irrigations_held": 1.5,
+        "irrigation_depth_mm": 75.0,
+        "usable_capacity_m3": 1252.27,
+        "surface_area_m2": 626.13,
+        "footprint_m2": 845.28,
+        "max_fill_m3_day": 1252.27,
+        "max_release_m3_day": 1252.27,
+        "seepage_m3_day": 2.505,
+        "k_evap": 1.0,
+        "rain_capture_fraction": 1.0
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": "pilot-a:field-019:pond",
+      "capex_pkr": 440727,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 21,
+      "lead_time_days": 90,
+      "shared": false,
+      "evidence_ids": [
+        "asm:pond-cost",
+        "asm:pond-fixed-cost",
+        "asm:pond-lead",
+        "asm:pond-seepage",
+        "asm:pond-kevap"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-020:pond-small",
+      "type_id": "farm-pond",
+      "category": "pond",
+      "target_ids": [
+        "pilot-a:field-020"
+      ],
+      "parameters": {
+        "irrigations_held": 0.5,
+        "irrigation_depth_mm": 75.0,
+        "usable_capacity_m3": 836.02,
+        "surface_area_m2": 418.01,
+        "footprint_m2": 564.31,
+        "max_fill_m3_day": 836.02,
+        "max_release_m3_day": 836.02,
+        "seepage_m3_day": 1.672,
+        "k_evap": 1.0,
+        "rain_capture_fraction": 1.0
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": "pilot-a:field-020:pond",
+      "capex_pkr": 307527,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 21,
+      "lead_time_days": 90,
+      "shared": false,
+      "evidence_ids": [
+        "asm:pond-cost",
+        "asm:pond-fixed-cost",
+        "asm:pond-lead",
+        "asm:pond-seepage",
+        "asm:pond-kevap"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-020:pond-medium",
+      "type_id": "farm-pond",
+      "category": "pond",
+      "target_ids": [
+        "pilot-a:field-020"
+      ],
+      "parameters": {
+        "irrigations_held": 1.0,
+        "irrigation_depth_mm": 75.0,
+        "usable_capacity_m3": 1672.03,
+        "surface_area_m2": 836.02,
+        "footprint_m2": 1128.62,
+        "max_fill_m3_day": 1672.03,
+        "max_release_m3_day": 1296.0,
+        "seepage_m3_day": 3.344,
+        "k_evap": 1.0,
+        "rain_capture_fraction": 1.0
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": "pilot-a:field-020:pond",
+      "capex_pkr": 575050,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 21,
+      "lead_time_days": 90,
+      "shared": false,
+      "evidence_ids": [
+        "asm:pond-cost",
+        "asm:pond-fixed-cost",
+        "asm:pond-lead",
+        "asm:pond-seepage",
+        "asm:pond-kevap"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-020:pond-large",
+      "type_id": "farm-pond",
+      "category": "pond",
+      "target_ids": [
+        "pilot-a:field-020"
+      ],
+      "parameters": {
+        "irrigations_held": 1.5,
+        "irrigation_depth_mm": 75.0,
+        "usable_capacity_m3": 2508.05,
+        "surface_area_m2": 1254.02,
+        "footprint_m2": 1692.93,
+        "max_fill_m3_day": 2508.05,
+        "max_release_m3_day": 1296.0,
+        "seepage_m3_day": 5.016,
+        "k_evap": 1.0,
+        "rain_capture_fraction": 1.0
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": "pilot-a:field-020:pond",
+      "capex_pkr": 842576,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 21,
+      "lead_time_days": 90,
+      "shared": false,
+      "evidence_ids": [
+        "asm:pond-cost",
+        "asm:pond-fixed-cost",
+        "asm:pond-lead",
+        "asm:pond-seepage",
+        "asm:pond-kevap"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-022:pond-small",
+      "type_id": "farm-pond",
+      "category": "pond",
+      "target_ids": [
+        "pilot-a:field-022"
+      ],
+      "parameters": {
+        "irrigations_held": 0.5,
+        "irrigation_depth_mm": 75.0,
+        "usable_capacity_m3": 413.91,
+        "surface_area_m2": 206.95,
+        "footprint_m2": 279.39,
+        "max_fill_m3_day": 413.91,
+        "max_release_m3_day": 413.91,
+        "seepage_m3_day": 0.828,
+        "k_evap": 1.0,
+        "rain_capture_fraction": 1.0
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": "pilot-a:field-022:pond",
+      "capex_pkr": 172452,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 21,
+      "lead_time_days": 90,
+      "shared": false,
+      "evidence_ids": [
+        "asm:pond-cost",
+        "asm:pond-fixed-cost",
+        "asm:pond-lead",
+        "asm:pond-seepage",
+        "asm:pond-kevap"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-022:pond-medium",
+      "type_id": "farm-pond",
+      "category": "pond",
+      "target_ids": [
+        "pilot-a:field-022"
+      ],
+      "parameters": {
+        "irrigations_held": 1.0,
+        "irrigation_depth_mm": 75.0,
+        "usable_capacity_m3": 827.81,
+        "surface_area_m2": 413.91,
+        "footprint_m2": 558.77,
+        "max_fill_m3_day": 827.81,
+        "max_release_m3_day": 827.81,
+        "seepage_m3_day": 1.656,
+        "k_evap": 1.0,
+        "rain_capture_fraction": 1.0
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": "pilot-a:field-022:pond",
+      "capex_pkr": 304900,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 21,
+      "lead_time_days": 90,
+      "shared": false,
+      "evidence_ids": [
+        "asm:pond-cost",
+        "asm:pond-fixed-cost",
+        "asm:pond-lead",
+        "asm:pond-seepage",
+        "asm:pond-kevap"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-022:pond-large",
+      "type_id": "farm-pond",
+      "category": "pond",
+      "target_ids": [
+        "pilot-a:field-022"
+      ],
+      "parameters": {
+        "irrigations_held": 1.5,
+        "irrigation_depth_mm": 75.0,
+        "usable_capacity_m3": 1241.72,
+        "surface_area_m2": 620.86,
+        "footprint_m2": 838.16,
+        "max_fill_m3_day": 1241.72,
+        "max_release_m3_day": 1241.72,
+        "seepage_m3_day": 2.483,
+        "k_evap": 1.0,
+        "rain_capture_fraction": 1.0
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": "pilot-a:field-022:pond",
+      "capex_pkr": 437351,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 21,
+      "lead_time_days": 90,
+      "shared": false,
+      "evidence_ids": [
+        "asm:pond-cost",
+        "asm:pond-fixed-cost",
+        "asm:pond-lead",
+        "asm:pond-seepage",
+        "asm:pond-kevap"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-029:pond-small",
+      "type_id": "farm-pond",
+      "category": "pond",
+      "target_ids": [
+        "pilot-a:field-029"
+      ],
+      "parameters": {
+        "irrigations_held": 0.5,
+        "irrigation_depth_mm": 75.0,
+        "usable_capacity_m3": 307.73,
+        "surface_area_m2": 153.87,
+        "footprint_m2": 207.72,
+        "max_fill_m3_day": 307.73,
+        "max_release_m3_day": 307.73,
+        "seepage_m3_day": 0.615,
+        "k_evap": 1.0,
+        "rain_capture_fraction": 1.0
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": "pilot-a:field-029:pond",
+      "capex_pkr": 138474,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 21,
+      "lead_time_days": 90,
+      "shared": false,
+      "evidence_ids": [
+        "asm:pond-cost",
+        "asm:pond-fixed-cost",
+        "asm:pond-lead",
+        "asm:pond-seepage",
+        "asm:pond-kevap"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-029:pond-medium",
+      "type_id": "farm-pond",
+      "category": "pond",
+      "target_ids": [
+        "pilot-a:field-029"
+      ],
+      "parameters": {
+        "irrigations_held": 1.0,
+        "irrigation_depth_mm": 75.0,
+        "usable_capacity_m3": 615.47,
+        "surface_area_m2": 307.73,
+        "footprint_m2": 415.44,
+        "max_fill_m3_day": 615.47,
+        "max_release_m3_day": 615.47,
+        "seepage_m3_day": 1.231,
+        "k_evap": 1.0,
+        "rain_capture_fraction": 1.0
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": "pilot-a:field-029:pond",
+      "capex_pkr": 236951,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 21,
+      "lead_time_days": 90,
+      "shared": false,
+      "evidence_ids": [
+        "asm:pond-cost",
+        "asm:pond-fixed-cost",
+        "asm:pond-lead",
+        "asm:pond-seepage",
+        "asm:pond-kevap"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-029:pond-large",
+      "type_id": "farm-pond",
+      "category": "pond",
+      "target_ids": [
+        "pilot-a:field-029"
+      ],
+      "parameters": {
+        "irrigations_held": 1.5,
+        "irrigation_depth_mm": 75.0,
+        "usable_capacity_m3": 923.2,
+        "surface_area_m2": 461.6,
+        "footprint_m2": 623.16,
+        "max_fill_m3_day": 923.2,
+        "max_release_m3_day": 923.2,
+        "seepage_m3_day": 1.846,
+        "k_evap": 1.0,
+        "rain_capture_fraction": 1.0
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": "pilot-a:field-029:pond",
+      "capex_pkr": 335424,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 21,
+      "lead_time_days": 90,
+      "shared": false,
+      "evidence_ids": [
+        "asm:pond-cost",
+        "asm:pond-fixed-cost",
+        "asm:pond-lead",
+        "asm:pond-seepage",
+        "asm:pond-kevap"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-030:pond-small",
+      "type_id": "farm-pond",
+      "category": "pond",
+      "target_ids": [
+        "pilot-a:field-030"
+      ],
+      "parameters": {
+        "irrigations_held": 0.5,
+        "irrigation_depth_mm": 75.0,
+        "usable_capacity_m3": 327.66,
+        "surface_area_m2": 163.83,
+        "footprint_m2": 221.17,
+        "max_fill_m3_day": 327.66,
+        "max_release_m3_day": 327.66,
+        "seepage_m3_day": 0.655,
+        "k_evap": 1.0,
+        "rain_capture_fraction": 1.0
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": "pilot-a:field-030:pond",
+      "capex_pkr": 144852,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 21,
+      "lead_time_days": 90,
+      "shared": false,
+      "evidence_ids": [
+        "asm:pond-cost",
+        "asm:pond-fixed-cost",
+        "asm:pond-lead",
+        "asm:pond-seepage",
+        "asm:pond-kevap"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-030:pond-medium",
+      "type_id": "farm-pond",
+      "category": "pond",
+      "target_ids": [
+        "pilot-a:field-030"
+      ],
+      "parameters": {
+        "irrigations_held": 1.0,
+        "irrigation_depth_mm": 75.0,
+        "usable_capacity_m3": 655.31,
+        "surface_area_m2": 327.66,
+        "footprint_m2": 442.34,
+        "max_fill_m3_day": 655.31,
+        "max_release_m3_day": 655.31,
+        "seepage_m3_day": 1.311,
+        "k_evap": 1.0,
+        "rain_capture_fraction": 1.0
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": "pilot-a:field-030:pond",
+      "capex_pkr": 249700,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 21,
+      "lead_time_days": 90,
+      "shared": false,
+      "evidence_ids": [
+        "asm:pond-cost",
+        "asm:pond-fixed-cost",
+        "asm:pond-lead",
+        "asm:pond-seepage",
+        "asm:pond-kevap"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:field-030:pond-large",
+      "type_id": "farm-pond",
+      "category": "pond",
+      "target_ids": [
+        "pilot-a:field-030"
+      ],
+      "parameters": {
+        "irrigations_held": 1.5,
+        "irrigation_depth_mm": 75.0,
+        "usable_capacity_m3": 982.97,
+        "surface_area_m2": 491.48,
+        "footprint_m2": 663.5,
+        "max_fill_m3_day": 982.97,
+        "max_release_m3_day": 982.97,
+        "seepage_m3_day": 1.966,
+        "k_evap": 1.0,
+        "rain_capture_fraction": 1.0
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": "pilot-a:field-030:pond",
+      "capex_pkr": 354551,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 21,
+      "lead_time_days": 90,
+      "shared": false,
+      "evidence_ids": [
+        "asm:pond-cost",
+        "asm:pond-fixed-cost",
+        "asm:pond-lead",
+        "asm:pond-seepage",
+        "asm:pond-kevap"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:edge-wc1-reach2:repair",
+      "type_id": "watercourse-lining",
+      "category": "shared_repair",
+      "target_ids": [
+        "pilot-a:edge-wc1-reach2"
+      ],
+      "parameters": {
+        "delivery_factor_after": 0.95,
+        "downtime_days": 14,
+        "reach_length_m": 182.4
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": null,
+      "capex_pkr": 1185920,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 30,
+      "lead_time_days": 120,
+      "shared": true,
+      "evidence_ids": [
+        "asm:lining-cost",
+        "asm:lining-factor",
+        "asm:lining-lead",
+        "asm:lining-downtime"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:edge-wc2-reach3:repair",
+      "type_id": "watercourse-lining",
+      "category": "shared_repair",
+      "target_ids": [
+        "pilot-a:edge-wc2-reach3"
+      ],
+      "parameters": {
+        "delivery_factor_after": 0.95,
+        "downtime_days": 14,
+        "reach_length_m": 977.6
+      },
+      "prerequisites": [],
+      "mutually_exclusive_group": null,
+      "capex_pkr": 6354377,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 30,
+      "lead_time_days": 120,
+      "shared": true,
+      "evidence_ids": [
+        "asm:lining-cost",
+        "asm:lining-factor",
+        "asm:lining-lead",
+        "asm:lining-downtime"
+      ]
+    },
+    {
+      "instance_id": "pilot-a:asset-pump-existing:supplement",
+      "type_id": "pump-supplement",
+      "category": "pump_supplement",
+      "target_ids": [
+        "pilot-a:asset-pump-existing"
+      ],
+      "parameters": {},
+      "prerequisites": [],
+      "mutually_exclusive_group": null,
+      "capex_pkr": 0,
+      "seasonal_opex_pkr": 0,
+      "procurement_delay_days": 0,
+      "lead_time_days": 0,
+      "shared": true,
+      "evidence_ids": [
+        "asm:pump-cost",
+        "asm:pump-cap",
+        "asm:pump-rate"
+      ]
+    }
+  ]
+}

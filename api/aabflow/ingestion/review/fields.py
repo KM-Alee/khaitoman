@@ -35,7 +35,7 @@ from shapely.validation import explain_validity, make_valid
 
 from ..aoi import Aoi, to_metric, to_wgs84
 
-REVIEW_RULES_VERSION = "field-review-rules-1.0.0"
+REVIEW_RULES_VERSION = "field-review-rules-1.1.0"
 
 
 @dataclass(frozen=True)

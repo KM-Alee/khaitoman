@@ -1,0 +1,23 @@
+[
+  {
+    "weather_series_id": "openmeteo-archive-30.8000N-72.3000E-20140101-20251231",
+    "point_requested": [
+      30.787,
+      72.318
+    ],
+    "point_returned": [
+      30.800003,
+      72.3
+    ],
+    "elevation_m": 152.0,
+    "start": "2014-01-01",
+    "end": "2025-12-31",
+    "source": "open-meteo-archive",
+    "source_model": "era5_seamless",
+    "raw_ref": "weather/openmeteo-archive-30.8000N-72.3000E-20140101-20251231.json",
+    "normalized_ref": "weather/openmeteo-archive-30.8000N-72.3000E-20140101-20251231.parquet",
+    "source_sha256": "16a485c85e5b080c4607c2ab17500c4787f195ab90e2bab20f3f69f03207a416",
+    "normalized_sha256": "e7d80bb8b435f486268e0c4888988bc92a0a8a7b6eb91af7e0e8bf06c242955c",
+    "evidence_id": "ev:weather:openmeteo-archive-30.8000N-72.3000E-20140101-20251231"
+  }
+]

@@ -1,0 +1,15 @@
+{
+  "reviewer": "aabflow data stream (rule-based review + visual overlay check of S2C_43RBQ_20250223_0_L2A)",
+  "field_edits": [
+    {
+      "model_id": "da:3768567ae9ee0beb:550",
+      "action": "reject",
+      "reason": "polygon lies on the bright built-up/bare patch at the village edge near the road junction; no parcel boundary visible in the 10 m image"
+    },
+    {
+      "model_id": "da:3768567ae9ee0beb:735",
+      "action": "reject",
+      "reason": "bare patch wedged between the road and the mapped canal junction; parcel outline not distinguishable from the road verge"
+    }
+  ]
+}

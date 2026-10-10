@@ -51,7 +51,52 @@
           "pre_reduced": false
         }
       ],
-      "by_pilot": {}
+      "by_pilot": {
+        "pilot-a": [
+          {
+            "supply_profile_id": "nominal-roster-v1",
+            "base_profile_hash": "b91d82522eeba02beff435e6b682d3ead91f118aae0f7e1fa9e48949a8d275d4",
+            "label": "Nominal roster (declared rates, no curtailment)",
+            "transformations": [],
+            "resolved_hash": "41d2426888b8234a35bac7a65bf0be4cfeb47d265998ace4709e9b23a869ba92",
+            "pre_reduced": false
+          },
+          {
+            "supply_profile_id": "shortage-22pct-v1",
+            "base_profile_hash": "b91d82522eeba02beff435e6b682d3ead91f118aae0f7e1fa9e48949a8d275d4",
+            "label": "22% uniform supply shortage (absolute multiplier 0.78)",
+            "transformations": [
+              {
+                "transformation_id": "shortage-22pct",
+                "kind": "absolute_multiplier",
+                "multiplier": 0.78,
+                "start": null,
+                "end": null,
+                "edge_ids": []
+              }
+            ],
+            "resolved_hash": "9ece6549ba279847aafd4a01d71bfaa6895348c4d3e0e293a27502a008f5f73c",
+            "pre_reduced": false
+          },
+          {
+            "supply_profile_id": "interruption-14d-v1",
+            "base_profile_hash": "b91d82522eeba02beff435e6b682d3ead91f118aae0f7e1fa9e48949a8d275d4",
+            "label": "14-day whole-source closure from 2027-02-13 (DAP 90)",
+            "transformations": [
+              {
+                "transformation_id": "interruption-14d",
+                "kind": "closure",
+                "multiplier": null,
+                "start": "2027-02-12T19:00:00Z",
+                "end": "2027-02-26T19:00:00Z",
+                "edge_ids": []
+              }
+            ],
+            "resolved_hash": "ff027e9b7c64493bd63388b515d86c5934307592a82a4e3ae9a414aaf38038c5",
+            "pre_reduced": false
+          }
+        ]
+      }
     },
     "wheat-rabi-2027-28": {
       "generic": [
@@ -98,7 +143,52 @@
           "pre_reduced": false
         }
       ],
-      "by_pilot": {}
+      "by_pilot": {
+        "pilot-a": [
+          {
+            "supply_profile_id": "nominal-roster-v1",
+            "base_profile_hash": "dc48f40ae3d10ea482bf3418088d55916619a333b3bddb8dd1ad8d08d5ff97bd",
+            "label": "Nominal roster (declared rates, no curtailment)",
+            "transformations": [],
+            "resolved_hash": "1bfc77d0ec1767c6168ba0312147235de5a5a0f2f00c00b687c88254d5d9fbf0",
+            "pre_reduced": false
+          },
+          {
+            "supply_profile_id": "shortage-22pct-v1",
+            "base_profile_hash": "dc48f40ae3d10ea482bf3418088d55916619a333b3bddb8dd1ad8d08d5ff97bd",
+            "label": "22% uniform supply shortage (absolute multiplier 0.78)",
+            "transformations": [
+              {
+                "transformation_id": "shortage-22pct",
+                "kind": "absolute_multiplier",
+                "multiplier": 0.78,
+                "start": null,
+                "end": null,
+                "edge_ids": []
+              }
+            ],
+            "resolved_hash": "405131c1b3216ce0d8739098dc1b4d6d32c2a4e533e342bb1bf7f44ef52a8441",
+            "pre_reduced": false
+          },
+          {
+            "supply_profile_id": "interruption-14d-v1",
+            "base_profile_hash": "dc48f40ae3d10ea482bf3418088d55916619a333b3bddb8dd1ad8d08d5ff97bd",
+            "label": "14-day whole-source closure from 2028-02-13 (DAP 90)",
+            "transformations": [
+              {
+                "transformation_id": "interruption-14d",
+                "kind": "closure",
+                "multiplier": null,
+                "start": "2028-02-12T19:00:00Z",
+                "end": "2028-02-26T19:00:00Z",
+                "edge_ids": []
+              }
+            ],
+            "resolved_hash": "6a4f7b579310e559e3b79afa23d01bb7c8e05e91c263d692723238a47bfe171f",
+            "pre_reduced": false
+          }
+        ]
+      }
     },
     "cotton-kharif-2027": {
       "generic": [
@@ -145,7 +235,52 @@
           "pre_reduced": false
         }
       ],
-      "by_pilot": {}
+      "by_pilot": {
+        "pilot-a": [
+          {
+            "supply_profile_id": "nominal-roster-v1",
+            "base_profile_hash": "5072592a3bf2825c654e46633d12858610995cf99e3c43e1c3ec43d71f8effe6",
+            "label": "Nominal roster (declared rates, no curtailment)",
+            "transformations": [],
+            "resolved_hash": "3ae368c1ba817094574c0240603ce113b6bec0fe139c511cce5a31e72e146c3a",
+            "pre_reduced": false
+          },
+          {
+            "supply_profile_id": "shortage-22pct-v1",
+            "base_profile_hash": "5072592a3bf2825c654e46633d12858610995cf99e3c43e1c3ec43d71f8effe6",
+            "label": "22% uniform supply shortage (absolute multiplier 0.78)",
+            "transformations": [
+              {
+                "transformation_id": "shortage-22pct",
+                "kind": "absolute_multiplier",
+                "multiplier": 0.78,
+                "start": null,
+                "end": null,
+                "edge_ids": []
+              }
+            ],
+            "resolved_hash": "2c3975c92d07937feb3ae7bd6bed82901bac30749c01494d543156ca00bd97fc",
+            "pre_reduced": false
+          },
+          {
+            "supply_profile_id": "interruption-14d-v1",
+            "base_profile_hash": "5072592a3bf2825c654e46633d12858610995cf99e3c43e1c3ec43d71f8effe6",
+            "label": "14-day whole-source closure from 2027-07-15 (DAP 75)",
+            "transformations": [
+              {
+                "transformation_id": "interruption-14d",
+                "kind": "closure",
+                "multiplier": null,
+                "start": "2027-07-14T19:00:00Z",
+                "end": "2027-07-28T19:00:00Z",
+                "edge_ids": []
+              }
+            ],
+            "resolved_hash": "b6eeb2c17428af7c0001c5d384c69bccc3967b04027d4ffb6cc7885a3471ec61",
+            "pre_reduced": false
+          }
+        ]
+      }
     },
     "wheat-rabi-2024-25": {
       "generic": [
@@ -192,10 +327,300 @@
           "pre_reduced": false
         }
       ],
-      "by_pilot": {}
+      "by_pilot": {
+        "pilot-a": [
+          {
+            "supply_profile_id": "nominal-roster-v1",
+            "base_profile_hash": "b518496bd6d422b52a773e8c28b376870568e599c851e1354c93a638e5366e94",
+            "label": "Nominal roster (declared rates, no curtailment)",
+            "transformations": [],
+            "resolved_hash": "4a788531501c495edada07340b1e6967fe30ac61d62a9f798947df8a70042663",
+            "pre_reduced": false
+          },
+          {
+            "supply_profile_id": "shortage-22pct-v1",
+            "base_profile_hash": "b518496bd6d422b52a773e8c28b376870568e599c851e1354c93a638e5366e94",
+            "label": "22% uniform supply shortage (absolute multiplier 0.78)",
+            "transformations": [
+              {
+                "transformation_id": "shortage-22pct",
+                "kind": "absolute_multiplier",
+                "multiplier": 0.78,
+                "start": null,
+                "end": null,
+                "edge_ids": []
+              }
+            ],
+            "resolved_hash": "7ce9a8b4a1903b8d774ab7ca8ab99003b5ea61d0e335c7d603037db447404b28",
+            "pre_reduced": false
+          },
+          {
+            "supply_profile_id": "interruption-14d-v1",
+            "base_profile_hash": "b518496bd6d422b52a773e8c28b376870568e599c851e1354c93a638e5366e94",
+            "label": "14-day whole-source closure from 2025-02-13 (DAP 90)",
+            "transformations": [
+              {
+                "transformation_id": "interruption-14d",
+                "kind": "closure",
+                "multiplier": null,
+                "start": "2025-02-12T19:00:00Z",
+                "end": "2025-02-26T19:00:00Z",
+                "edge_ids": []
+              }
+            ],
+            "resolved_hash": "0c22d5f2000bc22feaba1751fafffdd05a6d5f98f6fa9322146cf49b49ed5b84",
+            "pre_reduced": false
+          }
+        ]
+      }
     }
   },
-  "uncertainty_sets": [],
+  "uncertainty_sets": [
+    {
+      "uncertainty_set_id": "pilot-a:wheat-rabi-2026-27:release-9",
+      "pilot_id": "pilot-a",
+      "season_id": "wheat-rabi-2026-27",
+      "states": [
+        {
+          "state_id": "dry__nominal-roster-v1",
+          "weather_scenario_id": "dry",
+          "supply_profile_id": "nominal-roster-v1",
+          "resolved_supply_profile_hash": "41d2426888b8234a35bac7a65bf0be4cfeb47d265998ace4709e9b23a869ba92"
+        },
+        {
+          "state_id": "dry__shortage-22pct-v1",
+          "weather_scenario_id": "dry",
+          "supply_profile_id": "shortage-22pct-v1",
+          "resolved_supply_profile_hash": "9ece6549ba279847aafd4a01d71bfaa6895348c4d3e0e293a27502a008f5f73c"
+        },
+        {
+          "state_id": "dry__interruption-14d-v1",
+          "weather_scenario_id": "dry",
+          "supply_profile_id": "interruption-14d-v1",
+          "resolved_supply_profile_hash": "ff027e9b7c64493bd63388b515d86c5934307592a82a4e3ae9a414aaf38038c5"
+        },
+        {
+          "state_id": "typical__nominal-roster-v1",
+          "weather_scenario_id": "typical",
+          "supply_profile_id": "nominal-roster-v1",
+          "resolved_supply_profile_hash": "41d2426888b8234a35bac7a65bf0be4cfeb47d265998ace4709e9b23a869ba92"
+        },
+        {
+          "state_id": "typical__shortage-22pct-v1",
+          "weather_scenario_id": "typical",
+          "supply_profile_id": "shortage-22pct-v1",
+          "resolved_supply_profile_hash": "9ece6549ba279847aafd4a01d71bfaa6895348c4d3e0e293a27502a008f5f73c"
+        },
+        {
+          "state_id": "typical__interruption-14d-v1",
+          "weather_scenario_id": "typical",
+          "supply_profile_id": "interruption-14d-v1",
+          "resolved_supply_profile_hash": "ff027e9b7c64493bd63388b515d86c5934307592a82a4e3ae9a414aaf38038c5"
+        },
+        {
+          "state_id": "wet__nominal-roster-v1",
+          "weather_scenario_id": "wet",
+          "supply_profile_id": "nominal-roster-v1",
+          "resolved_supply_profile_hash": "41d2426888b8234a35bac7a65bf0be4cfeb47d265998ace4709e9b23a869ba92"
+        },
+        {
+          "state_id": "wet__shortage-22pct-v1",
+          "weather_scenario_id": "wet",
+          "supply_profile_id": "shortage-22pct-v1",
+          "resolved_supply_profile_hash": "9ece6549ba279847aafd4a01d71bfaa6895348c4d3e0e293a27502a008f5f73c"
+        },
+        {
+          "state_id": "wet__interruption-14d-v1",
+          "weather_scenario_id": "wet",
+          "supply_profile_id": "interruption-14d-v1",
+          "resolved_supply_profile_hash": "ff027e9b7c64493bd63388b515d86c5934307592a82a4e3ae9a414aaf38038c5"
+        }
+      ]
+    },
+    {
+      "uncertainty_set_id": "pilot-a:wheat-rabi-2027-28:release-9",
+      "pilot_id": "pilot-a",
+      "season_id": "wheat-rabi-2027-28",
+      "states": [
+        {
+          "state_id": "dry__nominal-roster-v1",
+          "weather_scenario_id": "dry",
+          "supply_profile_id": "nominal-roster-v1",
+          "resolved_supply_profile_hash": "1bfc77d0ec1767c6168ba0312147235de5a5a0f2f00c00b687c88254d5d9fbf0"
+        },
+        {
+          "state_id": "dry__shortage-22pct-v1",
+          "weather_scenario_id": "dry",
+          "supply_profile_id": "shortage-22pct-v1",
+          "resolved_supply_profile_hash": "405131c1b3216ce0d8739098dc1b4d6d32c2a4e533e342bb1bf7f44ef52a8441"
+        },
+        {
+          "state_id": "dry__interruption-14d-v1",
+          "weather_scenario_id": "dry",
+          "supply_profile_id": "interruption-14d-v1",
+          "resolved_supply_profile_hash": "6a4f7b579310e559e3b79afa23d01bb7c8e05e91c263d692723238a47bfe171f"
+        },
+        {
+          "state_id": "typical__nominal-roster-v1",
+          "weather_scenario_id": "typical",
+          "supply_profile_id": "nominal-roster-v1",
+          "resolved_supply_profile_hash": "1bfc77d0ec1767c6168ba0312147235de5a5a0f2f00c00b687c88254d5d9fbf0"
+        },
+        {
+          "state_id": "typical__shortage-22pct-v1",
+          "weather_scenario_id": "typical",
+          "supply_profile_id": "shortage-22pct-v1",
+          "resolved_supply_profile_hash": "405131c1b3216ce0d8739098dc1b4d6d32c2a4e533e342bb1bf7f44ef52a8441"
+        },
+        {
+          "state_id": "typical__interruption-14d-v1",
+          "weather_scenario_id": "typical",
+          "supply_profile_id": "interruption-14d-v1",
+          "resolved_supply_profile_hash": "6a4f7b579310e559e3b79afa23d01bb7c8e05e91c263d692723238a47bfe171f"
+        },
+        {
+          "state_id": "wet__nominal-roster-v1",
+          "weather_scenario_id": "wet",
+          "supply_profile_id": "nominal-roster-v1",
+          "resolved_supply_profile_hash": "1bfc77d0ec1767c6168ba0312147235de5a5a0f2f00c00b687c88254d5d9fbf0"
+        },
+        {
+          "state_id": "wet__shortage-22pct-v1",
+          "weather_scenario_id": "wet",
+          "supply_profile_id": "shortage-22pct-v1",
+          "resolved_supply_profile_hash": "405131c1b3216ce0d8739098dc1b4d6d32c2a4e533e342bb1bf7f44ef52a8441"
+        },
+        {
+          "state_id": "wet__interruption-14d-v1",
+          "weather_scenario_id": "wet",
+          "supply_profile_id": "interruption-14d-v1",
+          "resolved_supply_profile_hash": "6a4f7b579310e559e3b79afa23d01bb7c8e05e91c263d692723238a47bfe171f"
+        }
+      ]
+    },
+    {
+      "uncertainty_set_id": "pilot-a:cotton-kharif-2027:release-9",
+      "pilot_id": "pilot-a",
+      "season_id": "cotton-kharif-2027",
+      "states": [
+        {
+          "state_id": "dry__nominal-roster-v1",
+          "weather_scenario_id": "dry",
+          "supply_profile_id": "nominal-roster-v1",
+          "resolved_supply_profile_hash": "3ae368c1ba817094574c0240603ce113b6bec0fe139c511cce5a31e72e146c3a"
+        },
+        {
+          "state_id": "dry__shortage-22pct-v1",
+          "weather_scenario_id": "dry",
+          "supply_profile_id": "shortage-22pct-v1",
+          "resolved_supply_profile_hash": "2c3975c92d07937feb3ae7bd6bed82901bac30749c01494d543156ca00bd97fc"
+        },
+        {
+          "state_id": "dry__interruption-14d-v1",
+          "weather_scenario_id": "dry",
+          "supply_profile_id": "interruption-14d-v1",
+          "resolved_supply_profile_hash": "b6eeb2c17428af7c0001c5d384c69bccc3967b04027d4ffb6cc7885a3471ec61"
+        },
+        {
+          "state_id": "typical__nominal-roster-v1",
+          "weather_scenario_id": "typical",
+          "supply_profile_id": "nominal-roster-v1",
+          "resolved_supply_profile_hash": "3ae368c1ba817094574c0240603ce113b6bec0fe139c511cce5a31e72e146c3a"
+        },
+        {
+          "state_id": "typical__shortage-22pct-v1",
+          "weather_scenario_id": "typical",
+          "supply_profile_id": "shortage-22pct-v1",
+          "resolved_supply_profile_hash": "2c3975c92d07937feb3ae7bd6bed82901bac30749c01494d543156ca00bd97fc"
+        },
+        {
+          "state_id": "typical__interruption-14d-v1",
+          "weather_scenario_id": "typical",
+          "supply_profile_id": "interruption-14d-v1",
+          "resolved_supply_profile_hash": "b6eeb2c17428af7c0001c5d384c69bccc3967b04027d4ffb6cc7885a3471ec61"
+        },
+        {
+          "state_id": "wet__nominal-roster-v1",
+          "weather_scenario_id": "wet",
+          "supply_profile_id": "nominal-roster-v1",
+          "resolved_supply_profile_hash": "3ae368c1ba817094574c0240603ce113b6bec0fe139c511cce5a31e72e146c3a"
+        },
+        {
+          "state_id": "wet__shortage-22pct-v1",
+          "weather_scenario_id": "wet",
+          "supply_profile_id": "shortage-22pct-v1",
+          "resolved_supply_profile_hash": "2c3975c92d07937feb3ae7bd6bed82901bac30749c01494d543156ca00bd97fc"
+        },
+        {
+          "state_id": "wet__interruption-14d-v1",
+          "weather_scenario_id": "wet",
+          "supply_profile_id": "interruption-14d-v1",
+          "resolved_supply_profile_hash": "b6eeb2c17428af7c0001c5d384c69bccc3967b04027d4ffb6cc7885a3471ec61"
+        }
+      ]
+    },
+    {
+      "uncertainty_set_id": "pilot-a:wheat-rabi-2024-25:release-9",
+      "pilot_id": "pilot-a",
+      "season_id": "wheat-rabi-2024-25",
+      "states": [
+        {
+          "state_id": "dry__nominal-roster-v1",
+          "weather_scenario_id": "dry",
+          "supply_profile_id": "nominal-roster-v1",
+          "resolved_supply_profile_hash": "4a788531501c495edada07340b1e6967fe30ac61d62a9f798947df8a70042663"
+        },
+        {
+          "state_id": "dry__shortage-22pct-v1",
+          "weather_scenario_id": "dry",
+          "supply_profile_id": "shortage-22pct-v1",
+          "resolved_supply_profile_hash": "7ce9a8b4a1903b8d774ab7ca8ab99003b5ea61d0e335c7d603037db447404b28"
+        },
+        {
+          "state_id": "dry__interruption-14d-v1",
+          "weather_scenario_id": "dry",
+          "supply_profile_id": "interruption-14d-v1",
+          "resolved_supply_profile_hash": "0c22d5f2000bc22feaba1751fafffdd05a6d5f98f6fa9322146cf49b49ed5b84"
+        },
+        {
+          "state_id": "typical__nominal-roster-v1",
+          "weather_scenario_id": "typical",
+          "supply_profile_id": "nominal-roster-v1",
+          "resolved_supply_profile_hash": "4a788531501c495edada07340b1e6967fe30ac61d62a9f798947df8a70042663"
+        },
+        {
+          "state_id": "typical__shortage-22pct-v1",
+          "weather_scenario_id": "typical",
+          "supply_profile_id": "shortage-22pct-v1",
+          "resolved_supply_profile_hash": "7ce9a8b4a1903b8d774ab7ca8ab99003b5ea61d0e335c7d603037db447404b28"
+        },
+        {
+          "state_id": "typical__interruption-14d-v1",
+          "weather_scenario_id": "typical",
+          "supply_profile_id": "interruption-14d-v1",
+          "resolved_supply_profile_hash": "0c22d5f2000bc22feaba1751fafffdd05a6d5f98f6fa9322146cf49b49ed5b84"
+        },
+        {
+          "state_id": "wet__nominal-roster-v1",
+          "weather_scenario_id": "wet",
+          "supply_profile_id": "nominal-roster-v1",
+          "resolved_supply_profile_hash": "4a788531501c495edada07340b1e6967fe30ac61d62a9f798947df8a70042663"
+        },
+        {
+          "state_id": "wet__shortage-22pct-v1",
+          "weather_scenario_id": "wet",
+          "supply_profile_id": "shortage-22pct-v1",
+          "resolved_supply_profile_hash": "7ce9a8b4a1903b8d774ab7ca8ab99003b5ea61d0e335c7d603037db447404b28"
+        },
+        {
+          "state_id": "wet__interruption-14d-v1",
+          "weather_scenario_id": "wet",
+          "supply_profile_id": "interruption-14d-v1",
+          "resolved_supply_profile_hash": "0c22d5f2000bc22feaba1751fafffdd05a6d5f98f6fa9322146cf49b49ed5b84"
+        }
+      ]
+    }
+  ],
   "notes": [
     "A scalar request reduction multiplies the named base schedule once; pre-reduced profiles reject an additional reduction (aabflow.water.roster.resolve_supply).",
     "Worst case means worst within the nine tested states, not a probability."

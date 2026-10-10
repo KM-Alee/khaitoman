@@ -1,0 +1,102 @@
+{
+  "pilot_id": "pilot-a",
+  "pilot_version": "reviewed-v1",
+  "name": "Lower Chenab representative pilot A",
+  "geographic_name_basis": "Inside the published Mungi study search extent (doi:10.3390/w14030405) but no OSM waterway named Mungi was found in that extent (Overpass, 2026-10-09). The AOI is crossed by the Gugera (Gogera) Branch canal of the Lower Chenab Canal system (OSM way 1429447136, wikidata Q5615200), so it is named a Lower Chenab representative pilot, not Mungi.",
+  "aoi_geojson_ref": "aoi.geojson",
+  "aoi_bbox": [
+    72.306,
+    30.776,
+    72.33,
+    30.798
+  ],
+  "aoi_area_m2": 5607559.6,
+  "metric_crs": "EPSG:32643",
+  "timezone": "Asia/Karachi",
+  "state": "published",
+  "review_flags": {
+    "geography_reviewed": true,
+    "topology_structurally_valid": true,
+    "rights_verification": "assumed",
+    "cost_evidence": "assumed",
+    "crop_calibration": "uncalibrated"
+  },
+  "source_refs": [
+    "ev:aoi",
+    "ev:delineate",
+    "ev:dem",
+    "ev:discovery-extent",
+    "ev:field-review",
+    "ev:grain",
+    "ev:ndvi:S2B_43RBQ_20241210_0_L2A",
+    "ev:ndvi:S2C_43RBQ_20250223_0_L2A",
+    "ev:network",
+    "ev:osm-canals",
+    "ev:s2-display:S2B_43RBQ_20241210_0_L2A",
+    "ev:s2-display:S2C_43RBQ_20250223_0_L2A",
+    "ev:s2:S2B_43RBQ_20241210_0_L2A",
+    "ev:s2:S2C_43RBQ_20250223_0_L2A",
+    "ev:weather:openmeteo-archive-30.8000N-72.3000E-20140101-20251231"
+  ],
+  "imagery": [
+    {
+      "scene_id": "S2C_43RBQ_20250223_0_L2A",
+      "collection": "sentinel-2-l2a",
+      "acquired_at": "2025-02-23T06:00:51.949000Z",
+      "aoi_valid_fraction": 1.0,
+      "display_image_ref": "imagery/S2C_43RBQ_20250223_0_L2A.webp",
+      "display_corners_wgs84": [
+        [
+          72.29886977,
+          30.80403577
+        ],
+        [
+          72.33708148,
+          30.80403577
+        ],
+        [
+          72.33708148,
+          30.76994989
+        ],
+        [
+          72.29886977,
+          30.76994989
+        ]
+      ],
+      "resolution_m": 10.0,
+      "evidence_id": "ev:s2:S2C_43RBQ_20250223_0_L2A"
+    },
+    {
+      "scene_id": "S2B_43RBQ_20241210_0_L2A",
+      "collection": "sentinel-2-l2a",
+      "acquired_at": "2024-12-10T06:00:29.959000Z",
+      "aoi_valid_fraction": 1.0,
+      "display_image_ref": "imagery/S2B_43RBQ_20241210_0_L2A.webp",
+      "display_corners_wgs84": [
+        [
+          72.29886977,
+          30.80403577
+        ],
+        [
+          72.33708148,
+          30.80403577
+        ],
+        [
+          72.33708148,
+          30.76994989
+        ],
+        [
+          72.29886977,
+          30.76994989
+        ]
+      ],
+      "resolution_m": 10.0,
+      "evidence_id": "ev:s2:S2B_43RBQ_20241210_0_L2A"
+    }
+  ],
+  "package_sha256": "97e959846bb25326a14d48cde28db63814a17bd1794602b0d01413eb39d719d4",
+  "created_at": "2026-10-10T00:52:41Z",
+  "terrain_ref": "terrain/dem.json",
+  "weather_index_ref": "weather/index.json",
+  "bundle_ref": "data/raw/bundles/pilot-a/20261010T003625Z-48408f71"
+}

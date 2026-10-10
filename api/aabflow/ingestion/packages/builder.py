@@ -118,7 +118,14 @@ def field_ndvi_stats(ndvi_tif: Path, fields: list[ReviewedField]) -> dict[str, d
 
 
 def render_overlay(
-    display_png: Path, corners, raw_fc: dict, fields: list[ReviewedField], out: Path, scale: int = 3
+    display_png: Path,
+    corners,
+    raw_fc: dict,
+    fields: list[ReviewedField],
+    out: Path,
+    scale: int = 3,
+    canals_fc: dict | None = None,
+    aoi_geom: dict | None = None,
 ):
     """Review overlay: raw model polygons (yellow) and reviewed fields (cyan, labelled)."""
     img = Image.open(display_png).convert("RGBA")
@@ -148,6 +155,14 @@ def render_overlay(
     for f in raw_fc["features"]:
         for ring in rings(f["geometry"]):
             dr.line([px(*c) for c in ring], fill=(255, 220, 0, 255), width=1)
+    for f in (canals_fc or {}).get("features", []):
+        g = shape(f["geometry"])
+        lines = [g] if g.geom_type == "LineString" else list(getattr(g, "geoms", []))
+        for ln in lines:
+            dr.line([px(*c) for c in ln.coords], fill=(40, 120, 255, 255), width=3)
+    if aoi_geom:
+        for ring in rings(aoi_geom):
+            dr.line([px(*c) for c in ring], fill=(255, 255, 255, 255), width=2)
     for f in fields:
         for ring in rings(f.geometry_wgs84):
             dr.line([px(*c) for c in ring], fill=(0, 255, 255, 255), width=3)
@@ -815,7 +830,8 @@ def resource_status(bm: dict, proc: dict, now: datetime, n_fields: int) -> dict:
             now,
             "AOI valid fraction "
             + ", ".join(f"{r['scene_id']}={r['aoi_valid_fraction']:.3f}" for r in proc["imagery"])
-            + "; canal overlay aligned with visible canal banks",
+            + "; OSM canals overlaid on the display image (review_overlay.png); positional "
+            "accuracy of the OSM lines not independently confirmed",
         ),
         "runtime_validated": _gate(True, now, "display image, NDVI and Delineate input generated"),
     }

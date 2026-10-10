@@ -1,7 +1,7 @@
 {
   "pilot_id": "pilot-a",
   "summary": {
-    "rules_version": "field-review-rules-1.0.0",
+    "rules_version": "field-review-rules-1.1.0",
     "config": {
       "target_count": 30,
       "min_area_m2": 5000.0,
@@ -16,20 +16,20 @@
       "edge_buffer_m": 0.0
     },
     "raw_polygons": 931,
-    "rejected": 807,
-    "eligible": 124,
+    "rejected": 809,
+    "eligible": 122,
     "selected": 30,
     "selected_corrected": 0,
     "selected_correction_rate": 0.0,
     "overlap_pairs_resolved": 0,
-    "manual_edits": 0,
+    "manual_edits": 2,
     "selection_method": "top-ranked eligible polygons by quality score (0.5·rectangularity + 0.3·compactness/0.785 + 0.2·log10(area)/5)",
     "accuracy_metrics": "not_estimated: no independent reference boundaries",
-    "review_started_at": "2026-10-10T00:51:01Z",
-    "review_finished_at": "2026-10-10T00:51:27Z"
+    "review_started_at": "2026-10-10T00:51:27Z",
+    "review_finished_at": "2026-10-10T00:52:41Z"
   },
-  "reviewer": null,
-  "reviewed_at": "2026-10-10T00:51:27Z",
+  "reviewer": "aabflow data stream (rule-based review + visual overlay check of S2C_43RBQ_20250223_0_L2A)",
+  "reviewed_at": "2026-10-10T00:52:41Z",
   "id_map": {
     "da:3768567ae9ee0beb:621": "pilot-a:field-001",
     "da:3768567ae9ee0beb:612": "pilot-a:field-002",
@@ -46,8 +46,6 @@
     "da:3768567ae9ee0beb:53": "pilot-a:field-013",
     "da:3768567ae9ee0beb:33": "pilot-a:field-014",
     "da:3768567ae9ee0beb:453": "pilot-a:field-015",
-    "da:3768567ae9ee0beb:550": "pilot-a:field-016",
-    "da:3768567ae9ee0beb:735": "pilot-a:field-017",
     "da:3768567ae9ee0beb:692": "pilot-a:field-018",
     "da:3768567ae9ee0beb:766": "pilot-a:field-019",
     "da:3768567ae9ee0beb:1186": "pilot-a:field-020",
@@ -60,9 +58,28 @@
     "da:3768567ae9ee0beb:125": "pilot-a:field-027",
     "da:3768567ae9ee0beb:248": "pilot-a:field-028",
     "da:3768567ae9ee0beb:299": "pilot-a:field-029",
-    "da:3768567ae9ee0beb:528": "pilot-a:field-030"
+    "da:3768567ae9ee0beb:528": "pilot-a:field-030",
+    "da:3768567ae9ee0beb:655": "pilot-a:field-031",
+    "da:3768567ae9ee0beb:1064": "pilot-a:field-032"
   },
-  "manual_edits": [],
+  "manual_edits": [
+    {
+      "model_id": "da:3768567ae9ee0beb:550",
+      "action": "reject",
+      "reason": "polygon lies on the bright built-up/bare patch at the village edge near the road junction; no parcel boundary visible in the 10 m image",
+      "geometry_wgs84": null,
+      "parts_wgs84": null,
+      "other_model_ids": []
+    },
+    {
+      "model_id": "da:3768567ae9ee0beb:735",
+      "action": "reject",
+      "reason": "bare patch wedged between the road and the mapped canal junction; parcel outline not distinguishable from the road verge",
+      "geometry_wgs84": null,
+      "parts_wgs84": null,
+      "other_model_ids": []
+    }
+  ],
   "entries": [
     {
       "model_id": "da:3768567ae9ee0beb:10",
@@ -112,7 +129,7 @@
         "rectangularity": 0.7992,
         "holes": 0,
         "quality": 0.7041,
-        "rank": 89
+        "rank": 87
       },
       "field_id": null
     },
@@ -149,7 +166,7 @@
         "rectangularity": 0.8468,
         "holes": 0,
         "quality": 0.7393,
-        "rank": 22
+        "rank": 20
       },
       "field_id": "pilot-a:field-008"
     },
@@ -171,7 +188,7 @@
         "rectangularity": 0.8104,
         "holes": 0,
         "quality": 0.7161,
-        "rank": 61
+        "rank": 59
       },
       "field_id": null
     },
@@ -254,7 +271,7 @@
         "rectangularity": 0.8638,
         "holes": 0,
         "quality": 0.7473,
-        "rank": 14
+        "rank": 13
       },
       "field_id": "pilot-a:field-009"
     },
@@ -406,7 +423,7 @@
         "rectangularity": 0.7704,
         "holes": 0,
         "quality": 0.7138,
-        "rank": 65
+        "rank": 63
       },
       "field_id": null
     },
@@ -572,7 +589,7 @@
         "rectangularity": 0.7559,
         "holes": 0,
         "quality": 0.684,
-        "rank": 104
+        "rank": 102
       },
       "field_id": null
     },
@@ -624,7 +641,7 @@
         "rectangularity": 0.8329,
         "holes": 0,
         "quality": 0.7061,
-        "rank": 86
+        "rank": 84
       },
       "field_id": null
     },
@@ -646,7 +663,7 @@
         "rectangularity": 0.7855,
         "holes": 0,
         "quality": 0.7029,
-        "rank": 90
+        "rank": 88
       },
       "field_id": null
     },
@@ -668,7 +685,7 @@
         "rectangularity": 0.7671,
         "holes": 0,
         "quality": 0.7278,
-        "rank": 42
+        "rank": 40
       },
       "field_id": null
     },
@@ -751,7 +768,7 @@
         "rectangularity": 0.8603,
         "holes": 0,
         "quality": 0.7441,
-        "rank": 19
+        "rank": 18
       },
       "field_id": "pilot-a:field-010"
     },
@@ -783,7 +800,7 @@
       "source_model_ids": [
         "da:3768567ae9ee0beb:1064"
       ],
-      "decision": "eligible_not_selected",
+      "decision": "accepted",
       "actions": [],
       "reasons": [],
       "metrics": {
@@ -796,9 +813,9 @@
         "rectangularity": 0.8224,
         "holes": 0,
         "quality": 0.7346,
-        "rank": 31
+        "rank": 29
       },
-      "field_id": null
+      "field_id": "pilot-a:field-032"
     },
     {
       "model_id": "da:3768567ae9ee0beb:1065",
@@ -841,7 +858,7 @@
         "rectangularity": 0.8238,
         "holes": 0,
         "quality": 0.7247,
-        "rank": 48
+        "rank": 46
       },
       "field_id": null
     },
@@ -886,7 +903,7 @@
         "rectangularity": 0.8278,
         "holes": 0,
         "quality": 0.7333,
-        "rank": 33
+        "rank": 31
       },
       "field_id": null
     },
@@ -908,7 +925,7 @@
         "rectangularity": 0.8111,
         "holes": 0,
         "quality": 0.729,
-        "rank": 38
+        "rank": 36
       },
       "field_id": null
     },
@@ -983,7 +1000,7 @@
         "rectangularity": 0.7829,
         "holes": 0,
         "quality": 0.702,
-        "rank": 91
+        "rank": 89
       },
       "field_id": null
     },
@@ -1262,7 +1279,7 @@
         "rectangularity": 0.8167,
         "holes": 0,
         "quality": 0.7272,
-        "rank": 44
+        "rank": 42
       },
       "field_id": null
     },
@@ -1405,7 +1422,7 @@
         "rectangularity": 0.7921,
         "holes": 0,
         "quality": 0.7091,
-        "rank": 80
+        "rank": 78
       },
       "field_id": null
     },
@@ -1442,7 +1459,7 @@
         "rectangularity": 0.827,
         "holes": 0,
         "quality": 0.7045,
-        "rank": 88
+        "rank": 86
       },
       "field_id": null
     },
@@ -1464,7 +1481,7 @@
         "rectangularity": 0.8306,
         "holes": 0,
         "quality": 0.7231,
-        "rank": 53
+        "rank": 51
       },
       "field_id": null
     },
@@ -1547,7 +1564,7 @@
         "rectangularity": 0.809,
         "holes": 0,
         "quality": 0.72,
-        "rank": 56
+        "rank": 54
       },
       "field_id": null
     },
@@ -1569,7 +1586,7 @@
         "rectangularity": 0.7964,
         "holes": 0,
         "quality": 0.7238,
-        "rank": 51
+        "rank": 49
       },
       "field_id": null
     },
@@ -1591,7 +1608,7 @@
         "rectangularity": 0.8108,
         "holes": 0,
         "quality": 0.7372,
-        "rank": 27
+        "rank": 25
       },
       "field_id": "pilot-a:field-025"
     },
@@ -1613,7 +1630,7 @@
         "rectangularity": 0.786,
         "holes": 0,
         "quality": 0.7105,
-        "rank": 73
+        "rank": 71
       },
       "field_id": null
     },
@@ -1650,7 +1667,7 @@
         "rectangularity": 0.8586,
         "holes": 0,
         "quality": 0.7372,
-        "rank": 28
+        "rank": 26
       },
       "field_id": "pilot-a:field-011"
     },
@@ -1733,7 +1750,7 @@
         "rectangularity": 0.8426,
         "holes": 0,
         "quality": 0.7101,
-        "rank": 76
+        "rank": 74
       },
       "field_id": null
     },
@@ -1999,7 +2016,7 @@
         "rectangularity": 0.7687,
         "holes": 0,
         "quality": 0.6531,
-        "rank": 122
+        "rank": 120
       },
       "field_id": null
     },
@@ -2082,7 +2099,7 @@
         "rectangularity": 0.7554,
         "holes": 0,
         "quality": 0.6647,
-        "rank": 117
+        "rank": 115
       },
       "field_id": null
     },
@@ -2127,7 +2144,7 @@
         "rectangularity": 0.7072,
         "holes": 0,
         "quality": 0.6635,
-        "rank": 118
+        "rank": 116
       },
       "field_id": null
     },
@@ -2149,7 +2166,7 @@
         "rectangularity": 0.7492,
         "holes": 0,
         "quality": 0.7098,
-        "rank": 78
+        "rank": 76
       },
       "field_id": null
     },
@@ -2404,7 +2421,7 @@
         "rectangularity": 0.7383,
         "holes": 0,
         "quality": 0.6874,
-        "rank": 102
+        "rank": 100
       },
       "field_id": null
     },
@@ -2517,7 +2534,7 @@
         "rectangularity": 0.7761,
         "holes": 0,
         "quality": 0.7213,
-        "rank": 55
+        "rank": 53
       },
       "field_id": null
     },
@@ -2638,7 +2655,7 @@
         "rectangularity": 0.7703,
         "holes": 0,
         "quality": 0.7234,
-        "rank": 52
+        "rank": 50
       },
       "field_id": null
     },
@@ -2721,7 +2738,7 @@
         "rectangularity": 0.7201,
         "holes": 0,
         "quality": 0.6595,
-        "rank": 121
+        "rank": 119
       },
       "field_id": null
     },
@@ -2829,7 +2846,7 @@
         "rectangularity": 0.8459,
         "holes": 0,
         "quality": 0.7289,
-        "rank": 39
+        "rank": 37
       },
       "field_id": null
     },
@@ -2943,7 +2960,7 @@
         "rectangularity": 0.8046,
         "holes": 0,
         "quality": 0.7137,
-        "rank": 66
+        "rank": 64
       },
       "field_id": null
     },
@@ -2995,7 +3012,7 @@
         "rectangularity": 0.7958,
         "holes": 0,
         "quality": 0.7102,
-        "rank": 75
+        "rank": 73
       },
       "field_id": null
     },
@@ -3086,7 +3103,7 @@
         "rectangularity": 0.8368,
         "holes": 0,
         "quality": 0.7515,
-        "rank": 10
+        "rank": 9
       },
       "field_id": "pilot-a:field-020"
     },
@@ -3214,7 +3231,7 @@
         "rectangularity": 0.7562,
         "holes": 0,
         "quality": 0.6713,
-        "rank": 109
+        "rank": 107
       },
       "field_id": null
     },
@@ -3289,7 +3306,7 @@
         "rectangularity": 0.8144,
         "holes": 0,
         "quality": 0.7215,
-        "rank": 54
+        "rank": 52
       },
       "field_id": null
     },
@@ -3311,7 +3328,7 @@
         "rectangularity": 0.8109,
         "holes": 0,
         "quality": 0.7131,
-        "rank": 68
+        "rank": 66
       },
       "field_id": null
     },
@@ -3537,7 +3554,7 @@
         "rectangularity": 0.8669,
         "holes": 0,
         "quality": 0.7519,
-        "rank": 9
+        "rank": 8
       },
       "field_id": "pilot-a:field-027"
     },
@@ -4181,7 +4198,7 @@
         "rectangularity": 0.8627,
         "holes": 0,
         "quality": 0.7288,
-        "rank": 40
+        "rank": 38
       },
       "field_id": null
     },
@@ -4233,7 +4250,7 @@
         "rectangularity": 0.8285,
         "holes": 0,
         "quality": 0.7379,
-        "rank": 25
+        "rank": 23
       },
       "field_id": "pilot-a:field-026"
     },
@@ -5026,7 +5043,7 @@
         "rectangularity": 0.8487,
         "holes": 0,
         "quality": 0.7566,
-        "rank": 6
+        "rank": 5
       },
       "field_id": "pilot-a:field-028"
     },
@@ -5901,7 +5918,7 @@
         "rectangularity": 0.8368,
         "holes": 0,
         "quality": 0.7358,
-        "rank": 29
+        "rank": 27
       },
       "field_id": "pilot-a:field-029"
     },
@@ -6022,7 +6039,7 @@
         "rectangularity": 0.739,
         "holes": 0,
         "quality": 0.6961,
-        "rank": 95
+        "rank": 93
       },
       "field_id": null
     },
@@ -6263,7 +6280,7 @@
         "rectangularity": 0.7106,
         "holes": 0,
         "quality": 0.661,
-        "rank": 120
+        "rank": 118
       },
       "field_id": null
     },
@@ -6564,7 +6581,7 @@
         "rectangularity": 0.7627,
         "holes": 0,
         "quality": 0.7075,
-        "rank": 84
+        "rank": 82
       },
       "field_id": null
     },
@@ -6616,7 +6633,7 @@
         "rectangularity": 0.8205,
         "holes": 0,
         "quality": 0.7184,
-        "rank": 57
+        "rank": 55
       },
       "field_id": null
     },
@@ -6638,7 +6655,7 @@
         "rectangularity": 0.7484,
         "holes": 0,
         "quality": 0.6673,
-        "rank": 112
+        "rank": 110
       },
       "field_id": null
     },
@@ -6842,7 +6859,7 @@
         "rectangularity": 0.8471,
         "holes": 0,
         "quality": 0.7247,
-        "rank": 49
+        "rank": 47
       },
       "field_id": null
     },
@@ -7047,7 +7064,7 @@
         "rectangularity": 0.8446,
         "holes": 0,
         "quality": 0.7243,
-        "rank": 50
+        "rank": 48
       },
       "field_id": null
     },
@@ -7879,7 +7896,7 @@
         "rectangularity": 0.7722,
         "holes": 0,
         "quality": 0.6921,
-        "rank": 97
+        "rank": 95
       },
       "field_id": null
     },
@@ -7961,7 +7978,7 @@
         "rectangularity": 0.7244,
         "holes": 0,
         "quality": 0.668,
-        "rank": 111
+        "rank": 109
       },
       "field_id": null
     },
@@ -8066,7 +8083,7 @@
         "rectangularity": 0.805,
         "holes": 0,
         "quality": 0.7159,
-        "rank": 62
+        "rank": 60
       },
       "field_id": null
     },
@@ -8331,7 +8348,7 @@
         "rectangularity": 0.7071,
         "holes": 0,
         "quality": 0.6442,
-        "rank": 124
+        "rank": 122
       },
       "field_id": null
     },
@@ -8353,7 +8370,7 @@
         "rectangularity": 0.8268,
         "holes": 0,
         "quality": 0.7125,
-        "rank": 70
+        "rank": 68
       },
       "field_id": null
     },
@@ -8375,7 +8392,7 @@
         "rectangularity": 0.7496,
         "holes": 0,
         "quality": 0.6753,
-        "rank": 108
+        "rank": 106
       },
       "field_id": null
     },
@@ -8397,7 +8414,7 @@
         "rectangularity": 0.8304,
         "holes": 0,
         "quality": 0.7379,
-        "rank": 26
+        "rank": 24
       },
       "field_id": "pilot-a:field-015"
     },
@@ -8555,7 +8572,7 @@
         "rectangularity": 0.7979,
         "holes": 0,
         "quality": 0.7158,
-        "rank": 63
+        "rank": 61
       },
       "field_id": null
     },
@@ -8577,7 +8594,7 @@
         "rectangularity": 0.7151,
         "holes": 0,
         "quality": 0.6824,
-        "rank": 105
+        "rank": 103
       },
       "field_id": null
     },
@@ -9250,7 +9267,7 @@
         "rectangularity": 0.7747,
         "holes": 0,
         "quality": 0.7132,
-        "rank": 67
+        "rank": 65
       },
       "field_id": null
     },
@@ -9348,7 +9365,7 @@
         "rectangularity": 0.8464,
         "holes": 0,
         "quality": 0.7123,
-        "rank": 71
+        "rank": 69
       },
       "field_id": null
     },
@@ -9674,7 +9691,7 @@
         "rectangularity": 0.8657,
         "holes": 0,
         "quality": 0.7457,
-        "rank": 17
+        "rank": 16
       },
       "field_id": "pilot-a:field-030"
     },
@@ -9696,7 +9713,7 @@
         "rectangularity": 0.7828,
         "holes": 0,
         "quality": 0.7302,
-        "rank": 36
+        "rank": 34
       },
       "field_id": null
     },
@@ -9718,7 +9735,7 @@
         "rectangularity": 0.752,
         "holes": 0,
         "quality": 0.7572,
-        "rank": 5
+        "rank": 4
       },
       "field_id": "pilot-a:field-013"
     },
@@ -9907,7 +9924,7 @@
         "rectangularity": 0.7605,
         "holes": 0,
         "quality": 0.671,
-        "rank": 110
+        "rank": 108
       },
       "field_id": null
     },
@@ -9944,7 +9961,7 @@
         "rectangularity": 0.7605,
         "holes": 0,
         "quality": 0.6927,
-        "rank": 96
+        "rank": 94
       },
       "field_id": null
     },
@@ -10057,7 +10074,7 @@
         "rectangularity": 0.84,
         "holes": 0,
         "quality": 0.7058,
-        "rank": 87
+        "rank": 85
       },
       "field_id": null
     },
@@ -10111,9 +10128,12 @@
       "source_model_ids": [
         "da:3768567ae9ee0beb:550"
       ],
-      "decision": "accepted",
+      "decision": "rejected",
       "actions": [],
-      "reasons": [],
+      "reasons": [
+        "manual: polygon lies on the bright built-up/bare patch at the village edge near the road junction; no parcel boundary visible in the 10 m image",
+        "manual rejection: polygon lies on the bright built-up/bare patch at the village edge near the road junction; no parcel boundary visible in the 10 m image"
+      ],
       "metrics": {
         "aoi_inside_fraction": 1.0,
         "area_m2": 8706.25,
@@ -10123,10 +10143,9 @@
         "length_m": 122.5,
         "rectangularity": 0.7897,
         "holes": 0,
-        "quality": 0.7786,
-        "rank": 3
+        "quality": 0.7786
       },
-      "field_id": "pilot-a:field-016"
+      "field_id": null
     },
     {
       "model_id": "da:3768567ae9ee0beb:551",
@@ -10479,7 +10498,7 @@
         "rectangularity": 0.8033,
         "holes": 0,
         "quality": 0.6904,
-        "rank": 98
+        "rank": 96
       },
       "field_id": null
     },
@@ -10539,7 +10558,7 @@
         "rectangularity": 0.7758,
         "holes": 0,
         "quality": 0.713,
-        "rank": 69
+        "rank": 67
       },
       "field_id": null
     },
@@ -10599,7 +10618,7 @@
         "rectangularity": 0.7931,
         "holes": 0,
         "quality": 0.7077,
-        "rank": 83
+        "rank": 81
       },
       "field_id": null
     },
@@ -11135,7 +11154,7 @@
         "rectangularity": 0.8161,
         "holes": 0,
         "quality": 0.7398,
-        "rank": 21
+        "rank": 19
       },
       "field_id": "pilot-a:field-002"
     },
@@ -11285,7 +11304,7 @@
         "rectangularity": 0.8299,
         "holes": 0,
         "quality": 0.7485,
-        "rank": 12
+        "rank": 11
       },
       "field_id": "pilot-a:field-001"
     },
@@ -11337,7 +11356,7 @@
         "rectangularity": 0.8021,
         "holes": 0,
         "quality": 0.726,
-        "rank": 45
+        "rank": 43
       },
       "field_id": null
     },
@@ -11480,7 +11499,7 @@
         "rectangularity": 0.8404,
         "holes": 0,
         "quality": 0.7468,
-        "rank": 16
+        "rank": 15
       },
       "field_id": "pilot-a:field-003"
     },
@@ -11699,7 +11718,7 @@
         "rectangularity": 0.7821,
         "holes": 0,
         "quality": 0.7151,
-        "rank": 64
+        "rank": 62
       },
       "field_id": null
     },
@@ -11859,7 +11878,7 @@
       "source_model_ids": [
         "da:3768567ae9ee0beb:655"
       ],
-      "decision": "eligible_not_selected",
+      "decision": "accepted",
       "actions": [],
       "reasons": [],
       "metrics": {
@@ -11872,9 +11891,9 @@
         "rectangularity": 0.812,
         "holes": 0,
         "quality": 0.7334,
-        "rank": 32
+        "rank": 30
       },
-      "field_id": null
+      "field_id": "pilot-a:field-031"
     },
     {
       "model_id": "da:3768567ae9ee0beb:656",
@@ -12129,7 +12148,7 @@
         "rectangularity": 0.7992,
         "holes": 0,
         "quality": 0.7354,
-        "rank": 30
+        "rank": 28
       },
       "field_id": "pilot-a:field-004"
     },
@@ -12362,7 +12381,7 @@
         "rectangularity": 0.7866,
         "holes": 0,
         "quality": 0.698,
-        "rank": 94
+        "rank": 92
       },
       "field_id": null
     },
@@ -12474,7 +12493,7 @@
         "rectangularity": 0.8424,
         "holes": 0,
         "quality": 0.7469,
-        "rank": 15
+        "rank": 14
       },
       "field_id": "pilot-a:field-018"
     },
@@ -12802,7 +12821,7 @@
         "rectangularity": 0.7742,
         "holes": 0,
         "quality": 0.6885,
-        "rank": 100
+        "rank": 98
       },
       "field_id": null
     },
@@ -12824,7 +12843,7 @@
         "rectangularity": 0.8487,
         "holes": 0,
         "quality": 0.7506,
-        "rank": 11
+        "rank": 10
       },
       "field_id": "pilot-a:field-005"
     },
@@ -12959,7 +12978,7 @@
         "rectangularity": 0.7461,
         "holes": 0,
         "quality": 0.7007,
-        "rank": 92
+        "rank": 90
       },
       "field_id": null
     },
@@ -12996,7 +13015,7 @@
         "rectangularity": 0.7525,
         "holes": 0,
         "quality": 0.6663,
-        "rank": 116
+        "rank": 114
       },
       "field_id": null
     },
@@ -13033,7 +13052,7 @@
         "rectangularity": 0.7401,
         "holes": 0,
         "quality": 0.6872,
-        "rank": 103
+        "rank": 101
       },
       "field_id": null
     },
@@ -13070,7 +13089,7 @@
         "rectangularity": 0.7467,
         "holes": 0,
         "quality": 0.7305,
-        "rank": 35
+        "rank": 33
       },
       "field_id": null
     },
@@ -13157,9 +13176,12 @@
       "source_model_ids": [
         "da:3768567ae9ee0beb:735"
       ],
-      "decision": "accepted",
+      "decision": "rejected",
       "actions": [],
-      "reasons": [],
+      "reasons": [
+        "manual: bare patch wedged between the road and the mapped canal junction; parcel outline not distinguishable from the road verge",
+        "manual rejection: bare patch wedged between the road and the mapped canal junction; parcel outline not distinguishable from the road verge"
+      ],
       "metrics": {
         "aoi_inside_fraction": 1.0,
         "area_m2": 7325.0,
@@ -13169,10 +13191,9 @@
         "length_m": 126.81,
         "rectangularity": 0.8228,
         "holes": 0,
-        "quality": 0.7436,
-        "rank": 20
+        "quality": 0.7436
       },
-      "field_id": "pilot-a:field-017"
+      "field_id": null
     },
     {
       "model_id": "da:3768567ae9ee0beb:736",
@@ -13207,7 +13228,7 @@
         "rectangularity": 0.7354,
         "holes": 0,
         "quality": 0.6673,
-        "rank": 113
+        "rank": 111
       },
       "field_id": null
     },
@@ -13229,7 +13250,7 @@
         "rectangularity": 0.846,
         "holes": 0,
         "quality": 0.7388,
-        "rank": 23
+        "rank": 21
       },
       "field_id": "pilot-a:field-024"
     },
@@ -13311,7 +13332,7 @@
         "rectangularity": 0.8024,
         "holes": 0,
         "quality": 0.7165,
-        "rank": 59
+        "rank": 57
       },
       "field_id": null
     },
@@ -13333,7 +13354,7 @@
         "rectangularity": 0.8388,
         "holes": 0,
         "quality": 0.7385,
-        "rank": 24
+        "rank": 22
       },
       "field_id": "pilot-a:field-006"
     },
@@ -13408,7 +13429,7 @@
         "rectangularity": 0.7527,
         "holes": 0,
         "quality": 0.6814,
-        "rank": 106
+        "rank": 104
       },
       "field_id": null
     },
@@ -13682,7 +13703,7 @@
         "rectangularity": 0.765,
         "holes": 0,
         "quality": 0.708,
-        "rank": 82
+        "rank": 80
       },
       "field_id": null
     },
@@ -13704,7 +13725,7 @@
         "rectangularity": 0.8809,
         "holes": 0,
         "quality": 0.7533,
-        "rank": 8
+        "rank": 7
       },
       "field_id": "pilot-a:field-019"
     },
@@ -13787,7 +13808,7 @@
         "rectangularity": 0.8396,
         "holes": 0,
         "quality": 0.7273,
-        "rank": 43
+        "rank": 41
       },
       "field_id": null
     },
@@ -13975,7 +13996,7 @@
         "rectangularity": 0.7029,
         "holes": 0,
         "quality": 0.6667,
-        "rank": 115
+        "rank": 113
       },
       "field_id": null
     },
@@ -14035,7 +14056,7 @@
         "rectangularity": 0.8484,
         "holes": 0,
         "quality": 0.7286,
-        "rank": 41
+        "rank": 39
       },
       "field_id": null
     },
@@ -14277,7 +14298,7 @@
         "rectangularity": 0.7657,
         "holes": 0,
         "quality": 0.7097,
-        "rank": 79
+        "rank": 77
       },
       "field_id": null
     },
@@ -14458,7 +14479,7 @@
         "rectangularity": 0.806,
         "holes": 0,
         "quality": 0.7302,
-        "rank": 37
+        "rank": 35
       },
       "field_id": null
     },
@@ -14526,7 +14547,7 @@
         "rectangularity": 0.8548,
         "holes": 0,
         "quality": 0.7443,
-        "rank": 18
+        "rank": 17
       },
       "field_id": "pilot-a:field-021"
     },
@@ -14601,7 +14622,7 @@
         "rectangularity": 0.7043,
         "holes": 0,
         "quality": 0.6513,
-        "rank": 123
+        "rank": 121
       },
       "field_id": null
     },
@@ -14683,7 +14704,7 @@
         "rectangularity": 0.8522,
         "holes": 0,
         "quality": 0.7474,
-        "rank": 13
+        "rank": 12
       },
       "field_id": "pilot-a:field-007"
     },
@@ -14803,7 +14824,7 @@
         "rectangularity": 0.829,
         "holes": 0,
         "quality": 0.7329,
-        "rank": 34
+        "rank": 32
       },
       "field_id": null
     },
@@ -14825,7 +14846,7 @@
         "rectangularity": 0.7641,
         "holes": 0,
         "quality": 0.6804,
-        "rank": 107
+        "rank": 105
       },
       "field_id": null
     },
@@ -14892,7 +14913,7 @@
         "rectangularity": 0.7374,
         "holes": 0,
         "quality": 0.6673,
-        "rank": 114
+        "rank": 112
       },
       "field_id": null
     },
@@ -14952,7 +14973,7 @@
         "rectangularity": 0.7463,
         "holes": 0,
         "quality": 0.6875,
-        "rank": 101
+        "rank": 99
       },
       "field_id": null
     },
@@ -15348,7 +15369,7 @@
         "rectangularity": 0.7883,
         "holes": 0,
         "quality": 0.71,
-        "rank": 77
+        "rank": 75
       },
       "field_id": null
     },
@@ -15430,7 +15451,7 @@
         "rectangularity": 0.706,
         "holes": 0,
         "quality": 0.699,
-        "rank": 93
+        "rank": 91
       },
       "field_id": null
     },
@@ -15452,7 +15473,7 @@
         "rectangularity": 0.8193,
         "holes": 0,
         "quality": 0.7074,
-        "rank": 85
+        "rank": 83
       },
       "field_id": null
     },
@@ -16066,7 +16087,7 @@
         "rectangularity": 0.7574,
         "holes": 0,
         "quality": 0.7087,
-        "rank": 81
+        "rank": 79
       },
       "field_id": null
     },
@@ -16217,7 +16238,7 @@
         "rectangularity": 0.8178,
         "holes": 0,
         "quality": 0.7537,
-        "rank": 7
+        "rank": 6
       },
       "field_id": "pilot-a:field-023"
     },
@@ -16262,7 +16283,7 @@
         "rectangularity": 0.7976,
         "holes": 0,
         "quality": 0.7105,
-        "rank": 74
+        "rank": 72
       },
       "field_id": null
     },
@@ -16390,7 +16411,7 @@
         "rectangularity": 0.8087,
         "holes": 0,
         "quality": 0.726,
-        "rank": 46
+        "rank": 44
       },
       "field_id": null
     },
@@ -16412,7 +16433,7 @@
         "rectangularity": 0.7778,
         "holes": 0,
         "quality": 0.6625,
-        "rank": 119
+        "rank": 117
       },
       "field_id": null
     },
@@ -16564,7 +16585,7 @@
         "rectangularity": 0.7518,
         "holes": 0,
         "quality": 0.7113,
-        "rank": 72
+        "rank": 70
       },
       "field_id": null
     },
@@ -16737,7 +16758,7 @@
         "rectangularity": 0.7859,
         "holes": 0,
         "quality": 0.7165,
-        "rank": 60
+        "rank": 58
       },
       "field_id": null
     },
@@ -16804,7 +16825,7 @@
         "rectangularity": 0.7459,
         "holes": 0,
         "quality": 0.6889,
-        "rank": 99
+        "rank": 97
       },
       "field_id": null
     },
@@ -16985,7 +17006,7 @@
         "rectangularity": 0.8284,
         "holes": 0,
         "quality": 0.7176,
-        "rank": 58
+        "rank": 56
       },
       "field_id": null
     },
@@ -17022,7 +17043,7 @@
         "rectangularity": 0.7753,
         "holes": 0,
         "quality": 0.7256,
-        "rank": 47
+        "rank": 45
       },
       "field_id": null
     },
@@ -17059,7 +17080,7 @@
         "rectangularity": 0.8401,
         "holes": 0,
         "quality": 0.7602,
-        "rank": 4
+        "rank": 3
       },
       "field_id": "pilot-a:field-022"
     },

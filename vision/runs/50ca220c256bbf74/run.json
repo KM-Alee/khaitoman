@@ -1,0 +1,52 @@
+{
+  "label": "50ca220c256bbf74",
+  "command": "python delineate.py -b /app/vision/batches/50ca220c256bbf74.yaml",
+  "cwd": "/opt/delineate",
+  "upstream_commit": "",
+  "started_at": "2026-10-10T00:50:42.483621+00:00",
+  "finished_at": "2026-10-10T00:52:22.608146+00:00",
+  "wall_seconds": 100.125,
+  "returncode": 0,
+  "stderr_error_markers": [],
+  "ok": true,
+  "device": "cpu",
+  "torch": "2.14.1+cpu",
+  "torch_threads": 20,
+  "cpu_count": 20,
+  "platform": "Linux-7.2.9-1-cachyos-x86_64-with-glibc2.41",
+  "shm_bytes": 4294967296,
+  "batch_config": {
+    "base_config": "/app/vision/configs/conf_pilot_s2_sr4.yaml",
+    "data_root": "/app/vision/runs/50ca220c256bbf74/input",
+    "output_root": "/app/vision/runs/50ca220c256bbf74/output",
+    "temp_root": "/tmp/delineate-temp-50ca220c256bbf74",
+    "keep_temp": false,
+    "mask_root": "/app/vision/runs/50ca220c256bbf74/masks",
+    "include": [
+      "scene"
+    ],
+    "exclude": null,
+    "override": null
+  },
+  "base_config_path": "/app/vision/configs/conf_pilot_s2_sr4.yaml",
+  "base_config_sha256": "b0ce2227ca6fc5db731e28504d2689e8533463f8971e72c1ba48270947df54ef",
+  "checkpoints": {
+    "/app/data/models/delineate-anything/DelineateAnythingv2.pt": "46700b8a279b07922953a11adaeb5e658d9a2384b6334c8e0a3090886218915a"
+  },
+  "inputs": {
+    "scene/scene.tif": "4733c68cfc3a1dcd45070824d38b8890323f005a0f349e261a707c0e85db205e"
+  },
+  "outputs": {
+    "scene.gpkg": {
+      "sha256": "34c4f40f3968d573232fcc6a71d62048941a89917380c86b33f1293ad41dceaa",
+      "size_bytes": 1052672,
+      "feature_count": 303
+    },
+    "scene.simp.gpkg": {
+      "sha256": "de54caa179788d87f626660503b2a419b1d5bfcff901b5f0e496443293bf024a",
+      "size_bytes": 196608,
+      "feature_count": 299
+    }
+  },
+  "log": "/app/vision/runs/50ca220c256bbf74/run.log"
+}

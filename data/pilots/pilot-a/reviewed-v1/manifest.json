@@ -1,0 +1,233 @@
+{
+  "manifest_version": "1",
+  "pilot_id": "pilot-a",
+  "pilot_version": "reviewed-v1",
+  "state": "published",
+  "files": [
+    {
+      "path": "aoi.geojson",
+      "size_bytes": 763,
+      "sha256": "bef19fb61b2298320b3449bb0ed786b37a2d35ce0a7b561ac69f9424a9169ab8",
+      "kind": "aoi"
+    },
+    {
+      "path": "assets.json",
+      "size_bytes": 1932,
+      "sha256": "7abce5f908d61c4ee7229284028a8c54a907ccc361b662bf7847a87e8dabee03",
+      "kind": "assets"
+    },
+    {
+      "path": "canals.geojson",
+      "size_bytes": 131146,
+      "sha256": "e948458f9492b20889c3d834394fc4baf561672c6f9f9c39d76e44f8b1f1b325",
+      "kind": "canals"
+    },
+    {
+      "path": "evidence.json",
+      "size_bytes": 41042,
+      "sha256": "1913ba83f3982a564825037c2b3a7ebd83673278511ea304ddac474e7aa2227b",
+      "kind": "evidence"
+    },
+    {
+      "path": "fields.geojson",
+      "size_bytes": 413416,
+      "sha256": "7583a172da7a26fac569f4ec8bd2e8366d8913d7d9e0844dbb499f4b1005571b",
+      "kind": "fields"
+    },
+    {
+      "path": "fields_raw.geojson",
+      "size_bytes": 10442353,
+      "sha256": "e83dd4e19c6fc126b2a6f1d131fcbbf7abcebc710d07ac23ec798491f70f353b",
+      "kind": "fields_raw"
+    },
+    {
+      "path": "fields_raw.gpkg",
+      "size_bytes": 2498560,
+      "sha256": "440baaeeb7714bcb59f04d0956a773865414436bf8d7facd27738814b0c18ba6",
+      "kind": "fields_raw_gpkg"
+    },
+    {
+      "path": "imagery/S2B_43RBQ_20241210_0_L2A.json",
+      "size_bytes": 2235,
+      "sha256": "8a6e873ec5f85ff89bef94ed0612831f648c380b983e2c65601ed2241b4bfc74",
+      "kind": "imagery_metadata"
+    },
+    {
+      "path": "imagery/S2B_43RBQ_20241210_0_L2A.ndvi.json",
+      "size_bytes": 5210,
+      "sha256": "b31781b647dc1c5e7b9d0fd7f1e336b139af7fa856f2170474a6c445c17b2508",
+      "kind": "imagery_metadata"
+    },
+    {
+      "path": "imagery/S2B_43RBQ_20241210_0_L2A.webp",
+      "size_bytes": 54534,
+      "sha256": "ab4d877c9f3586b3800d86701d60cafb07d0fe40ee95605d1810447364bce089",
+      "kind": "display_image"
+    },
+    {
+      "path": "imagery/S2C_43RBQ_20250223_0_L2A.json",
+      "size_bytes": 2247,
+      "sha256": "2eb999e3c8ab385df6559a814a8d879079739301083e52542ffee8ae68edb59c",
+      "kind": "imagery_metadata"
+    },
+    {
+      "path": "imagery/S2C_43RBQ_20250223_0_L2A.ndvi.json",
+      "size_bytes": 5201,
+      "sha256": "f7317f6dfe49c611aee5eb7bff539b97850e5c6ab66b6101719827c96a32c7b9",
+      "kind": "imagery_metadata"
+    },
+    {
+      "path": "imagery/S2C_43RBQ_20250223_0_L2A.webp",
+      "size_bytes": 56610,
+      "sha256": "394a67572176edaf612d38f57c391cb172315226c02a8b512e31dd34e046e31f",
+      "kind": "display_image"
+    },
+    {
+      "path": "interventions.json",
+      "size_bytes": 50526,
+      "sha256": "7cbcd9d0bf446ad9e4b1fd803719b1296b60a997f543fdb24406fb161bd0bde1",
+      "kind": "interventions"
+    },
+    {
+      "path": "network.json",
+      "size_bytes": 7170,
+      "sha256": "3907fd483a52abc1488be4fa0fd6e7320641ce70d46b6c031d844ccced794a32",
+      "kind": "network"
+    },
+    {
+      "path": "pilot.json",
+      "size_bytes": 2976,
+      "sha256": "386f1ec15e7ad07d12785a64f3c1b13cc52d6f431781505b921be8be655d1a64",
+      "kind": "pilot"
+    },
+    {
+      "path": "resource_status.json",
+      "size_bytes": 8587,
+      "sha256": "09fdeb6bb5e00280fc39d605bbafd05948196dc402a8c25f7bdb2b6ec8fdb9c6",
+      "kind": "resource_status"
+    },
+    {
+      "path": "review_log.json",
+      "size_bytes": 406139,
+      "sha256": "309af04afcd95c465c13d4cd94f4e164caf6f0ff762e557e64161f4615428347",
+      "kind": "review_log"
+    },
+    {
+      "path": "review_overlay.png",
+      "size_bytes": 768049,
+      "sha256": "f1d7a6834de54600316199d9259bed88642c4abb320a43c559869f280ec21c40",
+      "kind": "review_overlay"
+    },
+    {
+      "path": "roster.json",
+      "size_bytes": 1572692,
+      "sha256": "d77a9544a442c53a6cd411cf936d83ad02e681846b6229ee2cc909d85d7b60fd",
+      "kind": "roster"
+    },
+    {
+      "path": "service_reference.json",
+      "size_bytes": 34056,
+      "sha256": "8e55e357a5fbc365e75cfb00ee73fa0978ffa665b6006efc8784cb2e99793d91",
+      "kind": "service_reference"
+    },
+    {
+      "path": "soils.json",
+      "size_bytes": 870,
+      "sha256": "44fea418a68617f9b72a41cabee57e4515c67254a5b6a6076e8bb289cf1ca7ae",
+      "kind": "soils"
+    },
+    {
+      "path": "terrain/dem.json",
+      "size_bytes": 738,
+      "sha256": "c1e9fb5980f0521436f61d511bb935768051d5839f5a43dd81b9fe5242c562f3",
+      "kind": "terrain"
+    },
+    {
+      "path": "terrain/dem.png",
+      "size_bytes": 37359,
+      "sha256": "e98a0d5dd5b054e7e089a88c283c9fe98c3a147ab257d8c0986685a6cc8d4809",
+      "kind": "terrain"
+    },
+    {
+      "path": "weather/index.json",
+      "size_bytes": 811,
+      "sha256": "243ebacd85faa7ad76bc150878eda183642f7559ed7da670e39b737c905e01ae",
+      "kind": "weather_index"
+    },
+    {
+      "path": "weather/openmeteo-archive-30.8000N-72.3000E-20140101-20251231.json",
+      "size_bytes": 144411,
+      "sha256": "16a485c85e5b080c4607c2ab17500c4787f195ab90e2bab20f3f69f03207a416",
+      "kind": "weather_raw"
+    },
+    {
+      "path": "weather/openmeteo-archive-30.8000N-72.3000E-20140101-20251231.parquet",
+      "size_bytes": 52233,
+      "sha256": "e7d80bb8b435f486268e0c4888988bc92a0a8a7b6eb91af7e0e8bf06c242955c",
+      "kind": "weather_normalized"
+    }
+  ],
+  "source_ids": [
+    "bundle:pilot-a/20261010T003625Z-48408f71",
+    "delineate:3768567ae9ee0beb",
+    "grain:PAK_456426_00837",
+    "grain:PAK_456426_00838",
+    "grain:PAK_456426_00839",
+    "grain:PAK_456426_00840",
+    "grain:PAK_456426_00841",
+    "grain:PAK_456426_00842",
+    "grain:PAK_456426_00843",
+    "grain:PAK_456426_00844",
+    "grain:PAK_456426_00845",
+    "grain:PAK_456426_00846",
+    "grain:PAK_456426_00847",
+    "grain:PAK_456426_00848",
+    "grain:PAK_456426_00849",
+    "grain:PAK_456426_00850",
+    "grain:PAK_456426_00853",
+    "grain:PAK_456426_00854",
+    "grain:PAK_456426_00855",
+    "grain:PAK_456426_00856",
+    "grain:PAK_456426_01006",
+    "grain:PAK_456427_00325",
+    "osm:way/1245855465",
+    "osm:way/1245855466",
+    "osm:way/1245855467",
+    "osm:way/1245856794",
+    "osm:way/1245856795",
+    "osm:way/1245856796",
+    "osm:way/1246256073",
+    "osm:way/1246256641",
+    "osm:way/1246259150",
+    "osm:way/1246260175",
+    "osm:way/1246262533",
+    "osm:way/1246262534",
+    "osm:way/1246262535",
+    "osm:way/1246262536",
+    "osm:way/1246283773",
+    "osm:way/1246285825",
+    "osm:way/1246289285",
+    "osm:way/1246295510",
+    "osm:way/1429447136",
+    "s2:S2B_43RBQ_20241210_0_L2A",
+    "s2:S2C_43RBQ_20250223_0_L2A",
+    "weather:openmeteo-archive-30.8000N-72.3000E-20140101-20251231"
+  ],
+  "licenses": [
+    "AGPL-3.0 (Delineate Anything code)",
+    "CC-BY-4.0",
+    "ODbL-1.0",
+    "copernicus-dem-glo30-licence",
+    "copernicus-sentinel-data-terms"
+  ],
+  "processing_versions": {
+    "ingestion": "aabflow-ingestion-1.0.0",
+    "package_format": "aabflow-pilot-package-1",
+    "review_rules": "field-review-rules-1.1.0",
+    "display_stretch": "s2-rgb-shared-p2-p98-gamma1.4-v1",
+    "network_template": "two-watercourse-three-reach-v1",
+    "delineate_upstream_commit": "4cfab87ecccbe8d1bda4167676f623e3728570d9",
+    "delineate_checkpoint": "MykolaL/DelineateAnything:DelineateAnythingv2.pt"
+  },
+  "generated_at": "2026-10-10T00:52:41Z"
+}

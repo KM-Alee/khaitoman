@@ -1,0 +1,224 @@
+{
+  "scene_id": "S2C_43RBQ_20250223_0_L2A",
+  "acquired_at": "2025-02-23T06:00:51.949000Z",
+  "method": "(NIR-red)/(NIR+red) on surface reflectance (scale/offset from STAC); SCL-invalid pixels and NIR+red<=0 are NaN",
+  "aoi": {
+    "aoi_mean": 0.6567465196039745,
+    "aoi_median": 0.7476713719713308,
+    "aoi_valid_fraction": 1.0
+  },
+  "fields": {
+    "pilot-a:field-001": {
+      "pixels": 64,
+      "valid_fraction": 1.0,
+      "mean": 0.862,
+      "median": 0.8837,
+      "status": "available"
+    },
+    "pilot-a:field-002": {
+      "pixels": 62,
+      "valid_fraction": 1.0,
+      "mean": 0.74,
+      "median": 0.7427,
+      "status": "available"
+    },
+    "pilot-a:field-003": {
+      "pixels": 65,
+      "valid_fraction": 1.0,
+      "mean": 0.3042,
+      "median": 0.256,
+      "status": "available"
+    },
+    "pilot-a:field-031": {
+      "pixels": 58,
+      "valid_fraction": 1.0,
+      "mean": 0.6676,
+      "median": 0.7002,
+      "status": "available"
+    },
+    "pilot-a:field-004": {
+      "pixels": 71,
+      "valid_fraction": 1.0,
+      "mean": 0.882,
+      "median": 0.8994,
+      "status": "available"
+    },
+    "pilot-a:field-005": {
+      "pixels": 63,
+      "valid_fraction": 1.0,
+      "mean": 0.716,
+      "median": 0.7213,
+      "status": "available"
+    },
+    "pilot-a:field-006": {
+      "pixels": 89,
+      "valid_fraction": 1.0,
+      "mean": 0.7766,
+      "median": 0.7776,
+      "status": "available"
+    },
+    "pilot-a:field-007": {
+      "pixels": 72,
+      "valid_fraction": 1.0,
+      "mean": 0.3108,
+      "median": 0.2542,
+      "status": "available"
+    },
+    "pilot-a:field-008": {
+      "pixels": 95,
+      "valid_fraction": 1.0,
+      "mean": 0.7388,
+      "median": 0.7281,
+      "status": "available"
+    },
+    "pilot-a:field-009": {
+      "pixels": 82,
+      "valid_fraction": 1.0,
+      "mean": 0.8847,
+      "median": 0.8937,
+      "status": "available"
+    },
+    "pilot-a:field-010": {
+      "pixels": 82,
+      "valid_fraction": 1.0,
+      "mean": 0.7405,
+      "median": 0.7368,
+      "status": "available"
+    },
+    "pilot-a:field-032": {
+      "pixels": 61,
+      "valid_fraction": 1.0,
+      "mean": 0.8566,
+      "median": 0.8686,
+      "status": "available"
+    },
+    "pilot-a:field-011": {
+      "pixels": 88,
+      "valid_fraction": 1.0,
+      "mean": 0.7026,
+      "median": 0.7054,
+      "status": "available"
+    },
+    "pilot-a:field-012": {
+      "pixels": 56,
+      "valid_fraction": 1.0,
+      "mean": 0.753,
+      "median": 0.7409,
+      "status": "available"
+    },
+    "pilot-a:field-013": {
+      "pixels": 181,
+      "valid_fraction": 1.0,
+      "mean": 0.8259,
+      "median": 0.84,
+      "status": "available"
+    },
+    "pilot-a:field-014": {
+      "pixels": 74,
+      "valid_fraction": 1.0,
+      "mean": 0.6762,
+      "median": 0.6861,
+      "status": "available"
+    },
+    "pilot-a:field-015": {
+      "pixels": 81,
+      "valid_fraction": 1.0,
+      "mean": 0.3291,
+      "median": 0.3022,
+      "status": "available"
+    },
+    "pilot-a:field-018": {
+      "pixels": 79,
+      "valid_fraction": 1.0,
+      "mean": 0.8532,
+      "median": 0.8754,
+      "status": "available"
+    },
+    "pilot-a:field-019": {
+      "pixels": 115,
+      "valid_fraction": 1.0,
+      "mean": 0.8416,
+      "median": 0.844,
+      "status": "available"
+    },
+    "pilot-a:field-020": {
+      "pixels": 228,
+      "valid_fraction": 1.0,
+      "mean": 0.5494,
+      "median": 0.5548,
+      "status": "available"
+    },
+    "pilot-a:field-021": {
+      "pixels": 85,
+      "valid_fraction": 1.0,
+      "mean": 0.6618,
+      "median": 0.6747,
+      "status": "available"
+    },
+    "pilot-a:field-022": {
+      "pixels": 111,
+      "valid_fraction": 1.0,
+      "mean": 0.736,
+      "median": 0.7581,
+      "status": "available"
+    },
+    "pilot-a:field-023": {
+      "pixels": 46,
+      "valid_fraction": 1.0,
+      "mean": 0.3821,
+      "median": 0.3417,
+      "status": "available"
+    },
+    "pilot-a:field-024": {
+      "pixels": 92,
+      "valid_fraction": 1.0,
+      "mean": 0.76,
+      "median": 0.7607,
+      "status": "available"
+    },
+    "pilot-a:field-025": {
+      "pixels": 52,
+      "valid_fraction": 1.0,
+      "mean": 0.5278,
+      "median": 0.5138,
+      "status": "available"
+    },
+    "pilot-a:field-026": {
+      "pixels": 64,
+      "valid_fraction": 1.0,
+      "mean": 0.5216,
+      "median": 0.4972,
+      "status": "available"
+    },
+    "pilot-a:field-027": {
+      "pixels": 148,
+      "valid_fraction": 1.0,
+      "mean": 0.7187,
+      "median": 0.7352,
+      "status": "available"
+    },
+    "pilot-a:field-028": {
+      "pixels": 68,
+      "valid_fraction": 1.0,
+      "mean": 0.9006,
+      "median": 0.9077,
+      "status": "available"
+    },
+    "pilot-a:field-029": {
+      "pixels": 84,
+      "valid_fraction": 1.0,
+      "mean": 0.4832,
+      "median": 0.4739,
+      "status": "available"
+    },
+    "pilot-a:field-030": {
+      "pixels": 89,
+      "valid_fraction": 1.0,
+      "mean": 0.3707,
+      "median": 0.335,
+      "status": "available"
+    }
+  },
+  "interpretation": "observation context only; not water stress, crop identity or yield",
+  "evidence_id": "ev:ndvi:S2C_43RBQ_20250223_0_L2A"
+}

@@ -156,8 +156,11 @@ def test_roster_exclusive_area_proportional_and_overlap_rejected():
     wins = roster["wheat-rabi-2026-27"]
     assert {w.outlet_node_id for w in wins} == set(net.mogha_of.values())
     first = [w for w in wins if w.outlet_node_id == net.mogha_of["wc1"]][:15]
-    assert (first[-1].end - first[0].start).total_seconds() == pytest.approx(7 * 86400, abs=15)
-    assert wins[0].start.date() == date(2026, 11, 15)  # 06:00 PKT = 01:00 UTC
+    turn = 7 * 86400 * 1.2 / ops.ASSUMPTIONS["asm:watercourse-cca"].value
+    assert (first[0].end - first[0].start).total_seconds() == pytest.approx(turn, abs=1)
+    assert (first[-1].start - first[0].start).total_seconds() < 7 * 86400
+    rate = ops.watercourse_rate_m3_s(ops.ASSUMPTIONS["asm:watercourse-cca"].value)
+    assert first[0].rate_m3_s == pytest.approx(rate, abs=1e-6)
     w0, w1 = first[0], first[1]
     bad = {"s": [w0, w1.model_copy(update={"start": w0.start})]}
     errs = []

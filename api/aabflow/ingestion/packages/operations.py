@@ -101,6 +101,16 @@ ASSUMPTIONS = {
             "local design discharge not available",
         ),
         _a(
+            "asm:watercourse-cca",
+            "Culturable command area of each watercourse",
+            120.0,
+            "ha",
+            60.0,
+            250.0,
+            "Typical Punjab watercourse command; the 15 reviewed fields are a subset and the "
+            "other shareholders' turns are not modelled",
+        ),
+        _a(
             "asm:warabandi-cycle",
             "Warabandi rotation length",
             168,
@@ -344,23 +354,32 @@ def build_roster(
     field_area_ha: dict[str, float],
     seasons: tuple[SeasonCalendar, ...] = SEASONS,
 ) -> dict[str, list[RosterWindow]]:
-    """Fixed, exclusive weekly warabandi windows per watercourse (head → tail)."""
+    """Fixed, exclusive weekly warabandi turns (head → tail) per watercourse.
+
+    The watercourse runs at ``allowance × declared CCA`` and each field's turn lasts
+    ``cycle × area / CCA`` (time right proportional to land). The reviewed fields are a
+    subset of the command, so their turns are spread over the week in head-to-tail
+    order; the gaps belong to shareholders who are not modelled.
+    """
     cycle = timedelta(hours=ASSUMPTIONS["asm:warabandi-cycle"].value)
+    cca = ASSUMPTIONS["asm:watercourse-cca"].value
+    rate = round(watercourse_rate_m3_s(cca), 6)
     out: dict[str, list[RosterWindow]] = {}
     for cal in seasons:
         wins: list[RosterWindow] = []
         for wc, fids in net.watercourse_fields.items():
-            cca = sum(field_area_ha[f] for f in fids)
-            rate = round(watercourse_rate_m3_s(cca), 6)
+            sel = sum(field_area_ha[f] for f in fids)
+            if sel > cca:
+                raise ValueError(f"{wc}: reviewed area {sel:.1f} ha exceeds declared CCA {cca} ha")
             t0 = _pkt(cal.start)
             end = _pkt(cal.end + timedelta(days=1))
             k = 0
             while t0 < end:
-                t = t0
+                cum = 0.0
                 for fid in fids:
-                    dur = cycle * (field_area_ha[fid] / cca)
-                    s, e = t, min(t + dur, end)
-                    t = t + dur
+                    s = t0 + cycle * (cum / sel)
+                    e = min(s + cycle * (field_area_ha[fid] / cca), end)
+                    cum += field_area_ha[fid]
                     if s >= end:
                         break
                     k += 1
@@ -376,9 +395,9 @@ def build_roster(
                             accounting_boundary="outlet",
                             verification="assumed",
                             source_rule=(
-                                "weekly warabandi, head-to-tail order, turn time ∝ field area, "
-                                f"watercourse rate {rate} m3/s from allowance "
-                                f"{ASSUMPTIONS['asm:water-allowance'].value} L/s/ha (assumed)"
+                                "weekly warabandi, head-to-tail order, turn = 168 h x field "
+                                f"area / {cca:g} ha CCA at {rate} m3/s "
+                                f"({ASSUMPTIONS['asm:water-allowance'].value} L/s/ha); assumed"
                             ),
                         )
                     )
@@ -421,6 +440,7 @@ def build_service_reference(
                     reference_receipt_m3=round(tot[fid], 3),
                     basis=RightsBasis.time,
                     evidence_ids=[
+                        "asm:watercourse-cca",
                         "asm:water-allowance",
                         "asm:warabandi-cycle",
                         "asm:canal-closure",
