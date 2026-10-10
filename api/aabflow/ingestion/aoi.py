@@ -12,6 +12,7 @@ from dataclasses import dataclass
 import shapely
 import shapely.validation
 from pyproj import CRS, Transformer
+from shapely.errors import ShapelyError
 from shapely.geometry import Polygon, box, mapping, shape
 from shapely.ops import transform
 
@@ -67,7 +68,7 @@ class Aoi:
             geom = shape(g)
         except AoiError:
             raise
-        except Exception as exc:
+        except (KeyError, TypeError, ValueError, AttributeError, IndexError, ShapelyError) as exc:
             # A malformed ring (too few positions, wrong nesting) is invalid input, not a 500.
             raise AoiError(f"AOI is not valid GeoJSON geometry: {exc}") from exc
         return cls.from_geometry(geom)
