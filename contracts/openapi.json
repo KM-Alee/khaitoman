@@ -7357,6 +7357,112 @@
         "summary": "Pilot Map"
       }
     },
+    "/api/v2/pilots/{pilot_id}/versions/{version}/package": {
+      "get": {
+        "operationId": "export_pilot_package_api_v2_pilots__pilot_id__versions__version__package_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "pilot_id",
+            "required": true,
+            "schema": {
+              "title": "Pilot Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "version",
+            "required": true,
+            "schema": {
+              "title": "Version",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Export Pilot Package"
+      },
+      "post": {
+        "operationId": "import_pilot_package_api_v2_pilots__pilot_id__versions__version__package_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "pilot_id",
+            "required": true,
+            "schema": {
+              "title": "Pilot Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "version",
+            "required": true,
+            "schema": {
+              "title": "Version",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Import Pilot Package"
+      }
+    },
     "/api/v2/runs": {
       "get": {
         "operationId": "runs_api_v2_runs_get",
