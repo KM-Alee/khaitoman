@@ -6,7 +6,7 @@ import { Link, useNavigate } from "react-router";
 import { ArrowRight, BookOpenCheck, CloudRain, Coins, Cpu, Map as MapIcon, PlayCircle, PlusCircle, Satellite, Scale, ShieldCheck, Sparkles, WifiOff } from "lucide-react";
 import { useCapabilities, useHealth, usePilots } from "@/lib/api/queries";
 import { describeError } from "@/lib/api/client";
-import { BACKEND_ORIGIN } from "@/lib/api/urls";
+import { BACKEND_ACCESS_REQUIRED, BACKEND_ORIGIN } from "@/lib/api/urls";
 import type { PilotSummary } from "@/lib/api/types";
 import { formatArea, formatDate } from "@/lib/formatting";
 import { ConnectionState } from "@/components/layout/ContextBar";
@@ -192,7 +192,7 @@ export function Landing({ pilots, notFound }: { pilots: ReturnType<typeof usePil
               <div className="md:col-span-2">
                 <StatePanel state="error" title={describeError(pilots.error).title}>
                   {describeError(pilots.error).detail}{" "}
-                  {BACKEND_ORIGIN ? "Use the backend sign-in and retry controls above to reconnect." : <>Start the stack with <code className="font-mono">make up</code> (or <code className="font-mono">make demo</code>).</>}
+                  {BACKEND_ORIGIN ? (BACKEND_ACCESS_REQUIRED ? "Use the backend sign-in and retry controls above to reconnect." : "Use Retry connection above to reconnect.") : <>Start the stack with <code className="font-mono">make up</code> (or <code className="font-mono">make demo</code>).</>}
                 </StatePanel>
               </div>
             ) : list.length ? (

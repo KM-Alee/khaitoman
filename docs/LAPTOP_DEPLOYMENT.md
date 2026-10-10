@@ -2,12 +2,13 @@
 
 Activated on 10 October 2026. Production source is latest `main` at
 `3cc65e3`, fast-forwarded onto `codex/laptop-serving`, plus the report contract
-fix at `03f5ecc` and the backend sign-in/connection recovery flow. The independent laptop backend runs schema 4. No PR was
+fix at `03f5ecc` and connection recovery with configurable public mode. The independent laptop backend runs schema 4. No PR was
 merged by this deployment session.
 
 Frontend: https://app.khmanan.site
-Backend health: https://api.khmanan.site/api/v2/health (Access protected)
-Backend sign-in: use **Sign in to backend** in the frontend connection banner.
+Backend health: https://api.khmanan.site/api/v2/health (public, no login)
+The owner confirmed public access on 10 October 2026. Visitors can view the
+shared saved data/reports and start processing jobs on the serving laptop.
 
 The deployed configuration and executed checks are recorded below. Local
 validation logs, account screenshots and backups remain in the ignored `.laptop/`
@@ -17,7 +18,7 @@ directory; the sanitized public activation record is under `evidence/commands/`.
 
 ```text
 Browser -> app.khmanan.site (static React build hosted on Vercel)
-        -> api.khmanan.site (Cloudflare Access + named Tunnel, HTTPS)
+        -> api.khmanan.site (public Access bypass + named Tunnel, HTTPS)
                             -> backend:8000 in Docker on this laptop
                                -> SQLite, data files and CPU job dispatcher
                                -> separate vision container when needed
@@ -32,8 +33,8 @@ changing hostnames, no uptime guarantee and no SSE support.
 [Cloudflare Quick Tunnel limits](https://developers.cloudflare.com/tunnel/get-started/quick-tunnels/).
 
 The custom frontend domain and backend domain should be HTTPS subdomains of the
-same site. This allows browser cookies for Cloudflare Access without depending
-on third-party cookies on a `vercel.app` preview origin. Local development still
+same site. This also supports Access cookies if private mode is restored without
+depending on third-party cookies on a `vercel.app` preview origin. Local development still
 uses the existing Vite proxy unless `VITE_BACKEND_ORIGIN` is set.
 
 ## What is running on this laptop
@@ -61,11 +62,11 @@ uses the existing Vite proxy unless `VITE_BACKEND_ORIGIN` is set.
   or copied into source, the frontend or an image. Changing that file affects
   the serving container only when it is recreated.
 
-This setup is for your single-user or trusted demonstration. Cloudflare Access
-must protect the complete backend hostname before enabling the Tunnel. CORS is
-an origin allowlist, not authentication. Organization/pilot authorization and
-storage separation for independent tenants remain outside this personal setup
-(implementation contract T14); don't treat it as a multi-tenant service.
+This is a public shared demonstration at the owner's explicit request. CORS is
+an origin allowlist, not authentication; it does not stop direct API clients.
+All visitors use the same serving data and processing capacity. Organization/pilot
+authorization and storage separation for independent tenants remain outside this
+personal setup (implementation contract T14).
 
 ## Power, startup and recovery
 
@@ -142,14 +143,19 @@ Never commit `.laptop/` or a Tunnel token. Docker build context excludes
   covers the whole API hostname. `AabFlow owner only` Allow policy
   `df134ae8-8de6-4fc2-9666-8fad09dc5232` includes only
   `Kali.bscs24seecs@seecs.edu.pk`; no testers. Session 24 hours, HTTP Only cookie.
-- Access bypasses OPTIONS to the origin; actual requests require login. API CORS
+  This policy is retained for restoring private mode.
+- Active `AabFlow public access` Bypass policy
+  `df12efcc-4ca9-4ebd-a079-8dcf18b2ecfd` includes **Everyone** on the whole hostname.
+  Bypass evaluates before Allow, so actual requests do not require login.
+- Access also bypasses OPTIONS to the origin. API CORS
   permits `https://app.khmanan.site` and the two local preview origins.
 - Active cache rule `AabFlow backend bypass cache`, ID
   `9573d3a3665a4c92ad4f87576acc0121`, expression
   `(http.host eq "api.khmanan.site")`; cache and browser-TTL bypass.
 - Connector token is only `.laptop/cloudflared-token`, user-owned mode 600 and
   ignored by Git. Docker reads the mounted secret file. Never print or commit it.
-  `.laptop/access-ready` records that the account policy was configured.
+  `.laptop/access-ready` records that the account policy was configured. Its
+  historical name does not mean the current policy requires authentication.
 
 After a stopped stack, restart with:
 
@@ -167,12 +173,11 @@ The following steps describe how to re-provision the current arrangement.
 
 1. Use the two hostnames in the Cloudflare-managed `khmanan.site` zone.
    Preserve every unrelated DNS record.
-2. Create a Cloudflare Access self-hosted application protecting **all paths**
-   on `api.khmanan.site`. Allow only your email or explicit trusted testers.
-   Set a session lifetime that covers your demonstration. Do not create a
-   permanent bypass policy. Configure Access to bypass **OPTIONS preflights**
-   to the origin, allowing the API to enforce its CORS allowlist. GET/POST and
-   other actual requests must still require authentication.
+2. Create a Cloudflare Access self-hosted application covering **all paths**
+   on `api.khmanan.site`. For the currently authorized public mode, attach a
+   **Bypass / Include Everyone** policy. Retain the owner-only Allow policy for
+   private-mode recovery. Configure Access to bypass **OPTIONS preflights**
+   to the origin, allowing the API to enforce its CORS allowlist.
    [Access CORS setup](https://developers.cloudflare.com/cloudflare-one/access-controls/applications/http-apps/authorization-cookie/cors/).
 3. Create a remotely managed named Tunnel in Cloudflare and route
    `api.khmanan.site` to **HTTP `backend:8000`**, not `localhost:8000`.
@@ -188,8 +193,8 @@ The following steps describe how to re-provision the current arrangement.
    `https://app.khmanan.site` (comma-separated exact origins only if needed).
    Run `./scripts/laptop.sh up` to recreate the backend with that setting.
    Add a Cloudflare cache bypass rule covering this backend hostname, especially
-   API responses and SSE. Apply rate limits for expensive mutation endpoints
-   to match your demo audience; do not challenge or cache event streams.
+   API responses and SSE. Additional account-side rate limiting has not been
+   configured or verified by this deployment task.
 6. Once those policies are configured, create the local readiness marker and
    start the connector:
 
@@ -201,21 +206,26 @@ The following steps describe how to re-provision the current arrangement.
    The marker records your manual Access setup; it does not verify the account
    policy. The command waits for backend health and a live connector connection.
    Test the public URL before declaring it available.
-7. Open `https://app.khmanan.site`. If its backend connection cannot complete,
-   click **Sign in to backend** and complete Access with your approved email.
-   The protected HTML landing `/api/v2/access/ready?return_to=...` returns to the
-   same frontend page, preserving its run and other URL state. Return URLs are
-   restricted to the exact configured CORS origins, escaped and never cached.
-   It supplies no authentication bypass or credential. Each tester needs their
-   own Access session. **Retry connection** refetches API data after connection
-   recovery. The frontend sends credentials for API, SSE, imagery and maps.
-   An expired login or a sleeping/disconnected laptop can both cause a failed
-   browser fetch, so the banner does not claim to distinguish them.
+7. Set Vercel Production `VITE_BACKEND_ACCESS_REQUIRED=false` and rebuild the
+   frontend. Open `https://app.khmanan.site`; no Cloudflare or Vercel account is
+   needed. **Retry connection** refetches API data after laptop/network recovery.
 
-An unauthenticated request must be denied or redirected by Access. Verify an
-allowed browser's health, a rejected origin's preflight, imagery, terrain,
-report downloads and a job SSE stream. Do not expose the bare unauthenticated
-FastAPI service just to make a `vercel.app` preview work.
+Verify health, imagery, terrain, report downloads and a job SSE stream without
+cookies or authentication headers. A rejected origin's preflight should remain
+HTTP 400. The origin remains bound to loopback and Docker; public traffic enters
+through the named HTTPS tunnel.
+
+### Restore private access
+
+In Cloudflare One → Access controls → Applications → AabFlow laptop API, remove
+the **AabFlow public access** policy association and save. Keep **AabFlow owner
+only** and the OPTIONS preflight bypass. Verify an unauthenticated health request
+redirects to Access before treating the API as private. Set Vercel Production
+`VITE_BACKEND_ACCESS_REQUIRED=true` and redeploy. The connection banner then
+offers **Sign in to backend**, using the existing restricted return landing
+`/api/v2/access/ready?return_to=...`. Setting the frontend flag alone does not
+change Cloudflare authentication. This restoration procedure has not been executed
+after the public activation.
 
 ## Saved Vercel configuration
 
@@ -236,11 +246,12 @@ the dashboard:
 | Output | `dist` |
 | Public frontend domain | `app.khmanan.site` |
 | `VITE_BACKEND_ORIGIN` | `https://api.khmanan.site` (origin only; no `/api/v2`) |
+| `VITE_BACKEND_ACCESS_REQUIRED` | `false` (Production; no login controls) |
 | Production Git branch | `codex/laptop-serving` |
 
 `web/vercel.json` supplies build settings, the SPA history fallback and a temporary
 redirect from this project's `vercel.app` hostnames to `app.khmanan.site`, preserving
-paths and queries. Access cookies and CORS are configured for that canonical domain.
+paths and queries. CORS is configured for that canonical domain.
 Vercel's own authentication still applies first on protected team/preview aliases;
 the public production alias `khaitoman.vercel.app` redirects directly.
 API and
@@ -320,7 +331,8 @@ task. CPU-only Torch was detected; no GPU inference or training is claimed.
 This work does not advance feature/acceptance rows to complete. Features still
 under development retain their existing capabilities and limitations. An actual machine reboot, deliberate unhealthy-container recovery, full
 database rollback, session-expiry behavior and new uncached vision inference
-remain unverified. Container recreation and schema migration to 4 were executed
+remain unverified. Private Access session-expiry behavior is retained as historical
+untested coverage; public visitors no longer need an Access session. Container recreation and schema migration to 4 were executed
 and returned healthy; the tunnel also recovered after a connector restart.
 
 To repeat the local browser smoke with the preview on 5180 and backend on 8010:
@@ -335,7 +347,7 @@ It uses the real seeded demo and verifies browser API/preflight requests, native
 EventSource, map assets and the rendered workspace. It writes
 `evidence/screenshots/laptop-split-origin.png` and fails on unexpected request failures.
 
-## Executed public validation
+## Earlier protected deployment validation
 
 Latest `main` at `3cc65e3` was fast-forwarded into the serving branch. The report
 contract fix and connection recovery changes are deployed at `8262ae9` as production

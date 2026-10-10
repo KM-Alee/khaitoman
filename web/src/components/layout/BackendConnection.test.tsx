@@ -36,3 +36,23 @@ test("same-origin local mode does not offer an edge login", async () => {
   expect(screen.queryByRole("link", { name: "Sign in to backend" })).not.toBeInTheDocument();
   client.clear();
 });
+
+test("public remote mode offers retry without suggesting authentication", async () => {
+  vi.stubEnv("VITE_BACKEND_ORIGIN", "https://api.example.com");
+  vi.stubEnv("VITE_BACKEND_ACCESS_REQUIRED", "false");
+  vi.resetModules();
+  const { BackendConnection } = await import("./BackendConnection");
+  const { ApiError, describeError } = await import("@/lib/api/client");
+  const fetcher = vi.fn().mockRejectedValue(new TypeError("offline"));
+  vi.stubGlobal("fetch", fetcher);
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  render(<QueryClientProvider client={client}><BackendConnection /></QueryClientProvider>);
+  const retry = await screen.findByRole("button", { name: "Retry connection" });
+  expect(screen.queryByRole("link", { name: "Sign in to backend" })).not.toBeInTheDocument();
+  expect(screen.getByRole("alert")).not.toHaveTextContent(/sign in|approved email/i);
+  expect(describeError(new ApiError(0, null, "offline")).detail).not.toMatch(/sign.in/i);
+  fetcher.mockResolvedValue(new Response('{"status":"ok"}'));
+  fireEvent.click(retry);
+  await waitFor(() => expect(screen.queryByRole("alert")).not.toBeInTheDocument());
+  client.clear();
+});

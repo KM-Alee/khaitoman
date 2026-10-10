@@ -1,5 +1,5 @@
 import type { ApiErrorBody } from "./types";
-import { apiRequestUrl, backendCredentials, BACKEND_ORIGIN } from "./urls";
+import { apiRequestUrl, backendCredentials, BACKEND_ACCESS_REQUIRED, BACKEND_ORIGIN } from "./urls";
 
 export { API_BASE } from "./urls";
 export const CONTRACT_VERSION = "2.0.0";
@@ -45,7 +45,7 @@ export function describeError(err: unknown): { title: string; detail: string } {
       case "PROVIDER_UNAVAILABLE":
         return { title: "Hosted assistant unavailable", detail: err.message };
       case "NETWORK":
-        return { title: `${BACKEND_ORIGIN ? "Backend" : "Local"} API not reachable`, detail: BACKEND_ORIGIN ? "The backend connection could not complete. Sign-in may be required, or the serving laptop may be offline." : "The AabFlow service did not respond." };
+        return { title: `${BACKEND_ORIGIN ? "Backend" : "Local"} API not reachable`, detail: BACKEND_ORIGIN ? (BACKEND_ACCESS_REQUIRED ? "The backend connection could not complete. Sign-in may be required, or the serving laptop may be offline." : "The backend connection could not complete. Retry when the serving laptop is awake and online.") : "The AabFlow service did not respond." };
       default:
         if (err.status >= 500) return { title: `Service error (${err.status})`, detail: err.message };
         return { title: `Request failed (${err.status})`, detail: err.message };
