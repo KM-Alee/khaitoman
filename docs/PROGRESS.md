@@ -46,7 +46,7 @@ Status values: `todo`, `building` (branch pushed, no PR yet), `review #n`, `done
 | ID | Milestone | Delivers | Needs | Status |
 |---|---|---|---|---|
 | P00 | M1–M5 | One PR with the whole current working tree (`git add .`; `.env` and `.xfer/` stay ignored), opened by the lead thread, including these plan docs: workflow, Esri imagery, surrogate retrain + domain-coverage test, pilot weather, copilot tool shapes. Refresh `docs/STATUS.md` with evidence for M0–M5 rows. | — | done #2 |
-| P01 | M2 | Pilot-b candidate libraries for all 4 seasons (`make candidates PILOT=pilot-b`). `make domain-tests` runs the AT02–AT04 tests and the water/property suites. | P00 | building |
+| P01 | M2 | Pilot-b candidate libraries for all 4 seasons (`make candidates PILOT=pilot-b`). `make domain-tests` runs the AT02–AT04 tests and the water/property suites. | P00 | review #3 |
 | P02 | M1 | AT01 test (`tests/integration/test_pilot_packages.py`): both pilots have real scene/source IDs, ≥30 reviewed fields, valid directed graph, manifest hashes match. `make pilot-a`/`pilot-b` reproduce the package. | P00 | todo |
 | P03 | M3 | Mark AT05–AT08, AT12 with evidence; fill any rule in PRD §11.2 those tests miss. `make core-acceptance` v1 runs every AT test that exists. | P00 | todo |
 | P04 | M5 | AT09–AT11 evidence; surrogate preview ≤300 ms after load (PRD §11.1), in-domain on the default request. | P00 | todo |
@@ -64,7 +64,7 @@ Gap issues (`gh issue list --label gap`) jump the queue: the builder fixes open 
 
 ## 3. Next up
 
-1. P00 (#2) is merged. Finish P01 validation and review, then the builder takes P02.
+1. P00 (#2) is merged. P01 (#3) is ready for reviewer verification; the builder takes P02 next.
 2. P01, P02, P05, P06 and P07 only need P00, so they can be built in parallel (separate branches from `origin/main` once P00 merges, or stacked on the P00 branch until then).
 3. P10 (copilot eval) starts as soon as P05 is merged; it costs model calls and time, so start it early.
 4. P11–P13 are the release run and go last.
