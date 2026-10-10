@@ -15,24 +15,24 @@ Scope is fixed: F01–F20 and AT01–AT18, nothing cut.
 |---|---|---|---|
 | M0 | Feasibility, contracts | **done** (committed) | Images build, `make doctor`, provider `gpt-6-luna` tool calling, AquaCrop bench 0.17 s/run, CP-SAT fixture, schemas frozen, Delineate sample. |
 | M1 | Two real pilot packages + onboarding pipeline | **mostly done** (committed) | pilot-a and pilot-b `reviewed-v1` published (`data/pilots/index.json`), pilot-b through the onboarding pipeline (`05c844d`). Missing: AT01 test. |
-| M2 | Exact domain engine | **mostly done** | P01 builds both pilots' four-season libraries and implements `make domain-tests` (75 passed, AT02–AT04). Pilot-b has 9,736 policies; repeat-build hashes verified separately. Denser-library objective/action stability (T5.7) remains unverified. |
+| M2 | Exact domain engine | **mostly done** | P01 builds both pilots' four-season libraries and implements `make domain-tests` (85 passed, AT02–AT04). Pilot-b has 17,480 policies; retained density recipes and repeat-build hashes are verified. P01 also executes denser-library objective/action comparisons on both pilots and crops; evidence is in `docs/P01_DOMAIN.md`. |
 | M3 | Decisions | **done in code** (committed `d9518bd`) | Baseline ladder, live solve, constraints, economics/rights. Named tests exist for AT05–AT08, AT12. Not yet marked passed in STATUS. |
-| M4 | Polished decision loop (UI) | **in progress** | Workspace 3D, replay with canopy frames, compare, impact/report screens, Explore wired to analyses, copilot panel (`c9e01a2`, `574534f`, `e049bdc`). Esri imagery layer uncommitted. Missing: AT13, AT14, screenshots. |
-| M5 | Frontier, stress/robust, surrogate, why-not/synergy | **done in code** (committed) | Routes under `/api/v2/analyses/*`, surrogate retrained to cover all 2026-27/2027-28 scenarios (`tests/unit/test_surrogate_domain_coverage.py`, uncommitted). AT09–AT11 tests exist. |
+| M4 | Polished decision loop (UI) | **in progress** | Workspace 3D, replay with canopy frames, compare, impact/report screens, Explore wired to analyses, copilot panel (`c9e01a2`, `574534f`, `e049bdc`). Esri imagery is committed in P00. Missing: AT13, AT14, screenshots. |
+| M5 | Frontier, stress/robust, surrogate, why-not/synergy | **done in code** (committed) | Routes under `/api/v2/analyses/*`, surrogate domain coverage is checked across published scenarios (`tests/unit/test_surrogate_domain_coverage.py`). AT09–AT11 tests exist. |
 | M6 | Impact/SDG, onboarding UI, evidence, export, offline/restart | **not started** | `services/reports/__init__.py` is empty, `services/onboarding` missing, but job handlers already point at both. No tests for AT15, AT16, AT18. |
 | M7 | Copilot | **built, not evaluated** | 16 tools, provider loop, router registered in `main.py`, 76 copilot tests. Live eval (30 cases × 3) never ran. Report tool needs M6 reports API. |
-| M8 | Release | **not started** | `make core-acceptance`, `copilot-evals`, `release-check`, `domain-tests` still print "not implemented yet". |
+| M8 | Release | **not started** | `make core-acceptance`, `copilot-evals`, `release-check` still print "not implemented yet". |
 
 Acceptance tests with a named test in `tests/` today: AT02–AT12. **No test yet:** AT01, AT13, AT14, AT15, AT16, AT17, AT18.
 
 ### Integration awaiting review
 
-The integration work above is committed on `feat/p00-integrate-m1-m5` and open as PR #2. P01 stacks on that branch; the reviewer owns P00.
+P00 was merged as PR #2 on 2026-10-10. P01 now targets `main`; its domain and GPU evaluation evidence is recorded in `docs/P01_DOMAIN.md`.
 
 ### Known risks
 
 - `docs/STATUS.md` records evidence by row. P01 moves AT02–AT04 to passed and keeps broader M2/F12 completion claims open where verification remains.
-- The full test suite has run green in sandboxes (381 fast tests, 49 vitest reported), not yet on a clean checkout of `main`.
+- P01 ran 397 fast tests, 85 domain tests, 45 science tests and lint green on its branch; P00 records 49 vitest passes. Release checks on a clean checkout remain P13.
 - Default AquaCrop yields look high (wheat ~7.6 t/ha rainfed). Keep `crop_calibration=uncalibrated` visible until a plausibility check.
 - The copilot turn budget is 90 s and the model takes ~14 s per call, so tool rounds must stay low.
 - Esri imagery was only tested with mocked tiles. It must work with no key (Sentinel-2 fallback) and the key must never be committed.
@@ -45,7 +45,7 @@ Status values: `todo`, `building` (branch pushed, no PR yet), `review #n`, `done
 
 | ID | Milestone | Delivers | Needs | Status |
 |---|---|---|---|---|
-| P00 | M1–M5 | One PR with the whole current working tree (`git add .`; `.env` and `.xfer/` stay ignored), opened by the lead thread, including these plan docs: workflow, Esri imagery, surrogate retrain + domain-coverage test, pilot weather, copilot tool shapes. Refresh `docs/STATUS.md` with evidence for M0–M5 rows. | — | review #2 |
+| P00 | M1–M5 | One PR with the whole current working tree (`git add .`; `.env` and `.xfer/` stay ignored), opened by the lead thread, including these plan docs: workflow, Esri imagery, surrogate retrain + domain-coverage test, pilot weather, copilot tool shapes. Refresh `docs/STATUS.md` with evidence for M0–M5 rows. | — | done #2 |
 | P01 | M2 | Pilot-b candidate libraries for all 4 seasons (`make candidates PILOT=pilot-b`). `make domain-tests` runs the AT02–AT04 tests and the water/property suites. | P00 | building |
 | P02 | M1 | AT01 test (`tests/integration/test_pilot_packages.py`): both pilots have real scene/source IDs, ≥30 reviewed fields, valid directed graph, manifest hashes match. `make pilot-a`/`pilot-b` reproduce the package. | P00 | todo |
 | P03 | M3 | Mark AT05–AT08, AT12 with evidence; fill any rule in PRD §11.2 those tests miss. `make core-acceptance` v1 runs every AT test that exists. | P00 | todo |
@@ -64,7 +64,7 @@ Gap issues (`gh issue list --label gap`) jump the queue: the builder fixes open 
 
 ## 3. Next up
 
-1. Reviewer reviews P00 (#2) first. P01 is building on its branch.
+1. P00 (#2) is merged. Finish P01 validation and review, then the builder takes P02.
 2. P01, P02, P05, P06 and P07 only need P00, so they can be built in parallel (separate branches from `origin/main` once P00 merges, or stacked on the P00 branch until then).
 3. P10 (copilot eval) starts as soon as P05 is merged; it costs model calls and time, so start it early.
 4. P11–P13 are the release run and go last.

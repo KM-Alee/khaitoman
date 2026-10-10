@@ -1,32 +1,48 @@
 # P01 self-review
 
-Reviewed the P01 diff against `origin/feat/p00-integrate-m1-m5`, including the
-reviewer's P00 fixes, following `.claude/agents/spec-auditor.md`.
+Reviewed the full P01 diff against `origin/main`, including uncommitted work,
+following `.claude/agents/spec-auditor.md`. P00 (#2) is merged; this PR targets main.
 
-No blockers found for the P01 deliverable. AT02–AT04 explicitly pass in the
-75-test domain gate. Both real pilots/all four seasons have complete field/configuration
-coverage and exact output references; original-precision reconstructed portfolios
-pass. Undeliverable states retain violations and null yields/production. The crop
-gates audit gross irrigation and the single tonne/ha → kg/ha conversion for both
-crops. No fixture data entered production libraries, no API/schema changes, no
-solver rounding changes, and no manifest/lockfile changes.
+No actionable blockers or should-fix findings remain in the selected P01 chunk.
 
-The publication fix preserves immutable metadata and refuses same-hash changes,
-with tests for collisions and restoration of ignored policy dumps. All four
-pilot-b hashes reproduce on the second build. The new surrogate model has a new
-version and retains original weather-year split labels for mapped experiments;
-domain tolerance and evaluation thresholds are unchanged.
+- T5.7: executed twenty paired density comparisons with forty proved OPTIMAL
+  solves, on both real pilots and both representative crops. Original-precision
+  physical reconstruction and spending/service checks pass. Six investment
+  choices changed; the larger libraries are retained and normal rebuilds reproduce
+  their recipes. Tests reject FEASIBLE, UNKNOWN, INFEASIBLE and invalid ledgers or
+  budget/service selections. Finite-library approximation is disclosed.
+- T8.2–T8.4: both pilots share the same unfitted release year; later source-only
+  years and the irregular family are excluded from fitting. Source/soil metrics,
+  rankings and decision-regret fixtures are reported separately. Architecture and
+  bias correction use development-year LOYO only. Fortnight input features contain
+  no crop outputs. Every crop/source passes the unchanged release gates. Failed
+  exact experiments stop training; failed release gates cannot advance latest.
+- T8.4: known, evaluated weather requires an exact input hash and complete matching
+  weather-only vector. Derived balances must equal validated P + fitted net input
+  − validated ET0. Soil/irrigation component ranges keep their 2% margin. Regression
+  tests reject unknown outlying weather, mismatches, invalid balances, excessive
+  irrigation and failed models. All default replay/planning previews pass; exact
+  confirmation was executed after the domain fix.
+- T3.2/T3.6/T5.2–T5.6: kg/ha conversion and irrigation audits pass for wheat/cotton;
+  every retained deliverable state references a real exact outcome and raw files.
+  Undeliverable states preserve violations and null production. Publication
+  collision/restoration tests preserve original metadata bytes and timestamps.
+  Cached dominance views keep the existing criteria; repeated published hashes
+  verify unchanged content. No physics or solver-rounding rule was changed.
+- T4/T6: chronological and capacity rejections, independent water properties,
+  original-precision reconstruction and conservative finite-model bounds pass.
+  No fixture was added to production libraries. API contracts, persistence schema,
+  dependency manifests and lockfiles are unchanged.
+- GPU execution: the final LightGBM training ran on an RTX 5060 Laptop GPU through
+  OpenCL, with actual process/device evidence. AquaCrop and CP-SAT remain CPU.
+  Final checks: 397 fast, 85 domain, 45 science tests; lint passed.
 
-Remaining findings (included in the PR's Known gaps):
+Notes, not completion claims:
 
-- **Should-fix:** `api/aabflow/optimizer/candidates/__init__.py:992`, T5.7.
-  Coverage counts and families do not establish objective/action stability under
-  a denser library. That comparison has not run. M2 remains `in_progress`, and
-  these finite-library results do not claim comprehensive search.
-- **Should-fix:** `api/aabflow/surrogate/training/__init__.py:365`, T8.3.
-  The newest wheat test season is 2025–26, outside the pilot archives ending in
-  2025. Its final holdout therefore has discovery samples only. Cotton's 2025
-  holdout has all three sources. Wheat pilot holdouts and per-pilot error metrics
-  remain for P04; F12 remains `in_progress`.
-- **Note:** `docs/P01_DOMAIN.md:48`, T5.4. These are exact simulated outcomes
-  with uncalibrated crop profiles, not observed field predictive accuracy.
+- `docs/P01_DOMAIN.md`, T5.4/T8.3: outcomes are simulated and uncalibrated. New
+  release schedules were never fitted, but their weather years were inspected in
+  prior release checks. Evidence explicitly records that limitation and prior
+  failed GPU evaluations; it does not claim independent new weather-year trials
+  or observed field prediction accuracy.
+- The wider UI, reports and release acceptance queue remains in PROGRESS.md;
+  none of the selected P01 requirements is deferred to that queue.

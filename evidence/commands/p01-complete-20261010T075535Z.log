@@ -1,0 +1,1257 @@
+P01 final validation 20261010T075535Z
+
+### GPU device probe
+[LightGBM] [Warning] min_data_in_leaf is set=2, min_child_samples=20 will be ignored. Current value: min_data_in_leaf=2
+[LightGBM] [Warning] min_data_in_leaf is set=2, min_child_samples=20 will be ignored. Current value: min_data_in_leaf=2
+[LightGBM] [Info] This is the GPU trainer!!
+[LightGBM] [Info] Total Bins 272
+[LightGBM] [Info] Number of data points in the train set: 200, number of used features: 4
+[LightGBM] [Info] Using GPU Device: NVIDIA GeForce RTX 5060 Laptop GPU, Vendor: NVIDIA Corporation
+[LightGBM] [Info] Compiling OpenCL Kernel with 256 bins...
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+[LightGBM] [Info] GPU programs have been built
+[LightGBM] [Info] Size of histogram bin entry: 16
+[LightGBM] [Info] 4 dense feature groups (0.00 MB) transferred to GPU in 0.000507 secs. 0 sparse feature groups
+[LightGBM] [Info] Start training from score 398.000000
+
+### GPU process during final training
+name, utilization.gpu [%], memory.used [MiB]
+NVIDIA GeForce RTX 5060 Laptop GPU, 8 %, 136 MiB
+pid, process_name, used_gpu_memory [MiB]
+598443, python, 126 MiB
+aabflow-api-run-16ef1617df43 Up About a minute
+aabflow-api-run-cd265de5c5d8 Up 14 minutes
+aabflow-api-1 Up 2 hours
+PID                 COMMAND
+598443              python scripts/science_train_surrogate.py
+
+### Failed v4 GPU release
+docker compose -f compose.yaml -f compose.gpu.yaml run --rm --no-deps api python scripts/science_train_surrogate.py
+ Container aabflow-api-run-d69ee245b4b8 Creating 
+ Container aabflow-api-run-d69ee245b4b8 Created 
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+{
+ "model_version": "surrogate-v4-gpu",
+ "training_device": "gpu",
+ "created_at": "2026-10-10T07:12:19.071929+00:00",
+ "adapter_version": "aabflow-aquacrop-adapter-1.0.0",
+ "crops": {
+  "wheat": {
+   "test": {
+    "n": 330,
+    "mae_kg_ha": 494.59486839823455,
+    "rmse_kg_ha": 562.2653647421382,
+    "bias_kg_ha": -315.1274843053047,
+    "nmae": 0.06208178589454357,
+    "reference_yield_kg_ha": 7966.827327396601
+   },
+   "test_ranking": {
+    "contexts": 18,
+    "median_spearman": 0.9909090909090907,
+    "min_spearman": 0.9636363636363637
+   },
+   "decision_regret_summary": {
+    "n": 36,
+    "median": 0.0028666020139021023,
+    "max": 0.09318853242762797,
+    "median_kg": 256.6786896563717
+   },
+   "baseline_test": {
+    "n": 330,
+    "mae_kg_ha": 952.5901738890478,
+    "rmse_kg_ha": 1217.7944157942377,
+    "bias_kg_ha": -176.44159416877105,
+    "nmae": 0.11956957704019112,
+    "reference_yield_kg_ha": 7966.827327396601
+   },
+   "gate_results": {
+    "nmae": true,
+    "median_spearman": true,
+    "median_regret": true,
+    "max_regret": true,
+    "fixtures": true,
+    "beats_naive_baseline": true,
+    "all_weather_sources": true
+   },
+   "passed": true,
+   "loyo_cv": {
+    "nmae_mean": 0.05201168259838357,
+    "nmae_max": 0.11803281543892816,
+    "nmae_std": 0.02124954763110183
+   },
+   "samples": {
+    "total": 4886,
+    "fit_pool": 4082,
+    "test": 330,
+    "holdout_family_test": 30,
+    "years": 26
+   }
+  },
+  "cotton": {
+   "test": {
+    "n": 198,
+    "mae_kg_ha": 307.70718467708775,
+    "rmse_kg_ha": 384.86076215067953,
+    "bias_kg_ha": -284.25684743802736,
+    "nmae": 0.09451907063897812,
+    "reference_yield_kg_ha": 3255.503705198243
+   },
+   "test_ranking": {
+    "contexts": 18,
+    "median_spearman": 0.9727272727272729,
+    "min_spearman": 0.9545454545454546
+   },
+   "decision_regret_summary": {
+    "n": 36,
+    "median": 0.0020838728477159205,
+    "max": 0.012646940347686335,
+    "median_kg": 102.26034956096555
+   },
+   "baseline_test": {
+    "n": 198,
+    "mae_kg_ha": 496.6353352540029,
+    "rmse_kg_ha": 702.3487537855481,
+    "bias_kg_ha": -237.20522606221905,
+    "nmae": 0.15255253264218308,
+    "reference_yield_kg_ha": 3255.503705198243
+   },
+   "gate_results": {
+    "nmae": true,
+    "median_spearman": true,
+    "median_regret": true,
+    "max_regret": true,
+    "fixtures": true,
+    "beats_naive_baseline": true,
+    "all_weather_sources": false
+   },
+   "passed": false,
+   "loyo_cv": {
+    "nmae_mean": 0.07410462991579433,
+    "nmae_max": 0.1455421896179234,
+    "nmae_std": 0.024355175464432728
+   },
+   "samples": {
+    "total": 4031,
+    "fit_pool": 3497,
+    "test": 198,
+    "holdout_family_test": 18,
+    "years": 26
+   }
+  }
+ },
+ "weather_sources": [
+  "science-discovery",
+  "pilot-a",
+  "pilot-b"
+ ],
+ "passed": false,
+ "wall_s": 179.2
+}
+
+make: *** [Makefile:98: train-surrogate] Error 2
+
+### Failed v5 GPU release
+docker compose -f compose.yaml -f compose.gpu.yaml run --rm --no-deps api python scripts/science_train_surrogate.py
+ Container aabflow-api-run-8c0ca43b6c00 Creating 
+ Container aabflow-api-run-8c0ca43b6c00 Created 
+  experiments 200/208 (26s)
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+{
+ "model_version": "surrogate-v5-gpu",
+ "training_device": "gpu",
+ "created_at": "2026-10-10T07:19:40.730193+00:00",
+ "adapter_version": "aabflow-aquacrop-adapter-1.0.0",
+ "crops": {
+  "wheat": {
+   "test": {
+    "n": 330,
+    "mae_kg_ha": 384.0067125849469,
+    "rmse_kg_ha": 479.4609923322104,
+    "bias_kg_ha": -135.33404654537702,
+    "nmae": 0.04820070735867607,
+    "reference_yield_kg_ha": 7966.827327396601
+   },
+   "test_ranking": {
+    "contexts": 18,
+    "median_spearman": 0.9727272727272728,
+    "min_spearman": 0.9272727272727272
+   },
+   "decision_regret_summary": {
+    "n": 36,
+    "median": 0.006889762548162555,
+    "max": 0.05115935050007707,
+    "median_kg": 630.7384350991997
+   },
+   "baseline_test": {
+    "n": 330,
+    "mae_kg_ha": 963.4878705080137,
+    "rmse_kg_ha": 1224.6133104726484,
+    "bias_kg_ha": -196.98995493392187,
+    "nmae": 0.12093746116408703,
+    "reference_yield_kg_ha": 7966.827327396601
+   },
+   "gate_results": {
+    "nmae": true,
+    "median_spearman": true,
+    "median_regret": true,
+    "max_regret": true,
+    "fixtures": true,
+    "beats_naive_baseline": true,
+    "all_weather_sources": true
+   },
+   "passed": true,
+   "loyo_cv": {
+    "nmae_mean": 0.05201168259838357,
+    "nmae_max": 0.11803281543892816,
+    "nmae_std": 0.02124954763110183
+   },
+   "samples": {
+    "total": 4886,
+    "fit_pool": 4082,
+    "test": 330,
+    "holdout_family_test": 30,
+    "years": 26
+   }
+  },
+  "cotton": {
+   "test": {
+    "n": 198,
+    "mae_kg_ha": 298.34685449644434,
+    "rmse_kg_ha": 377.9745869972334,
+    "bias_kg_ha": -284.888533855769,
+    "nmae": 0.09164383810101565,
+    "reference_yield_kg_ha": 3255.503705198243
+   },
+   "test_ranking": {
+    "contexts": 18,
+    "median_spearman": 0.9636363636363637,
+    "min_spearman": 0.9272727272727275
+   },
+   "decision_regret_summary": {
+    "n": 36,
+    "median": 0.0,
+    "max": 0.031336632382496524,
+    "median_kg": 0.0
+   },
+   "baseline_test": {
+    "n": 198,
+    "mae_kg_ha": 514.0310466292254,
+    "rmse_kg_ha": 754.1015970255888,
+    "bias_kg_ha": -275.02392414899606,
+    "nmae": 0.15789601031890813,
+    "reference_yield_kg_ha": 3255.503705198243
+   },
+   "gate_results": {
+    "nmae": true,
+    "median_spearman": true,
+    "median_regret": true,
+    "max_regret": true,
+    "fixtures": true,
+    "beats_naive_baseline": true,
+    "all_weather_sources": false
+   },
+   "passed": false,
+   "loyo_cv": {
+    "nmae_mean": 0.07410462991579433,
+    "nmae_max": 0.1455421896179234,
+    "nmae_std": 0.024355175464432728
+   },
+   "samples": {
+    "total": 4031,
+    "fit_pool": 3497,
+    "test": 198,
+    "holdout_family_test": 18,
+    "years": 26
+   }
+  }
+ },
+ "weather_sources": [
+  "science-discovery",
+  "pilot-a",
+  "pilot-b"
+ ],
+ "passed": false,
+ "wall_s": 213.7
+}
+
+make: *** [Makefile:98: train-surrogate] Error 2
+
+### Failed v6 GPU release
+docker compose -f compose.yaml -f compose.gpu.yaml run --rm --no-deps api python scripts/science_train_surrogate.py
+ Container aabflow-api-run-03efe65a1ffe Creating 
+ Container aabflow-api-run-03efe65a1ffe Created 
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+
+### Passing v7 GPU training
+docker compose -f compose.yaml -f compose.gpu.yaml run --rm --no-deps api python scripts/science_train_surrogate.py
+ Container aabflow-api-run-16ef1617df43 Creating 
+ Container aabflow-api-run-16ef1617df43 Created 
+  experiments 200/208 (25s)
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+1 warning generated.
+{
+ "model_version": "surrogate-v7-gpu",
+ "training_device": "gpu",
+ "created_at": "2026-10-10T07:43:48.477397+00:00",
+ "adapter_version": "aabflow-aquacrop-adapter-1.0.0",
+ "crops": {
+  "wheat": {
+   "test": {
+    "n": 325,
+    "mae_kg_ha": 568.6325814909175,
+    "rmse_kg_ha": 668.6745628196154,
+    "bias_kg_ha": -427.2922582412966,
+    "nmae": 0.07137503527100231,
+    "reference_yield_kg_ha": 7966.827327396601
+   },
+   "test_ranking": {
+    "contexts": 18,
+    "median_spearman": 0.9818181818181817,
+    "min_spearman": 0.9151515151515152
+   },
+   "decision_regret_summary": {
+    "n": 36,
+    "median": 0.004599746966680826,
+    "max": 0.0782342408698297,
+    "median_kg": 412.8590178071754
+   },
+   "baseline_test": {
+    "n": 325,
+    "mae_kg_ha": 958.3445858267406,
+    "rmse_kg_ha": 1251.6058760866554,
+    "bias_kg_ha": -95.35499332413167,
+    "nmae": 0.12029187359579795,
+    "reference_yield_kg_ha": 7966.827327396601
+   },
+   "gate_results": {
+    "nmae": true,
+    "median_spearman": true,
+    "median_regret": true,
+    "max_regret": true,
+    "fixtures": true,
+    "beats_naive_baseline": true,
+    "all_weather_sources": true
+   },
+   "passed": true,
+   "loyo_cv": {
+    "nmae_mean": 0.06208514155578989,
+    "nmae_max": 0.15761041120586844,
+    "nmae_std": 0.027855717563876448
+   },
+   "samples": {
+    "total": 4881,
+    "fit_pool": 4082,
+    "test": 325,
+    "holdout_family_test": 30,
+    "years": 26
+   }
+  },
+  "cotton": {
+   "test": {
+    "n": 198,
+    "mae_kg_ha": 259.2557934876031,
+    "rmse_kg_ha": 335.31818437095785,
+    "bias_kg_ha": -224.12758793317826,
+    "nmae": 0.07963615371521005,
+    "reference_yield_kg_ha": 3255.503705198243
+   },
+   "test_ranking": {
+    "contexts": 18,
+    "median_spearman": 0.9636363636363637,
+    "min_spearman": 0.8272727272727273
+   },
+   "decision_regret_summary": {
+    "n": 36,
+    "median": 0.005659860541502941,
+    "max": 0.040326493654996555,
+    "median_kg": 327.1524891782974
+   },
+   "baseline_test": {
+    "n": 198,
+    "mae_kg_ha": 491.7051840770366,
+    "rmse_kg_ha": 717.249321205645,
+    "bias_kg_ha": -159.0054970441758,
+    "nmae": 0.15103812761506114,
+    "reference_yield_kg_ha": 3255.503705198243
+   },
+   "gate_results": {
+    "nmae": true,
+    "median_spearman": true,
+    "median_regret": true,
+    "max_regret": true,
+    "fixtures": true,
+    "beats_naive_baseline": true,
+    "all_weather_sources": true
+   },
+   "passed": true,
+   "loyo_cv": {
+    "nmae_mean": 0.07543028866693195,
+    "nmae_max": 0.14465403452216463,
+    "nmae_std": 0.02456039493484507
+   },
+   "samples": {
+    "total": 4031,
+    "fit_pool": 3497,
+    "test": 198,
+    "holdout_family_test": 18,
+    "years": 26
+   }
+  }
+ },
+ "weather_sources": [
+  "science-discovery",
+  "pilot-a",
+  "pilot-b"
+ ],
+ "passed": true,
+ "wall_s": 421.6
+}
+
+### Library density comparisons; docker wait exit 0
+docker compose run --rm --no-deps api python scripts/science_library_adequacy.py
+ Container aabflow-api-run-cd265de5c5d8 Creating 
+ Container aabflow-api-run-cd265de5c5d8 Created 
+  experiments 200/1213 (12s)
+  experiments 400/1213 (17s)
+  experiments 600/1213 (22s)
+  experiments 800/1213 (27s)
+  experiments 1000/1213 (31s)
+  experiments 1200/1213 (36s)
+{"pilot": "pilot-a", "season": "wheat-rabi-2027-28", "scenario": "no_capital", "objective_delta_kg": 1447.5170816866448, "investment_changed": false}
+{"pilot": "pilot-a", "season": "wheat-rabi-2027-28", "scenario": "small_budget", "objective_delta_kg": 1653.4294069236785, "investment_changed": false}
+{"pilot": "pilot-a", "season": "wheat-rabi-2027-28", "scenario": "capital", "objective_delta_kg": 1636.4640030445298, "investment_changed": false}
+{"pilot": "pilot-a", "season": "wheat-rabi-2027-28", "scenario": "shortage", "objective_delta_kg": 20.216002489993116, "investment_changed": false}
+{"pilot": "pilot-a", "season": "wheat-rabi-2027-28", "scenario": "robust_nine_states", "objective_delta_kg": 1174.3306613137102, "investment_changed": false}
+
+### Fortnight balance domain failure before fix
+docker compose run --rm --no-deps api pytest -q --ignore=tests/scientific
+ Container aabflow-api-run-f18ffd83bbbd Creating 
+ Container aabflow-api-run-f18ffd83bbbd Created 
+........................................................................ [ 18%]
+........................................................................ [ 36%]
+........................................................................ [ 54%]
+........................................................................ [ 72%]
+.............F............F............F............F................... [ 90%]
+.....................................                                    [100%]
+=================================== FAILURES ===================================
+__ test_default_preview_in_domain[offsets0-pilot-a-wheat-rabi-2024-25-actual] __
+
+pilot_id = 'pilot-a', season_id = 'wheat-rabi-2024-25', scenario_id = 'actual'
+offsets = (0, 21, 42, 63)
+
+    @pytest.mark.parametrize("pilot_id,season_id,scenario_id", CASES)
+    @pytest.mark.parametrize("offsets", [(0, 21, 42, 63), (10, 31, 52, 73)])
+    def test_default_preview_in_domain(pilot_id, season_id, scenario_id, offsets):
+        pv = preview(default_request(pilot_id, season_id, scenario_id, offsets))
+>       assert pv.domain_status == "in_domain", pv.domain_reasons
+E       AssertionError: ['w11_balance_mm=-106 outside trained range [-105, -63.1]']
+E       assert 'out_of_domain' == 'in_domain'
+E         
+E         - in_domain
+E         + out_of_domain
+
+tests/unit/test_surrogate_domain_coverage.py:49: AssertionError
+__ test_default_preview_in_domain[offsets0-pilot-b-wheat-rabi-2024-25-actual] __
+
+pilot_id = 'pilot-b', season_id = 'wheat-rabi-2024-25', scenario_id = 'actual'
+offsets = (0, 21, 42, 63)
+
+    @pytest.mark.parametrize("pilot_id,season_id,scenario_id", CASES)
+    @pytest.mark.parametrize("offsets", [(0, 21, 42, 63), (10, 31, 52, 73)])
+    def test_default_preview_in_domain(pilot_id, season_id, scenario_id, offsets):
+        pv = preview(default_request(pilot_id, season_id, scenario_id, offsets))
+>       assert pv.domain_status == "in_domain", pv.domain_reasons
+E       AssertionError: ['w11_balance_mm=-107 outside trained range [-105, -63.1]']
+E       assert 'out_of_domain' == 'in_domain'
+E         
+E         - in_domain
+E         + out_of_domain
+
+tests/unit/test_surrogate_domain_coverage.py:49: AssertionError
+__ test_default_preview_in_domain[offsets1-pilot-a-wheat-rabi-2024-25-actual] __
+
+pilot_id = 'pilot-a', season_id = 'wheat-rabi-2024-25', scenario_id = 'actual'
+offsets = (10, 31, 52, 73)
+
+    @pytest.mark.parametrize("pilot_id,season_id,scenario_id", CASES)
+    @pytest.mark.parametrize("offsets", [(0, 21, 42, 63), (10, 31, 52, 73)])
+    def test_default_preview_in_domain(pilot_id, season_id, scenario_id, offsets):
+        pv = preview(default_request(pilot_id, season_id, scenario_id, offsets))
+>       assert pv.domain_status == "in_domain", pv.domain_reasons
+E       AssertionError: ['w11_balance_mm=-106 outside trained range [-105, -63.1]']
+E       assert 'out_of_domain' == 'in_domain'
+E         
+E         - in_domain
+E         + out_of_domain
+
+tests/unit/test_surrogate_domain_coverage.py:49: AssertionError
+__ test_default_preview_in_domain[offsets1-pilot-b-wheat-rabi-2024-25-actual] __
+
+pilot_id = 'pilot-b', season_id = 'wheat-rabi-2024-25', scenario_id = 'actual'
+offsets = (10, 31, 52, 73)
+
+    @pytest.mark.parametrize("pilot_id,season_id,scenario_id", CASES)
+    @pytest.mark.parametrize("offsets", [(0, 21, 42, 63), (10, 31, 52, 73)])
+    def test_default_preview_in_domain(pilot_id, season_id, scenario_id, offsets):
+        pv = preview(default_request(pilot_id, season_id, scenario_id, offsets))
+>       assert pv.domain_status == "in_domain", pv.domain_reasons
+E       AssertionError: ['w11_balance_mm=-107 outside trained range [-105, -63.1]']
+E       assert 'out_of_domain' == 'in_domain'
+E         
+E         - in_domain
+E         + out_of_domain
+
+tests/unit/test_surrogate_domain_coverage.py:49: AssertionError
+=============================== warnings summary ===============================
+tests/unit/test_ingestion_sources.py::test_write_and_read_local_window
+  /opt/venv/lib/python3.11/site-packages/rasterio/windows.py:360: PendingDeprecationWarning: Use `@` matmul instead of `*` mul operator for matrix multiplication
+    x, y = transform * (window.col_off or 0.0, window.row_off or 0.0)
+
+tests/unit/test_ingestion_sources.py::test_write_and_read_local_window
+  /opt/venv/lib/python3.11/site-packages/rasterio/windows.py:361: PendingDeprecationWarning: Use `@` matmul instead of `*` mul operator for matrix multiplication
+    return Affine.translation(
+
+tests/unit/test_ingestion_sources.py::test_display_stretch_corners_and_webp
+  /opt/venv/lib/python3.11/site-packages/rasterio/transform.py:189: PendingDeprecationWarning: Use `@` matmul instead of `*` mul operator for matrix multiplication
+    return Affine.translation(west, north) * Affine.scale(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_surrogate_domain_coverage.py::test_default_preview_in_domain[offsets0-pilot-a-wheat-rabi-2024-25-actual]
+FAILED tests/unit/test_surrogate_domain_coverage.py::test_default_preview_in_domain[offsets0-pilot-b-wheat-rabi-2024-25-actual]
+FAILED tests/unit/test_surrogate_domain_coverage.py::test_default_preview_in_domain[offsets1-pilot-a-wheat-rabi-2024-25-actual]
+FAILED tests/unit/test_surrogate_domain_coverage.py::test_default_preview_in_domain[offsets1-pilot-b-wheat-rabi-2024-25-actual]
+4 failed, 393 passed, 3 warnings in 31.32s
+
+make: *** [Makefile:54: test] Error 1
+
+### Domain regression after fix
+ Container aabflow-api-run-238065e7b313 Creating 
+ Container aabflow-api-run-238065e7b313 Created 
+All checks passed!
+1 file reformatted, 1 file left unchanged
+......................................................                   [100%]
+54 passed in 2.39s
+
+### make test
+docker compose run --rm --no-deps api pytest -q --ignore=tests/scientific
+ Container aabflow-api-run-947894124eab Creating 
+ Container aabflow-api-run-947894124eab Created 
+........................................................................ [ 18%]
+........................................................................ [ 36%]
+........................................................................ [ 54%]
+........................................................................ [ 72%]
+........................................................................ [ 90%]
+.....................................                                    [100%]
+=============================== warnings summary ===============================
+tests/unit/test_ingestion_sources.py::test_write_and_read_local_window
+  /opt/venv/lib/python3.11/site-packages/rasterio/windows.py:360: PendingDeprecationWarning: Use `@` matmul instead of `*` mul operator for matrix multiplication
+    x, y = transform * (window.col_off or 0.0, window.row_off or 0.0)
+
+tests/unit/test_ingestion_sources.py::test_write_and_read_local_window
+  /opt/venv/lib/python3.11/site-packages/rasterio/windows.py:361: PendingDeprecationWarning: Use `@` matmul instead of `*` mul operator for matrix multiplication
+    return Affine.translation(
+
+tests/unit/test_ingestion_sources.py::test_display_stretch_corners_and_webp
+  /opt/venv/lib/python3.11/site-packages/rasterio/transform.py:189: PendingDeprecationWarning: Use `@` matmul instead of `*` mul operator for matrix multiplication
+    return Affine.translation(west, north) * Affine.scale(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+397 passed, 3 warnings in 24.62s
+
+### make domain-tests
+docker compose run --rm --no-deps api pytest -v tests/scientific/test_crop_gates.py tests/scientific/test_published_libraries.py tests/scientific/test_library_adequacy.py tests/unit/test_candidate_publication.py tests/unit/test_candidate_density.py tests/unit/test_water_*.py tests/property
+ Container aabflow-api-run-59933e17a538 Creating 
+ Container aabflow-api-run-59933e17a538 Created 
+============================= test session starts ==============================
+platform linux -- Python 3.11.17, pytest-9.1.1, pluggy-1.6.0 -- /opt/venv/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /app
+configfile: pyproject.toml
+plugins: anyio-4.15.1, asyncio-1.4.0, hypothesis-6.168.1
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 85 items
+
+tests/scientific/test_crop_gates.py::test_at02_gate2_wheat_three_treatments PASSED [  1%]
+tests/scientific/test_crop_gates.py::test_at02_gate3_cotton_three_treatments PASSED [  2%]
+tests/scientific/test_crop_gates.py::test_gate4_above_default_cap_and_clipping_detection PASSED [  3%]
+tests/scientific/test_crop_gates.py::test_gate5_application_efficiency_applied_once PASSED [  4%]
+tests/scientific/test_crop_gates.py::test_gate6_out_of_season_events_fail PASSED [  5%]
+tests/scientific/test_crop_gates.py::test_gate6b_empty_schedule_equals_rainfed_method PASSED [  7%]
+tests/scientific/test_crop_gates.py::test_gate7_raw_columns_and_yield_basis PASSED [  8%]
+tests/scientific/test_crop_gates.py::test_cache_reuses_hash PASSED       [  9%]
+tests/scientific/test_crop_gates.py::test_batch_runner_with_warmup PASSED [ 10%]
+tests/scientific/test_published_libraries.py::test_published_field_configuration_and_state_coverage[pilot-a/wheat-rabi-2026-27] PASSED [ 11%]
+tests/scientific/test_published_libraries.py::test_published_exact_outcomes_and_raw_artifacts[pilot-a/wheat-rabi-2026-27] PASSED [ 12%]
+tests/scientific/test_published_libraries.py::test_published_portfolios_reconstruct_at_original_precision[pilot-a/wheat-rabi-2026-27] PASSED [ 14%]
+tests/scientific/test_published_libraries.py::test_published_field_configuration_and_state_coverage[pilot-a/wheat-rabi-2027-28] PASSED [ 15%]
+tests/scientific/test_published_libraries.py::test_published_exact_outcomes_and_raw_artifacts[pilot-a/wheat-rabi-2027-28] PASSED [ 16%]
+tests/scientific/test_published_libraries.py::test_published_portfolios_reconstruct_at_original_precision[pilot-a/wheat-rabi-2027-28] PASSED [ 17%]
+tests/scientific/test_published_libraries.py::test_published_field_configuration_and_state_coverage[pilot-a/cotton-kharif-2027] PASSED [ 18%]
+tests/scientific/test_published_libraries.py::test_published_exact_outcomes_and_raw_artifacts[pilot-a/cotton-kharif-2027] PASSED [ 20%]
+tests/scientific/test_published_libraries.py::test_published_portfolios_reconstruct_at_original_precision[pilot-a/cotton-kharif-2027] PASSED [ 21%]
+tests/scientific/test_published_libraries.py::test_published_field_configuration_and_state_coverage[pilot-a/wheat-rabi-2024-25] PASSED [ 22%]
+tests/scientific/test_published_libraries.py::test_published_exact_outcomes_and_raw_artifacts[pilot-a/wheat-rabi-2024-25] PASSED [ 23%]
+tests/scientific/test_published_libraries.py::test_published_portfolios_reconstruct_at_original_precision[pilot-a/wheat-rabi-2024-25] PASSED [ 24%]
+tests/scientific/test_published_libraries.py::test_published_field_configuration_and_state_coverage[pilot-b/wheat-rabi-2026-27] PASSED [ 25%]
+tests/scientific/test_published_libraries.py::test_published_exact_outcomes_and_raw_artifacts[pilot-b/wheat-rabi-2026-27] PASSED [ 27%]
+tests/scientific/test_published_libraries.py::test_published_portfolios_reconstruct_at_original_precision[pilot-b/wheat-rabi-2026-27] PASSED [ 28%]
+tests/scientific/test_published_libraries.py::test_published_field_configuration_and_state_coverage[pilot-b/wheat-rabi-2027-28] PASSED [ 29%]
+tests/scientific/test_published_libraries.py::test_published_exact_outcomes_and_raw_artifacts[pilot-b/wheat-rabi-2027-28] PASSED [ 30%]
+tests/scientific/test_published_libraries.py::test_published_portfolios_reconstruct_at_original_precision[pilot-b/wheat-rabi-2027-28] PASSED [ 31%]
+tests/scientific/test_published_libraries.py::test_published_field_configuration_and_state_coverage[pilot-b/cotton-kharif-2027] PASSED [ 32%]
+tests/scientific/test_published_libraries.py::test_published_exact_outcomes_and_raw_artifacts[pilot-b/cotton-kharif-2027] PASSED [ 34%]
+tests/scientific/test_published_libraries.py::test_published_portfolios_reconstruct_at_original_precision[pilot-b/cotton-kharif-2027] PASSED [ 35%]
+tests/scientific/test_published_libraries.py::test_published_field_configuration_and_state_coverage[pilot-b/wheat-rabi-2024-25] PASSED [ 36%]
+tests/scientific/test_published_libraries.py::test_published_exact_outcomes_and_raw_artifacts[pilot-b/wheat-rabi-2024-25] PASSED [ 37%]
+tests/scientific/test_published_libraries.py::test_published_portfolios_reconstruct_at_original_precision[pilot-b/wheat-rabi-2024-25] PASSED [ 38%]
+tests/scientific/test_library_adequacy.py::test_density_objective_actions_and_retained_larger_library[wheat-rabi-2027-28-pilot-a] PASSED [ 40%]
+tests/scientific/test_library_adequacy.py::test_density_objective_actions_and_retained_larger_library[wheat-rabi-2027-28-pilot-b] PASSED [ 41%]
+tests/scientific/test_library_adequacy.py::test_density_objective_actions_and_retained_larger_library[cotton-kharif-2027-pilot-a] PASSED [ 42%]
+tests/scientific/test_library_adequacy.py::test_density_objective_actions_and_retained_larger_library[cotton-kharif-2027-pilot-b] PASSED [ 43%]
+tests/unit/test_candidate_publication.py::test_rebuild_preserves_original_metadata_and_creation_time PASSED [ 44%]
+tests/unit/test_candidate_publication.py::test_clean_checkout_restores_policy_dump_without_rewriting_metadata PASSED [ 45%]
+tests/unit/test_candidate_publication.py::test_same_hash_with_changed_content_is_refused[metadata] PASSED [ 47%]
+tests/unit/test_candidate_publication.py::test_same_hash_with_changed_content_is_refused[policy] PASSED [ 48%]
+tests/unit/test_candidate_density.py::test_retained_recipe_refuses_unknown_generator PASSED [ 49%]
+tests/unit/test_candidate_density.py::test_stability_rejects_unproved_comparison[FEASIBLE] PASSED [ 50%]
+tests/unit/test_candidate_density.py::test_stability_rejects_unproved_comparison[UNKNOWN] PASSED [ 51%]
+tests/unit/test_candidate_density.py::test_stability_rejects_unproved_comparison[INFEASIBLE] PASSED [ 52%]
+tests/unit/test_candidate_density.py::test_stability_rejects_physical_and_budget_violation[True] PASSED [ 54%]
+tests/unit/test_candidate_density.py::test_stability_rejects_physical_and_budget_violation[False] PASSED [ 55%]
+tests/unit/test_water_ledger.py::test_context_states_configs_and_shared_cost_once PASSED [ 56%]
+tests/unit/test_water_ledger.py::test_zero_receipt_policy_deliverable_in_every_state PASSED [ 57%]
+tests/unit/test_water_ledger.py::test_b0_exists_per_supply_and_respects_curtailment PASSED [ 58%]
+tests/unit/test_water_ledger.py::test_at04_closed_route_receipt_rejected PASSED [ 60%]
+tests/unit/test_water_ledger.py::test_receipt_above_window_cap_rejected PASSED [ 61%]
+tests/unit/test_water_ledger.py::test_receipt_outside_own_windows_and_wrong_time_rejected PASSED [ 62%]
+tests/unit/test_water_ledger.py::test_field_balance_mismatch_rejected PASSED [ 63%]
+tests/unit/test_water_ledger.py::test_at04_shared_pump_excess_rejected_jointly PASSED [ 64%]
+tests/unit/test_water_ledger.py::test_pump_access_restricted PASSED      [ 65%]
+tests/unit/test_water_ledger.py::test_at04_missing_costs_rejected PASSED [ 67%]
+tests/unit/test_water_ledger.py::test_at04_premature_commissioning_rejected PASSED [ 68%]
+tests/unit/test_water_ledger.py::test_at12_pond_land_removed_once PASSED [ 69%]
+tests/unit/test_water_ledger.py::test_pumping_charged_to_operating_budget PASSED [ 70%]
+tests/unit/test_water_ledger.py::test_reconstruct_valid_plan_balances PASSED [ 71%]
+tests/unit/test_water_ledger.py::test_edge_capacity_checked_jointly PASSED [ 72%]
+tests/unit/test_water_ledger.py::test_interruption_state_blocks_closed_windows PASSED [ 74%]
+tests/unit/test_water_network.py::test_recursive_intake_no_double_factor PASSED [ 75%]
+tests/unit/test_water_network.py::test_shared_edge_sums_demands PASSED   [ 76%]
+tests/unit/test_water_network.py::test_invalid_topologies_rejected PASSED [ 77%]
+tests/unit/test_water_network.py::test_time_right_cap_at_mogha_and_field PASSED [ 78%]
+tests/unit/test_water_network.py::test_curtailment_applied_once_and_transformations PASSED [ 80%]
+tests/unit/test_water_network.py::test_closures_remove_time_and_close_route PASSED [ 81%]
+tests/unit/test_water_network.py::test_volume_basis_and_field_inlet_boundary PASSED [ 82%]
+tests/unit/test_water_network.py::test_repair_override_changes_tail_cap PASSED [ 83%]
+tests/unit/test_water_network.py::test_split_attributes_volume_to_pieces PASSED [ 84%]
+tests/unit/test_water_pond.py::test_two_period_trace_fixture PASSED      [ 85%]
+tests/unit/test_water_pond.py::test_at03_monday_before_friday_rejected PASSED [ 87%]
+tests/unit/test_water_pond.py::test_at03_intra_period_over_capacity_rejected PASSED [ 88%]
+tests/unit/test_water_pond.py::test_simultaneous_events_use_explicit_order PASSED [ 89%]
+tests/unit/test_water_pond.py::test_losses_bounded_by_inventory PASSED   [ 90%]
+tests/unit/test_water_pond.py::test_exogenous_losses_capped_and_spill_explicit PASSED [ 91%]
+tests/unit/test_water_pond.py::test_pond_size_in_irrigations PASSED      [ 92%]
+tests/unit/test_water_pond.py::test_inconsistent_geometry_rejected PASSED [ 94%]
+tests/property/test_water_properties.py::test_routing_conserves_mass_against_walkup_oracle PASSED [ 95%]
+tests/property/test_water_properties.py::test_valid_traces_pass_and_balance PASSED [ 96%]
+tests/property/test_water_properties.py::test_single_perturbation_is_rejected PASSED [ 97%]
+tests/property/test_water_properties.py::test_event_order_mutation_matches_independent_oracle PASSED [ 98%]
+tests/property/test_water_properties.py::test_window_cap_monotone_and_bounded PASSED [100%]
+
+======================== 85 passed in 75.34s (0:01:15) =========================
+
+### make science-smoke
+docker compose run --rm --no-deps api pytest -q tests/scientific
+ Container aabflow-api-run-a1474a595830 Creating 
+ Container aabflow-api-run-a1474a595830 Created 
+.............................................                            [100%]
+45 passed in 128.72s (0:02:08)
+
+### Post-fix exact confirmation
+ Container aabflow-api-run-86e2188fb2e7 Creating 
+ Container aabflow-api-run-86e2188fb2e7 Created 
+.                                                                        [100%]
+1 passed in 1.77s
+
+### make lint
+docker compose run --rm --no-deps api sh -c "ruff check api tests scripts && ruff format --check api tests scripts"
+ Container aabflow-api-run-510eb5b7b715 Creating 
+ Container aabflow-api-run-510eb5b7b715 Created 
+All checks passed!
+207 files already formatted
+
+### External pilot-a evaluation
+ Container aabflow-api-run-a828da3ccc1e Creating 
+ Container aabflow-api-run-a828da3ccc1e Created 
+{
+ "model_version": "surrogate-v7-gpu",
+ "pilot_id": "pilot-a",
+ "created_at": "2026-10-10T07:51:46.068670+00:00",
+ "crops": {
+  "wheat": {
+   "samples": 72,
+   "years": [
+    "2024-25"
+   ],
+   "all": {
+    "n": 72,
+    "mae_kg_ha": 590.8578225791755,
+    "rmse_kg_ha": 703.670275351735,
+    "bias_kg_ha": -393.4690360684665,
+    "nmae": 0.07416475822782216,
+    "reference_yield_kg_ha": 7966.827327396601
+   },
+   "ranking": {
+    "contexts": 6,
+    "median_spearman": 0.9790209790209792,
+    "min_spearman": 0.8881118881118882
+   },
+   "decision_regret_year": "2024-25",
+   "decision_regret": {
+    "n": 12,
+    "median": 0.008131884232394582,
+    "max": 0.06865649089882063
+   }
+  },
+  "cotton": {
+   "samples": 72,
+   "years": [
+    "2025"
+   ],
+   "all": {
+    "n": 72,
+    "mae_kg_ha": 239.560526588744,
+    "rmse_kg_ha": 316.1975842742006,
+    "bias_kg_ha": -210.34259532664584,
+    "nmae": 0.07358631667542705,
+    "reference_yield_kg_ha": 3255.503705198243
+   },
+   "ranking": {
+    "contexts": 6,
+    "median_spearman": 0.9720279720279721,
+    "min_spearman": 0.9090909090909092
+   },
+   "decision_regret_year": "2025",
+   "decision_regret": {
+    "n": 12,
+    "median": 0.005540039827495111,
+    "max": 0.01292185441017943
+   }
+  }
+ },
+ "weather_origin": "pilot-package:pilot-a/reviewed-v1",
+ "series_id": "openmeteo-archive-30.8000N-72.3000E-20140101-20251231"
+}
+
+### External pilot-b evaluation
+ Container aabflow-api-run-5074bd12c518 Creating 
+ Container aabflow-api-run-5074bd12c518 Created 
+{
+ "model_version": "surrogate-v7-gpu",
+ "pilot_id": "pilot-b",
+ "created_at": "2026-10-10T07:51:49.319083+00:00",
+ "crops": {
+  "wheat": {
+   "samples": 72,
+   "years": [
+    "2024-25"
+   ],
+   "all": {
+    "n": 72,
+    "mae_kg_ha": 600.7859914646974,
+    "rmse_kg_ha": 718.4903238500023,
+    "bias_kg_ha": -390.2397221535641,
+    "nmae": 0.07541094676405172,
+    "reference_yield_kg_ha": 7966.827327396601
+   },
+   "ranking": {
+    "contexts": 6,
+    "median_spearman": 0.9685314685314685,
+    "min_spearman": 0.9300699300699302
+   },
+   "decision_regret_year": "2024-25",
+   "decision_regret": {
+    "n": 12,
+    "median": 0.013018195809811265,
+    "max": 0.07064869760681437
+   }
+  },
+  "cotton": {
+   "samples": 72,
+   "years": [
+    "2025"
+   ],
+   "all": {
+    "n": 72,
+    "mae_kg_ha": 241.8602221039742,
+    "rmse_kg_ha": 315.00741054952243,
+    "bias_kg_ha": -206.9681444235162,
+    "nmae": 0.07429271904000065,
+    "reference_yield_kg_ha": 3255.503705198243
+   },
+   "ranking": {
+    "contexts": 6,
+    "median_spearman": 0.9720279720279721,
+    "min_spearman": 0.9090909090909092
+   },
+   "decision_regret_year": "2025",
+   "decision_regret": {
+    "n": 12,
+    "median": 0.00599905939817973,
+    "max": 0.013959567130923991
+   }
+  }
+ },
+ "weather_origin": "pilot-package:pilot-b/reviewed-v1",
+ "series_id": "openmeteo-archive-30.7000N-72.2000E-20140101-20251231"
+}
+
+### Stored final GPU evaluation
+{
+ "model_version": "surrogate-v7-gpu",
+ "training_device": "gpu",
+ "created_at": "2026-10-10T07:43:48.477397+00:00",
+ "adapter_version": "aabflow-aquacrop-adapter-1.0.0",
+ "crops": {
+  "wheat": {
+   "test": {
+    "n": 325,
+    "mae_kg_ha": 568.6325814909175,
+    "rmse_kg_ha": 668.6745628196154,
+    "bias_kg_ha": -427.2922582412966,
+    "nmae": 0.07137503527100231,
+    "reference_yield_kg_ha": 7966.827327396601
+   },
+   "test_ranking": {
+    "contexts": 18,
+    "median_spearman": 0.9818181818181817,
+    "min_spearman": 0.9151515151515152
+   },
+   "decision_regret_summary": {
+    "n": 36,
+    "median": 0.004599746966680826,
+    "max": 0.0782342408698297,
+    "median_kg": 412.8590178071754
+   },
+   "baseline_test": {
+    "n": 325,
+    "mae_kg_ha": 958.3445858267406,
+    "rmse_kg_ha": 1251.6058760866554,
+    "bias_kg_ha": -95.35499332413167,
+    "nmae": 0.12029187359579795,
+    "reference_yield_kg_ha": 7966.827327396601
+   },
+   "gate_results": {
+    "nmae": true,
+    "median_spearman": true,
+    "median_regret": true,
+    "max_regret": true,
+    "fixtures": true,
+    "beats_naive_baseline": true,
+    "all_weather_sources": true
+   },
+   "passed": true,
+   "loyo_cv": {
+    "nmae_mean": 0.06208514155578989,
+    "nmae_max": 0.15761041120586844,
+    "nmae_std": 0.027855717563876448
+   },
+   "samples": {
+    "total": 4881,
+    "fit_pool": 4082,
+    "test": 325,
+    "holdout_family_test": 30,
+    "years": 26
+   }
+  },
+  "cotton": {
+   "test": {
+    "n": 198,
+    "mae_kg_ha": 259.2557934876031,
+    "rmse_kg_ha": 335.31818437095785,
+    "bias_kg_ha": -224.12758793317826,
+    "nmae": 0.07963615371521005,
+    "reference_yield_kg_ha": 3255.503705198243
+   },
+   "test_ranking": {
+    "contexts": 18,
+    "median_spearman": 0.9636363636363637,
+    "min_spearman": 0.8272727272727273
+   },
+   "decision_regret_summary": {
+    "n": 36,
+    "median": 0.005659860541502941,
+    "max": 0.040326493654996555,
+    "median_kg": 327.1524891782974
+   },
+   "baseline_test": {
+    "n": 198,
+    "mae_kg_ha": 491.7051840770366,
+    "rmse_kg_ha": 717.249321205645,
+    "bias_kg_ha": -159.0054970441758,
+    "nmae": 0.15103812761506114,
+    "reference_yield_kg_ha": 3255.503705198243
+   },
+   "gate_results": {
+    "nmae": true,
+    "median_spearman": true,
+    "median_regret": true,
+    "max_regret": true,
+    "fixtures": true,
+    "beats_naive_baseline": true,
+    "all_weather_sources": true
+   },
+   "passed": true,
+   "loyo_cv": {
+    "nmae_mean": 0.07543028866693195,
+    "nmae_max": 0.14465403452216463,
+    "nmae_std": 0.02456039493484507
+   },
+   "samples": {
+    "total": 4031,
+    "fit_pool": 3497,
+    "test": 198,
+    "holdout_family_test": 18,
+    "years": 26
+   }
+  }
+ },
+ "weather_sources": [
+  "science-discovery",
+  "pilot-a",
+  "pilot-b"
+ ],
+ "passed": true,
+ "wall_s": 421.6
+}
+### make candidates PILOT=pilot-b: exit 0; retained hashes reproduced
+docker compose run --rm --no-deps api python scripts/science_build_libraries.py pilot-b
+ Container aabflow-api-run-c9ee03c3314d Creating 
+ Container aabflow-api-run-c9ee03c3314d Created 
+  experiments 200/300 (9s)
+{
+ "wheat-rabi-2026-27": {
+  "library_hash": "7fe55c700d29fb9f2c270ad887ea25697f34d65a03ff8285cb41564d36bce1bd",
+  "wall_s": 34.48,
+  "fields": 30,
+  "configurations": 1,
+  "templates": 906,
+  "experiments_requested": 2193,
+  "experiments_executed": 0,
+  "experiments_cached": 1893,
+  "policies_retained": 854,
+  "options_per_field_min": 24,
+  "options_per_field_max": 39,
+  "pilot_label": "pilot package",
+  "decision_at": "2026-10-10T03:00:00+00:00"
+ }
+}
+  experiments 200/965 (12s)
+  experiments 400/965 (18s)
+  experiments 600/965 (23s)
+  experiments 800/965 (28s)
+{
+ "wheat-rabi-2027-28": {
+  "library_hash": "f68eedb1f814f8ce0b75d1e641c2a8b3af3d4b00f76ea29cfb81e27a126e5997",
+  "wall_s": 254.78,
+  "fields": 30,
+  "configurations": 4,
+  "templates": 8464,
+  "experiments_requested": 8232,
+  "experiments_executed": 0,
+  "experiments_cached": 7267,
+  "policies_retained": 7729,
+  "options_per_field_min": 46,
+  "options_per_field_max": 96,
+  "pilot_label": "pilot package",
+  "decision_at": "2026-10-10T03:00:00+00:00"
+ }
+}
+{
+ "cotton-kharif-2027": {
+  "library_hash": "c9d3a31f99732fcc2fdc917aed7cea085d3452dbbed04f43ca95253705a8791e",
+  "wall_s": 218.48,
+  "fields": 30,
+  "configurations": 4,
+  "templates": 8448,
+  "experiments_requested": 5220,
+  "experiments_executed": 0,
+  "experiments_cached": 5220,
+  "policies_retained": 8024,
+  "options_per_field_min": 51,
+  "options_per_field_max": 98,
+  "pilot_label": "pilot package",
+  "decision_at": "2026-10-10T03:00:00+00:00"
+ }
+}
+{
+ "wheat-rabi-2024-25": {
+  "library_hash": "f3595e1f91bc9ff210e6f058201512c611b7b05f28a76f12581fde466ccec974",
+  "wall_s": 21.6,
+  "fields": 30,
+  "configurations": 1,
+  "templates": 906,
+  "experiments_requested": 2256,
+  "experiments_executed": 0,
+  "experiments_cached": 2137,
+  "policies_retained": 873,
+  "options_per_field_min": 24,
+  "options_per_field_max": 40,
+  "pilot_label": "pilot package",
+  "decision_at": "2024-10-01T03:00:00+00:00"
+ }
+}
+{
+ "wheat-rabi-2026-27": {
+  "library_hash": "7fe55c700d29fb9f2c270ad887ea25697f34d65a03ff8285cb41564d36bce1bd",
+  "wall_s": 34.48,
+  "fields": 30,
+  "configurations": 1,
+  "templates": 906,
+  "experiments_requested": 2193,
+  "experiments_executed": 0,
+  "experiments_cached": 1893,
+  "policies_retained": 854,
+  "options_per_field_min": 24,
+  "options_per_field_max": 39,
+  "pilot_label": "pilot package",
+  "decision_at": "2026-10-10T03:00:00+00:00"
+ },
+ "wheat-rabi-2027-28": {
+  "library_hash": "f68eedb1f814f8ce0b75d1e641c2a8b3af3d4b00f76ea29cfb81e27a126e5997",
+  "wall_s": 254.78,
+  "fields": 30,
+  "configurations": 4,
+  "templates": 8464,
+  "experiments_requested": 8232,
+  "experiments_executed": 0,
+  "experiments_cached": 7267,
+  "policies_retained": 7729,
+  "options_per_field_min": 46,
+  "options_per_field_max": 96,
+  "pilot_label": "pilot package",
+  "decision_at": "2026-10-10T03:00:00+00:00"
+ },
+ "cotton-kharif-2027": {
+  "library_hash": "c9d3a31f99732fcc2fdc917aed7cea085d3452dbbed04f43ca95253705a8791e",
+  "wall_s": 218.48,
+  "fields": 30,
+  "configurations": 4,
+  "templates": 8448,
+  "experiments_requested": 5220,
+  "experiments_executed": 0,
+  "experiments_cached": 5220,
+  "policies_retained": 8024,
+  "options_per_field_min": 51,
+  "options_per_field_max": 98,
+  "pilot_label": "pilot package",
+  "decision_at": "2026-10-10T03:00:00+00:00"
+ },
+ "wheat-rabi-2024-25": {
+  "library_hash": "f3595e1f91bc9ff210e6f058201512c611b7b05f28a76f12581fde466ccec974",
+  "wall_s": 21.6,
+  "fields": 30,
+  "configurations": 1,
+  "templates": 906,
+  "experiments_requested": 2256,
+  "experiments_executed": 0,
+  "experiments_cached": 2137,
+  "policies_retained": 873,
+  "options_per_field_min": 24,
+  "options_per_field_max": 40,
+  "pilot_label": "pilot package",
+  "decision_at": "2024-10-01T03:00:00+00:00"
+ }
+}
+benchmark: /app/evidence/benchmarks/science-library-pilot-b-20261010T075823Z.json
+
+{
+ "wheat-rabi-2026-27": {
+  "hash": "7fe55c700d29fb9f2c270ad887ea25697f34d65a03ff8285cb41564d36bce1bd",
+  "policies": 854,
+  "experiments_executed": 0,
+  "experiments_cached": 1893,
+  "wall_s": 34.48
+ },
+ "wheat-rabi-2027-28": {
+  "hash": "f68eedb1f814f8ce0b75d1e641c2a8b3af3d4b00f76ea29cfb81e27a126e5997",
+  "policies": 7729,
+  "experiments_executed": 0,
+  "experiments_cached": 7267,
+  "wall_s": 254.78
+ },
+ "cotton-kharif-2027": {
+  "hash": "c9d3a31f99732fcc2fdc917aed7cea085d3452dbbed04f43ca95253705a8791e",
+  "policies": 8024,
+  "experiments_executed": 0,
+  "experiments_cached": 5220,
+  "wall_s": 218.48
+ },
+ "wheat-rabi-2024-25": {
+  "hash": "f3595e1f91bc9ff210e6f058201512c611b7b05f28a76f12581fde466ccec974",
+  "policies": 873,
+  "experiments_executed": 0,
+  "experiments_cached": 2137,
+  "wall_s": 21.6
+ }
+}

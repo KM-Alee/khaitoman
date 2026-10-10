@@ -1,0 +1,398 @@
+{
+ "created_at_utc": "20261010T075535Z",
+ "checks": {
+  "make test": 397,
+  "make domain-tests": 85,
+  "make science-smoke": 45,
+  "make lint": "passed",
+  "post-fix exact confirmation": 1
+ },
+ "training_device": "NVIDIA GeForce RTX 5060 Laptop GPU (OpenCL; actual process/device recorded)",
+ "model_evaluation": {
+  "model_version": "surrogate-v7-gpu",
+  "training_device": "gpu",
+  "created_at": "2026-10-10T07:43:48.477397+00:00",
+  "adapter_version": "aabflow-aquacrop-adapter-1.0.0",
+  "crops": {
+   "wheat": {
+    "test": {
+     "n": 325,
+     "mae_kg_ha": 568.6325814909175,
+     "rmse_kg_ha": 668.6745628196154,
+     "bias_kg_ha": -427.2922582412966,
+     "nmae": 0.07137503527100231,
+     "reference_yield_kg_ha": 7966.827327396601
+    },
+    "test_ranking": {
+     "contexts": 18,
+     "median_spearman": 0.9818181818181817,
+     "min_spearman": 0.9151515151515152
+    },
+    "decision_regret_summary": {
+     "n": 36,
+     "median": 0.004599746966680826,
+     "max": 0.0782342408698297,
+     "median_kg": 412.8590178071754
+    },
+    "baseline_test": {
+     "n": 325,
+     "mae_kg_ha": 958.3445858267406,
+     "rmse_kg_ha": 1251.6058760866554,
+     "bias_kg_ha": -95.35499332413167,
+     "nmae": 0.12029187359579795,
+     "reference_yield_kg_ha": 7966.827327396601
+    },
+    "gate_results": {
+     "nmae": true,
+     "median_spearman": true,
+     "median_regret": true,
+     "max_regret": true,
+     "fixtures": true,
+     "beats_naive_baseline": true,
+     "all_weather_sources": true
+    },
+    "passed": true,
+    "loyo_cv": {
+     "nmae_mean": 0.06208514155578989,
+     "nmae_max": 0.15761041120586844,
+     "nmae_std": 0.027855717563876448
+    },
+    "samples": {
+     "total": 4881,
+     "fit_pool": 4082,
+     "test": 325,
+     "holdout_family_test": 30,
+     "years": 26
+    }
+   },
+   "cotton": {
+    "test": {
+     "n": 198,
+     "mae_kg_ha": 259.2557934876031,
+     "rmse_kg_ha": 335.31818437095785,
+     "bias_kg_ha": -224.12758793317826,
+     "nmae": 0.07963615371521005,
+     "reference_yield_kg_ha": 3255.503705198243
+    },
+    "test_ranking": {
+     "contexts": 18,
+     "median_spearman": 0.9636363636363637,
+     "min_spearman": 0.8272727272727273
+    },
+    "decision_regret_summary": {
+     "n": 36,
+     "median": 0.005659860541502941,
+     "max": 0.040326493654996555,
+     "median_kg": 327.1524891782974
+    },
+    "baseline_test": {
+     "n": 198,
+     "mae_kg_ha": 491.7051840770366,
+     "rmse_kg_ha": 717.249321205645,
+     "bias_kg_ha": -159.0054970441758,
+     "nmae": 0.15103812761506114,
+     "reference_yield_kg_ha": 3255.503705198243
+    },
+    "gate_results": {
+     "nmae": true,
+     "median_spearman": true,
+     "median_regret": true,
+     "max_regret": true,
+     "fixtures": true,
+     "beats_naive_baseline": true,
+     "all_weather_sources": true
+    },
+    "passed": true,
+    "loyo_cv": {
+     "nmae_mean": 0.07543028866693195,
+     "nmae_max": 0.14465403452216463,
+     "nmae_std": 0.02456039493484507
+    },
+    "samples": {
+     "total": 4031,
+     "fit_pool": 3497,
+     "test": 198,
+     "holdout_family_test": 18,
+     "years": 26
+    }
+   }
+  },
+  "weather_sources": [
+   "science-discovery",
+   "pilot-a",
+   "pilot-b"
+  ],
+  "passed": true,
+  "wall_s": 421.6
+ },
+ "libraries": {
+  "pilot-a": {
+   "cotton-kharif-2027": {
+    "candidate_library_hash": "b0e95fc3e9bf993a7fc94c2651804aa53ee17c6ceb4c1ddd26c719983bd5ec41",
+    "created_at": "2026-10-10T07:23:44.018645+00:00",
+    "pilot_version": "reviewed-v1",
+    "policies": 8034
+   },
+   "wheat-rabi-2024-25": {
+    "candidate_library_hash": "ae50557e537ce08c87b2cced7bd0ba8b668556239752eaa98e1bfe874e256f56",
+    "created_at": "2026-10-10T01:03:03.295066+00:00",
+    "pilot_version": "reviewed-v1",
+    "policies": 876
+   },
+   "wheat-rabi-2026-27": {
+    "candidate_library_hash": "af80665e124f23c893ea285365df0dbe1d6b5627426ffe1bc79038ad16f6fd72",
+    "created_at": "2026-10-10T00:55:14.298298+00:00",
+    "pilot_version": "reviewed-v1",
+    "policies": 856
+   },
+   "wheat-rabi-2027-28": {
+    "candidate_library_hash": "33c5d938e017235aca12a2727e2c3d14b42254eee8cd034fa2acba373521f325",
+    "created_at": "2026-10-10T07:17:22.765602+00:00",
+    "pilot_version": "reviewed-v1",
+    "policies": 7745
+   }
+  },
+  "pilot-b": {
+   "cotton-kharif-2027": {
+    "candidate_library_hash": "c9d3a31f99732fcc2fdc917aed7cea085d3452dbbed04f43ca95253705a8791e",
+    "created_at": "2026-10-10T07:48:18.100288+00:00",
+    "pilot_version": "reviewed-v1",
+    "policies": 8024
+   },
+   "wheat-rabi-2024-25": {
+    "candidate_library_hash": "f3595e1f91bc9ff210e6f058201512c611b7b05f28a76f12581fde466ccec974",
+    "created_at": "2026-10-10T06:51:14.329856+00:00",
+    "pilot_version": "reviewed-v1",
+    "policies": 873
+   },
+   "wheat-rabi-2026-27": {
+    "candidate_library_hash": "7fe55c700d29fb9f2c270ad887ea25697f34d65a03ff8285cb41564d36bce1bd",
+    "created_at": "2026-10-10T06:41:12.149780+00:00",
+    "pilot_version": "reviewed-v1",
+    "policies": 854
+   },
+   "wheat-rabi-2027-28": {
+    "candidate_library_hash": "f68eedb1f814f8ce0b75d1e641c2a8b3af3d4b00f76ea29cfb81e27a126e5997",
+    "created_at": "2026-10-10T07:41:27.343252+00:00",
+    "pilot_version": "reviewed-v1",
+    "policies": 7729
+   }
+  }
+ },
+ "density": [
+  {
+   "pilot_id": "pilot-a",
+   "season_id": "cotton-kharif-2027",
+   "baseline_hash": "0dff25527a6a412c0065f605149a8a4ca93673439cc9123b3734524fe2601399",
+   "retained_hash": "b0e95fc3e9bf993a7fc94c2651804aa53ee17c6ceb4c1ddd26c719983bd5ec41",
+   "coarse_policies": 4096,
+   "dense_policies": 8034,
+   "evidence_hash": "828c3996b6022e71b29d34fc89fe0dedc7927c944ef77349b6da333021bd14ac",
+   "investment_changes": 2,
+   "schedule_changes": 5,
+   "all_solves_optimal": true
+  },
+  {
+   "pilot_id": "pilot-a",
+   "season_id": "wheat-rabi-2027-28",
+   "baseline_hash": "ee2822b73ec45efa94924224b6d791ff2d0ffb4648490bf4c5146facf071603d",
+   "retained_hash": "33c5d938e017235aca12a2727e2c3d14b42254eee8cd034fa2acba373521f325",
+   "coarse_policies": 3909,
+   "dense_policies": 7745,
+   "evidence_hash": "f9d6a1cfe068417b4d8589eaa04c898df1af428bb0175e86a961cb148a863b45",
+   "investment_changes": 0,
+   "schedule_changes": 5,
+   "all_solves_optimal": true
+  },
+  {
+   "pilot_id": "pilot-b",
+   "season_id": "cotton-kharif-2027",
+   "baseline_hash": "95d5ef221aeb850c87dcfd89e0227c57e683c32913151626d975f2dbd44290a0",
+   "retained_hash": "c9d3a31f99732fcc2fdc917aed7cea085d3452dbbed04f43ca95253705a8791e",
+   "coarse_policies": 4096,
+   "dense_policies": 8024,
+   "evidence_hash": "c212cae9b6e23f4e2ebb3faa7778fad368408ca11e75ace23ce277803d90c975",
+   "investment_changes": 2,
+   "schedule_changes": 5,
+   "all_solves_optimal": true
+  },
+  {
+   "pilot_id": "pilot-b",
+   "season_id": "wheat-rabi-2027-28",
+   "baseline_hash": "79c28165a39ea52535bf80c88273a1f530ec2b59632ec5c1e5bd848171a92960",
+   "retained_hash": "f68eedb1f814f8ce0b75d1e641c2a8b3af3d4b00f76ea29cfb81e27a126e5997",
+   "coarse_policies": 3913,
+   "dense_policies": 7729,
+   "evidence_hash": "2bab63cab4c37cb2055a065f20d49a7a17fbce947378719bd1a2c97418061132",
+   "investment_changes": 2,
+   "schedule_changes": 4,
+   "all_solves_optimal": true
+  }
+ ],
+ "external_evaluations": {
+  "pilot-a": {
+   "model_version": "surrogate-v7-gpu",
+   "pilot_id": "pilot-a",
+   "created_at": "2026-10-10T07:51:46.068670+00:00",
+   "crops": {
+    "wheat": {
+     "samples": 72,
+     "years": [
+      "2024-25"
+     ],
+     "all": {
+      "n": 72,
+      "mae_kg_ha": 590.8578225791755,
+      "rmse_kg_ha": 703.670275351735,
+      "bias_kg_ha": -393.4690360684665,
+      "nmae": 0.07416475822782216,
+      "reference_yield_kg_ha": 7966.827327396601
+     },
+     "ranking": {
+      "contexts": 6,
+      "median_spearman": 0.9790209790209792,
+      "min_spearman": 0.8881118881118882
+     },
+     "decision_regret_year": "2024-25",
+     "decision_regret": {
+      "n": 12,
+      "median": 0.008131884232394582,
+      "max": 0.06865649089882063
+     }
+    },
+    "cotton": {
+     "samples": 72,
+     "years": [
+      "2025"
+     ],
+     "all": {
+      "n": 72,
+      "mae_kg_ha": 239.560526588744,
+      "rmse_kg_ha": 316.1975842742006,
+      "bias_kg_ha": -210.34259532664584,
+      "nmae": 0.07358631667542705,
+      "reference_yield_kg_ha": 3255.503705198243
+     },
+     "ranking": {
+      "contexts": 6,
+      "median_spearman": 0.9720279720279721,
+      "min_spearman": 0.9090909090909092
+     },
+     "decision_regret_year": "2025",
+     "decision_regret": {
+      "n": 12,
+      "median": 0.005540039827495111,
+      "max": 0.01292185441017943
+     }
+    }
+   },
+   "weather_origin": "pilot-package:pilot-a/reviewed-v1",
+   "series_id": "openmeteo-archive-30.8000N-72.3000E-20140101-20251231"
+  },
+  "pilot-b": {
+   "model_version": "surrogate-v7-gpu",
+   "pilot_id": "pilot-b",
+   "created_at": "2026-10-10T07:51:49.319083+00:00",
+   "crops": {
+    "wheat": {
+     "samples": 72,
+     "years": [
+      "2024-25"
+     ],
+     "all": {
+      "n": 72,
+      "mae_kg_ha": 600.7859914646974,
+      "rmse_kg_ha": 718.4903238500023,
+      "bias_kg_ha": -390.2397221535641,
+      "nmae": 0.07541094676405172,
+      "reference_yield_kg_ha": 7966.827327396601
+     },
+     "ranking": {
+      "contexts": 6,
+      "median_spearman": 0.9685314685314685,
+      "min_spearman": 0.9300699300699302
+     },
+     "decision_regret_year": "2024-25",
+     "decision_regret": {
+      "n": 12,
+      "median": 0.013018195809811265,
+      "max": 0.07064869760681437
+     }
+    },
+    "cotton": {
+     "samples": 72,
+     "years": [
+      "2025"
+     ],
+     "all": {
+      "n": 72,
+      "mae_kg_ha": 241.8602221039742,
+      "rmse_kg_ha": 315.00741054952243,
+      "bias_kg_ha": -206.9681444235162,
+      "nmae": 0.07429271904000065,
+      "reference_yield_kg_ha": 3255.503705198243
+     },
+     "ranking": {
+      "contexts": 6,
+      "median_spearman": 0.9720279720279721,
+      "min_spearman": 0.9090909090909092
+     },
+     "decision_regret_year": "2025",
+     "decision_regret": {
+      "n": 12,
+      "median": 0.00599905939817973,
+      "max": 0.013959567130923991
+     }
+    }
+   },
+   "weather_origin": "pilot-package:pilot-b/reviewed-v1",
+   "series_id": "openmeteo-archive-30.7000N-72.2000E-20140101-20251231"
+  }
+ },
+ "model_file_sha256": {
+  "evaluation-cotton.json": "1d64036e27fa6e84ffffe51da387fee384df41be9a2a919b4acdbc5ccbbfe2da",
+  "evaluation-wheat.json": "32f6b69d815b8d684eed9b60fc9ecc6db70f01620c8eaaf84a64cf2d121c6971",
+  "evaluation.json": "eaed6d051bec907880a002eb1996f1a2e46abc24705deef79e32e221a40965c6",
+  "external-pilot-a-cotton.parquet": "0e3d0bd9c888f7e93755c2821298c746f9e26f85d9dc1b0c138d3ac5e1887020",
+  "external-pilot-a-wheat.parquet": "22808f689ff89c215653ed60310b82e93a1f7f4ad4692f19ff85af6880580b11",
+  "external-pilot-a.json": "ed2e048946e0e78232de24c96e85f4e2b6fce748a827a642961c872041389b9d",
+  "external-pilot-b-cotton.parquet": "fa2d28c9d54afaf218bb36dc034eba7dc6745693099c59881f0de53b4136634c",
+  "external-pilot-b-wheat.parquet": "4b6e1329e144f1c3c58ccd8c6b2018b163c961a60b329d813ab32d58f2b844eb",
+  "external-pilot-b.json": "2e6407fac6c89cd0dd43a8deec10228b4fa17db370c73617ee3a25eb397016a8",
+  "model-cotton.txt": "21ee006cf5ba16ad98861a6adac26a41930fb036c8904ed6c41dc31887bdd478",
+  "model-wheat.txt": "1226cb46ea4846965ea91967b0d0f05a24309c1da57203a7090a1b47164bb6df",
+  "training-cotton.parquet": "db135ee34303146c4b1e49d57b37202c4e57d13f882807d2c3473b11474f0f3f",
+  "training-wheat.parquet": "3fc7c75b843b4d53a3491e20792302175a4543c62e1631bbb78a64b67377971e"
+ },
+ "retained_reproduction": {
+  "wheat-rabi-2026-27": {
+   "hash": "7fe55c700d29fb9f2c270ad887ea25697f34d65a03ff8285cb41564d36bce1bd",
+   "policies": 854,
+   "experiments_executed": 0,
+   "experiments_cached": 1893,
+   "wall_s": 34.48
+  },
+  "wheat-rabi-2027-28": {
+   "hash": "f68eedb1f814f8ce0b75d1e641c2a8b3af3d4b00f76ea29cfb81e27a126e5997",
+   "policies": 7729,
+   "experiments_executed": 0,
+   "experiments_cached": 7267,
+   "wall_s": 254.78
+  },
+  "cotton-kharif-2027": {
+   "hash": "c9d3a31f99732fcc2fdc917aed7cea085d3452dbbed04f43ca95253705a8791e",
+   "policies": 8024,
+   "experiments_executed": 0,
+   "experiments_cached": 5220,
+   "wall_s": 218.48
+  },
+  "wheat-rabi-2024-25": {
+   "hash": "f3595e1f91bc9ff210e6f058201512c611b7b05f28a76f12581fde466ccec974",
+   "policies": 873,
+   "experiments_executed": 0,
+   "experiments_cached": 2137,
+   "wall_s": 21.6
+  }
+ },
+ "retained_reproduction_benchmark": "evidence/benchmarks/science-library-pilot-b-20261010T075823Z.json"
+}
