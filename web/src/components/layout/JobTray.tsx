@@ -86,6 +86,13 @@ export function JobTray({ className }: { className?: string }) {
   const visible = jobs.filter((j) => !j.dismissed && j.pilotKey === sel.pilotKey).slice(0, 6);
   const running = visible.filter((j) => !isTerminal(j.state));
   const [, tick] = useState(0);
+  // Succeeded jobs leave the tray once their result is bound; failures stay until dismissed.
+  useEffect(() => {
+    const done = visible.filter((j) => j.state === "succeeded");
+    if (!done.length) return;
+    const t = setTimeout(() => done.forEach((j) => dismiss(j.jobId)), 4500);
+    return () => clearTimeout(t);
+  }, [visible.map((j) => `${j.jobId}:${j.state}`).join("|"), dismiss]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!running.length) return;
     const t = setInterval(() => tick((x) => x + 1), 1000);

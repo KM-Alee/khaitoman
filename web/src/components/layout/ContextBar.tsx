@@ -125,24 +125,24 @@ export function ContextBar({ compact, onOpenScenario }: { compact?: boolean; onO
       </DropdownMenu.Root>
 
       {!compact ? (
-        <div className="hidden min-w-0 items-center gap-1.5 lg:flex" aria-label="Scenario context">
+        <div className="hidden min-w-0 flex-1 items-center gap-1.5 overflow-hidden lg:flex" aria-label="Scenario context">
           <span className="h-6 w-px bg-border" aria-hidden />
           {season ? (
-            <Chip tone="vegetation" title={`${season.season_id}: ${formatDate(season.start)} – ${formatDate(season.end)}`}>
-              {titleCase(season.crop)} · {season.label ?? season.season_id.replace(/^(wheat|cotton)-/, "")}
+            <Chip tone="vegetation" className="min-w-0 max-w-[280px] shrink" title={`${season.season_id}: ${formatDate(season.start)} – ${formatDate(season.end)}`}>
+              <span className="truncate">{titleCase(season.crop)} · {season.label ?? season.season_id.replace(/^(wheat|cotton)-/, "")}</span>
             </Chip>
           ) : null}
-          {scenario.draft ? <Chip tone="info">{titleCase(scenario.draft.planning_mode)}</Chip> : null}
+          {scenario.draft ? <Chip tone="info" className="hidden shrink-0 2xl:inline-flex">{titleCase(scenario.draft.planning_mode)}</Chip> : null}
           <RevisionChip phase={scenario.phase} revisionId={scenario.active?.revisionId ?? null} />
           {sel.runId ? (
-            <Chip tone="ink" title={`Displayed run ${sel.runId}`}>
+            <Chip tone="ink" className="shrink-0" title={`Displayed run ${sel.runId}`}>
               Run {shortId(sel.runId)}
             </Chip>
           ) : null}
         </div>
       ) : null}
 
-      <div className="ml-auto flex items-center gap-1.5">
+      <div className="ml-auto flex shrink-0 items-center gap-1.5">
         <ConnectionState compact={compact} />
         {!compact ? (
           <>
@@ -181,13 +181,13 @@ export function ContextBar({ compact, onOpenScenario }: { compact?: boolean; onO
 function RevisionChip({ phase, revisionId }: { phase: string; revisionId: string | null }) {
   if (phase === "dirty")
     return (
-      <Chip tone="warning" title="Inputs differ from the last run revision">
+      <Chip tone="warning" className="shrink-0" title="Inputs differ from the last run revision">
         Draft · inputs changed
       </Chip>
     );
-  if (phase === "draft") return <Chip tone="neutral">Draft · not yet run</Chip>;
+  if (phase === "draft") return <Chip tone="neutral" className="shrink-0">Draft · not yet run</Chip>;
   if (phase === "running") return <Chip tone="water">Revision {shortId(revisionId)} · solving</Chip>;
-  if (revisionId) return <Chip tone="info" title={revisionId}>Revision {shortId(revisionId)}</Chip>;
+  if (revisionId) return <Chip tone="info" className="shrink-0" title={revisionId}>Revision {shortId(revisionId)}</Chip>;
   return null;
 }
 

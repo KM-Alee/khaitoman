@@ -7,7 +7,8 @@ import { GROUP_COLORS } from "./palette";
 import { METRIC_DEFS, type FieldVisualResult } from "./useFieldVisuals";
 
 export function MapLegend({ metric, visuals, className }: { metric: MapMetric; visuals: FieldVisualResult; className?: string }) {
-  const [open, setOpen] = useState(true);
+  // Open by default only where it leaves the scene visible; one tap expands it on short screens.
+  const [open, setOpen] = useState(() => typeof window === "undefined" || (window.innerHeight >= 880 && window.innerWidth >= 768));
   const def = metric !== "none" ? METRIC_DEFS[metric] : null;
   return (
     <div

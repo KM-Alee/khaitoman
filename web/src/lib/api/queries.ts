@@ -12,6 +12,7 @@ import type {
   Health,
   InterventionInstance,
   Job,
+  MetricValue,
   Pilot,
   PilotSummary,
   RevisionChange,
@@ -244,12 +245,59 @@ export function useInterventions(pilotId?: string, seasonId?: string, decisionAt
   });
 }
 
+/** Server revision view: immutable snapshot plus readiness and its runs (T9.1). */
+export interface RevisionIssue {
+  code: string;
+  detail: string;
+  field?: string | null;
+}
+export interface RevisionReadiness {
+  ready: boolean;
+  blockers: RevisionIssue[];
+  warnings: RevisionIssue[];
+  max_attainable_service: Record<string, number | null>;
+  coverage?: Record<string, unknown> | null;
+}
+export interface RevisionView {
+  revision: ScenarioRevision;
+  readiness: RevisionReadiness | null;
+  runs: { run_id: string; plan_kind: string; outcome: string; solver_status: string; created_at: string; job_id?: string | null }[];
+  is_head: boolean;
+  origin: string | null;
+}
+
+/** Accepts the composed `{revision, readiness, runs}` view or a bare revision. */
+export function readRevisionView(raw: unknown): RevisionView {
+  const o = (raw ?? {}) as Record<string, unknown>;
+  const inner = o.revision as Record<string, unknown> | undefined;
+  const isView = !!inner && typeof inner === "object" && "scenario_revision_id" in inner;
+  const revision = (isView ? inner : o) as unknown as ScenarioRevision;
+  const rd = (isView ? o.readiness : null) as Record<string, unknown> | null;
+  const issues = (v: unknown): RevisionIssue[] =>
+    Array.isArray(v) ? v.map((x) => (typeof x === "string" ? { code: "NOTE", detail: x } : (x as RevisionIssue))) : [];
+  return {
+    revision,
+    readiness: rd
+      ? {
+          ready: !!rd.ready,
+          blockers: issues(rd.blockers),
+          warnings: issues(rd.warnings),
+          max_attainable_service: (rd.max_attainable_service ?? {}) as Record<string, number | null>,
+          coverage: (rd.coverage ?? null) as Record<string, unknown> | null,
+        }
+      : null,
+    runs: (isView && Array.isArray(o.runs) ? o.runs : []) as RevisionView["runs"],
+    is_head: isView ? o.is_head !== false : true,
+    origin: (isView ? (o.origin as string | null) : null) ?? null,
+  };
+}
+
 export function useRevision(revisionId?: string | null) {
   return useQuery({
     queryKey: qk.revision(revisionId ?? ""),
     enabled: !!revisionId,
-    queryFn: ({ signal }) => api.get<ScenarioRevision>(`/scenario-revisions/${enc(revisionId!)}`, signal),
-    staleTime: Number.POSITIVE_INFINITY,
+    queryFn: async ({ signal }) => readRevisionView(await api.get<unknown>(`/scenario-revisions/${enc(revisionId!)}`, signal)),
+    staleTime: 30_000,
     retry,
   });
 }
@@ -311,6 +359,190 @@ export function useTimeline(runId?: string | null, fieldId?: string | null) {
     staleTime: Number.POSITIVE_INFINITY,
     retry,
   });
+}
+
+/* ---------------------------------------------------------------- dedicated run views (PRD §8.1–8.5) */
+/** Every run-view endpoint may answer `{available:false, reason}`; never substitute numbers for it. */
+export interface RunViewUnavailable {
+  available: false;
+  reason: string;
+  run_id?: string;
+}
+export type RunView<T> = (T & { available: true }) | RunViewUnavailable;
+/** A status/reason pair the server uses for quantities it declines to compute. */
+export interface StatusReason {
+  status: MetricValue["status"];
+  reason: string | null;
+}
+
+export interface AccountingFlow {
+  from: string;
+  to: string;
+  m3: number;
+}
+export interface RunAccounting {
+  run_id: string;
+  state_id: string | null;
+  boundaries: Record<string, number | null>;
+  flows: AccountingFlow[];
+  reconciliation: { source_minus_loss_minus_receipt_m3?: number | null; note?: string | null } & Record<string, unknown>;
+  per_field: Record<string, Record<string, number>>;
+  basin_savings: StatusReason | null;
+}
+
+export interface EquityField {
+  field_id: string;
+  group: "head" | "middle" | "tail" | string | null;
+  owner_ref: string | null;
+  service_ratio: number | null;
+  service_status: MetricValue["status"] | string;
+  production_kg: number | null;
+  groundwater_m3: number | null;
+  production_delta_kg: number | null;
+}
+export interface EquityGroupStats {
+  fields: number;
+  eligible: number;
+  mean_service_ratio: number | null;
+  min_service_ratio: number | null;
+}
+export interface EquityComparison {
+  compatible: boolean;
+  compatibility_key?: string;
+  shared?: { condition: string; value: unknown }[];
+  differences?: { condition: string; values: unknown[]; kind?: string; note?: string }[];
+  label?: string;
+}
+export interface RunEquity {
+  run_id: string;
+  baseline_run_id: string | null;
+  measure_label: string;
+  aggregation: string;
+  fields: EquityField[];
+  groups: Record<string, EquityGroupStats>;
+  min_service_ratio: number | null;
+  zero_reference_fields: string[];
+  fields_worse_off: (string | { field_id: string; [k: string]: unknown })[];
+  fields_worse_off_count: number | null;
+  pumping_burden_share: Record<string, number>;
+  owner_aggregation: unknown;
+  owner_note: string | null;
+  comparison: EquityComparison | null;
+}
+
+export interface EconomicsInstance {
+  instance_id: string;
+  category: string;
+  capex_pkr: number;
+  seasonal_opex_pkr: number;
+  shared: boolean;
+  charged: string;
+  evidence_ids: string[];
+}
+export interface EconomicsSensitivity {
+  case: string;
+  gross_capital_pkr?: number;
+  operating_pkr?: number;
+  within_budget: boolean;
+}
+export interface RunEconomics {
+  run_id: string;
+  gross_project_cost_pkr: number | null;
+  capital_budget_pkr: number | null;
+  public_grant_pkr: number | StatusReason | null;
+  participant_cash_pkr: number | null;
+  seasonal_operating_pkr: number | null;
+  operating_budget_pkr: number | null;
+  pumping: { field_id: string; seasonal_opex_pkr: number; pump_volume_m3: number }[];
+  instances: EconomicsInstance[];
+  crop_value: MetricValue | null;
+  irrigation_contribution: MetricValue | null;
+  sensitivity: EconomicsSensitivity[];
+  sensitivity_note: string | null;
+  cashflow: StatusReason | Record<string, unknown> | null;
+}
+
+export interface PlanAction {
+  action_id: string;
+  category: string;
+  target_ids: string[];
+  description: string;
+  crop_season: string | null;
+  decision_date: string | null;
+  start_date: string | null;
+  commissioning_date: string | null;
+  quantity: Record<string, number | string | null>;
+  capex_pkr: number | null;
+  seasonal_opex_pkr: number | null;
+  payer: string | null;
+  responsible_role: string | null;
+  required_approval: string | null;
+  prerequisites: string[];
+  affected_fields: string[];
+  modeled_change: Record<string, number | null>;
+  uncertainty: string | null;
+  source_refs: string[];
+  run_id: string;
+  status: string;
+}
+export interface ScheduleRow {
+  field_id: string;
+  date: string;
+  gross_depth_mm: number;
+  policy_family: string;
+}
+export interface RunActionPlan {
+  run_id: string;
+  plan_kind: string;
+  actions: PlanAction[];
+  schedules: ScheduleRow[];
+  status_note: string | null;
+}
+
+export interface SdgCard {
+  card: string;
+  metrics: string[];
+  interpretation: string;
+  target_url: string | null;
+  official_indicator: boolean;
+  values: MetricValue[];
+  formulas: Record<string, string>;
+  run_ids: string[];
+  limitations: string[];
+}
+export interface RunImpact {
+  run_id: string;
+  cards: SdgCard[];
+  distribution: { field_id: string; production_kg: number | null }[];
+  co2: StatusReason | null;
+}
+
+function runViewQuery<T>(key: readonly unknown[], runId: string | null | undefined, path: string, params?: Record<string, string | null | undefined>) {
+  return {
+    queryKey: key,
+    enabled: !!runId,
+    queryFn: ({ signal }: { signal: AbortSignal }) => api.get<RunView<T>>(`/runs/${enc(runId!)}/${path}${params ? qs(params) : ""}`, signal),
+    staleTime: Number.POSITIVE_INFINITY, // derived from an immutable run
+    retry,
+  };
+}
+
+export function useRunAccounting(runId?: string | null) {
+  return useQuery(runViewQuery<RunAccounting>(["run-accounting", runId ?? ""], runId, "accounting"));
+}
+export function useRunEquity(runId?: string | null, baselineRunId?: string | null) {
+  const b = baselineRunId && baselineRunId !== runId ? baselineRunId : null;
+  return useQuery(runViewQuery<RunEquity>(["run-equity", runId ?? "", b ?? ""], runId, "equity", { baseline_run_id: b }));
+}
+export function useRunEconomics(runId?: string | null) {
+  return useQuery(runViewQuery<RunEconomics>(["run-economics", runId ?? ""], runId, "economics"));
+}
+export function useRunActionPlan(runId?: string | null) {
+  return useQuery(runViewQuery<RunActionPlan>(["run-action-plan", runId ?? ""], runId, "action-plan"));
+}
+export function useRunImpact(runId?: string | null, baselineRunId?: string | null) {
+  const b = baselineRunId && baselineRunId !== runId ? baselineRunId : null;
+  return useQuery(runViewQuery<RunImpact>(["run-impact", runId ?? "", b ?? ""], runId, "impact", { baseline_run_id: b }));
 }
 
 export interface RunListItem {
@@ -427,6 +659,7 @@ export interface EvidenceHit {
 export function useEvidenceSearch(q: string, pilotId?: string) {
   return useQuery({
     queryKey: qk.evidenceSearch(q, pilotId),
+    enabled: q.trim().length > 0, // the curated index requires a term (min length 1)
     queryFn: async ({ signal }) =>
       listOf<EvidenceHit>(await api.get(`/evidence/search${qs({ q, pilot_id: pilotId })}`, signal), "results"),
     staleTime: 30_000,
@@ -439,17 +672,23 @@ export function useEvidenceSearch(q: string, pilotId?: string) {
 export interface CreatedScenario {
   scenario_id: string;
   revision: ScenarioRevision;
+  view: RevisionView;
 }
 export function useCreateScenario() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (req: ScenarioRequest) => {
-      const r = await api.post<Record<string, unknown>>("/scenarios", req, { idempotent: true });
-      const revision = (r.revision ?? r.initial_revision ?? r) as ScenarioRevision;
-      const scenario_id = String(r.scenario_id ?? revision.scenario_id);
-      return { scenario_id, revision } as CreatedScenario;
+      // POST /scenarios takes {contract_version, label?, request} (T9.1, ScenarioCreate).
+      const r = await api.post<Record<string, unknown>>(
+        "/scenarios",
+        { contract_version: "2.0.0", request: req },
+        { idempotent: true },
+      );
+      const view = readRevisionView(r.revision ?? r.initial_revision ?? r);
+      const scenario_id = String(r.scenario_id ?? view.revision.scenario_id);
+      return { scenario_id, revision: view.revision, view } as CreatedScenario;
     },
-    onSuccess: (d) => qc.setQueryData(qk.revision(d.revision.scenario_revision_id), d.revision),
+    onSuccess: (d) => qc.setQueryData(qk.revision(d.revision.scenario_revision_id), d.view),
   });
 }
 
@@ -459,12 +698,12 @@ export function useDeriveRevision() {
     mutationFn: async (a: { scenarioId: string; parentRevisionId: string; changes: RevisionChange }) => {
       const r = await api.post<Record<string, unknown>>(
         `/scenarios/${enc(a.scenarioId)}/revisions`,
-        { parent_revision_id: a.parentRevisionId, changes: a.changes },
+        { contract_version: "2.0.0", parent_revision_id: a.parentRevisionId, changes: a.changes },
         { idempotent: true },
       );
-      return (r.revision ?? r) as ScenarioRevision;
+      return readRevisionView(r);
     },
-    onSuccess: (rev) => qc.setQueryData(qk.revision(rev.scenario_revision_id), rev),
+    onSuccess: (v) => qc.setQueryData(qk.revision(v.revision.scenario_revision_id), v),
   });
 }
 

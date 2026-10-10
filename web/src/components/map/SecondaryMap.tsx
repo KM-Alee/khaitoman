@@ -45,6 +45,7 @@ export function SecondaryMap({
     if (!ref.current) return;
     const e = new MapEngine(ref.current, { mode, reducedMotion: reduced, secondary: true });
     setEngine(e);
+    (window as unknown as { __aabMap2?: MapEngine }).__aabMap2 = e;
     e.whenReady().then(() => setReady(true));
     const ro = new ResizeObserver(() => e.resize());
     ro.observe(ref.current);
@@ -108,5 +109,11 @@ export function SecondaryMap({
     if (engine && ready) engine.setImageryVisible(showImagery);
   }, [engine, ready, showImagery]);
 
-  return <div ref={ref} className={cn("absolute inset-0", className)} style={style} role="region" aria-label={label} data-testid="secondary-map" />;
+  // MapLibre sets `position: relative` on its container, so the engine gets an inner
+  // full-size element and the absolute positioning stays on the wrapper.
+  return (
+    <div className={cn("absolute inset-0", className)} style={style} role="region" aria-label={label} data-testid="secondary-map">
+      <div ref={ref} className="h-full w-full" />
+    </div>
+  );
 }

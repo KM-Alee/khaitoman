@@ -204,6 +204,8 @@ function MapTag({ run, side }: { run: RunResult | null; side: "left" | "right" }
 
 function Ladder({ byKind, loading, error }: { byKind: Map<PlanKind, RunResult>; loading: boolean; error: unknown }) {
   const { sel } = usePilotData();
+  const { mobile } = useShell();
+  const cell = mobile ? "px-2 py-2" : "px-4 py-2";
   if (loading) return <Skeleton className="h-44" />;
   if (error) return <StatePanel state="error" error={error} title="Runs could not be loaded" />;
   const kinds = ORDER.filter((k) => byKind.has(k));
@@ -221,22 +223,22 @@ function Ladder({ byKind, loading, error }: { byKind: Map<PlanKind, RunResult>; 
         </Button>
       </header>
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[640px] border-collapse text-[13px]">
+        <table className={cn("w-full border-collapse text-[13px]", mobile ? "" : "min-w-[640px]")}>
           <thead>
             <tr className="border-y border-border bg-surface-muted/60">
-              <th scope="col" className="px-4 py-2 text-left text-[12px] font-medium text-ink-tertiary">
+              <th scope="col" className={cn(cell, "pl-4 text-left text-[12px] font-medium text-ink-tertiary")}>
                 Metric
               </th>
               {kinds.map((k) => {
                 const run = byKind.get(k)!;
                 return (
-                  <th key={k} scope="col" className="px-4 py-2 text-right align-bottom">
+                  <th key={k} scope="col" className={cn(cell, "text-right align-bottom last:pr-4")}>
                     <div className="text-[13px] font-semibold text-ink">{k}</div>
-                    <div className="text-[11px] font-normal text-ink-secondary">{PLAN_LABEL[k]}</div>
+                    <div className="hidden text-[11px] font-normal text-ink-secondary sm:block">{PLAN_LABEL[k]}</div>
                     <div className="mt-1 flex justify-end">
                       <SolverBadge status={run.solver_status} size="sm" />
                     </div>
-                    <button type="button" className="num mt-1 font-mono text-[11px] font-normal text-water hover:underline" onClick={() => sel.setParams({ run: run.run_id })} title={run.run_id}>
+                    <button type="button" className="num mt-1 hidden font-mono sm:inline text-[11px] font-normal text-water hover:underline" onClick={() => sel.setParams({ run: run.run_id })} title={run.run_id}>
                       {shortId(run.run_id)}
                     </button>
                   </th>
@@ -249,11 +251,11 @@ function Ladder({ byKind, loading, error }: { byKind: Map<PlanKind, RunResult>; 
               if (!kinds.some((k) => metrics.get(k)![i].metric)) return null;
               return (
                 <tr key={h.key} className="border-b border-border/70 last:border-0">
-                  <th scope="row" className="px-4 py-2 text-left font-normal text-ink-secondary">
+                  <th scope="row" className={cn(cell, "pl-4 text-left font-normal text-ink-secondary", mobile && "text-[12px] leading-snug")}>
                     {h.label}
                   </th>
                   {kinds.map((k) => (
-                    <td key={k} className="px-4 py-2 text-right">
+                    <td key={k} className={cn(cell, "text-right last:pr-4")}>
                       {byKind.get(k)!.outcome === "plan" ? <MetricValueView metric={metrics.get(k)![i].metric} size="sm" showReason={false} /> : <span className="text-[12px] text-ink-tertiary">no plan</span>}
                     </td>
                   ))}
@@ -279,8 +281,8 @@ function Compatibility({ cmp, loading, error, leftRun, rightRun }: { cmp?: Recor
   if (!cmp) return null;
   const compatible = cmp.compatible === true;
   const cert = (cmp.certificate ?? {}) as { shared?: unknown[]; differences?: unknown[] };
-  const shared = (cert.shared ?? []).map(String);
-  const diffs = (cert.differences ?? (cmp.differences as unknown[]) ?? []).map((d) => (typeof d === "string" ? d : JSON.stringify(d)));
+  const shared = (cert.shared ?? []).map(readCondition);
+  const diffs = (cert.differences ?? (cmp.differences as unknown[]) ?? []).map(readCondition);
   return (
     <section
       className={cn("rounded-[14px] border px-4 py-3", compatible ? "border-vegetation/30 bg-vegetation-soft/60" : "border-warning/40 bg-warning-soft/70")}
@@ -294,18 +296,43 @@ function Compatibility({ cmp, loading, error, leftRun, rightRun }: { cmp?: Recor
         </span>
         {cmp.compatibility_key ? <Chip size="sm" tone="info">key {shortId(String(cmp.compatibility_key))}</Chip> : null}
       </div>
-      {shared.length ? (
-        <p className="mt-1 text-[12px] text-ink-secondary">
-          Shared: {shared.slice(0, 8).map(titleCase).join(" · ")}
-        </p>
-      ) : null}
       {diffs.length ? (
-        <p className="mt-1 text-[12px] text-ink-secondary">
-          Differences: {diffs.slice(0, 6).join(" · ")}
-        </p>
+        <div className="mt-2 flex flex-wrap items-baseline gap-x-2 gap-y-1 text-[12px]">
+          <span className="font-semibold text-ink">{compatible ? "Treatment" : "Differs"}</span>
+          {diffs.map((d) => (
+            <span key={d.key} className="rounded-[8px] bg-surface/80 px-2 py-0.5 text-ink">
+              {d.label}: <span className="num font-medium">{d.value}</span>
+              {d.note ? <span className="text-ink-secondary"> · {d.note}</span> : null}
+            </span>
+          ))}
+        </div>
+      ) : null}
+      {shared.length ? (
+        <details className="mt-1.5 text-[12px] text-ink-secondary">
+          <summary className="cursor-pointer select-none hover:text-ink">Held identical across both runs ({shared.length} conditions)</summary>
+          <dl className="mt-1.5 grid grid-cols-[max-content_1fr] gap-x-4 gap-y-0.5">
+            {shared.map((c) => (
+              <div key={c.key} className="contents">
+                <dt>{c.label}</dt>
+                <dd className="num break-all text-ink">{c.value}</dd>
+              </div>
+            ))}
+          </dl>
+        </details>
       ) : null}
     </section>
   );
+}
+
+/** Certificate condition rows arrive as `{condition, value|values, kind?, note?}` or plain strings. */
+function readCondition(c: unknown, i: number): { key: string; label: string; value: string; note: string | null } {
+  if (typeof c === "string") return { key: `${c}-${i}`, label: titleCase(c), value: "", note: null };
+  const o = (c ?? {}) as { condition?: string; value?: unknown; values?: unknown; note?: string };
+  const v = o.values ?? o.value;
+  const fmt = (x: unknown): string =>
+    Array.isArray(x) ? (x.length ? x.map(fmt).join(o.values ? " → " : ", ") : "none") : x === null || x === undefined ? "—" : String(x);
+  const cond = o.condition ?? `condition ${i + 1}`;
+  return { key: `${cond}-${i}`, label: titleCase(cond.replace(/_/g, " ")), value: fmt(v), note: o.note ?? null };
 }
 
 function Distribution({ leftRun, rightRun, cmp }: { leftRun: RunResult | null; rightRun: RunResult | null; cmp?: Record<string, unknown> }) {

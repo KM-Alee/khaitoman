@@ -1,18 +1,28 @@
-import { useMemo } from "react";
-import { FileDown, Info } from "lucide-react";
+import { useMemo, useState } from "react";
+import { ExternalLink, FileDown, Info } from "lucide-react";
 import { usePilotData } from "@/app/pilotData";
-import { useRun } from "@/lib/api/queries";
-import { fieldMetricMap, findMetric, runMetrics } from "@/lib/api/adapters";
-import type { MetricValue, RunResult } from "@/lib/api/types";
-import { formatPercent, formatWithUnit, shortId, titleCase } from "@/lib/formatting";
+import { useMediaQuery } from "@/app/environment";
+import {
+  useRun,
+  useRunAccounting,
+  useRunEconomics,
+  useRunEquity,
+  useRunImpact,
+  type RunAccounting,
+  type RunEconomics,
+  type RunEquity,
+  type RunImpact,
+} from "@/lib/api/queries";
+import type { PlanKind } from "@/lib/api/types";
+import { formatDelta, formatMass, formatNumber, formatPKR, formatPercent, formatVolume, formatWithUnit, shortId, titleCase } from "@/lib/formatting";
 import { ChartPanel, DataTable, EChart, baseOption, chartTokens } from "@/components/charts/EChart";
-import { Chip, MetricValueView, Skeleton, StatePanel, metricText } from "@/components/status";
+import { Chip, MetricValueView, Skeleton, StatePanel } from "@/components/status";
 import { Button } from "@/components/ui/Button";
-import { Dialog, DialogContent, DialogTrigger, Eyebrow } from "@/components/ui/primitives";
+import { Eyebrow, Segmented } from "@/components/ui/primitives";
 import { SubTabs } from "@/features/compare/CompareTabs";
-import { EvidenceById } from "@/features/evidence/EvidenceCard";
 import { useLadderRuns } from "@/features/compare/CompareScreen";
 import { cn } from "@/lib/cn";
+import { BudgetMeter, Panel, Rows, StatusReasonView, ViewGate, isStatusReason, useFieldLabel } from "./viewKit";
 
 const TABS = [
   { value: "water", label: "Water accounting" },
@@ -49,10 +59,34 @@ export function ImpactNav() {
   );
 }
 
+/** Baseline options for comparisons: B0/B1 runs of the ladder other than the current run. */
+function useBaselines(runId: string | null) {
+  const { byKind } = useLadderRuns();
+  return useMemo(
+    () =>
+      (["B0", "B1"] as PlanKind[])
+        .map((k) => ({ kind: k, id: byKind.get(k)?.run_id ?? null }))
+        .filter((b): b is { kind: PlanKind; id: string } => !!b.id && b.id !== runId),
+    [byKind, runId],
+  );
+}
+
 export function ImpactScreen() {
   const { sel } = usePilotData();
   const run = useRun(sel.runId);
   const tab = TABS.some((t) => t.value === sel.tab) ? sel.tab! : "water";
+  const baselines = useBaselines(sel.runId);
+  const [baseKind, setBaseKind] = useState<PlanKind | "none">("B0");
+  const baseline = baselines.find((b) => b.kind === baseKind) ?? (baseKind === "none" ? null : baselines[0] ?? null);
+  const baselinePicker = baselines.length ? (
+    <Segmented
+      label="Baseline for comparison"
+      size="sm"
+      value={baseline ? baseline.kind : "none"}
+      onChange={(v) => setBaseKind(v as PlanKind | "none")}
+      options={[...baselines.map((b) => ({ value: b.kind as string, label: `vs ${b.kind}`, title: b.id })), { value: "none", label: "No baseline" }]}
+    />
+  ) : null;
   return (
     <div className="flex min-h-0 flex-1 flex-col" data-testid="impact">
       <ImpactNav />
@@ -73,342 +107,757 @@ export function ImpactScreen() {
           <StatePanel state="error" error={run.error} title="Run unavailable" />
         ) : run.data.outcome !== "plan" ? (
           <StatePanel state={run.data.solver_status === "INFEASIBLE" ? "infeasible" : "unknown"} title={`No plan (${run.data.solver_status})`}>
-            Impact metrics exist only for runs with a validated plan.
+            Impact views exist only for runs with a validated plan.
           </StatePanel>
         ) : (
-          <>
+          <div className="mx-auto max-w-[1600px]">
             <div className="mb-3 flex flex-wrap items-center gap-2 text-[12px] text-ink-secondary">
-              <Chip size="sm" tone="ink">{run.data.plan_kind} · run {shortId(run.data.run_id)}</Chip>
-              Metric values come from the server registry shared with the report and copilot.
-              <Button size="sm" variant="secondary" className="ml-auto" icon={<FileDown size={14} />} onClick={() => sel.go("report")}>
-                Export report
-              </Button>
+              <Chip size="sm" tone="ink">
+                {run.data.plan_kind} · run {shortId(run.data.run_id)}
+              </Chip>
+              <span className="min-w-0">Every number below is returned by the server for this run; nothing is re-derived in the browser.</span>
+              <div className="ml-auto flex flex-wrap items-center gap-2">
+                {tab === "equity" || tab === "sdg" ? baselinePicker : null}
+                <Button size="sm" variant="secondary" icon={<FileDown size={14} />} onClick={() => sel.go("report")}>
+                  Action plan & report
+                </Button>
+              </div>
             </div>
-            {tab === "water" ? <WaterLedger run={run.data} /> : null}
-            {tab === "economics" ? <Economics run={run.data} /> : null}
-            {tab === "equity" ? <Equity run={run.data} /> : null}
-            {tab === "sdg" ? <SDG run={run.data} /> : null}
-          </>
+            {tab === "water" ? <WaterTab runId={run.data.run_id} /> : null}
+            {tab === "economics" ? <EconomicsTab runId={run.data.run_id} /> : null}
+            {tab === "equity" ? <EquityTab runId={run.data.run_id} baseline={baseline} /> : null}
+            {tab === "sdg" ? <SdgTab runId={run.data.run_id} baseline={baseline} /> : null}
+          </div>
         )}
       </div>
     </div>
   );
 }
 
-/* ---------------------------------------------------------------- water */
-const LEDGER: { id: string[]; label: string; from: string; to: string }[] = [
-  { id: ["source_withdrawal_m3", "canal_source_m3"], label: "Source withdrawal", from: "Source", to: "Network" },
-  { id: ["conveyance_loss_m3", "edge_loss_m3"], label: "Conveyance loss", from: "Network", to: "Conveyance loss" },
-  { id: ["outlet_receipt_m3", "canal_receipt_m3"], label: "Delivered at outlets", from: "Network", to: "Outlets" },
-  { id: ["direct_application_m3", "direct_irrigation_m3"], label: "Direct irrigation", from: "Outlets", to: "Field application" },
-  { id: ["pond_fill_m3"], label: "To pond storage", from: "Outlets", to: "Ponds" },
-  { id: ["pond_rain_m3"], label: "Pond rainfall", from: "Rainfall", to: "Ponds" },
-  { id: ["pond_release_m3"], label: "Pond release", from: "Ponds", to: "Field application" },
-  { id: ["pond_loss_m3", "pond_evaporation_seepage_m3"], label: "Pond evaporation + seepage", from: "Ponds", to: "Pond losses" },
-  { id: ["pond_residual_m3", "pond_end_inventory_m3"], label: "Pond inventory at season end", from: "Ponds", to: "Carried inventory" },
-  { id: ["groundwater_m3", "pump_abstraction_m3"], label: "Groundwater pumped", from: "Groundwater", to: "Field application" },
-  { id: ["unused_window_m3"], label: "Unused window allowance", from: "Outlets", to: "Unused" },
-];
+/* ================================================================ water accounting */
+const NODE_LABEL: Record<string, string> = {
+  canal_source: "Canal source withdrawal",
+  conveyance_loss: "Conveyance loss",
+  outlet_receipt: "Outlet receipt",
+  pond_storage: "Pond storage",
+  pond_rain: "Rain on ponds",
+  pond_losses: "Pond evaporation, seepage & spill",
+  direct_field_application: "Direct field application",
+  field_application_from_pond: "Field application from pond",
+  field_application_from_pump: "Field application from pump",
+  groundwater: "Groundwater abstraction",
+};
+const nodeLabel = (n: string) => NODE_LABEL[n] ?? titleCase(n);
+const boundaryLabel = (k: string) => titleCase(k.replace(/_m3$/, "")).replace(/\bPond\b/, "Pond");
 
-function WaterLedger({ run }: { run: RunResult }) {
-  const ms = runMetrics(run);
+function WaterTab({ runId }: { runId: string }) {
+  const q = useRunAccounting(runId);
+  return <ViewGate q={q} title="Water accounting">{(d) => <Water d={d} />}</ViewGate>;
+}
+
+function Water({ d }: { d: RunAccounting }) {
   const t = chartTokens();
-  const flows = LEDGER.map((l) => ({ ...l, m: findMetric(ms, ...l.id) })).filter((x) => x.m);
-  const avail = flows.filter((f) => f.m!.status === "available" && (f.m!.value ?? 0) > 0);
-  const app = findMetric(ms, "field_application_m3", "gross_application_m3");
-  const nodes = [...new Set(avail.flatMap((f) => [f.from, f.to]))];
-  const option = {
-    ...baseOption(),
-    tooltip: { trigger: "item", backgroundColor: t.surface, borderColor: t.border, textStyle: { color: t.ink }, valueFormatter: (v: number) => formatWithUnit(v, "m3") },
-    series: [
-      {
-        type: "sankey",
-        left: 8,
-        right: 120,
-        top: 12,
-        bottom: 12,
-        nodeGap: 14,
-        nodeWidth: 12,
-        draggable: false,
-        emphasis: { focus: "adjacency" },
-        label: { color: t.ink, fontSize: 12, fontFamily: t.font },
-        lineStyle: { color: "gradient", opacity: 0.35, curveness: 0.5 },
-        data: nodes.map((n) => ({
-          name: n,
-          itemStyle: { color: /loss|Unused/i.test(n) ? t.danger : /Ground/i.test(n) ? t.warning : /Rain/i.test(n) ? t.series[3] : /Pond|Carried/i.test(n) ? t.waterDeep : /Field/i.test(n) ? t.veg : t.water },
-        })),
-        links: avail.map((f) => ({ source: f.from, target: f.to, value: f.m!.value })),
+  const { sel } = usePilotData();
+  const label = useFieldLabel();
+  const flows = d.flows.filter((f) => Number.isFinite(f.m3));
+  const drawn = flows.filter((f) => f.m3 > 0);
+  const nodes = [...new Set(drawn.flatMap((f) => [f.from, f.to]))];
+  const colour = (n: string) =>
+    /loss/.test(n) ? t.danger : /groundwater|pump/.test(n) ? t.warning : /rain/.test(n) ? t.series[3] : /pond/.test(n) ? t.waterDeep : /application/.test(n) ? t.veg : t.water;
+  const option = useMemo(
+    () => ({
+      ...baseOption(),
+      tooltip: {
+        trigger: "item",
+        backgroundColor: t.surface,
+        borderColor: t.border,
+        textStyle: { color: t.ink, fontSize: 12 },
+        confine: true,
+        formatter: (p: { dataType: string; data: { source?: string; target?: string; value?: number; name?: string }; value: number }) =>
+          p.dataType === "edge" ? `${p.data.source} → ${p.data.target}<br/><b>${formatVolume(p.data.value ?? 0)}</b>` : `${p.data.name}<br/><b>${formatVolume(p.value)}</b>`,
       },
-    ],
-  };
-  if (!flows.length)
-    return (
-      <StatePanel state="empty" title="No water-accounting metrics in this run">
-        The run reports none of the ledger boundary totals (source withdrawal, conveyance, outlet receipts, storage, groundwater).
-      </StatePanel>
-    );
+      series: [
+        {
+          type: "sankey",
+          left: 150,
+          right: 210,
+          top: 28,
+          bottom: 12,
+          nodeGap: 30,
+          nodeWidth: 12,
+          draggable: false,
+          layoutIterations: 64,
+          emphasis: { focus: "adjacency" },
+          label: {
+            color: t.ink,
+            fontSize: 12,
+            fontFamily: t.font,
+            formatter: (p: { name: string; value: number }) => `${p.name}\n{v|${formatNumber(p.value, 0)} m³}`,
+            lineHeight: 15,
+            rich: { v: { color: t.ink3, fontSize: 11, fontFamily: t.font } },
+          },
+          lineStyle: { color: "gradient", opacity: 0.32, curveness: 0.5 },
+          data: nodes.map((n) => ({
+            name: nodeLabel(n),
+            itemStyle: { color: colour(n), borderWidth: 0 },
+            // Sources label on the left, sinks on the right, pass-through nodes above, so no label sits on a flow band.
+            label: { position: !drawn.some((f) => f.to === n) ? "left" : !drawn.some((f) => f.from === n) ? "right" : "top" },
+          })),
+          links: drawn.map((f) => ({ source: nodeLabel(f.from), target: nodeLabel(f.to), value: f.m3 })),
+        },
+      ],
+    }),
+    [drawn, nodes, t], // eslint-disable-line react-hooks/exhaustive-deps
+  );
+  const b = d.boundaries;
+  const appTotal = flows.filter((f) => /application/.test(f.to)).reduce((s, f) => s + f.m3, 0);
+  const fieldIds = Object.keys(d.per_field);
+  const cols = ["outlet_receipt", "pond_fill", "pond_release", "pump_abstraction", "field_application"].filter((c) => fieldIds.some((f) => d.per_field[f][c] !== undefined));
+  const residual = d.reconciliation?.source_minus_loss_minus_receipt_m3;
+  // A Sankey with ten labelled nodes cannot be read at phone width; open on its table twin there.
+  const narrow = useMediaQuery("(max-width: 640px)");
   return (
-    <div className="grid gap-3 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
-      <ChartPanel
-        id="water-sankey"
-        title="Water ledger by accounting boundary"
-        summary="Source → conveyance → outlets → direct irrigation or storage → field application; groundwater and rainfall enter explicitly. ET is not added as a separate loss."
-        chart={nodes.length ? <EChart option={option} height={360} ariaLabel="Sankey of seasonal water flows; table view lists every amount" /> : <p className="p-4 text-[13px] text-ink-secondary">All ledger totals are zero or unavailable.</p>}
-        table={
-          <DataTable
-            caption="Water ledger"
-            columns={[
-              { key: "l", label: "Flow" },
-              { key: "b", label: "Boundary" },
-              { key: "v", label: "Seasonal volume", align: "right" },
-            ]}
-            rows={flows.map((f) => ({ l: f.label, b: `${f.from} → ${f.to}`, v: metricText(f.m) }))}
+    <div className="flex flex-col gap-3">
+      <div className="grid gap-3 xl:grid-cols-[minmax(0,1.6fr)_minmax(320px,1fr)]">
+        <ChartPanel
+          id="water-sankey"
+          defaultView={narrow ? "table" : "chart"}
+          key={narrow ? "n" : "w"}
+          title="Seasonal water ledger"
+          summary="Flows exactly as returned by the accounting endpoint: canal source → conveyance loss or outlet receipt → direct application or pond storage; groundwater and pond rainfall enter explicitly."
+          chart={
+            drawn.length ? (
+              <EChart option={option} height={420} ariaLabel="Sankey of seasonal water flows; the table view lists every flow" />
+            ) : (
+              <p className="p-4 text-[13px] text-ink-secondary">All flows are zero for this run.</p>
+            )
+          }
+          table={
+            <DataTable
+              caption="Water flows"
+              columns={[
+                { key: "f", label: "From" },
+                { key: "t", label: "To" },
+                { key: "v", label: "Seasonal volume", align: "right" },
+              ]}
+              rows={flows.map((f) => ({ f: nodeLabel(f.from), t: nodeLabel(f.to), v: formatVolume(f.m3) }))}
+            />
+          }
+        />
+        <Panel title="Boundary totals">
+          <Rows
+            rows={Object.entries(b).map(([k, v]) => [
+              boundaryLabel(k),
+              typeof v === "number" ? <span className="num">{formatNumber(v, 0)} m³</span> : <span className="text-ink-tertiary">Not reported</span>,
+            ])}
           />
-        }
-      />
-      <section className="rounded-[14px] border border-border bg-surface p-4 shadow-1">
-        <Eyebrow className="mb-2">Boundary totals</Eyebrow>
-        <dl className="flex flex-col divide-y divide-border">
-          {[...flows, ...(app ? [{ label: "Gross field application", m: app }] : [])].map((f) => (
-            <div key={f.label} className="flex items-baseline justify-between gap-3 py-2">
-              <dt className="text-[13px] text-ink-secondary">{f.label}</dt>
-              <dd>
-                <MetricValueView metric={f.m} size="sm" />
-              </dd>
-            </div>
-          ))}
-        </dl>
-        <p className="mt-3 flex gap-1.5 text-[12px] text-ink-secondary">
-          <Info size={13} className="mt-0.5 shrink-0" aria-hidden />
-          Withdrawals reduced are not consumptive water savings. Basin-wide savings stay <em>not estimated</em> unless return flows are accounted for.
-        </p>
-      </section>
-    </div>
-  );
-}
-
-/* ---------------------------------------------------------------- economics */
-const ECON: { ids: string[]; label: string }[] = [
-  { ids: ["gross_project_cost_pkr", "capex_pkr", "capital_commitment_pkr"], label: "Gross project cost" },
-  { ids: ["public_grant_pkr", "verified_grant_pkr"], label: "Public grant (verified only)" },
-  { ids: ["participant_cash_pkr"], label: "Participant cash requirement" },
-  { ids: ["seasonal_pumping_cost_pkr", "pumping_cost_pkr"], label: "Seasonal pumping" },
-  { ids: ["seasonal_upkeep_pkr", "upkeep_pkr"], label: "Seasonal upkeep" },
-  { ids: ["seasonal_opex_pkr", "operating_cost_pkr"], label: "Total seasonal operating" },
-  { ids: ["crop_value_pkr"], label: "Crop value (assumed price)" },
-  { ids: ["incremental_irrigation_contribution_pkr", "irrigation_contribution_pkr"], label: "Irrigation contribution" },
-  { ids: ["payback_years", "payback"], label: "Payback" },
-];
-
-function Economics({ run }: { run: RunResult }) {
-  const ms = runMetrics(run);
-  const rows = ECON.map((e) => ({ ...e, m: findMetric(ms, ...e.ids) }));
-  const shown = rows.filter((r) => r.m);
-  const t = chartTokens();
-  const capex = shown.filter((r) => /cost|grant|cash/i.test(r.label) && r.m?.status === "available");
-  const option = {
-    ...baseOption(),
-    grid: { left: 180, right: 24, top: 8, bottom: 24 },
-    tooltip: { ...(baseOption().tooltip as object), trigger: "item", valueFormatter: (v: number) => formatWithUnit(v, "PKR") },
-    xAxis: { ...(baseOption().xAxis as object), type: "value", axisLabel: { color: t.ink3, fontSize: 11, formatter: (v: number) => formatWithUnit(v, "PKR").replace("PKR ", "") } },
-    yAxis: { ...(baseOption().yAxis as object), type: "category", data: capex.map((r) => r.label), axisLabel: { color: t.ink2, fontSize: 12 } },
-    series: [{ type: "bar", data: capex.map((r) => r.m!.value), itemStyle: { color: t.water, borderRadius: [0, 4, 4, 0] }, barMaxWidth: 18 }],
-  };
-  if (!shown.length)
-    return <StatePanel state="empty" title="No financial metrics">This run reports no economics. Null prices or costs disable the corresponding calculation rather than defaulting to zero.</StatePanel>;
-  return (
-    <div className="grid gap-3 xl:grid-cols-2">
-      <ChartPanel
-        id="econ-chart"
-        title="Capital and cash breakdown"
-        summary="The capital budget constrains gross project commitment; a verified grant changes participant cash only."
-        chart={capex.length ? <EChart option={option} height={Math.max(160, capex.length * 44)} ariaLabel="Bar chart of capital breakdown" /> : <p className="p-4 text-[13px] text-ink-secondary">No capital amounts available.</p>}
-        table={<DataTable caption="Financial breakdown" columns={[{ key: "l", label: "Item" }, { key: "v", label: "Value", align: "right" }]} rows={shown.map((r) => ({ l: r.label, v: metricText(r.m) }))} />}
-      />
-      <section className="rounded-[14px] border border-border bg-surface p-4 shadow-1">
-        <Eyebrow className="mb-2">Financial panel</Eyebrow>
-        <dl className="flex flex-col divide-y divide-border">
-          {shown.map((r) => (
-            <div key={r.label} className="flex items-baseline justify-between gap-3 py-2">
-              <dt className="text-[13px] text-ink-secondary">{r.label}</dt>
-              <dd className="text-right">
-                <MetricValueView metric={r.m} size="sm" />
-              </dd>
-            </div>
-          ))}
-        </dl>
-      </section>
-    </div>
-  );
-}
-
-/* ---------------------------------------------------------------- equity */
-function Equity({ run }: { run: RunResult }) {
-  const { fieldIndex, sel } = usePilotData();
-  const ms = runMetrics(run);
-  const svc = fieldMetricMap(ms, "field_service_ratio", "service_ratio");
-  const gw = fieldMetricMap(ms, "groundwater_m3", "field_groundwater_m3");
-  const t = chartTokens();
-  const groups = ["head", "middle", "tail"] as const;
-  const pts = [...svc.entries()].map(([fid, m]) => ({ fid, m, g: fieldIndex.get(fid)?.group ?? null, label: fieldIndex.get(fid)?.label ?? fid }));
-  const zeroEnt = pts.filter((p) => p.m.status === "not_applicable");
-  const valid = pts.filter((p) => p.m.status === "available" && typeof p.m.value === "number");
-  const minM = findMetric(ms, "min_eligible_fulfillment", "min_service_ratio", "minimum_eligible_service");
-  const aggBasis = findMetric(ms, "service_aggregation_basis");
-  const option = {
-    ...baseOption(),
-    grid: { left: 70, right: 24, top: 16, bottom: 36 },
-    tooltip: { trigger: "item", backgroundColor: t.surface, borderColor: t.border, textStyle: { color: t.ink }, formatter: (p: { data: { label: string; value: [number, number] } }) => `${p.data.label}<br/>${formatPercent(p.data.value[0])}` },
-    xAxis: { ...(baseOption().xAxis as object), type: "value", min: 0, max: (v: { max: number }) => Math.max(1, Math.ceil(v.max * 10) / 10), name: "Receipt / reference allowance", nameLocation: "middle", nameGap: 24, axisLabel: { color: t.ink3, formatter: (v: number) => formatPercent(v) }, splitLine: { show: true, lineStyle: { color: t.border, opacity: 0.6 } } },
-    yAxis: { ...(baseOption().yAxis as object), type: "category", data: groups.map(titleCase), axisLabel: { color: t.ink2, fontSize: 12 } },
-    series: [
-      {
-        type: "scatter",
-        symbolSize: 12,
-        data: valid.map((p, i) => ({ value: [p.m.value, groups.indexOf((p.g ?? "middle") as (typeof groups)[number]) + ((i % 5) - 2) * 0.06], label: p.label, fid: p.fid, itemStyle: { color: p.g === "tail" ? t.warning : p.g === "head" ? t.water : t.veg, borderColor: t.surface, borderWidth: 1 } })),
-        markLine: { silent: true, symbol: "none", lineStyle: { color: t.ink3, type: "dashed" }, data: [{ xAxis: 1 }], label: { formatter: "full reference", color: t.ink3 } },
-      },
-    ],
-  };
-  return (
-    <div className="grid gap-3 xl:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
-      <ChartPanel
-        id="equity-chart"
-        title="Service by head / middle / tail"
-        summary={
-          <>
-            Field canal receipts ÷ the fixed reference allowance at the same boundary (receipt / reference allowance, not a legal quota). {zeroEnt.length ? `${zeroEnt.length} zero-entitlement field(s) are excluded and listed below.` : ""}
-          </>
-        }
-        chart={valid.length ? <EChart option={option} height={260} ariaLabel="Strip plot of field service ratios by group" onEvents={{ click: (p) => { const f = (p as { data?: { fid?: string } }).data?.fid; if (f) sel.setParams({ field: f }, false); } }} /> : <p className="p-4 text-[13px] text-ink-secondary">No per-field service ratios in this run.</p>}
-        table={
-          <DataTable
-            caption="Field service and pumping"
-            columns={[
-              { key: "f", label: "Field" },
-              { key: "g", label: "Group" },
-              { key: "s", label: "Service", align: "right" },
-              { key: "gw", label: "Groundwater", align: "right" },
+        </Panel>
+      </div>
+      <div className="grid gap-3 xl:grid-cols-[minmax(320px,1fr)_minmax(0,1.6fr)]">
+        <Panel title="Reconciliation">
+          <Rows
+            rows={[
+              ["Source − conveyance loss − outlet receipt", typeof residual === "number" ? `${formatNumber(Math.abs(residual) < 1e-6 ? 0 : residual, 3)} m³` : "Not reported"],
+              ["Sum of field-application flows (chart)", `${formatNumber(appTotal, 0)} m³`],
+              ["Gross field application (boundary)", typeof b.gross_field_application_m3 === "number" ? `${formatNumber(b.gross_field_application_m3, 0)} m³` : "Not reported"],
+              ...(typeof b.pond_net_storage_change_m3 === "number" && b.pond_net_storage_change_m3 !== 0
+                ? ([["Pond net storage change", `${formatNumber(b.pond_net_storage_change_m3, 0)} m³`]] as [string, string][])
+                : []),
             ]}
-            rows={pts
-              .sort((a, b) => (a.m.value ?? 9) - (b.m.value ?? 9))
-              .map((p) => ({ f: p.label, g: p.g ? titleCase(p.g) : "—", s: metricText(p.m), gw: metricText(gw.get(p.fid)) }))}
           />
-        }
-      />
-      <section className="rounded-[14px] border border-border bg-surface p-4 shadow-1">
-        <Eyebrow className="mb-2">Equity summary</Eyebrow>
-        <dl className="flex flex-col divide-y divide-border">
-          {[
-            ["Minimum eligible fulfillment", minM],
-            ["Tail minimum service", findMetric(ms, "tail_min_service", "tail_min_service_ratio")],
-            ["Fields worse off vs baseline", findMetric(ms, "fields_worse_off", "fields_worse_off_count")],
-            ["Pumping burden (groundwater)", findMetric(ms, "groundwater_m3", "total_groundwater_m3")],
-          ].map(([l, m]) => (
-            <div key={l as string} className="flex items-baseline justify-between gap-3 py-2">
-              <dt className="text-[13px] text-ink-secondary">{l as string}</dt>
-              <dd>
-                <MetricValueView metric={m as MetricValue | null} size="sm" />
-              </dd>
-            </div>
-          ))}
-        </dl>
-        <p className="mt-3 text-[12px] text-ink-secondary">
-          Aggregation: {aggBasis?.reason ?? "field-weighted unless the metric definition states entitlement-volume weighting"}. No aggregate score hides fields with reduced service.
-        </p>
-        {zeroEnt.length ? <p className="mt-2 text-[12px] text-ink-secondary">Zero-entitlement: {zeroEnt.map((z) => z.label).join(", ")}</p> : null}
-      </section>
-    </div>
-  );
-}
-
-/* ---------------------------------------------------------------- SDG */
-const SDG_CARDS = [
-  {
-    id: "2.4",
-    title: "SDG 2.4 · Sustainable food production",
-    ids: ["sdg_2_4_production_retained", "production_retained_fraction", "worst_tested_production_kg", "production_kg"],
-    interp: "Model-based planning resilience, not measured food security.",
-  },
-  {
-    id: "6.4",
-    title: "SDG 6.4 / 6.5 · Water-use efficiency and management",
-    ids: ["withdrawal_productivity_kg_m3", "sdg_6_4_water_productivity"],
-    interp: "Water productivity / accounting / participation proxies, not official UN indicator scores.",
-  },
-  {
-    id: "13.1",
-    title: "SDG 13.1 · Resilience to climate hazards",
-    ids: ["worst_tested_production_kg", "sdg_13_1_worst_case_gap", "typical_vs_worst_gap_kg"],
-    interp: "Scenario robustness within nine tested states, not quantified disaster-risk reduction.",
-  },
-];
-
-function SDG({ run }: { run: RunResult }) {
-  const ms = runMetrics(run);
-  return (
-    <div className="grid gap-3 lg:grid-cols-3" data-testid="sdg">
-      {SDG_CARDS.map((c) => {
-        const m = findMetric(ms, ...c.ids);
-        const extra = c.id === "6.4" ? [findMetric(ms, "groundwater_m3"), findMetric(ms, "mean_entitlement_fulfillment", "field_service_ratio_mean")].filter(Boolean) : [];
-        return (
-          <article key={c.id} className="flex flex-col rounded-[14px] border border-border bg-surface p-4 shadow-1" data-testid="sdg-card">
-            <div className="flex items-start justify-between gap-2">
-              <h3 className="text-[13px] font-semibold leading-snug text-ink">{c.title}</h3>
-              <Chip size="sm" tone="warning" title="official_indicator=false">Project proxy</Chip>
-            </div>
-            <div className="mt-3">
-              <MetricValueView metric={m} size="lg" />
-            </div>
-            {extra.map((e) => (
-              <div key={e!.metric_id} className="mt-1 text-[12px] text-ink-secondary">
-                {titleCase(e!.definition_id)}: <MetricValueView metric={e} size="sm" showReason={false} />
-              </div>
-            ))}
-            <p className="mt-3 text-[12px] text-ink-secondary">{c.interp}</p>
-            <p className="mt-1 text-[11px] text-ink-tertiary">official_indicator = false · No 0–100 score · No CO₂ figure without cited energy factors.</p>
-            <div className="mt-auto pt-3">
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button size="sm" variant="secondary" disabled={!m}>
-                    How was this calculated?
-                  </Button>
-                </DialogTrigger>
-                {m ? (
-                  <DialogContent title={c.title} description="Formula, run reference and sources">
-                    <div className="flex flex-col gap-3 p-5 text-[13px]">
-                      <div>
-                        <Eyebrow>Definition</Eyebrow>
-                        <p className="mt-1 font-mono text-[12px] text-ink">{m.formula ?? m.definition_id}</p>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2 text-[12px]">
-                        <span className="text-ink-secondary">Metric id</span>
-                        <span className="font-mono text-ink">{m.metric_id}</span>
-                        <span className="text-ink-secondary">Run</span>
-                        <span className="font-mono text-ink">{m.run_id}</span>
-                        <span className="text-ink-secondary">Unit</span>
-                        <span className="text-ink">{m.unit}</span>
-                        <span className="text-ink-secondary">Status</span>
-                        <span className="text-ink">{m.status.replace(/_/g, " ")}</span>
-                      </div>
-                      {m.reason ? <p className="text-ink-secondary">{m.reason}</p> : null}
-                      <p className="text-ink-secondary">{c.interp}</p>
-                      {m.evidence_ids.map((id) => (
-                        <EvidenceById key={id} id={id} compact />
+          {d.reconciliation?.note ? (
+            <p className="mt-3 flex gap-1.5 text-[12px] leading-snug text-ink-secondary">
+              <Info size={13} className="mt-0.5 shrink-0" aria-hidden />
+              {d.reconciliation.note}
+            </p>
+          ) : null}
+          {typeof b.pond_net_storage_change_m3 === "number" && b.pond_net_storage_change_m3 < 0 ? (
+            <p className="mt-2 text-[12px] leading-snug text-ink-secondary">Pond outflows exceed inflows by the storage drawdown (initial inventory released), so the pond node is not flow-balanced within the season.</p>
+          ) : null}
+          <div className="mt-3 border-t border-border pt-3">
+            <div className="text-[12px] text-ink-secondary">Basin-wide water savings</div>
+            <StatusReasonView v={d.basin_savings} className="mt-1" />
+          </div>
+        </Panel>
+        <Panel title={`Per-field ledger · m³ (${fieldIds.length} fields)`} aside={sel.fieldId ? <Chip size="sm" tone="water">Selected {label(sel.fieldId)}</Chip> : null}>
+          <div className="max-h-[360px] overflow-auto">
+            <table className="w-full min-w-[520px] border-collapse text-[12px]">
+              <caption className="sr-only">Per-field seasonal volumes in cubic metres; select a row to select the field</caption>
+              <thead className="sticky top-0 z-[1] bg-surface">
+                <tr className="border-b border-border text-ink-tertiary">
+                  <th scope="col" className="pb-1.5 pt-1 text-left font-medium">Field</th>
+                  {cols.map((c) => (
+                    <th key={c} scope="col" className="pb-1.5 pt-1 text-right font-medium">
+                      {titleCase(c)}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {fieldIds.map((f) => {
+                  const on = sel.fieldId === f;
+                  return (
+                    <tr
+                      key={f}
+                      aria-selected={on}
+                      onClick={() => sel.setParams({ field: on ? null : f }, true)}
+                      className={cn("cursor-pointer border-b border-border/70 last:border-0 hover:bg-surface-muted/70", on && "bg-water/10")}
+                    >
+                      <th scope="row" className="whitespace-nowrap py-1.5 pr-2 text-left font-medium text-ink">
+                        <button
+                          type="button"
+                          className="rounded-[4px] text-left focus-visible:outline-2"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            sel.setParams({ field: on ? null : f }, true);
+                          }}
+                        >
+                          {label(f)}
+                        </button>
+                      </th>
+                      {cols.map((c) => (
+                        <td key={c} className="num py-1.5 text-right text-ink">
+                          {typeof d.per_field[f][c] === "number" ? formatNumber(d.per_field[f][c], 0) : <span className="text-ink-tertiary">—</span>}
+                        </td>
                       ))}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          <p className="mt-2 text-[11px] text-ink-tertiary">— means the field had no event of that type in the ledger. Withdrawals reduced are not consumptive water savings.</p>
+        </Panel>
+      </div>
+    </div>
+  );
+}
+
+/* ================================================================ economics */
+function EconomicsTab({ runId }: { runId: string }) {
+  const q = useRunEconomics(runId);
+  return <ViewGate q={q} title="Economics">{(d) => <Economics d={d} />}</ViewGate>;
+}
+
+const pkr = (v: number | null | undefined) => (typeof v === "number" ? formatPKR(v) : "Not reported");
+
+function Economics({ d }: { d: RunEconomics }) {
+  const t = chartTokens();
+  const label = useFieldLabel();
+  const grant = d.public_grant_pkr;
+  const pumping = [...d.pumping].sort((a, b) => b.seasonal_opex_pkr - a.seasonal_opex_pkr);
+  const pumpOption = useMemo(
+    () => ({
+      ...baseOption(),
+      grid: { left: 64, right: 24, top: 8, bottom: 40 },
+      tooltip: { ...(baseOption().tooltip as object), trigger: "axis", axisPointer: { type: "shadow" } },
+      xAxis: { ...(baseOption().xAxis as object), type: "value", name: "PKR per season", nameLocation: "middle", nameGap: 26, nameTextStyle: { color: t.ink3, fontSize: 11 }, axisLabel: { color: t.ink3, fontSize: 11, formatter: (v: number) => formatNumber(v, 0) }, splitLine: { show: true, lineStyle: { color: t.border, opacity: 0.6 } } },
+      yAxis: { ...(baseOption().yAxis as object), type: "category", inverse: true, data: pumping.map((p) => label(p.field_id)), axisLabel: { color: t.ink2, fontSize: 12 } },
+      series: [
+        {
+          type: "bar",
+          name: "Seasonal pumping cost",
+          data: pumping.map((p) => p.seasonal_opex_pkr),
+          itemStyle: { color: t.warning, borderRadius: [0, 4, 4, 0] },
+          barMaxWidth: 16,
+          tooltip: { valueFormatter: (v: number) => formatPKR(v) },
+        },
+      ],
+    }),
+    [pumping, t], // eslint-disable-line react-hooks/exhaustive-deps
+  );
+  const cats = [...new Set(d.instances.map((i) => i.category))];
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <Kpi label="Gross project cost" value={pkr(d.gross_project_cost_pkr)} sub={`Capital budget ${pkr(d.capital_budget_pkr)}`}>
+          {typeof d.gross_project_cost_pkr === "number" && typeof d.capital_budget_pkr === "number" ? (
+            <BudgetMeter used={d.gross_project_cost_pkr} budget={d.capital_budget_pkr} label="Gross project cost as share of capital budget" />
+          ) : null}
+        </Kpi>
+        <Kpi label="Participant cash" value={pkr(d.participant_cash_pkr)} sub="Gross cost less verified grants only" />
+        <Kpi label="Public grant (verified only)" value={typeof grant === "number" ? formatPKR(grant) : null}>
+          {isStatusReason(grant) ? <StatusReasonView v={grant} className="mt-1" /> : grant === null ? <StatusReasonView v={null} /> : null}
+        </Kpi>
+        <Kpi label="Seasonal operating" value={pkr(d.seasonal_operating_pkr)} sub={`Operating budget ${pkr(d.operating_budget_pkr)}`}>
+          {typeof d.seasonal_operating_pkr === "number" && typeof d.operating_budget_pkr === "number" ? (
+            <BudgetMeter used={d.seasonal_operating_pkr} budget={d.operating_budget_pkr} label="Seasonal operating cost as share of operating budget" />
+          ) : null}
+        </Kpi>
+      </div>
+
+      <div className="grid gap-3 xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+        <Panel title={`Selected interventions (${d.instances.length})`} aside={<span className="text-[11px] text-ink-tertiary">{cats.map(titleCase).join(" · ")}</span>}>
+          {d.instances.length ? (
+            <div className="max-h-[380px] overflow-auto">
+              <DataTable
+                caption="Selected intervention instances"
+                dense
+                columns={[
+                  { key: "i", label: "Instance" },
+                  { key: "c", label: "Category" },
+                  { key: "cap", label: "Capital", align: "right" },
+                  { key: "op", label: "Seasonal opex", align: "right" },
+                  { key: "s", label: "Shared", className: "pl-5" },
+                  { key: "ch", label: "Charged", className: "pl-3" },
+                ]}
+                rows={d.instances.map((i) => {
+                  const [, fld] = i.instance_id.match(/^(.*):[^:]+$/) ?? [];
+                  return {
+                    i: (
+                      <span title={i.instance_id}>
+                        {fld ? label(fld) : i.instance_id}
+                        <span className="ml-1 font-mono text-[10px] text-ink-tertiary">{i.instance_id.split(":").pop()}</span>
+                      </span>
+                    ),
+                    c: titleCase(i.category),
+                    cap: formatPKR(i.capex_pkr),
+                    op: formatPKR(i.seasonal_opex_pkr),
+                    s: i.shared ? "Shared" : "No",
+                    ch: titleCase(i.charged),
+                  };
+                })}
+              />
+            </div>
+          ) : (
+            <p className="text-[13px] text-ink-secondary">No capital interventions selected in this run.</p>
+          )}
+        </Panel>
+        <ChartPanel
+          id="econ-pumping"
+          title="Seasonal pumping cost by field"
+          summary="Operating cost of groundwater top-up per field, with the pumped volume in the table."
+          chart={
+            pumping.length ? (
+              <EChart option={pumpOption} height={Math.max(170, pumping.length * 30 + 56)} ariaLabel="Bar chart of seasonal pumping cost per field" />
+            ) : (
+              <p className="p-4 text-[13px] text-ink-secondary">No pumping in this run.</p>
+            )
+          }
+          table={
+            <DataTable
+              caption="Pumping by field"
+              columns={[
+                { key: "f", label: "Field" },
+                { key: "v", label: "Pumped", align: "right" },
+                { key: "c", label: "Seasonal cost", align: "right" },
+              ]}
+              rows={pumping.map((p) => ({ f: label(p.field_id), v: formatVolume(p.pump_volume_m3), c: formatPKR(p.seasonal_opex_pkr) }))}
+            />
+          }
+        />
+      </div>
+
+      <div className="grid gap-3 lg:grid-cols-3">
+        <Panel title="Crop value & contribution">
+          <Rows
+            rows={[
+              ["Crop value", <MetricValueView key="cv" metric={d.crop_value} size="sm" />],
+              ["Irrigation contribution", <MetricValueView key="ic" metric={d.irrigation_contribution} size="sm" />],
+            ]}
+          />
+          <p className="mt-2 text-[11px] text-ink-tertiary">Revenue figures appear only with a dated crop price record; they never default to zero.</p>
+        </Panel>
+        <Panel title="Cost sensitivity">
+          <DataTable
+            caption="Budget sensitivity"
+            dense
+            columns={[
+              { key: "c", label: "Case" },
+              { key: "v", label: "Amount", align: "right" },
+              { key: "b", label: "Within budget", align: "right" },
+            ]}
+            rows={d.sensitivity.map((s) => ({
+              c: s.case,
+              v: pkr(s.gross_capital_pkr ?? s.operating_pkr),
+              b: s.within_budget ? "Yes" : <span className="font-medium text-danger">No</span>,
+            }))}
+          />
+          {d.sensitivity_note ? <p className="mt-2 text-[12px] leading-snug text-ink-secondary">{d.sensitivity_note}</p> : null}
+        </Panel>
+        <Panel title="Multi-year cashflow">
+          {isStatusReason(d.cashflow) ? <StatusReasonView v={d.cashflow} /> : d.cashflow ? <pre className="overflow-auto text-[11px]">{JSON.stringify(d.cashflow, null, 2)}</pre> : <StatusReasonView v={null} />}
+          <p className="mt-3 text-[11px] text-ink-tertiary">No payback, NPV or IRR is shown without a documented asset life, crop price and discount rate.</p>
+        </Panel>
+      </div>
+    </div>
+  );
+}
+
+function Kpi({ label, value, sub, children }: { label: string; value: string | null; sub?: string; children?: React.ReactNode }) {
+  return (
+    <section className="min-w-0 rounded-[14px] border border-border bg-surface p-4 shadow-1">
+      <div className="text-[12px] text-ink-secondary">{label}</div>
+      {value ? <div className="num mt-1 text-[22px] font-semibold tracking-[-0.01em] text-ink">{value}</div> : null}
+      {sub ? <div className="num mt-0.5 text-[12px] text-ink-tertiary">{sub}</div> : null}
+      {children}
+    </section>
+  );
+}
+
+/* ================================================================ equity */
+const GROUPS = ["head", "middle", "tail"] as const;
+
+function EquityTab({ runId, baseline }: { runId: string; baseline: { kind: PlanKind; id: string } | null }) {
+  const q = useRunEquity(runId, baseline?.id);
+  return <ViewGate q={q} title="Equity">{(d) => <Equity d={d} baselineKind={baseline?.kind ?? null} />}</ViewGate>;
+}
+
+function Equity({ d, baselineKind }: { d: RunEquity; baselineKind: PlanKind | null }) {
+  const t = chartTokens();
+  const { sel } = usePilotData();
+  const label = useFieldLabel();
+  const groupColour: Record<string, string> = { head: t.series[0], middle: t.series[3], tail: t.series[1] };
+  const eligible = d.fields.filter((f) => typeof f.service_ratio === "number").sort((a, b) => a.service_ratio! - b.service_ratio!);
+  const hasDelta = !!d.baseline_run_id && d.fields.some((f) => typeof f.production_delta_kg === "number");
+  const cats = eligible.map((f) => label(f.field_id));
+  const max = Math.max(1, ...eligible.map((f) => f.service_ratio!));
+  const option = useMemo(
+    () => ({
+      ...baseOption(),
+      legend: { top: 0, left: 50, itemWidth: 10, itemHeight: 10, textStyle: { color: t.ink2, fontSize: 12 }, data: GROUPS.map(titleCase) },
+      grid: { left: 56, right: 28, top: 40, bottom: 32 },
+      tooltip: {
+        ...(baseOption().tooltip as object),
+        trigger: "item",
+        formatter: (p: { name: string; seriesName: string; value: number }) => `${p.name} · ${p.seriesName}<br/><b>${formatPercent(p.value, 1)}</b> of reference allowance`,
+      },
+      xAxis: {
+        ...(baseOption().xAxis as object),
+        type: "value",
+        min: 0,
+        max: Math.ceil(max * 10) / 10,
+        name: d.measure_label,
+        nameLocation: "middle",
+        nameGap: 22,
+        nameTextStyle: { color: t.ink3, fontSize: 11 },
+        axisLabel: { color: t.ink3, fontSize: 11, formatter: (v: number) => formatPercent(v) },
+        splitLine: { show: true, lineStyle: { color: t.border, opacity: 0.6 } },
+      },
+      yAxis: { ...(baseOption().yAxis as object), type: "category", inverse: true, data: cats, axisLabel: { color: t.ink2, fontSize: 11 }, splitLine: { show: false } },
+      series: GROUPS.map((g, gi) => ({
+        type: "bar",
+        name: titleCase(g),
+        barGap: "-100%",
+        barMaxWidth: 12,
+        data: eligible.map((f) => ({ value: f.group === g ? f.service_ratio : null, fid: f.field_id, itemStyle: { opacity: sel.fieldId && sel.fieldId !== f.field_id ? 0.45 : 1 } })),
+        itemStyle: { color: groupColour[g], borderRadius: [0, 3, 3, 0] },
+        ...(gi === 0
+          ? {
+              markLine: {
+                silent: true,
+                symbol: "none",
+                lineStyle: { color: t.ink3, type: "dashed" },
+                label: { show: false },
+                data: [{ xAxis: 1 }],
+              },
+            }
+          : {}),
+      })),
+    }),
+    [eligible, cats, sel.fieldId, t, d.measure_label, max], // eslint-disable-line react-hooks/exhaustive-deps
+  );
+  const burden = Object.entries(d.pumping_burden_share)
+    .filter(([, v]) => v > 0)
+    .sort((a, b) => b[1] - a[1]);
+  const worse = d.fields_worse_off.map((w) => (typeof w === "string" ? w : w.field_id));
+  const fieldClick = useMemo(
+    () => ({
+      click: (p: unknown) => {
+        const f = (p as { data?: { fid?: string } }).data?.fid;
+        if (f) sel.setParams({ field: f }, true);
+      },
+    }),
+    [sel],
+  );
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-[14px] border border-border bg-surface px-4 py-2.5 text-[12px] shadow-1">
+        <span>
+          <span className="text-ink-secondary">Measure </span>
+          <span className="font-medium text-ink">{d.measure_label}</span>
+        </span>
+        <span>
+          <span className="text-ink-secondary">Aggregation </span>
+          <span className="font-medium text-ink">{d.aggregation}</span>
+        </span>
+        <span>
+          <span className="text-ink-secondary">Minimum service </span>
+          <span className="num font-medium text-ink">{typeof d.min_service_ratio === "number" ? formatPercent(d.min_service_ratio, 1) : "Not reported"}</span>
+        </span>
+        <span>
+          <span className="text-ink-secondary">Baseline </span>
+          <span className="font-medium text-ink">{d.baseline_run_id ? `${baselineKind ?? ""} · ${shortId(d.baseline_run_id)}` : "none selected"}</span>
+        </span>
+        {d.comparison ? (
+          <Chip size="sm" tone={d.comparison.compatible ? "water" : "warning"} title={(d.comparison.differences ?? []).map((x) => `${x.condition}: ${x.note ?? ""}`).join("; ")}>
+            {d.comparison.label ?? (d.comparison.compatible ? "compatible comparison" : "incompatible comparison")}
+          </Chip>
+        ) : null}
+      </div>
+
+      <div className="grid gap-3 md:grid-cols-3">
+        {GROUPS.map((g) => {
+          const s = d.groups[g];
+          return (
+            <section key={g} className="min-w-0 rounded-[14px] border border-border bg-surface p-4 shadow-1">
+              <div className="flex items-center gap-2 text-[12px] font-medium text-ink-secondary">
+                <span className="inline-block size-2.5 rounded-[3px]" style={{ background: groupColour[g] }} aria-hidden />
+                {titleCase(g)} fields
+                <span className="num ml-auto text-ink-tertiary">{s ? `${s.eligible} of ${s.fields} eligible` : ""}</span>
+              </div>
+              {s ? (
+                <div className="mt-2 grid grid-cols-2 gap-2">
+                  <div>
+                    <div className="text-[11px] text-ink-tertiary">Mean service</div>
+                    <div className="num text-[20px] font-semibold text-ink">{typeof s.mean_service_ratio === "number" ? formatPercent(s.mean_service_ratio, 1) : "—"}</div>
+                  </div>
+                  <div>
+                    <div className="text-[11px] text-ink-tertiary">Minimum service</div>
+                    <div className="num text-[20px] font-semibold text-ink">{typeof s.min_service_ratio === "number" ? formatPercent(s.min_service_ratio, 1) : "—"}</div>
+                  </div>
+                </div>
+              ) : (
+                <p className="mt-2 text-[12px] text-ink-tertiary">Group not reported.</p>
+              )}
+            </section>
+          );
+        })}
+      </div>
+
+      <div className="grid gap-3 xl:grid-cols-[minmax(0,1.5fr)_minmax(320px,1fr)]">
+        <ChartPanel
+          id="equity-chart"
+          title="Service ratio per field, lowest first"
+          summary={`Field canal receipt ÷ fixed reference allowance (${d.measure_label}; not a legal quota). Colour marks the head / middle / tail group; the dashed line is the full reference allowance. Click a bar to select the field.`}
+          chart={
+            eligible.length ? (
+              <EChart option={option} height={Math.max(240, eligible.length * 17 + 80)} ariaLabel="Horizontal bar chart of field service ratios sorted ascending, coloured by canal position" onEvents={fieldClick} />
+            ) : (
+              <p className="p-4 text-[13px] text-ink-secondary">No eligible fields with a service ratio.</p>
+            )
+          }
+          table={
+            <DataTable
+              caption="Field equity"
+              dense
+              columns={[
+                { key: "f", label: "Field" },
+                { key: "g", label: "Group" },
+                { key: "s", label: "Service", align: "right" },
+                { key: "p", label: "Production", align: "right" },
+                ...(hasDelta ? [{ key: "dp", label: `Δ vs ${baselineKind ?? "baseline"}`, align: "right" as const }] : []),
+                { key: "gw", label: "Groundwater", align: "right" },
+              ]}
+              rows={[...d.fields]
+                .sort((a, b) => (a.service_ratio ?? 9) - (b.service_ratio ?? 9))
+                .map((f) => ({
+                  f: label(f.field_id),
+                  g: f.group ? titleCase(f.group) : "—",
+                  s: typeof f.service_ratio === "number" ? formatPercent(f.service_ratio, 1) : titleCase(String(f.service_status)),
+                  p: typeof f.production_kg === "number" ? formatMass(f.production_kg) : "—",
+                  dp: typeof f.production_delta_kg === "number" ? formatDelta(f.production_delta_kg, "kg") : "—",
+                  gw: typeof f.groundwater_m3 === "number" ? formatVolume(f.groundwater_m3) : "—",
+                }))}
+            />
+          }
+        />
+        <div className="flex min-w-0 flex-col gap-3">
+          <Panel title="Fields worse off vs baseline">
+            {!d.baseline_run_id ? (
+              <p className="text-[12px] text-ink-secondary">Select a B0 or B1 baseline above to list fields whose production falls.</p>
+            ) : (
+              <>
+                <div className="num text-[22px] font-semibold text-ink">{d.fields_worse_off_count ?? worse.length}</div>
+                <p className="text-[12px] text-ink-secondary">
+                  {worse.length ? worse.map(label).join(", ") : `No field produces less than under ${baselineKind ?? "the baseline"}.`}
+                </p>
+              </>
+            )}
+            {hasDelta ? (
+              <ProductionDelta fields={d.fields} label={label} />
+            ) : null}
+          </Panel>
+          <Panel title="Pumping burden share">
+            {burden.length ? (
+              <ul className="flex flex-col gap-1.5">
+                {burden.map(([f, v]) => (
+                  <li key={f} className="grid grid-cols-[52px_minmax(0,1fr)_48px] items-center gap-2 text-[12px]">
+                    <span className="font-medium text-ink">{label(f)}</span>
+                    <span className="h-2 overflow-hidden rounded-full bg-surface-muted">
+                      <span className="block h-full rounded-full bg-warning" style={{ width: `${(v / burden[0][1]) * 100}%` }} />
+                    </span>
+                    <span className="num text-right text-ink">{formatPercent(v, 1)}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-[12px] text-ink-secondary">No field pumps groundwater in this run.</p>
+            )}
+            <p className="mt-2 text-[11px] text-ink-tertiary">Share of total groundwater abstraction; {Object.keys(d.pumping_burden_share).length - burden.length} fields pump none.</p>
+          </Panel>
+          <Panel title="Exclusions & ownership">
+            <div className="text-[12px] text-ink-secondary">Zero-reference fields (excluded from service ratios)</div>
+            <p className="mt-0.5 text-[13px] text-ink">{d.zero_reference_fields.length ? d.zero_reference_fields.map(label).join(", ") : "None"}</p>
+            {d.owner_note ? <p className="mt-2 text-[12px] leading-snug text-ink-secondary">{d.owner_note}</p> : null}
+          </Panel>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ProductionDelta({ fields, label }: { fields: RunEquity["fields"]; label: (id: string) => string }) {
+  const ds = fields.filter((f) => typeof f.production_delta_kg === "number").map((f) => f.production_delta_kg!);
+  if (!ds.length) return null;
+  const gain = ds.filter((v) => v > 0).length;
+  const loss = ds.filter((v) => v < 0).length;
+  const minF = fields.reduce((m, f) => (typeof f.production_delta_kg === "number" && (m === null || f.production_delta_kg < m.production_delta_kg!) ? f : m), null as RunEquity["fields"][number] | null);
+  return (
+    <div className="mt-3 border-t border-border pt-2">
+      <Rows
+        rows={[
+          ["Fields with higher production", String(gain)],
+          ["Fields with lower production", String(loss)],
+          ["Smallest change", minF ? `${label(minF.field_id)} · ${formatDelta(minF.production_delta_kg!, "kg")}` : "—"],
+        ]}
+      />
+    </div>
+  );
+}
+
+/* ================================================================ SDG proxies */
+function SdgTab({ runId, baseline }: { runId: string; baseline: { kind: PlanKind; id: string } | null }) {
+  const q = useRunImpact(runId, baseline?.id);
+  return <ViewGate q={q} title="SDG proxies">{(d) => <Sdg d={d} />}</ViewGate>;
+}
+
+const METRIC_LABEL: Record<string, string> = {
+  sdg_2_4_production_retained_fraction: "Production retained (worst ÷ typical)",
+  production_kg: "Production",
+  worst_tested_production_kg: "Worst tested production",
+  typical_production_kg: "Typical-state production",
+  sdg_6_4_water_productivity_kg_m3: "Water productivity",
+  groundwater_m3: "Groundwater abstraction",
+  sdg_6_5_min_entitlement_fulfillment: "Minimum entitlement fulfilment",
+  sdg_6_4_groundwater_change_m3: "Groundwater change vs baseline",
+  sdg_13_1_worst_tested_production_kg: "Worst tested production",
+};
+function metricLabel(id: string): string {
+  if (METRIC_LABEL[id]) return METRIC_LABEL[id];
+  const t = id.replace(/^sdg_\d+_\d+_/, "").replace(/_(kg_m3|m3|kg|pkr|fraction)$/, "").replace(/_/g, " ");
+  return t.charAt(0).toUpperCase() + t.slice(1);
+}
+
+const SDG_TITLE: Record<string, string> = {
+  "SDG 2.4": "Sustainable food production",
+  "SDG 6.4/6.5": "Water-use efficiency & integrated management",
+  "SDG 13.1": "Resilience to climate hazards",
+};
+
+function Sdg({ d }: { d: RunImpact }) {
+  return (
+    <div className="flex flex-col gap-3" data-testid="sdg">
+      <p className="flex items-start gap-1.5 text-[12px] text-ink-secondary">
+        <Info size={13} className="mt-0.5 shrink-0" aria-hidden />
+        Project proxies computed from model output and aligned to SDG targets. They are not official UN indicators and are never combined into a 0–100 score.
+      </p>
+      <div className="grid gap-3 lg:grid-cols-3">
+        {d.cards.map((c) => (
+          <article key={c.card} className="flex min-w-0 flex-col rounded-[14px] border border-border bg-surface p-4 shadow-1" data-testid="sdg-card">
+            <div className="flex items-center justify-between gap-2">
+              <div className="text-[12px] font-semibold text-water">{c.card}</div>
+              <Chip size="sm" tone="warning" title={`official_indicator=${String(c.official_indicator)}`}>
+                {c.official_indicator ? "Official indicator" : "Project proxy · not official"}
+              </Chip>
+            </div>
+            <h3 className="mt-0.5 text-[14px] font-semibold leading-snug text-ink">{SDG_TITLE[c.card] ?? c.card}</h3>
+            <p className="mt-2 text-[12px] leading-snug text-ink-secondary">{c.interpretation}</p>
+            <ul className="mt-3 flex flex-col divide-y divide-border border-y border-border">
+              {c.values.map((v) => (
+                <li key={v.metric_id} className="py-2.5">
+                  <div className="flex items-baseline justify-between gap-3">
+                    <span className="text-[12px] text-ink-secondary" title={v.definition_id}>
+                      {metricLabel(v.metric_id)}
+                    </span>
+                    <MetricValueView metric={v} size="sm" showReason={false} className="shrink-0 text-right" />
+                  </div>
+                  {v.reason ? <div className="mt-0.5 text-[11px] text-ink-tertiary">{v.reason}</div> : null}
+                  {c.formulas[v.metric_id] ? <code className="mt-1 block break-words font-mono text-[11px] leading-snug text-ink">{c.formulas[v.metric_id]}</code> : null}
+                </li>
+              ))}
+            </ul>
+            {Object.entries(c.formulas).filter(([k]) => !c.values.some((v) => v.metric_id === k)).length ? (
+              <div className="mt-2">
+                <Eyebrow>Supporting definitions</Eyebrow>
+                {Object.entries(c.formulas)
+                  .filter(([k]) => !c.values.some((v) => v.metric_id === k))
+                  .map(([k, f]) => (
+                    <div key={k} className="mt-1 text-[11px]">
+                      <span className="text-ink-secondary">{metricLabel(k)}: </span>
+                      <code className="break-words font-mono text-ink">{f}</code>
                     </div>
-                  </DialogContent>
-                ) : null}
-              </Dialog>
+                  ))}
+              </div>
+            ) : null}
+            <div className="mt-3">
+              <Eyebrow>Limitations</Eyebrow>
+              <ul className="mt-1 list-disc pl-4 text-[12px] text-ink-secondary">
+                {c.limitations.map((l) => (
+                  <li key={l}>{l}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1 pt-3 text-[11px] text-ink-tertiary">
+              <span>
+                Runs: <span className="font-mono">{c.run_ids.map((r) => shortId(r)).join(", ")}</span>
+              </span>
+              <span>official_indicator = {String(c.official_indicator)}</span>
+              {c.target_url ? (
+                <a href={c.target_url} target="_blank" rel="noreferrer" className="no-print ml-auto inline-flex items-center gap-1 text-water hover:underline">
+                  UN target <ExternalLink size={11} aria-hidden />
+                </a>
+              ) : null}
             </div>
           </article>
-        );
-      })}
+        ))}
+      </div>
+      <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
+        <Panel title="CO₂ estimate" className="self-start">
+          <StatusReasonView v={d.co2} />
+        </Panel>
+        <ProductionDistribution d={d} />
+      </div>
     </div>
+  );
+}
+
+function ProductionDistribution({ d }: { d: RunImpact }) {
+  const t = chartTokens();
+  const label = useFieldLabel();
+  const rows = d.distribution.filter((r) => typeof r.production_kg === "number").sort((a, b) => b.production_kg! - a.production_kg!);
+  const option = useMemo(
+    () => ({
+      ...baseOption(),
+      grid: { left: 40, right: 12, top: 24, bottom: 44 },
+      tooltip: { ...(baseOption().tooltip as object), trigger: "axis", axisPointer: { type: "shadow" } },
+      xAxis: { ...(baseOption().xAxis as object), type: "category", data: rows.map((r) => label(r.field_id)), axisLabel: { color: t.ink3, fontSize: 10, rotate: 50 } },
+      yAxis: { ...(baseOption().yAxis as object), type: "value", name: "t", nameTextStyle: { color: t.ink3, fontSize: 11 }, axisLabel: { color: t.ink3, fontSize: 11, formatter: (v: number) => formatNumber(v / 1000, v % 1000 ? 1 : 0) } },
+      series: [{ type: "bar", name: "Production", data: rows.map((r) => r.production_kg), itemStyle: { color: t.veg, borderRadius: [3, 3, 0, 0] }, barMaxWidth: 14, tooltip: { valueFormatter: (v: number) => formatWithUnit(v, "kg") } }],
+    }),
+    [rows, t], // eslint-disable-line react-hooks/exhaustive-deps
+  );
+  return (
+    <ChartPanel
+      id="sdg-distribution"
+      title="Production distribution by field"
+      summary="Shown with the proxies so an aggregate never hides fields with low output."
+      chart={rows.length ? <EChart option={option} height={220} ariaLabel="Bar chart of production per field" /> : <p className="p-4 text-[13px] text-ink-secondary">No per-field production reported.</p>}
+      table={<DataTable caption="Production by field" dense columns={[{ key: "f", label: "Field" }, { key: "p", label: "Production", align: "right" }]} rows={rows.map((r) => ({ f: label(r.field_id), p: formatMass(r.production_kg!) }))} />}
+    />
   );
 }
 
 export function useImpactRuns() {
   return useLadderRuns();
 }
-export { useMemo };

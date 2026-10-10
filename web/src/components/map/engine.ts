@@ -58,6 +58,15 @@ export type EngineEvent =
   | { type: "camera" }
   | { type: "ready" };
 
+export interface MapDataArgs {
+  bundle: MapBundle;
+  fields: GeoJSON.FeatureCollection | null;
+  canals: GeoJSON.FeatureCollection | null;
+  aoi: GeoJSON.FeatureCollection | null;
+  raw: GeoJSON.FeatureCollection | null;
+  imageryIndex?: number;
+}
+
 export interface EngineOptions {
   reducedMotion: boolean;
   mode: MapMode;
@@ -65,7 +74,7 @@ export interface EngineOptions {
   secondary?: boolean;
 }
 
-const MAX_EXTRUDE_M = 46;
+const MAX_EXTRUDE_M = 30;
 const MIN_EXTRUDE_M = 3;
 const SRC = {
   imagery: "imagery",
@@ -86,6 +95,22 @@ interface EdgeGeom {
   edge: Edge;
   path: Polyline;
   assumed: boolean;
+}
+
+const imageryCache = new Map<string, Promise<ImageBitmap>>();
+function decodeImagery(url: string): Promise<ImageBitmap> {
+  let p = imageryCache.get(url);
+  if (!p) {
+    p = fetch(url)
+      .then((r) => {
+        if (!r.ok) throw new Error(`imagery ${r.status}`);
+        return r.blob();
+      })
+      .then((b) => createImageBitmap(b));
+    p.catch(() => imageryCache.delete(url));
+    imageryCache.set(url, p);
+  }
+  return p;
 }
 
 export class MapEngine {
@@ -122,6 +147,8 @@ export class MapEngine {
   private imageryVisible = true;
   private rawVisible = false;
   private dataKey = "";
+  private dimAmount = 0.42;
+  private dataQueue: Promise<void> = Promise.resolve();
 
   constructor(container: HTMLElement, opts: EngineOptions) {
     this.opts = opts;
@@ -221,14 +248,13 @@ export class MapEngine {
   }
 
   /* ------------------------------------------------------------ data */
-  async setData(args: {
-    bundle: MapBundle;
-    fields: GeoJSON.FeatureCollection | null;
-    canals: GeoJSON.FeatureCollection | null;
-    aoi: GeoJSON.FeatureCollection | null;
-    raw: GeoJSON.FeatureCollection | null;
-    imageryIndex?: number;
-  }) {
+  /** Serialised: overlapping calls (e.g. GeoJSON arriving in pieces) never interleave layer rebuilds. */
+  setData(args: MapDataArgs): Promise<void> {
+    this.dataQueue = this.dataQueue.then(() => this.applyData(args)).catch((e) => console.warn("map data", e));
+    return this.dataQueue;
+  }
+
+  private async applyData(args: MapDataArgs) {
     await this.loaded;
     if (this.destroyed) return;
     const key = `${args.bundle.pilotId}@${args.bundle.pilotVersion}|${args.fields?.features.length ?? 0}|${args.canals?.features.length ?? 0}|${args.aoi ? 1 : 0}|${args.raw ? 1 : 0}|${args.imageryIndex ?? 0}`;
@@ -275,13 +301,27 @@ export class MapEngine {
     // --- imagery
     const im = args.bundle.imagery[args.imageryIndex ?? 0] ?? args.bundle.imagery[0];
     if (im && im.url && im.corners.length === 4) {
-      m.addSource(SRC.imagery, { type: "image", url: im.url, coordinates: im.corners as [LngLat, LngLat, LngLat, LngLat] });
+      // Decoded once per URL and drawn into a per-map canvas: two maps (compare) sharing one
+      // image URL otherwise race in MapLibre's image-request queue and the second never loads.
+      const coords = im.corners as [LngLat, LngLat, LngLat, LngLat];
+      const bitmap = await decodeImagery(im.url).catch(() => null);
+      if (this.destroyed || this.dataKey !== key) return;
+      if (bitmap) {
+        const canvas = document.createElement("canvas");
+        canvas.width = bitmap.width;
+        canvas.height = bitmap.height;
+        canvas.getContext("2d")?.drawImage(bitmap, 0, 0);
+        m.addSource(SRC.imagery, { type: "canvas", canvas, coordinates: coords, animate: false });
+      } else {
+        m.addSource(SRC.imagery, { type: "image", url: im.url, coordinates: coords });
+      }
       m.addLayer({
         id: "imagery",
         type: "raster",
         source: SRC.imagery,
         layout: { visibility: this.imageryVisible ? "visible" : "none" },
-        paint: { "raster-opacity": 1, "raster-saturation": -0.12, "raster-contrast": 0.06, "raster-fade-duration": 0, "raster-resampling": "linear" },
+        // Muted so server-coloured fields read first; the scene itself is unaltered data.
+        paint: { "raster-opacity": 1, "raster-saturation": -0.38, "raster-contrast": 0.04, "raster-brightness-max": 0.9, "raster-fade-duration": 0, "raster-resampling": "linear" },
       });
     }
 
@@ -295,7 +335,7 @@ export class MapEngine {
         const relief = Math.max(1, stats.max - stats.min);
         // Flat Punjab plains: exaggerate modestly so canal-scale relief is legible; labelled in the legend.
         this.terrainExaggeration = Math.round(Math.max(1, Math.min(6, 24 / relief)) * 10) / 10;
-        const demSrc = { type: "raster-dem" as const, tiles: [tiles], tileSize: 256, encoding: "terrarium" as const, bounds: t.bounds, minzoom: 8, maxzoom: 14 };
+        const demSrc = { type: "raster-dem" as const, tiles: [tiles], tileSize: 256, encoding: "terrarium" as const, bounds: t.bounds, minzoom: 8, maxzoom: 12 }; // ~30 m DEM: z12 already oversamples it
         m.addSource(SRC.dem, demSrc);
         m.addSource(SRC.demHs, demSrc);
         m.addLayer({
@@ -327,7 +367,7 @@ export class MapEngine {
           geometry: { type: "Polygon", coordinates: [[[-180, -85], [180, -85], [180, 85], [-180, 85], [-180, -85]], aoiRing] },
         },
       });
-      m.addLayer({ id: "aoi-mask", type: "fill", source: SRC.mask, paint: { "fill-color": cssVar("--canvas"), "fill-opacity": 0.38 } });
+      m.addLayer({ id: "aoi-mask", type: "fill", source: SRC.mask, paint: { "fill-color": maskColor(), "fill-opacity": 0.42 } });
       m.addSource(SRC.aoi, { type: "geojson", data: aoiFC });
       m.addLayer({
         id: "aoi-outline",
@@ -467,7 +507,7 @@ export class MapEngine {
         ],
         "fill-extrusion-height": ["coalesce", ["feature-state", "h"], MIN_EXTRUDE_M],
         "fill-extrusion-base": 0,
-        "fill-extrusion-opacity": 0.9,
+        "fill-extrusion-opacity": 0.94,
         "fill-extrusion-vertical-gradient": true,
       },
     });
@@ -559,6 +599,12 @@ export class MapEngine {
   private applySky() {
     const dark = document.documentElement.dataset.theme === "dark";
     try {
+      // Low warm sun from the south-west: extrusion walls shade, so block heights read in 3D.
+      this.map.setLight({ anchor: "map", color: dark ? "#cfe3e1" : "#fff4e0", intensity: dark ? 0.32 : 0.42, position: [1.4, 215, 38] });
+    } catch {
+      /* light unsupported */
+    }
+    try {
       this.map.setSky({
         "sky-color": dark ? "#0b1716" : "#bcd9da",
         "horizon-color": dark ? "#1a2a28" : "#efe9da",
@@ -576,7 +622,7 @@ export class MapEngine {
   refreshTheme() {
     if (!this.map.isStyleLoaded()) return;
     this.map.setPaintProperty("bg", "background-color", cssVar("--map-bg"));
-    if (this.map.getLayer("aoi-mask")) this.map.setPaintProperty("aoi-mask", "fill-color", cssVar("--canvas"));
+    if (this.map.getLayer("aoi-mask")) this.map.setPaintProperty("aoi-mask", "fill-color", maskColor());
     this.applySky();
   }
 
@@ -633,6 +679,12 @@ export class MapEngine {
     this.applyVisuals();
   }
 
+  /** How strongly unselected fields fade when one is selected (replay keeps context visible). */
+  setDimAmount(t: number) {
+    this.dimAmount = Math.max(0, Math.min(1, t));
+    this.applyVisuals();
+  }
+
   /** Emphasise a subset (e.g. frontier portfolio fields); others dim. null clears. */
   setHighlight(ids: string[] | null) {
     this.highlightIds = ids && ids.length ? new Set(ids) : null;
@@ -650,7 +702,7 @@ export class MapEngine {
       const base = v?.color ?? neutral;
       const focus = this.highlightIds ? this.highlightIds.has(id) || id === this.selected : !this.selected || id === this.selected;
       const dim = anyFocus && !focus;
-      const color = dim ? mix(base, canvas, 0.5) : base;
+      const color = dim ? mix(base, canvas, this.dimAmount) : base;
       const h = v ? MIN_EXTRUDE_M + v.norm * (MAX_EXTRUDE_M - MIN_EXTRUDE_M) : MIN_EXTRUDE_M * 0.6;
       m.setFeatureState({ source: SRC.fields, id }, { color, hcolor: mix(base, "#ffffff", 0.28), h, dim });
     }
@@ -857,12 +909,14 @@ export class MapEngine {
 
   /* ------------------------------------------------------------ camera */
   fitAOI(animate = true) {
-    const b = this.bundle?.bbox ?? bboxOfCollection(this.fields);
+    // Frame the reviewed fields (the subject), falling back to the AOI box.
+    const b = (this.fields?.features.length ? bboxOfCollection(this.fields) : null) ?? this.bundle?.bbox;
     if (!b) return;
     const three = this.opts.mode === "3d" && !this.opts.reducedMotion;
     const cam = this.map.cameraForBounds(b as LngLatBoundsLike, { padding: paddingFor(this.map), bearing: three ? -18 : 0, pitch: three ? 52 : 0 });
     if (!cam) return;
-    const opts = { ...cam, pitch: three ? 52 : 0, bearing: three ? -18 : 0 };
+    // cameraForBounds is conservative under pitch (it fits the far edge); nudge in so blocks read.
+    const opts = { ...cam, zoom: (cam.zoom ?? 14) + (three ? 0.2 : 0), pitch: three ? 52 : 0, bearing: three ? -18 : 0 };
     if (!animate || this.opts.reducedMotion) this.map.jumpTo(opts);
     else this.map.flyTo({ ...opts, duration: 900, essential: false, curve: 1.3 });
   }
@@ -871,7 +925,7 @@ export class MapEngine {
     const b = this.fieldBBox.get(id);
     if (!b) return;
     const three = this.opts.mode === "3d" && !this.opts.reducedMotion;
-    const cam = this.map.cameraForBounds(b as LngLatBoundsLike, { padding: paddingFor(this.map, 0.3), maxZoom: 16.5, bearing: this.map.getBearing(), pitch: three ? 58 : 0 });
+    const cam = this.map.cameraForBounds(b as LngLatBoundsLike, { padding: paddingFor(this.map, 0.3), maxZoom: this.map.getContainer().clientHeight < 520 ? 15.6 : 16.5, bearing: this.map.getBearing(), pitch: three ? 58 : 0 });
     if (!cam) return;
     const zoom = Math.min(16.2, (cam.zoom ?? 15) - 0.6);
     const opts = { center: cam.center, zoom, pitch: three ? 58 : 0, bearing: this.map.getBearing() };
@@ -946,6 +1000,10 @@ export class MapEngine {
 }
 
 /* ---------------------------------------------------------------- helpers */
+function maskColor(): string {
+  // Outside the pilot AOI: a cool ink veil in light mode, deeper canvas in dark mode.
+  return document.documentElement.dataset.theme === "dark" ? cssVar("--canvas", "#0e1716") : mix(cssVar("--ink", "#172b2a"), "#ffffff", 0.35);
+}
 function emptyFC(): GeoJSON.FeatureCollection {
   return { type: "FeatureCollection", features: [] };
 }

@@ -1,14 +1,16 @@
-import { useEffect, useMemo, useState } from "react";
-import { Download, FileText, Printer } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Download, FileJson, FileText, Printer } from "lucide-react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { usePilotData } from "@/app/pilotData";
 import { useUI } from "@/app/store";
 import { api, describeError } from "@/lib/api/client";
-import { useCreateReport, useRun } from "@/lib/api/queries";
+import { useCreateReport, useRun, useRunActionPlan } from "@/lib/api/queries";
 import { useQuery } from "@tanstack/react-query";
-import type { PlanKind } from "@/lib/api/types";
-import { formatDate, formatDateTime, formatPKR, shortId, titleCase } from "@/lib/formatting";
+import type { PlanKind, RunResult } from "@/lib/api/types";
+import { formatDate, formatDateTime, formatMass, formatNumber, formatPKR, formatPercent, shortId, titleCase } from "@/lib/formatting";
+import { cn } from "@/lib/cn";
+import { useFieldLabel } from "./viewKit";
 import { Chip, MetricValueView, SolverBadge, Skeleton, StatePanel, JobBadge, ReviewFlagChips } from "@/components/status";
 import { Button, buttonClass } from "@/components/ui/Button";
 import { Eyebrow, Segmented } from "@/components/ui/primitives";
@@ -30,8 +32,6 @@ export function ReportScreen() {
   const run = useRun(sel.runId);
   const s = useScenario();
   const ladder = useLadderRuns();
-  const catalog = s.catalog.interventions.data ?? [];
-  const decisions = useDecisions();
   const [reportId, setReportId] = useState<string | null>(null);
   const create = useCreateReport();
   const trackJob = useUI((st) => st.trackJob);
@@ -52,7 +52,6 @@ export function ReportScreen() {
   }, [run.data, sel.pilotId]);
 
   const r = run.data;
-  const actions = useMemo(() => (r?.outcome === "plan" ? r.selected_intervention_instance_ids.map((id) => ({ id, it: catalog.find((c) => c.instance_id === id) })) : []), [r, catalog]);
   const ladderKinds = (["B0", "B1", "P", "R"] as PlanKind[]).filter((k) => ladder.byKind.has(k));
 
   const exportReport = async () => {
@@ -100,6 +99,7 @@ export function ReportScreen() {
                 <ReviewFlagChips flags={pilot.data?.pilot?.review_flags} className="mt-3" />
               </div>
               <div className="no-print flex flex-wrap gap-2">
+                <DataDownloads runId={r.run_id} run={r} />
                 <Button variant="secondary" icon={<Printer size={15} />} onClick={() => window.print()}>
                   Print / PDF
                 </Button>
@@ -197,62 +197,7 @@ export function ReportScreen() {
               </section>
             ) : null}
 
-            <section className="mt-7" aria-labelledby="act-h">
-              <h2 id="act-h" className="text-[15px] font-semibold text-ink">
-                Actions ({actions.length})
-              </h2>
-              {!actions.length ? (
-                <p className="mt-1 text-[13px] text-ink-secondary">No new investment selected; the plan schedules existing assets only.</p>
-              ) : (
-                <ol className="mt-3 flex flex-col gap-3">
-                  {actions.map(({ id, it }, n) => {
-                    const key = `${r.run_id}|${id}`;
-                    const dec = decisions.d[key] ?? "proposed";
-                    return (
-                      <li key={id} className="break-inside-avoid rounded-[12px] border border-border p-4" data-testid="action-card">
-                        <div className="flex flex-wrap items-start justify-between gap-2">
-                          <div>
-                            <div className="flex items-center gap-1.5 text-[12px] text-ink-secondary">
-                              <span className="num font-semibold text-ink">{n + 1}.</span>
-                              {it ? CATEGORY_META[it.category]?.icon : null}
-                              {it ? CATEGORY_META[it.category]?.label : "Intervention"}
-                              {it?.shared ? <Chip size="sm" tone="water">Shared project · charged once</Chip> : null}
-                            </div>
-                            <h3 className="mt-0.5 text-[14px] font-semibold text-ink">{it?.label ?? id}</h3>
-                            <div className="font-mono text-[11px] text-ink-tertiary">{id}</div>
-                          </div>
-                          <div className="no-print">
-                            <Segmented
-                              label={`Decision for ${id}`}
-                              size="sm"
-                              value={dec}
-                              onChange={(v) => decisions.set(key, v as Decision)}
-                              options={(["proposed", "reviewed", "accepted", "rejected"] as Decision[]).map((x) => ({ value: x, label: titleCase(x) }))}
-                            />
-                          </div>
-                          <Chip size="sm" className="hidden print:inline-flex">{titleCase(dec)}</Chip>
-                        </div>
-                        <dl className="mt-3 grid grid-cols-2 gap-x-6 gap-y-1.5 text-[12px] sm:grid-cols-3">
-                          <Fact k="Targets" v={(it?.target_ids ?? []).join(", ") || "—"} />
-                          <Fact k="Capital" v={it ? formatPKR(it.capex_pkr) : "—"} />
-                          <Fact k="Seasonal operating" v={it ? formatPKR(it.seasonal_opex_pkr) : "—"} />
-                          <Fact k="Decision" v={s.draft ? formatDate(s.draft.decision_at.slice(0, 10)) : "—"} />
-                          <Fact k="Commissioning" v={it?.earliest_commissioning ? formatDate(it.earliest_commissioning) : it ? `${it.procurement_delay_days + it.lead_time_days} days after decision` : "—"} />
-                          <Fact k="Prerequisites" v={(it?.prerequisites ?? []).join(", ") || "None"} />
-                          <Fact k="Payer / financing" v={param(it?.parameters, "payer", "financing") ?? "Not recorded in the package"} />
-                          <Fact k="Responsible role" v={param(it?.parameters, "responsible_role", "responsible") ?? "Not recorded"} />
-                          <Fact k="Required approval" v={param(it?.parameters, "required_approval", "approval") ?? "Not recorded"} />
-                        </dl>
-                        {it?.category === "pond" ? <p className="mt-2 text-[12px] text-ink-secondary">The pond footprint is removed from the field's cropped area in every metric.</p> : null}
-                      </li>
-                    );
-                  })}
-                </ol>
-              )}
-              <p className="mt-3 text-[11px] text-ink-tertiary">
-                “Accepted” records this software user's decision only. It is not a government authorization, a work order, or an instruction to operate a canal.
-              </p>
-            </section>
+            <ActionsSection runId={r.run_id} />
 
             <section className="mt-7 border-t border-border pt-5 text-[12px] text-ink-secondary" aria-labelledby="prov-h">
               <h2 id="prov-h" className="text-[13px] font-semibold text-ink">
@@ -293,16 +238,167 @@ export function ReportScreen() {
   );
 }
 
-function param(p: Record<string, unknown> | undefined, ...keys: string[]): string | null {
-  for (const k of keys) if (p && typeof p[k] === "string") return p[k] as string;
-  return null;
+/* ---------------------------------------------------------------- client-side data downloads */
+function saveBlob(name: string, body: string, type: string) {
+  const url = URL.createObjectURL(new Blob([body], { type }));
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+const csvCell = (v: unknown) => {
+  const s = v === null || v === undefined ? "" : String(v);
+  return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+};
+
+/** CSV of `schedules` and JSON run metadata, built from server responses only (PRD §8.1). */
+function DataDownloads({ runId, run }: { runId: string; run: RunResult }) {
+  const plan = useRunActionPlan(runId);
+  const ready = plan.data && plan.data.available !== false ? plan.data : null;
+  const downloadCsv = () => {
+    if (!ready) return;
+    const head = ["field_id", "date", "gross_depth_mm", "policy_family"];
+    const lines = [head.join(","), ...ready.schedules.map((r) => [r.field_id, r.date, r.gross_depth_mm, r.policy_family].map(csvCell).join(","))];
+    saveBlob(`aabflow_schedule_${runId}.csv`, lines.join("\n") + "\n", "text/csv;charset=utf-8");
+  };
+  const downloadJson = () => {
+    const o = run as unknown as Record<string, unknown>;
+    const keys = ["run_id", "plan_kind", "outcome", "solver_status", "scenario_revision_id", "scenario_hash", "candidate_library_hash", "created_at", "warnings", "selected_intervention_instance_ids", "physical_validation"];
+    const meta: Record<string, unknown> = {};
+    for (const k of keys) if (k in o) meta[k] = o[k];
+    if (ready) meta.action_plan = { plan_kind: ready.plan_kind, action_count: ready.actions.length, schedule_events: ready.schedules.length, status_note: ready.status_note, actions: ready.actions };
+    saveBlob(`aabflow_run_${runId}.json`, JSON.stringify(meta, null, 2), "application/json");
+  };
+  return (
+    <>
+      <Button variant="secondary" icon={<Download size={15} />} disabled={!ready || !ready.schedules.length} onClick={downloadCsv} data-testid="download-schedule-csv" title={ready ? `${ready.schedules.length} irrigation events` : "Action plan unavailable"}>
+        Schedule CSV
+      </Button>
+      <Button variant="secondary" icon={<FileJson size={15} />} onClick={downloadJson} data-testid="download-run-json">
+        Run JSON
+      </Button>
+    </>
+  );
 }
 
-function Fact({ k, v }: { k: string; v: string }) {
+/* ---------------------------------------------------------------- actions (GET /runs/{id}/action-plan) */
+function ActionsSection({ runId }: { runId: string }) {
+  const q = useRunActionPlan(runId);
+  const decisions = useDecisions();
+  const label = useFieldLabel();
+  const fields = (ids: string[]) => (ids.length ? ids.map(label).join(", ") : "None");
+  const d = q.data;
   return (
-    <div>
+    <section className="mt-7" aria-labelledby="act-h">
+      <h2 id="act-h" className="text-[15px] font-semibold text-ink">
+        Actions{d && d.available !== false ? ` (${d.actions.length})` : ""}
+      </h2>
+      {q.isLoading ? (
+        <Skeleton className="mt-3 h-40" />
+      ) : q.error || !d ? (
+        <StatePanel className="mt-3" state="error" error={q.error} title="Action plan unavailable" />
+      ) : d.available === false ? (
+        <StatePanel className="mt-3" state="unknown" title="Action plan: unavailable">
+          {d.reason}
+        </StatePanel>
+      ) : (
+        <>
+          <p className="text-[12px] text-ink-secondary">
+            {d.actions.length ? "Every field below is returned by the server's action-plan view for this run." : "No new investment selected; the plan schedules existing assets only."}{" "}
+            {d.schedules.length ? `${d.schedules.length} dated irrigation events are in the schedule CSV.` : ""}
+          </p>
+          {d.actions.length ? (
+            <ol className="mt-3 flex flex-col gap-3">
+              {d.actions.map((a, n) => {
+                const key = `${a.run_id}|${a.action_id}`;
+                const dec = decisions.d[key] ?? ((["proposed", "reviewed", "accepted", "rejected"] as Decision[]).includes(a.status as Decision) ? (a.status as Decision) : "proposed");
+                const meta = CATEGORY_META[a.category as keyof typeof CATEGORY_META];
+                const change = Object.entries(a.modeled_change).filter(([, v]) => typeof v === "number");
+                return (
+                  <li key={a.action_id} className="break-inside-avoid rounded-[12px] border border-border p-4" data-testid="action-card">
+                    <div className="flex flex-wrap items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1.5 text-[12px] text-ink-secondary">
+                          <span className="num font-semibold text-ink">{n + 1}.</span>
+                          {meta?.icon}
+                          {meta?.label ?? titleCase(a.category)}
+                          {a.crop_season ? <span className="font-mono text-[11px] text-ink-tertiary">· {a.crop_season}</span> : null}
+                        </div>
+                        <h3 className="mt-0.5 text-[14px] font-semibold text-ink">
+                          {titleCase(a.category)} · {fields(a.target_ids)}
+                        </h3>
+                        {a.description && a.description !== `${a.category} ${a.action_id}` ? <div className="text-[12px] text-ink-secondary">{a.description}</div> : null}
+                        <div className="font-mono text-[11px] text-ink-tertiary">{a.action_id}</div>
+                      </div>
+                      <div className="no-print flex flex-col items-end gap-1">
+                        <Segmented
+                          label={`Local decision for ${a.action_id}`}
+                          size="sm"
+                          value={dec}
+                          onChange={(v) => decisions.set(key, v as Decision)}
+                          options={(["proposed", "reviewed", "accepted", "rejected"] as Decision[]).map((x) => ({ value: x, label: titleCase(x) }))}
+                        />
+                        <span className="text-[11px] text-ink-tertiary">Local decision only · server status: {a.status}</span>
+                      </div>
+                      <Chip size="sm" className="hidden print:inline-flex">
+                        Local decision: {titleCase(dec)}
+                      </Chip>
+                    </div>
+                    <dl className="mt-3 grid grid-cols-2 gap-x-6 gap-y-2 text-[12px] sm:grid-cols-3">
+                      <Fact k="Targets" v={fields(a.target_ids)} />
+                      <Fact k="Capital" v={typeof a.capex_pkr === "number" ? formatPKR(a.capex_pkr) : "Not reported"} />
+                      <Fact k="Seasonal operating" v={typeof a.seasonal_opex_pkr === "number" ? formatPKR(a.seasonal_opex_pkr) : "Not reported"} />
+                      <Fact k="Decision" v={formatDate(a.decision_date)} />
+                      <Fact k="Start" v={formatDate(a.start_date)} />
+                      <Fact k="Commissioning" v={formatDate(a.commissioning_date)} />
+                      <Fact k="Quantity" v={quantityText(a.quantity)} />
+                      <Fact k="Payer / financing" v={a.payer ?? "Not recorded"} />
+                      <Fact k="Responsible role" v={a.responsible_role ?? "Not recorded"} />
+                      <Fact k="Required approval" v={a.required_approval ?? "Not recorded"} />
+                      <Fact k="Prerequisites" v={a.prerequisites.length ? a.prerequisites.join(", ") : "None"} />
+                      <Fact k="Affected fields" v={fields(a.affected_fields)} />
+                      <Fact k="Modeled production" v={change.length ? change.map(([f, v]) => `${label(f)}: ${formatMass(v as number)}`).join("; ") : "Not reported"} />
+                      <Fact k="Sources" v={a.source_refs.length ? a.source_refs.join(", ") : "None"} mono />
+                    </dl>
+                    {a.uncertainty ? <p className="mt-2 text-[12px] text-ink-secondary">Uncertainty: {a.uncertainty}</p> : null}
+                    {a.category === "pond" ? <p className="mt-1 text-[12px] text-ink-secondary">The pond footprint is removed from the field's cropped area in every metric.</p> : null}
+                  </li>
+                );
+              })}
+            </ol>
+          ) : null}
+          <p className="mt-3 text-[11px] text-ink-tertiary">
+            {d.status_note ?? "“Accepted” records this software user's decision only. It is not a government authorization, a work order, or an instruction to operate a canal."} Decisions are stored in this browser only.
+          </p>
+        </>
+      )}
+    </section>
+  );
+}
+
+function quantityText(q: Record<string, number | string | null>): string {
+  const e = Object.entries(q ?? {});
+  if (!e.length) return "—";
+  return e
+    .map(([k, v]) => {
+      const name = titleCase(k);
+      if (typeof v !== "number") return `${name}: ${v ?? "—"}`;
+      if (/efficiency|fraction|ratio/.test(k)) return `${name}: ${formatPercent(v)}`;
+      if (/_m3$/.test(k)) return `${name.replace(/ M3$/, "")}: ${formatNumber(v, 0)} m³`;
+      if (/_m2$/.test(k)) return `${name.replace(/ M2$/, "")}: ${formatNumber(v, 0)} m²`;
+      return `${name}: ${formatNumber(v, 2)}`;
+    })
+    .join("; ");
+}
+
+function Fact({ k, v, mono }: { k: string; v: string; mono?: boolean }) {
+  return (
+    <div className="min-w-0">
       <dt className="text-ink-tertiary">{k}</dt>
-      <dd className="text-ink">{v}</dd>
+      <dd className={cn("break-words text-ink", mono && "font-mono text-[11px]")}>{v}</dd>
     </div>
   );
 }

@@ -151,25 +151,30 @@ export function runMetrics(run: RunResult | null | undefined): MetricValue[] {
   return [];
 }
 
-/** Find a run-level (field_id null) metric by definition id or metric id suffix. */
+/** True when a metric matches an id by metric id, versioned definition id, or a namespaced suffix. */
+function metricMatches(m: MetricValue, id: string): boolean {
+  if (m.metric_id === id || m.definition_id === id) return true;
+  if (typeof m.definition_id === "string" && m.definition_id.split("@")[0] === id) return true;
+  return m.metric_id.endsWith(`:${id}`) || m.metric_id.endsWith(`/${id}`);
+}
+
+/** Find a run-level (field_id null) metric by metric id or definition id, in preference order. */
 export function findMetric(metrics: MetricValue[], ...ids: string[]): MetricValue | null {
   for (const id of ids) {
-    const hit =
-      metrics.find((m) => !m.field_id && (m.definition_id === id || m.metric_id === id)) ??
-      metrics.find((m) => !m.field_id && (m.metric_id.endsWith(`:${id}`) || m.metric_id.endsWith(`/${id}`)));
+    const hit = metrics.find((m) => !m.field_id && metricMatches(m, id));
     if (hit) return hit;
   }
   return null;
 }
 
-/** Per-field metrics for a definition: field_id → MetricValue. */
+/** Per-field metrics for the first id that has any: field_id → MetricValue. */
 export function fieldMetricMap(metrics: MetricValue[], ...ids: string[]): Map<string, MetricValue> {
-  const out = new Map<string, MetricValue>();
-  for (const m of metrics) {
-    if (!m.field_id) continue;
-    if (ids.includes(m.definition_id) || ids.some((id) => m.metric_id.endsWith(`:${id}`))) out.set(m.field_id, m);
+  for (const id of ids) {
+    const out = new Map<string, MetricValue>();
+    for (const m of metrics) if (m.field_id && metricMatches(m, id)) out.set(m.field_id, m);
+    if (out.size) return out;
   }
-  return out;
+  return new Map();
 }
 
 /* ---------------------------------------------------------------- timeline */
@@ -234,7 +239,7 @@ export function readTimeline(raw: unknown, runId: string, fieldId: string | null
   if (isObj(ef)) for (const [k, v] of Object.entries(ef)) if (Array.isArray(v)) edgeFlows[k] = v.map(numOrNull);
   if (Array.isArray(ef))
     for (const row of ef.filter(isObj)) {
-      const id = String(pick(row, "edge_id") ?? "");
+      const id = String(pick(row, "edge_id", "entity_id") ?? "");
       const vals = pick<unknown[]>(row, "values", "delivered_m3");
       if (id && Array.isArray(vals)) edgeFlows[id] = vals.map(numOrNull);
     }
@@ -251,7 +256,7 @@ export function readTimeline(raw: unknown, runId: string, fieldId: string | null
     }
   if (Array.isArray(pd))
     for (const row of pd.filter(isObj)) {
-      const id = String(pick(row, "asset_id") ?? "");
+      const id = String(pick(row, "asset_id", "entity_id") ?? "");
       if (id)
         ponds[id] = {
           inventory: ((pick<unknown[]>(row, "inventory_m3", "values") ?? []) as unknown[]).map(numOrNull),

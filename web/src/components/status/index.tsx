@@ -159,7 +159,7 @@ export function SolverBadge({ status, showFriendly, size = "md" }: { status: Sol
       <Ban size={12} aria-hidden />
     );
   return (
-    <span className="inline-flex flex-col gap-1">
+    <span className="inline-flex flex-col items-start gap-1">
       <Chip tone={c.tone} icon={icon} size={size} title={c.friendly}>
         {c.label}
       </Chip>

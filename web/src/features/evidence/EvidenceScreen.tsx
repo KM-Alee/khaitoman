@@ -47,7 +47,9 @@ export function EvidenceScreen() {
           <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
             <section aria-label="Search results" className="flex flex-col gap-2">
               <Eyebrow>{sel.q ? `Results for “${sel.q}”` : "Curated index"}</Eyebrow>
-              {search.isLoading ? (
+              {!sel.q ? (
+                <EvidenceStart refs={p?.source_refs ?? []} onTopic={(t) => setQ(t)} onOpen={(id) => sel.setParams({ ev: id }, false)} />
+              ) : search.isLoading ? (
                 [0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-20" />)
               ) : search.error ? (
                 <StatePanel state="error" error={search.error} title="Evidence search unavailable" />
@@ -154,6 +156,54 @@ export function EvidenceScreen() {
           </DialogContent>
         ) : null}
       </Dialog>
+    </div>
+  );
+}
+
+const TOPICS = ["Sentinel-2", "canal", "roster", "wheat", "AquaCrop", "pond", "pump", "delivery factor", "solver", "surrogate"];
+
+function evidenceKind(id: string): string {
+  const k = id.split(":")[0];
+  return (
+    { ev: "Source", asm: "Assumption", metric: "Metric definition", tx: "Transformation", run: "Run" } as Record<string, string>
+  )[k] ?? titleCase(k);
+}
+
+/** Empty-query state: topic shortcuts plus every evidence record the package cites. */
+function EvidenceStart({ refs, onTopic, onOpen }: { refs: string[]; onTopic: (t: string) => void; onOpen: (id: string) => void }) {
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="flex flex-wrap gap-1.5" role="group" aria-label="Search topics">
+        {TOPICS.map((t) => (
+          <button
+            key={t}
+            type="button"
+            onClick={() => onTopic(t)}
+            className="rounded-full border border-border bg-surface px-3 py-1 text-[12px] font-medium text-ink-secondary shadow-1 transition-colors hover:border-water/50 hover:text-water"
+          >
+            {t}
+          </button>
+        ))}
+      </div>
+      {refs.length ? (
+        <ul className="grid gap-2 sm:grid-cols-2">
+          {refs.map((id) => (
+            <li key={id}>
+              <button
+                type="button"
+                onClick={() => onOpen(id)}
+                className="flex w-full flex-col items-start rounded-[12px] border border-border bg-surface px-3.5 py-2.5 text-left shadow-1 transition-shadow hover:shadow-2"
+                data-testid="evidence-ref"
+              >
+                <span className="text-[11px] font-medium uppercase tracking-[0.06em] text-ink-tertiary">{evidenceKind(id)}</span>
+                <span className="mt-0.5 break-all font-mono text-[12px] text-ink">{id}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <StatePanel state="empty" title="No package evidence listed">This pilot version cites no evidence records.</StatePanel>
+      )}
     </div>
   );
 }

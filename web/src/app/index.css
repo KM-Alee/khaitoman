@@ -73,12 +73,12 @@
   --map-bg: #dfe3da;
 
   /* Data palettes (shared by map legends and charts) */
-  --seq-0: #f1ede0;
-  --seq-1: #d9e3c7;
-  --seq-2: #a9c79a;
-  --seq-3: #6e9f72;
-  --seq-4: #386a4b;
-  --seq-5: #1f4532;
+  --seq-0: #f3dc9b;
+  --seq-1: #dcc06a;
+  --seq-2: #a9b45a;
+  --seq-3: #66995a;
+  --seq-4: #2f7353;
+  --seq-5: #134a3c;
   --svc-0: #f3e3c9;
   --svc-1: #c9dfd9;
   --svc-2: #8cc4c4;
@@ -149,12 +149,13 @@
   --on-water: #06201f;
   --scrim: rgb(0 0 0 / 0.55);
   --map-bg: #1a2321;
-  --seq-0: #2b2a22;
-  --seq-1: #3b4a33;
-  --seq-2: #4f7350;
-  --seq-3: #6f9f72;
-  --seq-4: #9cc79d;
-  --seq-5: #d0ecc9;
+  /* Wheat gold → mint: every step stays brighter than the dark imagery so blocks read. */
+  --seq-0: #c99a2e;
+  --seq-1: #d2b44c;
+  --seq-2: #b3c25c;
+  --seq-3: #84c07a;
+  --seq-4: #74cf9c;
+  --seq-5: #b4efcb;
   --svc-0: #3d3020;
   --svc-1: #234240;
   --svc-2: #26636a;

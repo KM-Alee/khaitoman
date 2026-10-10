@@ -215,6 +215,9 @@ export function needsNewScenario(basis: ScenarioDraft, draft: ScenarioDraft): bo
     basis.season_id !== draft.season_id ||
     basis.planning_mode !== draft.planning_mode ||
     basis.decision_at !== draft.decision_at ||
-    basis.objective !== draft.objective
+    basis.objective !== draft.objective ||
+    // A derived revision's typed changes cannot clear an optional value back to null.
+    (basis.minimum_service_ratio !== null && draft.minimum_service_ratio === null) ||
+    (basis.uncertainty_set_id !== null && draft.uncertainty_set_id === null)
   );
 }

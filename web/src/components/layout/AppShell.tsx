@@ -1,3 +1,4 @@
+import { cn } from "@/lib/cn";
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { PanelLeftOpen, PanelRightOpen, SlidersHorizontal } from "lucide-react";
 import { useUI } from "@/app/store";
@@ -91,7 +92,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <JobTray />
               </div>
               {!docked ? (
-                <div className="no-print pointer-events-none absolute right-3 top-3 z-30 flex gap-2 md:top-auto md:bottom-3 md:right-auto md:left-3">
+                <div className={cn("no-print pointer-events-none absolute z-30 flex gap-2 md:top-auto md:bottom-3 md:right-auto md:left-3", showScenario ? "left-3 top-[60px]" : "right-3 top-3")}>
                   {showScenario ? (
                     <Button variant="secondary" size="sm" className="pointer-events-auto shadow-2" icon={<SlidersHorizontal size={14} />} onClick={() => setScenarioSheet(true)} data-testid="open-scenario-sheet">
                       Inputs
@@ -159,7 +160,7 @@ function useGlobalShortcuts() {
         set({ inspectorOpen: true, inspectorTab: "field" });
         if (sel.fieldId) sel.setParams({ field: null });
         setTimeout(() => document.getElementById("field-search")?.focus(), 30);
-      } else if (e.key === "p" && e.shiftKey) {
+      } else if (e.key.toLowerCase() === "p" && e.shiftKey) {
         set({ presentation: !useUI.getState().presentation });
       }
     };

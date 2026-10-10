@@ -44,9 +44,7 @@ export function ScenarioPanel({ onCollapse, className }: { onCollapse?: () => vo
     for (const st of catalog.uncertainty.data?.sets?.flatMap((x) => x.states) ?? []) ids.add(st.supply_profile_id);
     return [...ids];
   }, [supply, catalog.uncertainty.data]);
-  const readiness = revision.data?.readiness as
-    | ({ ready: boolean; blockers?: string[]; warnings?: string[]; max_attainable_service?: Record<string, number> } & Record<string, unknown>)
-    | undefined;
+  const readiness = revision.data?.readiness ?? undefined;
 
   return (
     <aside
@@ -285,7 +283,7 @@ export function ScenarioPanel({ onCollapse, className }: { onCollapse?: () => vo
                 {[...(readiness.blockers ?? []), ...(readiness.warnings ?? [])].map((b, i) => (
                   <div key={i} className="flex gap-1.5">
                     <AlertTriangle size={13} className="mt-0.5 shrink-0" aria-hidden />
-                    {b}
+                    <span>{b.detail}</span>
                   </div>
                 ))}
               </div>
@@ -324,9 +322,10 @@ export function ScenarioPanel({ onCollapse, className }: { onCollapse?: () => vo
   );
 }
 
-function serviceWarning(max: Record<string, number> | undefined, group: string, floor: number, dirty: boolean) {
+function serviceWarning(max: Record<string, number | null> | undefined, group: string, floor: number, dirty: boolean) {
   if (!max || dirty) return null;
-  const m = group === "all" ? Math.min(...Object.values(max)) : max[group];
+  const vals = Object.values(max).filter((v): v is number => typeof v === "number");
+  const m = typeof max[group] === "number" ? max[group] : group === "all" && vals.length ? Math.min(...vals) : null;
   if (typeof m !== "number" || floor <= m) return null;
   return (
     <span className="inline-flex items-start gap-1">

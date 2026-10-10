@@ -185,11 +185,11 @@ class DesignRow:
     sim_end: date
 
 
-def build_design(crop: Crop) -> list[DesignRow]:
+def build_design(crop: Crop, pilot_id: str | None = None) -> list[DesignRow]:
     season = next(
         s for s in crop_profiles.SEASONS.values() if s.crop is crop and s.weather_basis == "analog"
     )
-    src = scenarios.weather_source(None)
+    src = scenarios.weather_source(pilot_id)
     cp = crop_profiles.profile(season.crop_profile_id)
     # historical pool: every complete season in the archive (original dates)
     rows: list[DesignRow] = []
@@ -460,3 +460,55 @@ def train_all(workers: int | None = None, crops=(Crop.wheat, Crop.cotton)) -> di
 
 def model_dir(version: str = MODEL_VERSION) -> Path:
     return models_dir() / version
+
+
+def external_evaluation(
+    pilot_id: str, workers: int | None = None, version: str = MODEL_VERSION
+) -> dict[str, Any]:
+    """Untouched evaluation of a trained model on a pilot's own weather series (no refit).
+
+    Uses the same design generator on every complete season of the pilot package
+    weather; none of these experiments were seen in fitting when the pilot series
+    differs from the training series (different grid point/model).
+    """
+    import lightgbm as lgb
+
+    out: dict[str, Any] = {
+        "model_version": version,
+        "pilot_id": pilot_id,
+        "created_at": datetime.now(UTC).isoformat(),
+        "crops": {},
+    }
+    src = scenarios.weather_source(pilot_id)
+    out["weather_origin"] = src.origin
+    out["series_id"] = src.series_id
+    for crop in (Crop.wheat, Crop.cotton):
+        df = execute_design(build_design(crop, pilot_id), workers=workers)
+        feats = feature_names(crop)
+        booster = lgb.Booster(model_file=str(models_dir() / version / f"model-{crop.value}.txt"))
+        df["pred"] = np.clip(booster.predict(df[feats]), 0, None)
+        ev = json.loads((models_dir() / version / f"evaluation-{crop.value}.json").read_text())
+        ref = ev["test"]["reference_yield_kg_ha"]
+        last = max(df["year"].unique())
+        last_df = df[(df["year"] == last) & (df["family"] != HOLDOUT_FAMILY)]
+        regret = decision_regret(last_df, "pred")
+        rv = [f["regret"] for f in regret]
+        out["crops"][crop.value] = {
+            "samples": len(df),
+            "years": sorted(df["year"].unique().tolist()),
+            "all": regression_metrics(df["yield_kg_ha"].to_numpy(), df["pred"].to_numpy(), ref),
+            "ranking": within_context_spearman(df, "pred", ["year", "soil", "app_eff"]),
+            "decision_regret_year": last,
+            "decision_regret": {
+                "n": len(rv),
+                "median": float(np.median(rv)),
+                "max": float(np.max(rv)),
+            },
+        }
+        df.to_parquet(
+            models_dir() / version / f"external-{pilot_id}-{crop.value}.parquet", index=False
+        )
+    atomic_write_text(
+        models_dir() / version / f"external-{pilot_id}.json", json.dumps(out, indent=1, default=str)
+    )
+    return out

@@ -124,7 +124,7 @@ export function ResultStrip({ runId, baselineRunId, className }: { runId: string
   const present = rows.filter((x) => x.metric);
   const shown = (present.length ? present : rows).slice(0, 6);
   return (
-    <div className={cn("rounded-[14px] border border-border bg-surface/95 shadow-2 backdrop-blur", className)} data-testid="result-strip" data-state={r.solver_status === "OPTIMAL" ? "feasible" : "feasible"}>
+    <div className={cn("@container rounded-[14px] border border-border bg-surface/95 shadow-2 backdrop-blur", className)} data-testid="result-strip" data-state={r.solver_status === "OPTIMAL" ? "feasible" : "feasible"}>
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-border px-4 py-2">
         <span className="text-[12px] font-semibold text-ink">{r.plan_kind === "P" ? "Integrated plan" : r.plan_kind === "B1" ? "No new capital" : r.plan_kind === "B0" ? "Fixed-roster baseline" : "Robust plan"}</span>
         <SolverBadge status={r.solver_status} size="sm" />
@@ -138,12 +138,12 @@ export function ResultStrip({ runId, baselineRunId, className }: { runId: string
           run {shortId(r.run_id)} · {formatDuration(r.solve_wall_ms)} · proof scope: finite candidate library
         </span>
       </div>
-      <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-b-[14px] bg-border sm:grid-cols-3 xl:grid-cols-6">
+      <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-b-[14px] bg-border @md:grid-cols-3 @4xl:grid-cols-6">
         {shown.map((h) => {
           const delta = h.ids.map((id) => deltas.get(id)).find(Boolean) ?? null;
           return (
             <div key={h.key} className="bg-surface px-4 py-2.5" data-metric={h.key}>
-              <dt className="truncate text-[11px] font-medium text-ink-secondary">{h.label}</dt>
+              <dt className="truncate text-[11px] font-medium text-ink-secondary" title={h.label}>{h.label}</dt>
               <dd className="mt-0.5">
                 <MetricValueView metric={h.metric} size="md" delta={delta ? { ...delta, goodWhen: h.goodWhen } : null} showReason={false} />
               </dd>

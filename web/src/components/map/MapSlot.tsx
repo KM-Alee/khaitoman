@@ -19,6 +19,7 @@ import { IconButton } from "@/components/ui/Button";
 import { Popover, PopoverContent, PopoverTrigger, Segmented, Switch } from "@/components/ui/primitives";
 import { attachMap, detachMap, getEngine, useMapRuntime } from "./runtime";
 import { METRIC_DEFS, useFieldVisuals, type FieldVisualResult } from "./useFieldVisuals";
+import type { FieldVisual } from "./engine";
 import { MapLegend } from "./MapLegend";
 
 export interface MapSlotProps {
@@ -34,6 +35,14 @@ export interface MapSlotProps {
   label?: string;
   highlightFieldIds?: string[] | null;
   onVisuals?: (r: FieldVisualResult) => void;
+  /** Screen-owned field colouring (e.g. replay canopy by date); replaces the metric visuals. */
+  visualsOverride?: Map<string, FieldVisual> | null;
+  /** Legend shown instead of the metric legend while an override is active. */
+  legendOverride?: ReactNode;
+  /** Fade of unselected fields (0 = none). Defaults to the engine's standard dimming. */
+  dimAmount?: number;
+  /** Hover-card value while an override is active (e.g. "62% canopy on 10 Jan"). */
+  hoverValue?: (fieldId: string) => ReactNode;
 }
 
 /** A place where the persistent map is shown, plus its overlay chrome. */
@@ -49,6 +58,10 @@ export function MapSlot({
   label = "Pilot map",
   highlightFieldIds,
   onVisuals,
+  visualsOverride,
+  legendOverride,
+  dimAmount,
+  hoverValue,
 }: MapSlotProps) {
   const slotId = useId();
   const hostRef = useRef<HTMLDivElement>(null);
@@ -69,8 +82,13 @@ export function MapSlot({
   const attached = attachedTo === slotId;
   useEffect(() => {
     if (!attached || !ready) return;
-    getEngine()?.setFieldVisuals(visuals.visuals);
-  }, [attached, ready, visuals.visuals]);
+    getEngine()?.setFieldVisuals(visualsOverride ?? visuals.visuals);
+  }, [attached, ready, visuals.visuals, visualsOverride]);
+  useEffect(() => {
+    if (!attached || !ready || dimAmount === undefined) return;
+    getEngine()?.setDimAmount(dimAmount);
+    return () => getEngine()?.setDimAmount(0.42);
+  }, [attached, ready, dimAmount]);
   useEffect(() => {
     if (!attached || !ready) return;
     getEngine()?.setHighlight(highlightFieldIds ?? null);
@@ -109,10 +127,10 @@ export function MapSlot({
       <div ref={hostRef} className="absolute inset-0 z-0" />
       {!map.data && !map.error ? <MapLoading /> : null}
       {map.error || geoError ? <MapUnavailable /> : null}
-      <HoverCard visuals={visuals} />
+      <HoverCard visuals={visuals} override={visualsOverride && hoverValue ? hoverValue : undefined} />
       {showLegend ? (
         <div className="pointer-events-none absolute bottom-3 left-3 z-10 flex max-w-[calc(100%-96px)] flex-col items-start gap-2">
-          <MapLegend metric={metric} visuals={visuals} />
+          {visualsOverride && legendOverride ? legendOverride : <MapLegend metric={metric} visuals={visuals} />}
         </div>
       ) : null}
       <MapControls compact={compactControls} metric={metric} metricControlled={!!metricProp} />
@@ -141,7 +159,7 @@ function MapUnavailable() {
   );
 }
 
-function HoverCard({ visuals }: { visuals: FieldVisualResult }) {
+function HoverCard({ visuals, override }: { visuals: FieldVisualResult; override?: (fieldId: string) => ReactNode }) {
   const hovered = useUI((s) => s.hoveredFieldId);
   const hoveredEdge = useUI((s) => s.hoveredEdgeId);
   const areaUnit = useUI((s) => s.areaUnit);
@@ -171,7 +189,9 @@ function HoverCard({ visuals }: { visuals: FieldVisualResult }) {
             {f.group ? <span className="capitalize">{f.group}</span> : null}
             {f.areaM2 ? <span className="num">{formatArea(f.areaM2, areaUnit)}</span> : null}
           </div>
-          {v ? (
+          {override ? (
+            <div className="num mt-1 text-[13px] font-semibold text-ink">{override(f.id)}</div>
+          ) : v ? (
             <div className="num mt-1 text-[13px] font-semibold text-ink">
               {typeof v.value === "number" ? formatWithUnit(v.value, v.unit) : v.status.replace(/_/g, " ")}
             </div>

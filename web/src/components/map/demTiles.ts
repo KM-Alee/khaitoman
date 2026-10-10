@@ -21,6 +21,9 @@ interface DemGrid {
 }
 
 const grids = new Map<string, Promise<DemGrid>>();
+/** Encoded tiles shared by every map and source (terrain + hillshade, paired maps). */
+const tileCache = new Map<string, Promise<ArrayBuffer>>();
+const TILE_CACHE_MAX = 400;
 let registered = false;
 
 export function decodeTerrarium(r: number, g: number, b: number): number {
@@ -129,7 +132,15 @@ export function demTileTemplate(url: string, bounds: DemGrid["bounds"], encoding
       const k = decodeURIComponent(m[1]);
       const g = await grids.get(k);
       if (!g) throw new Error("dem not registered");
-      return { data: await renderTile(g, Number(m[2]), Number(m[3]), Number(m[4])) };
+      const tk = params.url;
+      let t = tileCache.get(tk);
+      if (!t) {
+        t = renderTile(g, Number(m[2]), Number(m[3]), Number(m[4]));
+        tileCache.set(tk, t);
+        if (tileCache.size > TILE_CACHE_MAX) tileCache.delete(tileCache.keys().next().value!);
+      }
+      // MapLibre may transfer the buffer to a worker; hand out a copy.
+      return { data: (await t).slice(0) };
     });
   }
   return `${DEM_PROTOCOL}://${encodeURIComponent(key)}/{z}/{x}/{y}`;

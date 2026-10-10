@@ -151,13 +151,14 @@ export function useScenario() {
         setActive(key, { scenarioId: created.scenario_id, revisionId: created.revision.scenario_revision_id, basis: { ...draft } });
         return created.revision.scenario_revision_id;
       }
-      const rev = await deriveRevision.mutateAsync({
+      const view = await deriveRevision.mutateAsync({
         scenarioId: active.scenarioId,
         parentRevisionId: active.revisionId,
         changes: draftChanges(active.basis, draft),
       });
-      setActive(key, { scenarioId: active.scenarioId, revisionId: rev.scenario_revision_id, basis: { ...draft } });
-      return rev.scenario_revision_id;
+      const revId = view.revision.scenario_revision_id;
+      setActive(key, { scenarioId: active.scenarioId, revisionId: revId, basis: { ...draft } });
+      return revId;
     } catch (e) {
       const d = describeError(e);
       toast({ tone: "danger", title: d.title, description: d.detail });
