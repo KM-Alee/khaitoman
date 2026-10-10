@@ -5,7 +5,7 @@ import { useUI } from "@/app/store";
 import { useField, useRun, useRuns } from "@/lib/api/queries";
 import { fieldMetricMap, runMetrics } from "@/lib/api/adapters";
 import type { Asset, MetricValue, RosterWindow, RunResult, ServiceReference, SoilProfile } from "@/lib/api/types";
-import { formatArea, formatAreaDual, formatDateTime, formatPercent, formatVolume, shortId, titleCase } from "@/lib/formatting";
+import { formatArea, formatAreaDual, formatDateTime, formatPercent, formatVolume, titleCase } from "@/lib/formatting";
 import { Chip, MetricValueView, Skeleton, StatePanel } from "@/components/status";
 import { DL, Eyebrow } from "@/components/ui/primitives";
 import { IconButton } from "@/components/ui/Button";
@@ -154,16 +154,18 @@ function FieldDetail({ fieldId }: { fieldId: string }) {
           <Route size={12} aria-hidden /> Declared route
         </Eyebrow>
         {route.length ? (
-          <ol className="flex flex-wrap items-center gap-1 text-[12px]">
-            {route.map((eid, i) => {
+          <ol className="relative flex flex-col gap-1.5 pl-4 text-[12px]">
+            <span className="absolute bottom-2 left-[5px] top-2 w-px bg-border-strong/50" aria-hidden />
+            {route.map((eid) => {
               const e = map.data?.edges.find((x) => x.edge_id === eid);
               return (
-                <li key={eid} className="flex items-center gap-1">
-                  <Chip size="sm" tone={e?.geometry_ref ? "water" : "neutral"} title={e ? `delivery factor ${e.delivery_factor}` : eid}>
-                    {e?.reach_label ?? eid} {e ? `· ${formatPercent(e.delivery_factor)}` : ""}
-                    {e && !e.geometry_ref ? " · assumed" : ""}
+                <li key={eid} className="relative flex min-w-0 items-center">
+                  <span className={cn("absolute -left-[15px] h-2 w-2 rounded-full border-2 border-surface", e?.geometry_ref ? "bg-water" : "bg-ink-tertiary")} aria-hidden />
+                  <Chip size="sm" tone={e?.geometry_ref ? "water" : "neutral"} className="min-w-0 max-w-full" title={`${e?.reach_label ?? eid}${e ? ` · delivery factor ${e.delivery_factor}` : ""}`}>
+                    <span className="truncate">{e?.reach_label ?? eid}</span>
+                    {e ? <span className="num shrink-0">· {formatPercent(e.delivery_factor)}</span> : null}
+                    {e && !e.geometry_ref ? <span className="shrink-0">· assumed</span> : null}
                   </Chip>
-                  {i < route.length - 1 ? <span className="text-ink-tertiary">→</span> : null}
                 </li>
               );
             })}
@@ -266,8 +268,8 @@ function FieldResults({ fieldId, runIds }: { fieldId: string; runIds: string[] }
           <tr className="text-left text-ink-tertiary">
             <th className="pb-1 font-medium">Metric</th>
             {list.map((r) => (
-              <th key={r.run_id} className="pb-1 text-right font-medium" title={r.run_id}>
-                {r.plan_kind} <span className="font-normal">{shortId(r.run_id, 4)}</span>
+              <th key={r.run_id} className="pb-1 pl-3 text-right font-medium" title={`${r.plan_kind} · ${r.run_id}`}>
+                {r.plan_kind}
               </th>
             ))}
           </tr>
@@ -279,7 +281,7 @@ function FieldResults({ fieldId, runIds }: { fieldId: string; runIds: string[] }
                 {row.label}
               </th>
               {row.cells.map((c: MetricValue | null, i) => (
-                <td key={i} className="py-1.5 text-right">
+                <td key={i} className="whitespace-nowrap py-1.5 pl-3 text-right">
                   <MetricValueView metric={c} size="sm" showReason={false} />
                 </td>
               ))}

@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import { usePilotData } from "@/app/pilotData";
-import { useEvidenceSearch, useRun } from "@/lib/api/queries";
+import { useEvidence, useEvidenceSearch, useRun } from "@/lib/api/queries";
 import { formatDateTime, shortId, titleCase } from "@/lib/formatting";
 import { Chip, ReviewFlagChips, Skeleton, StatePanel } from "@/components/status";
 import { Dialog, DialogContent, Eyebrow } from "@/components/ui/primitives";
-import { EvidenceById } from "./EvidenceCard";
+import { EvidenceById, VERIF_TONE } from "./EvidenceCard";
 import { useShell } from "@/components/layout/AppShell";
 
 export function EvidenceScreen() {
@@ -26,7 +26,7 @@ export function EvidenceScreen() {
       <div className="min-w-0 flex-1 overflow-y-auto p-3 md:p-5">
         <div className="mx-auto flex max-w-[1080px] flex-col gap-4">
           <header>
-            <h1 className="text-[20px] font-semibold tracking-[-0.01em] text-ink">Evidence and reproducibility</h1>
+            <h1 className="pr-[112px] text-[20px] font-semibold tracking-[-0.01em] text-ink md:pr-0">Evidence and reproducibility</h1>
             <p className="mt-1 max-w-[70ch] text-[13px] text-ink-secondary">
               Every input, assumption and transformation behind this pilot version, with source, licence, hashes and limitations. Versions are immutable; corrections create new versions.
             </p>
@@ -44,7 +44,7 @@ export function EvidenceScreen() {
             />
           </label>
 
-          <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
             <section aria-label="Search results" className="flex flex-col gap-2">
               <Eyebrow>{sel.q ? `Results for “${sel.q}”` : "Curated index"}</Eyebrow>
               {!sel.q ? (
@@ -134,7 +134,7 @@ export function EvidenceScreen() {
                   <ul className="flex flex-col gap-1">
                     {p.source_refs.slice(0, 30).map((id) => (
                       <li key={id}>
-                        <button type="button" className="font-mono text-[12px] text-water hover:underline" onClick={() => sel.setParams({ ev: id }, false)}>
+                        <button type="button" className="break-all text-left font-mono text-[12px] text-water hover:underline" onClick={() => sel.setParams({ ev: id }, false)}>
                           {id}
                         </button>
                       </li>
@@ -161,6 +161,31 @@ export function EvidenceScreen() {
 }
 
 const TOPICS = ["Sentinel-2", "canal", "roster", "wheat", "AquaCrop", "pond", "pump", "delivery factor", "solver", "surrogate"];
+
+/** One cited record: its title and verification state, loaded from the evidence index. */
+function RefCard({ id, onOpen }: { id: string; onOpen: () => void }) {
+  const rec = useEvidence(id);
+  const r = rec.data;
+  return (
+    <button
+      type="button"
+      onClick={onOpen}
+      className="flex h-full w-full flex-col items-start gap-1 rounded-[12px] border border-border bg-surface px-3.5 py-2.5 text-left shadow-1 transition-shadow hover:shadow-2"
+      data-testid="evidence-hit"
+    >
+      <span className="flex w-full items-center justify-between gap-2">
+        <span className="text-[11px] font-medium uppercase tracking-[0.06em] text-ink-tertiary">{r?.kind ? titleCase(String(r.kind)) : evidenceKind(id)}</span>
+        {r?.verification_state ? (
+          <Chip size="sm" tone={VERIF_TONE[r.verification_state] ?? "neutral"}>
+            {titleCase(r.verification_state)}
+          </Chip>
+        ) : null}
+      </span>
+      {rec.isLoading ? <Skeleton className="h-4 w-3/4" /> : <span className="text-[13px] font-semibold leading-snug text-ink">{r?.source_title ?? id}</span>}
+      <span className="break-all font-mono text-[11px] text-ink-tertiary">{id}</span>
+    </button>
+  );
+}
 
 function evidenceKind(id: string): string {
   const k = id.split(":")[0];
@@ -189,15 +214,7 @@ function EvidenceStart({ refs, onTopic, onOpen }: { refs: string[]; onTopic: (t:
         <ul className="grid gap-2 sm:grid-cols-2">
           {refs.map((id) => (
             <li key={id}>
-              <button
-                type="button"
-                onClick={() => onOpen(id)}
-                className="flex w-full flex-col items-start rounded-[12px] border border-border bg-surface px-3.5 py-2.5 text-left shadow-1 transition-shadow hover:shadow-2"
-                data-testid="evidence-ref"
-              >
-                <span className="text-[11px] font-medium uppercase tracking-[0.06em] text-ink-tertiary">{evidenceKind(id)}</span>
-                <span className="mt-0.5 break-all font-mono text-[12px] text-ink">{id}</span>
-              </button>
+              <RefCard id={id} onOpen={() => onOpen(id)} />
             </li>
           ))}
         </ul>

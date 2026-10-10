@@ -67,9 +67,11 @@ export function ResultStrip({ runId, baselineRunId, className }: { runId: string
   if (!runId)
     return (
       <div className={cn("rounded-[14px] border border-border bg-surface/95 px-4 py-3 shadow-2 backdrop-blur", className)} data-testid="result-strip" data-state="empty">
-        <div className="flex items-center gap-2 text-[13px] text-ink-secondary">
-          <Info size={15} className="text-water" aria-hidden />
-          No result yet. Review the inputs, then <strong className="font-semibold text-ink">Run plan</strong> to solve the fixed baseline, the no-capital plan and the integrated portfolio.
+        <div className="flex items-start gap-2 text-[13px] text-ink-secondary">
+          <Info size={15} className="mt-0.5 shrink-0 text-water" aria-hidden />
+          <p>
+            No result yet. Review the inputs, then <strong className="font-semibold text-ink">Run plan</strong> to solve the fixed baseline, the no-capital plan and the integrated portfolio.
+          </p>
         </div>
       </div>
     );

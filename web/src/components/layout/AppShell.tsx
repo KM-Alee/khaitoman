@@ -88,19 +88,26 @@ export function AppShell({ children }: { children: ReactNode }) {
                 </div>
               ) : null}
               {children}
-              <div className="pointer-events-none absolute bottom-3 right-3 z-30 flex flex-col items-end gap-2">
+              <div className={cn("pointer-events-none absolute right-3 z-30 flex flex-col items-end gap-2", !docked && !showScenario ? "bottom-16 md:bottom-3" : "bottom-3")}>
                 <JobTray />
               </div>
               {!docked ? (
-                <div className={cn("no-print pointer-events-none absolute z-30 flex gap-2 md:top-auto md:bottom-3 md:right-auto md:left-3", showScenario ? "left-3 top-[60px]" : "right-3 top-3")}>
+                <div className={cn("no-print pointer-events-none absolute z-30 flex gap-2 md:top-auto md:bottom-3 md:right-auto md:left-3", showScenario ? "left-3 top-[60px]" : "bottom-3 right-3")}>
                   {showScenario ? (
                     <Button variant="secondary" size="sm" className="pointer-events-auto shadow-2" icon={<SlidersHorizontal size={14} />} onClick={() => setScenarioSheet(true)} data-testid="open-scenario-sheet">
                       Inputs
                     </Button>
                   ) : null}
-                  <Button variant="secondary" size="sm" className="pointer-events-auto shadow-2" icon={<PanelRightOpen size={14} />} onClick={() => setInspectorSheet(true)} data-testid="open-inspector-sheet">
-                    Details
-                  </Button>
+                  {showScenario || !mobile ? (
+                    <Button variant="secondary" size="sm" className="pointer-events-auto shadow-2" icon={<PanelRightOpen size={14} />} onClick={() => setInspectorSheet(true)} data-testid="open-inspector-sheet">
+                      Details
+                    </Button>
+                  ) : (
+                    // Screens with their own content: a compact floating control that covers as little as possible.
+                    <IconButton label="Open details" variant="secondary" className="pointer-events-auto rounded-full shadow-3" onClick={() => setInspectorSheet(true)} data-testid="open-inspector-sheet">
+                      <PanelRightOpen size={16} />
+                    </IconButton>
+                  )}
                 </div>
               ) : null}
             </main>

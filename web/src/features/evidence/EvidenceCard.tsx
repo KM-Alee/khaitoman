@@ -6,7 +6,7 @@ import { Chip, Skeleton, StatePanel, type Tone } from "@/components/status";
 import { useSelection } from "@/app/selection";
 import { cn } from "@/lib/cn";
 
-const VERIF_TONE: Record<string, Tone> = {
+export const VERIF_TONE: Record<string, Tone> = {
   unchecked: "warning",
   source_checked: "water",
   artifact_checked: "water",

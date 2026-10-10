@@ -1,45 +1,49 @@
 /**
- * Surrogate explorer (F12, T8.5): debounced "Approximate preview" for a proposed schedule,
- * explicit OOD refusal, and "Verify with crop model" that starts a real job and replaces
- * the provisional card only when exact results return.
+ * Surrogate explorer (PRD §7.4, T8.4–T8.5): debounced, explicitly approximate yield preview
+ * for a proposed gross irrigation schedule on one field, explicit out-of-domain refusal, and
+ * "Verify with crop model" which runs the exact AquaCrop experiment as a job and records the
+ * exact yield next to the preview. The preview never stands in for exact outputs.
  */
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FlaskConical, Plus, ShieldAlert, Sparkles, Trash2 } from "lucide-react";
 import { usePilotData } from "@/app/pilotData";
 import { useUI } from "@/app/store";
-import { useCapabilities, useSurrogatePreview, useVerifyPreview } from "@/lib/api/queries";
+import { useCapabilities, useField, useSeasons, useWeatherScenarios } from "@/lib/api/queries";
 import { describeError } from "@/lib/api/client";
-import { formatDelta, formatWithUnit, shortId } from "@/lib/formatting";
-import { Chip, EstimateBadge, StatePanel, JobBadge } from "@/components/status";
+import { formatDate, formatDateTime, formatDelta, formatPercent, formatWithUnit, shortId } from "@/lib/formatting";
+import { Chip, EstimateBadge, JobBadge, StatePanel } from "@/components/status";
 import { Button, IconButton } from "@/components/ui/Button";
 import { Eyebrow, Select } from "@/components/ui/primitives";
-import { useScenario } from "@/features/workspace/useScenario";
-import { pickNum } from "./analysis";
+import { Rows } from "@/features/impact/viewKit";
+import { useAnalysisJob, useCreatePreview, usePreviewView, useVerifyPreview, type ExploreBase, type PreviewRequest, type PreviewView } from "./api";
+import { Card, CardHeader } from "./kit";
 
 interface Ev {
   date: string;
   mm: number;
 }
 
-export function Surrogate() {
+export function Surrogate({ base }: { base: ExploreBase }) {
   const { sel, sortedFields } = usePilotData();
-  const s = useScenario();
   const caps = useCapabilities();
-  const season = s.catalog.seasons.data?.find((x) => x.season_id === s.draft?.season_id);
-  const weather = s.catalog.weather.data ?? [];
+  const seasons = useSeasons(sel.pilotId);
+  const seasonId = base.revision.data?.revision.request.season_id ?? seasons.data?.[0]?.season_id;
+  const season = seasons.data?.find((x) => x.season_id === seasonId);
+  const weather = useWeatherScenarios(sel.pilotId, seasonId).data ?? [];
   const [fieldId, setFieldId] = useState<string>(sel.fieldId ?? "");
+  const field = useField(sel.version, fieldId || null, sel.pilotId).data?.field;
   const [weatherId, setWeatherId] = useState<string>("");
   const [events, setEvents] = useState<Ev[]>([]);
-  const preview = useSurrogatePreview();
+  const [eff, setEff] = useState<number | null>(null);
+  const [previewId, setPreviewId] = useState<string | null>(null);
+  const create = useCreatePreview();
   const verify = useVerifyPreview();
   const trackJob = useUI((st) => st.trackJob);
-  const jobs = useUI((st) => st.jobs);
-  const [verifyJob, setVerifyJob] = useState<string | null>(null);
   const debounce = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    if (!fieldId && sel.fieldId) setFieldId(sel.fieldId);
-  }, [sel.fieldId, fieldId]);
+    if (!fieldId && (sel.fieldId || sortedFields[0])) setFieldId(sel.fieldId ?? sortedFields[0].id);
+  }, [sel.fieldId, sortedFields, fieldId]);
   useEffect(() => {
     if (!weatherId && weather.length) setWeatherId((weather.find((w) => w.is_typical) ?? weather[0]).weather_scenario_id);
   }, [weather, weatherId]);
@@ -47,54 +51,75 @@ export function Surrogate() {
     if (events.length || !season) return;
     const start = new Date(`${(season.planting_date ?? season.start).slice(0, 10)}T12:00:00Z`);
     const mk = (d: number, mm: number) => ({ date: new Date(start.getTime() + d * 864e5).toISOString().slice(0, 10), mm });
-    // Starting template the user edits; the preview only runs on explicit inputs below.
+    // A starting template the user edits; nothing is previewed until the inputs settle.
     setEvents([mk(0, 75), mk(25, 75), mk(55, 75), mk(85, 75)]);
   }, [season, events.length]);
+  useEffect(() => setEff(null), [fieldId]);
+  const efficiency = eff ?? field?.existing_application_efficiency ?? null;
 
-  const body = useMemo(
+  const body = useMemo<PreviewRequest | null>(
     () =>
-      fieldId && weatherId && events.length && sel.pilotId && s.draft
-        ? { pilot_id: sel.pilotId, pilot_version: sel.version, season_id: s.draft.season_id, field_id: fieldId, weather_scenario_id: weatherId, schedule: events.map((e) => ({ date: e.date, gross_depth_mm: e.mm })) }
+      field && season && weatherId && events.length && efficiency !== null
+        ? {
+            crop_profile_id: season.crop_profile_id,
+            soil_profile_id: field.soil_profile_id,
+            application_efficiency: efficiency,
+            season_id: season.season_id,
+            weather_scenario_id: weatherId,
+            pilot_id: sel.pilotId ?? null,
+            schedule: events.filter((e) => e.date && e.mm > 0).map((e) => ({ date: e.date, gross_depth_mm: e.mm })),
+          }
         : null,
-    [fieldId, weatherId, events, sel.pilotId, sel.version, s.draft],
+    [field, season, weatherId, events, efficiency, sel.pilotId],
   );
 
-  // Debounced preview on input change (≥ 400 ms after the last edit), never per keystroke.
+  // Debounced preview after the inputs settle (≥ 450 ms), never per keystroke.
   useEffect(() => {
     if (!body) return;
     if (debounce.current) clearTimeout(debounce.current);
-    debounce.current = setTimeout(() => preview.mutate(body), 450);
+    debounce.current = setTimeout(() => {
+      create.mutate(body, { onSuccess: (p) => setPreviewId(p.preview_id) });
+    }, 450);
     return () => {
       if (debounce.current) clearTimeout(debounce.current);
     };
-  }, [body]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(body)]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const p = preview.data as Record<string, unknown> | undefined;
-  const ood = p && String(p.domain_status ?? "") === "out_of_domain";
-  const est = pickNum(p, "estimated_yield_kg_ha");
-  const vj = jobs.find((j) => j.jobId === verifyJob);
-  const exact = vj?.state === "succeeded" ? (vj as unknown as { exact?: number }).exact ?? null : null;
-  const gate = String(caps.data?.surrogate_gate ?? "not_run");
-  const total = events.reduce((a, e) => a + e.mm, 0);
+  const pv = usePreviewView(previewId, false);
+  const p = pv.data;
+  const verifyJob = useAnalysisJob(p?.verify_job_id ?? null, !!p?.verify_job_id && !p?.verification);
+  const gate = String(caps.data?.surrogate_gate ?? "unknown");
+  const total = events.reduce((a, e) => a + (e.mm || 0), 0);
+  const stale = create.isPending || (create.data && create.data.preview_id !== previewId);
+
+  const startVerify = async () => {
+    if (!p) return;
+    try {
+      const r = await verify.mutateAsync(p.preview_id);
+      trackJob({ jobId: r.job_id, label: "Exact crop verification", operation: "surrogate_verify", revisionId: null, pilotKey: sel.pilotKey });
+      void pv.refetch();
+    } catch {
+      /* surfaced through verify.error */
+    }
+  };
 
   return (
-    <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_340px]" data-testid="surrogate">
-      <section className="rounded-[14px] border border-border bg-surface p-4 shadow-1">
-        <div className="flex flex-wrap items-start justify-between gap-2">
-          <div>
-            <h2 className="text-[15px] font-semibold text-ink">Surrogate explorer</h2>
-            <p className="mt-0.5 max-w-[60ch] text-[12px] text-ink-secondary">
-              Try an admissible irrigation schedule and get a fast, explicitly approximate yield preview. Before it can be used in a plan, the schedule must be verified with the exact
-              crop model and physical validation.
-            </p>
-          </div>
-          <Chip tone={gate === "passed" ? "vegetation" : "warning"} title="Held-out evaluation gate (T8.3)">
-            Evaluation gate: {gate.replace(/_/g, " ")}
-          </Chip>
-        </div>
-        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+    <div className="grid items-start gap-3 lg:grid-cols-[minmax(0,1fr)_380px]" data-testid="surrogate">
+      <Card>
+        <CardHeader
+          icon={<Sparkles size={16} className="text-warning" aria-hidden />}
+          title="Surrogate explorer"
+          aside={
+            <Chip tone={gate === "passed" ? "vegetation" : "warning"} title="Held-out evaluation gate (T8.3)">
+              Evaluation gate: {gate.replace(/_/g, " ")}
+            </Chip>
+          }
+        >
+          Try an irrigation schedule on one field and get a fast, explicitly approximate yield preview from a model trained on executed crop simulations. It guides which schedule to
+          simulate next; it never replaces the exact crop model or water and rights validation.
+        </CardHeader>
+        <div className="mt-3 grid gap-3 sm:grid-cols-3">
           <Select label="Field" value={fieldId} onChange={(e) => setFieldId(e.target.value)}>
-            <option value="">Choose…</option>
             {sortedFields.map((f) => (
               <option key={f.id} value={f.id}>
                 {f.label}
@@ -108,19 +133,38 @@ export function Surrogate() {
               </option>
             ))}
           </Select>
+          <Select label="Application efficiency" value={efficiency === null ? "" : String(efficiency)} onChange={(e) => setEff(Number(e.target.value))}>
+            {[...new Set([field?.existing_application_efficiency, 0.5, 0.6, 0.7, 0.75, 0.8, 0.85].filter((x): x is number => typeof x === "number"))]
+              .sort()
+              .map((v) => (
+                <option key={v} value={v}>
+                  {formatPercent(v)}
+                  {v === field?.existing_application_efficiency ? " (field's existing)" : ""}
+                </option>
+              ))}
+          </Select>
+        </div>
+        <div className="mt-2 text-[12px] text-ink-tertiary">
+          {season ? `${season.label ?? season.season_id} · crop profile ${season.crop_profile_id}` : "Loading season…"}
+          {field ? ` · soil ${field.soil_profile_id.replace(/^[^:]+:/, "")}` : ""}
         </div>
         <div className="mt-4">
           <div className="mb-1.5 flex items-center justify-between">
             <Eyebrow>Gross irrigation schedule</Eyebrow>
-            <span className="num text-[12px] text-ink-secondary">{events.length} events · {total} mm total</span>
+            <span className="num text-[12px] text-ink-secondary">
+              {events.length} events · {total} mm total
+            </span>
           </div>
           <ul className="flex flex-col gap-1.5">
             {events.map((e, i) => (
-              <li key={i} className="flex items-center gap-2">
+              <li key={i} className="flex flex-wrap items-center gap-2">
+                <span className="num w-5 text-right text-[11px] text-ink-tertiary">{i + 1}</span>
                 <input
                   type="date"
                   aria-label={`Event ${i + 1} date`}
                   value={e.date}
+                  min={season?.start?.slice(0, 10)}
+                  max={season?.end?.slice(0, 10)}
                   onChange={(ev) => setEvents((xs) => xs.map((x, j) => (j === i ? { ...x, date: ev.target.value } : x)))}
                   className="h-8 rounded-[8px] border border-border-strong/60 bg-surface px-2 text-[13px] text-ink"
                 />
@@ -128,9 +172,9 @@ export function Surrogate() {
                   <input
                     type="number"
                     min={0}
-                    max={200}
+                    max={300}
                     step={5}
-                    aria-label={`Event ${i + 1} depth in millimetres`}
+                    aria-label={`Event ${i + 1} gross depth in millimetres`}
                     value={e.mm}
                     onChange={(ev) => setEvents((xs) => xs.map((x, j) => (j === i ? { ...x, mm: Math.max(0, Number(ev.target.value) || 0) } : x)))}
                     className="num h-8 w-[76px] rounded-[8px] border border-border-strong/60 bg-surface px-2 text-right text-[13px] text-ink"
@@ -148,94 +192,148 @@ export function Surrogate() {
             variant="ghost"
             className="mt-1.5"
             icon={<Plus size={13} />}
-            onClick={() => setEvents((xs) => [...xs, { date: xs[xs.length - 1]?.date ?? new Date().toISOString().slice(0, 10), mm: 75 }])}
+            onClick={() =>
+              setEvents((xs) => {
+                const last = xs[xs.length - 1]?.date ?? season?.planting_date ?? season?.start ?? new Date().toISOString();
+                const d = new Date(`${last.slice(0, 10)}T12:00:00Z`);
+                return [...xs, { date: new Date(d.getTime() + 25 * 864e5).toISOString().slice(0, 10), mm: 75 }];
+              })
+            }
           >
             Add irrigation
           </Button>
         </div>
-      </section>
+      </Card>
 
-      <section className="flex flex-col gap-3" aria-live="polite">
+      <section className="flex flex-col gap-3" aria-live="polite" aria-label="Preview and exact result">
         {!body ? (
-          <StatePanel state="empty" title="Choose a field and schedule">A preview appears shortly after the inputs settle.</StatePanel>
-        ) : preview.isPending ? (
+          <StatePanel state="empty" title="Choose a field and schedule">
+            A preview appears shortly after the inputs settle.
+          </StatePanel>
+        ) : create.error && !stale ? (
+          <StatePanel state={gate !== "passed" ? "blocked" : "error"} title={gate !== "passed" ? "Preview unavailable" : describeError(create.error).title}>
+            {describeError(create.error).detail}
+          </StatePanel>
+        ) : !p ? (
           <div className="rounded-[14px] border border-warning/30 bg-surface p-4 shadow-1" aria-busy>
             <EstimateBadge kind="preview" />
             <div className="skeleton mt-3 h-8 w-40" />
           </div>
-        ) : preview.error ? (
-          <StatePanel state="error" title={describeError(preview.error).title}>
-            {describeError(preview.error).detail}
-          </StatePanel>
-        ) : p ? (
-          ood ? (
-            <div className="rounded-[14px] border border-warning/40 bg-warning-soft/70 p-4" data-testid="preview-ood">
-              <div className="flex items-center gap-2 text-[13px] font-semibold text-warning">
-                <ShieldAlert size={16} aria-hidden /> Outside validated preview range — run crop model.
-              </div>
-              <ul className="mt-2 list-disc pl-5 text-[12px] text-ink-secondary">
-                {((p.domain_reasons as string[] | undefined) ?? []).map((r, i) => (
-                  <li key={i}>{r}</li>
-                ))}
-              </ul>
-            </div>
-          ) : (
-            <div className="rounded-[14px] border border-warning/30 bg-surface p-4 shadow-1" data-testid="preview-card">
-              <div className="flex items-center justify-between gap-2">
-                <EstimateBadge kind="preview" size="md" />
-                <span className="num font-mono text-[11px] text-ink-tertiary">{String(p.model_version ?? "")}</span>
-              </div>
-              <div className="mt-3 flex items-baseline gap-2">
-                <Sparkles size={16} className="text-warning" aria-hidden />
-                <span className="num text-[28px] font-semibold tracking-[-0.02em] text-ink">{est !== null ? formatWithUnit(est, "kg/ha") : "—"}</span>
-              </div>
-              <p className="mt-1 text-[12px] text-ink-secondary">{String(p.uncertainty_note ?? "Approximate; not a calibrated confidence interval.")}</p>
-              {p.residual_band ? <p className="num mt-1 text-[12px] text-ink-secondary">Held-out residual band: {JSON.stringify(p.residual_band)}</p> : null}
-              <p className="mt-1 text-[12px] text-ink-tertiary">Physical pre-check: {String(p.physical_precheck_status ?? "not run").replace(/_/g, " ")}</p>
-              <Button
-                className="mt-3 w-full"
-                variant="primary"
-                icon={<FlaskConical size={15} />}
-                busy={verify.isPending}
-                disabled={!p.preview_id}
-                onClick={async () => {
-                  try {
-                    const r = await verify.mutateAsync(String(p.preview_id));
-                    const jid = String(r.job_id ?? "");
-                    if (jid) {
-                      setVerifyJob(jid);
-                      trackJob({ jobId: jid, label: "Exact crop verification", operation: "surrogate_verify", revisionId: null, pilotKey: sel.pilotKey });
-                    }
-                  } catch {
-                    /* surfaced by mutation state */
-                  }
-                }}
-                data-testid="verify-preview"
-              >
-                Verify with crop model
-              </Button>
-              {verify.error ? <p className="mt-2 text-[12px] text-danger">{describeError(verify.error).detail}</p> : null}
-            </div>
-          )
-        ) : null}
-        {vj ? (
-          <div className="rounded-[14px] border border-vegetation/30 bg-surface p-4 shadow-1" data-testid="exact-card">
-            <div className="flex items-center justify-between">
-              <EstimateBadge kind="exact" size="md" />
-              <JobBadge state={vj.state} />
-            </div>
-            {vj.state === "succeeded" ? (
-              <>
-                <p className="mt-2 text-[13px] text-ink">Exact result recorded as {shortId(vj.resultRef)}.</p>
-                {exact !== null && est !== null ? <p className="num text-[12px] text-ink-secondary">Preview − exact: {formatDelta(est - exact, "kg/ha")}</p> : null}
-              </>
-            ) : (
-              <p className="mt-2 text-[12px] text-ink-secondary">{vj.stage ?? "Running the exact crop model and ledger validation…"}</p>
-            )}
-          </div>
-        ) : null}
-        <p className="px-1 text-[11px] text-ink-tertiary">Crop replay is unavailable for preview-only schedules.</p>
+        ) : (
+          <PreviewCard p={p} stale={!!stale} onVerify={startVerify} verifying={verify.isPending} verifyError={verify.error} />
+        )}
+        {p && (p.verify_job_id || p.verification) ? <ExactCard p={p} jobState={verifyJob.data?.state ?? null} jobStage={verifyJob.data?.stage ?? null} jobError={verifyJob.data?.error ?? null} /> : null}
+        <p className="px-1 text-[11px] leading-relaxed text-ink-tertiary">
+          Crop replay is unavailable for preview-only schedules. A schedule used in a final plan needs exact crop outputs and full physical validation in a solve.
+        </p>
       </section>
+    </div>
+  );
+}
+
+function PreviewCard({ p, stale, onVerify, verifying, verifyError }: { p: PreviewView; stale: boolean; onVerify: () => void; verifying: boolean; verifyError: unknown }) {
+  const ood = p.domain_status === "out_of_domain";
+  const done = !!p.verification;
+  const verifyBtn = (
+    <Button className="mt-3 w-full" variant={ood ? "primary" : "secondary"} icon={<FlaskConical size={15} />} busy={verifying} disabled={stale || !!p.verify_job_id} onClick={onVerify} data-testid="verify-preview">
+      {done ? "Exact result recorded" : p.verify_job_id ? "Crop model running…" : ood ? "Run crop model" : "Verify with crop model"}
+    </Button>
+  );
+  return (
+    <div className={stale ? "opacity-60 transition-opacity" : "transition-opacity"} aria-busy={stale} data-testid="preview-card" data-domain={p.domain_status}>
+      {ood ? (
+        <div className="rounded-[14px] border border-warning/40 bg-warning-soft/70 p-4" data-testid="preview-ood">
+          <div className="flex items-center justify-between gap-2">
+            <EstimateBadge kind="preview" size="md" />
+            <span className="font-mono text-[11px] text-ink-tertiary">{p.model_version}</span>
+          </div>
+          <div className="mt-3 flex items-center gap-2 text-[14px] font-semibold text-warning">
+            <ShieldAlert size={16} aria-hidden /> {p.message ?? "Outside validated preview range — run crop model."}
+          </div>
+          <p className="mt-1 text-[12px] text-ink-secondary">No estimate is shown: these inputs fall outside the model's training domain.</p>
+          <ul className="mt-2 list-disc pl-5 text-[12px] text-ink-secondary">
+            {p.domain_reasons.map((r, i) => (
+              <li key={i} className="num">
+                {r}
+              </li>
+            ))}
+          </ul>
+          {verifyBtn}
+        </div>
+      ) : (
+        <div className="rounded-[14px] border border-warning/30 bg-surface p-4 shadow-1" data-testid="preview-in-domain">
+          <div className="flex items-center justify-between gap-2">
+            <EstimateBadge kind="preview" size="md" />
+            <span className="font-mono text-[11px] text-ink-tertiary">{p.model_version}</span>
+          </div>
+          <div className="mt-3 flex items-baseline gap-2">
+            <Sparkles size={16} className="text-warning" aria-hidden />
+            <span className="num text-[28px] font-semibold tracking-[-0.02em] text-ink">{p.estimated_yield_kg_ha !== null ? formatWithUnit(p.estimated_yield_kg_ha, "kg/ha") : "—"}</span>
+          </div>
+          {p.residual_band_kg_ha ? (
+            <p className="num mt-1 text-[12px] text-ink-secondary">
+              Held-out residual band {formatDelta(p.residual_band_kg_ha[0], "kg/ha")} to {formatDelta(p.residual_band_kg_ha[1], "kg/ha")} (empirical 5–95%, not a confidence interval)
+            </p>
+          ) : null}
+          {verifyBtn}
+        </div>
+      )}
+      {verifyError ? <p className="mt-2 text-[12px] text-danger">{describeError(verifyError).detail}</p> : null}
+      <div className="mt-3 rounded-[12px] border border-border bg-surface px-3 py-2">
+        <Rows
+          rows={[
+            ["Physical pre-check", <span key="pc">{p.physical_precheck_status.replace(/_/g, " ")}</span>],
+            ["Preview", <span key="id" className="font-mono text-[11px]">{shortId(p.preview_id)}</span>],
+            ["Features", <span key="fv" className="font-mono text-[11px]">{p.feature_version}</span>],
+          ]}
+        />
+        <p className="mt-1 text-[11px] leading-relaxed text-ink-tertiary">{p.uncertainty_note}</p>
+        {p.physical_precheck_reasons.length ? <p className="mt-1 text-[11px] text-ink-tertiary">{p.physical_precheck_reasons.join("; ")}</p> : null}
+      </div>
+    </div>
+  );
+}
+
+function ExactCard({ p, jobState, jobStage, jobError }: { p: PreviewView; jobState: string | null; jobStage: string | null; jobError: Record<string, unknown> | null }) {
+  const v = p.verification;
+  return (
+    <div className="rounded-[14px] border border-vegetation/30 bg-surface p-4 shadow-1" data-testid="exact-card">
+      <div className="flex items-center justify-between gap-2">
+        <EstimateBadge kind="exact" size="md" />
+        {v ? <JobBadge state="succeeded" /> : jobState ? <JobBadge state={jobState as "running"} /> : null}
+      </div>
+      {v ? (
+        <>
+          <div className="num mt-3 text-[28px] font-semibold tracking-[-0.02em] text-ink" data-testid="exact-yield">
+            {v.exact_yield_kg_ha !== null ? formatWithUnit(v.exact_yield_kg_ha, "kg/ha") : "Not reported"}
+          </div>
+          <p className="mt-0.5 text-[12px] text-ink-secondary">
+            {v.preview_minus_exact_kg_ha !== null
+              ? `Preview − exact: ${formatDelta(v.preview_minus_exact_kg_ha, "kg/ha")}`
+              : v.preview_domain_status === "out_of_domain"
+                ? "No preview difference: the preview refused these inputs as out of domain."
+                : "Preview difference not reported."}
+          </p>
+          <div className="mt-2">
+            <Rows
+              rows={[
+                ["Seasonal irrigation", v.seasonal_irrigation_mm !== null ? formatWithUnit(v.seasonal_irrigation_mm, "mm") : "—"],
+                ["Harvest", v.outcome?.actual_harvest_date ? formatDate(String(v.outcome.actual_harvest_date)) : v.has_finished === false ? "season did not finish" : "—"],
+                ["Yield basis", String(v.outcome?.yield_basis ?? "—").replace(/_/g, " ")],
+                ["Engine", v.outcome?.engine_name ? `${v.outcome.engine_name} ${v.outcome.engine_version ?? ""}` : "—"],
+                ["Verified", formatDateTime(v.verified_at)],
+              ]}
+            />
+          </div>
+          {v.note ? <p className="mt-2 text-[11px] leading-relaxed text-ink-tertiary">{v.note}</p> : null}
+        </>
+      ) : jobState === "failed" || jobState === "interrupted" || jobState === "cancelled" ? (
+        <p className="mt-2 text-[12px] text-danger" role="alert">
+          The exact crop run {jobState}: {String((jobError as { detail?: string } | null)?.detail ?? "no detail reported")}. The preview remains approximate.
+        </p>
+      ) : (
+        <p className="mt-2 text-[12px] text-ink-secondary">{jobStage ?? "Running the exact crop model…"} The preview card is not replaced until the exact result is recorded.</p>
+      )}
     </div>
   );
 }
