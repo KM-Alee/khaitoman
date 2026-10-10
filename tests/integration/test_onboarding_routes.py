@@ -7,7 +7,12 @@ import json
 from aabflow.repositories.sqlite import connect
 from aabflow.services.onboarding import store
 from tests.fixtures.api_app import settings_for
-from tests.integration.test_onboarding_support import POLY, onboarding_client, write_raw_bundle
+from tests.integration.test_onboarding_support import (
+    PILOT_B_BUNDLE,
+    POLY,
+    onboarding_client,
+    write_raw_bundle,
+)
 
 
 def test_aoi_check_reports_area_without_starting_a_job(tmp_path):
@@ -30,7 +35,7 @@ def test_raw_package_list_is_not_the_published_pilot(tmp_path):
         assert response.status_code == 200, response.text
         packages = response.json()["packages"]
     refs = [row["bundle_ref"] for row in packages]
-    assert any(row["bundle_id"] == "20261010T003841Z-798d10d2" for row in packages)
+    assert any(row["bundle_ref"] == PILOT_B_BUNDLE for row in packages)
     assert all("reviewed-v1" not in ref for ref in refs)
     assert all(row["intake_kind"] == "raw_source_bundle" for row in packages)
     assert all("/pilots/" not in ref for ref in refs)

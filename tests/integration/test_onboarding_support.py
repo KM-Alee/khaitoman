@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 from contextlib import contextmanager
 from pathlib import Path
 
@@ -20,7 +21,26 @@ POLY = {
     ],
 }
 
-PILOT_B_BUNDLE = "data/raw/bundles/pilot-b/20261010T003841Z-798d10d2"
+
+def pilot_b_bundle_ref() -> str:
+    """Use the recorded bundle, or a real local acquisition of the same pilot AOI.
+
+    Acquisitions retain their own timestamp and manifest. Processing still has
+    to validate every file and match the recorded inference input and output.
+    """
+    if override := os.environ.get("AABFLOW_TEST_PILOT_B_BUNDLE"):
+        return override
+    root = Path(__file__).resolve().parents[2]
+    recorded = "data/raw/bundles/pilot-b/20261010T003841Z-798d10d2"
+    if (root / recorded / "bundle_manifest.json").is_file():
+        return recorded
+    acquisitions = sorted(
+        (root / "data/raw/bundles/pilot-b").glob("*-798d10d2/bundle_manifest.json")
+    )
+    return acquisitions[-1].parent.relative_to(root).as_posix() if acquisitions else recorded
+
+
+PILOT_B_BUNDLE = pilot_b_bundle_ref()
 PILOT_B_INFERENCE_KEY = "50ca220c256bbf74"
 
 
