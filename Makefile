@@ -86,7 +86,7 @@ vision-shell:
 	$(VIS) bash
 
 water-tests:      ## chronology, network, roster, pond, pump invariants (unit + property)
-	$(API) pytest -q tests/unit/test_water_*.py tests/property
+	$(API) pytest -q tests/unit/test_water_ledger.py tests/unit/test_water_network.py tests/unit/test_water_pond.py tests/property
 
 pilot-a pilot-b:  ## onboarding pipeline -> reviewed, validated, published pilot package (exit 3: run printed vision command, rerun)
 	$(API) python scripts/publish_pilot.py --pilot $@ --version reviewed-v1
@@ -101,7 +101,10 @@ library-adequacy: ## denser exact libraries and objective/investment stability o
 	$(API) python scripts/science_library_adequacy.py
 
 domain-tests:     ## AT02–AT04 crop/ledger gates, water properties, both pilots' published libraries (run candidates first)
-	$(API) pytest -v tests/scientific/test_crop_gates.py tests/scientific/test_published_libraries.py tests/scientific/test_library_adequacy.py tests/unit/test_candidate_publication.py tests/unit/test_candidate_density.py tests/unit/test_water_*.py tests/property
+	$(API) pytest -v tests/scientific/test_crop_gates.py tests/scientific/test_published_libraries.py tests/scientific/test_library_adequacy.py tests/unit/test_candidate_publication.py tests/unit/test_candidate_density.py tests/unit/test_water_ledger.py tests/unit/test_water_network.py tests/unit/test_water_pond.py tests/property
 
-core-acceptance copilot-evals release-check:
+core-acceptance: ## v1: run each existing AT test once; fail on failures; list AT ids with no test. Not G-CORE.
+	$(API) python scripts/core_acceptance.py
+
+copilot-evals release-check:
 	@echo "make $@: not implemented yet" >&2; exit 1
