@@ -140,7 +140,16 @@ def capabilities(state: State) -> Capabilities:
         "F16": _fs(has_lib, no_lib),
         "F17": _fs(has_pilot, "no published pilot package"),
         "F03": _fs(onboarding, "ingestion onboarding pipeline not installed"),
-        "copilot": FeatureStatus(status="not_available", reason="copilot is implemented last (M7)"),
+        # Hosted chat needs a configured key; AT17 (30x3 evaluation) is not certified, so never "available".
+        "copilot": FeatureStatus(
+            status="partial",
+            reason="hosted copilot configured; the 30-case evaluation (AT17) has not passed yet",
+        )
+        if config.openai_key_configured()
+        else FeatureStatus(
+            status="not_available",
+            reason="no hosted-model key is configured; saved results and controls work offline",
+        ),
     }
     return Capabilities(
         pilots=pilots,

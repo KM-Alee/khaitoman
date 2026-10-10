@@ -100,6 +100,18 @@ class Backend:
     async def post(self, path: str, json: Any = None, *, idempotency_key: str | None = None) -> Any:
         return await self.request("POST", path, json=json, idempotency_key=idempotency_key)
 
+    async def get_asset(self, url: str) -> Any:
+        """GET a JSON pilot asset served by the same app (``/assets/pilots/...``), never an external URL."""
+        if not url.startswith("/assets/pilots/"):
+            raise ToolFailure("INVALID_INPUT", "only local pilot assets can be read")
+        try:
+            r = await self.client.get(url)
+        except httpx.HTTPError as exc:
+            raise ToolFailure("BACKEND_UNAVAILABLE", f"GET {url} failed: {exc}") from exc
+        if r.status_code >= 400:
+            raise ToolFailure("NOT_FOUND", f"asset {url} is not available", status=r.status_code)
+        return r.json()
+
 
 def _trim(extra: dict[str, Any]) -> dict[str, Any]:
     out = {}

@@ -10,7 +10,7 @@ def test_health_and_json_404(tmp_path):
         assert r.status_code == 200
         body = r.json()
         assert body["contract_version"] == "2.0.0"
-        assert body["schema_version"] == "2"
+        assert body["schema_version"] == "3"
         assert body["database"] == "ok"
         assert body["pilots_published"] == 0
         missing = client.get("/api/v2/does-not-exist")
@@ -20,7 +20,8 @@ def test_health_and_json_404(tmp_path):
         assert client.get("/assets/pilots/x/y/z.png").status_code == 404
 
 
-def test_capabilities_are_honest_without_data(tmp_path):
+def test_capabilities_are_honest_without_data(tmp_path, monkeypatch):
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     with TestClient(create_app(settings_for(tmp_path))) as client:
         caps = client.get("/api/v2/capabilities").json()
         assert caps["pilots"] == []

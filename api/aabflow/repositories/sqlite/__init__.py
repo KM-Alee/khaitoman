@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any
 
 SCHEMA_PATH = Path(__file__).with_name("schema.sql")
-SCHEMA_VERSION = "2"
+SCHEMA_VERSION = "3"
 
 
 def utcnow() -> str:
@@ -43,12 +43,25 @@ def _migrate(conn: sqlite3.Connection) -> None:
         )
 
 
+def _upgrade(conn: sqlite3.Connection) -> None:
+    """v2 -> v3: copilot tables moved into schema.sql. A v2 database may hold copilot tables created
+    before that (without the language/timings columns); add them, then record the new version."""
+    row = conn.execute("SELECT value FROM meta WHERE key = 'schema_version'").fetchone()
+    if row and row[0] == "2":
+        cols = {r[1] for r in conn.execute("PRAGMA table_info(copilot_turns)")}
+        for name in ("language", "timings"):
+            if name not in cols:
+                conn.execute(f"ALTER TABLE copilot_turns ADD COLUMN {name} TEXT")
+        conn.execute("UPDATE meta SET value = ? WHERE key = 'schema_version'", (SCHEMA_VERSION,))
+
+
 def init_db(db_path: Path) -> str:
     """Apply schema.sql and return the stored schema version."""
     conn = connect(db_path)
     try:
         _migrate(conn)
         conn.executescript(SCHEMA_PATH.read_text())
+        _upgrade(conn)
         return conn.execute("SELECT value FROM meta WHERE key = 'schema_version'").fetchone()[0]
     finally:
         conn.close()

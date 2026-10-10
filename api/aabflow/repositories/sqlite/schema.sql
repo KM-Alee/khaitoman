@@ -1,13 +1,14 @@
 -- AabFlow SQLite schema (T1.2, T9.4). Bump schema_version on any change.
 -- v2: job leases/stages/payloads, idempotency, scenarios, runs, analyses,
 --     comparisons, reports, surrogate previews, onboarding, evidence FTS5.
+-- v3: copilot sessions, turns (with language and timings), events and tool calls.
 PRAGMA journal_mode = WAL;
 
 CREATE TABLE IF NOT EXISTS meta (
     key   TEXT PRIMARY KEY,
     value TEXT NOT NULL
 );
-INSERT OR IGNORE INTO meta (key, value) VALUES ('schema_version', '2');
+INSERT OR IGNORE INTO meta (key, value) VALUES ('schema_version', '3');
 
 CREATE TABLE IF NOT EXISTS jobs (
     job_id          TEXT PRIMARY KEY,
@@ -138,6 +139,62 @@ CREATE TABLE IF NOT EXISTS onboarding (
     created_at    TEXT NOT NULL,
     updated_at    TEXT NOT NULL
 );
+
+-- Copilot (F19, T11): transcripts hold no secrets; API keys never reach these tables.
+CREATE TABLE IF NOT EXISTS copilot_sessions (
+    session_id  TEXT PRIMARY KEY,
+    created_at  TEXT NOT NULL,
+    role        TEXT NOT NULL,
+    ui_context  TEXT NOT NULL,
+    preferences TEXT NOT NULL DEFAULT '{}'
+);
+CREATE TABLE IF NOT EXISTS copilot_turns (
+    turn_id             TEXT PRIMARY KEY,
+    session_id          TEXT NOT NULL REFERENCES copilot_sessions(session_id),
+    seq                 INTEGER NOT NULL,
+    created_at          TEXT NOT NULL,
+    finished_at         TEXT,
+    status              TEXT NOT NULL,
+    user_message        TEXT NOT NULL,
+    context             TEXT NOT NULL,
+    answer              TEXT,
+    view_intents        TEXT NOT NULL DEFAULT '[]',
+    created_refs        TEXT NOT NULL DEFAULT '[]',
+    job_ids             TEXT NOT NULL DEFAULT '[]',
+    error               TEXT,
+    model               TEXT,
+    prompt_version      TEXT,
+    tool_schema_version TEXT,
+    request_ids         TEXT NOT NULL DEFAULT '[]',
+    rounds              INTEGER NOT NULL DEFAULT 0,
+    latency_ms          INTEGER,
+    idem_namespace      TEXT,
+    language            TEXT,
+    timings             TEXT
+);
+CREATE INDEX IF NOT EXISTS copilot_turns_session ON copilot_turns(session_id, seq);
+CREATE TABLE IF NOT EXISTS copilot_events (
+    event_id   INTEGER PRIMARY KEY AUTOINCREMENT,
+    turn_id    TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    type       TEXT NOT NULL,
+    payload    TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS copilot_events_turn ON copilot_events(turn_id, event_id);
+CREATE TABLE IF NOT EXISTS copilot_tool_calls (
+    pk              INTEGER PRIMARY KEY AUTOINCREMENT,
+    turn_id         TEXT NOT NULL,
+    call_id         TEXT NOT NULL,
+    round           INTEGER NOT NULL,
+    tool            TEXT NOT NULL,
+    arguments       TEXT NOT NULL,
+    idempotency_key TEXT,
+    status          TEXT NOT NULL,
+    result          TEXT,
+    started_at      TEXT NOT NULL,
+    finished_at     TEXT
+);
+CREATE INDEX IF NOT EXISTS copilot_tool_calls_turn ON copilot_tool_calls(turn_id);
 
 CREATE VIRTUAL TABLE IF NOT EXISTS evidence_fts USING fts5(
     doc_id UNINDEXED, kind UNINDEXED, pilot_id UNINDEXED, title, body, source_url UNINDEXED,

@@ -259,7 +259,22 @@ async def inspect_run(ctx: ToolCtx, args: InspectRunArgs) -> dict[str, Any]:
         } or {"keys": sorted(cov)[:10]}
     except ToolFailure:
         out["coverage"] = None
+    out["datasets"] = await run_datasets(ctx, view)
     return out
+
+
+async def run_datasets(ctx: ToolCtx, view: dict[str, Any]) -> list[dict[str, Any]]:
+    """Headline metric cards and field-by-field outcomes of a plan run."""
+    from aabflow.copilot import datasets as D
+
+    call_id, tool = ctx.call()
+    labels = await ctx.metric_labels()
+    roster = await ctx.field_roster()
+    made = [
+        D.run_metrics(ctx, view, labels, call_id, tool),
+        D.field_outcomes(ctx, view, roster, call_id, tool),
+    ]
+    return [d.descriptor() for d in made if d is not None]
 
 
 # ----------------------------------------------------------------- compare_runs
@@ -290,7 +305,34 @@ async def compare_runs(ctx: ToolCtx, args: CompareArgs) -> dict[str, Any]:
     res = await ctx.backend.post(
         "/comparisons", {"run_ids": ids}, idempotency_key=ctx.idem("compare_runs", ids)
     )
-    run_level = [d for d in res["deltas"] if d["field_id"] is None]
+    return await comparison_view(ctx, res, steps=len(ids) > 2)
+
+
+def _slim(d: dict[str, Any]) -> dict[str, Any]:
+    keys = ("metric_id", "field_id", "unit", "a", "b", "delta", "status", "a_run_id", "b_run_id")
+    return {k: d[k] for k in keys}
+
+
+async def comparison_view(
+    ctx: ToolCtx,
+    res: dict[str, Any],
+    labels_by_run: dict[str, str] | None = None,
+    pair: tuple[str, str] | None = None,
+    steps: bool = False,
+    extra_views: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
+    """Model-facing summary of a comparison plus its chart datasets (deltas come from the service)."""
+    from aabflow.copilot import datasets as D
+
+    key_metrics = {m for m, _ in D.PLAN_COLUMNS} | {
+        "cropped_area_ha",
+        "withdrawal_productivity_kg_m3",
+    }
+    run_level = [
+        d
+        for d in res["deltas"]
+        if d["field_id"] is None and (len(res["run_ids"]) == 2 or d["metric_id"] in key_metrics)
+    ]
     field_prod = sorted(
         (
             d
@@ -300,36 +342,27 @@ async def compare_runs(ctx: ToolCtx, args: CompareArgs) -> dict[str, Any]:
         key=lambda d: abs(d["delta"]),
         reverse=True,
     )
-
-    def slim(d):
-        return {
-            k: d[k]
-            for k in (
-                "metric_id",
-                "field_id",
-                "unit",
-                "a",
-                "b",
-                "delta",
-                "status",
-                "a_run_id",
-                "b_run_id",
-            )
-        }
-
+    call_id, tool = ctx.call()
+    roster = await ctx.field_roster()
+    made = [
+        D.plans_side_by_side(ctx, res, labels_by_run or {}, call_id, tool, extra_views),
+        D.field_deltas(ctx, res, roster, call_id, tool, pair=pair),
+        D.incremental_steps(ctx, res, call_id, tool) if steps else None,
+    ]
     return {
         "comparison_id": res["comparison_id"],
         "compatible": res["compatible"],
         "label": res["labels"]["comparison"],
         "plans": res["plans"],
         "differences": res["certificate"]["differences"],
-        "run_level_deltas": [slim(d) for d in run_level],
+        "run_level_deltas": [_slim(d) for d in run_level],
         "incremental": res["incremental"],
         "fields_worse_off": res["fields_worse_off"],
-        "largest_field_production_deltas": [slim(d) for d in field_prod[:6]],
+        "largest_field_production_deltas": [_slim(d) for d in field_prod[:6]],
         "note": "Deltas are b minus a, computed by the server. Non-matched comparisons are not causal."
         if res["compatible"]
         else "NON-MATCHED: conditions differ, so deltas are not attributable to the plan.",
+        "datasets": [d.descriptor() for d in made if d is not None],
     }
 
 
@@ -452,7 +485,82 @@ async def analysis_summary(ctx: ToolCtx, analysis_id: str) -> dict[str, Any]:
         )
         if k in a
     }
+    from aabflow.copilot import datasets as D
     from aabflow.copilot.tools.base import _clip
 
-    keep["result"] = _clip(a.get("result"), 6000)
+    res = a.get("result") or {}
+    kind = a.get("kind")
+    if kind == "stress" and res.get("cells"):
+        keep["result"] = {
+            "mode": res.get("mode"),
+            "run_id": res.get("run_id"),
+            "label": res.get("label"),
+            "summary": res.get("summary"),
+            "cells": [
+                {
+                    "state_id": c.get("state_id"),
+                    "weather": c.get("weather_scenario_id"),
+                    "supply": c.get("supply_label") or c.get("supply_profile_id"),
+                    "deliverable": c.get("deliverable"),
+                    "production_kg": c.get("production_kg"),
+                    "solver_status": c.get("solver_status"),
+                    "broken_rules": len(c.get("violations") or []),
+                    "example_violation": ((c.get("violations") or [{}])[0] or {}).get("detail"),
+                    "run_id": c.get("run_id"),
+                }
+                for c in res["cells"]
+            ],
+            "metrics": {
+                k: {x: v.get(x) for x in ("value", "unit", "status", "reason")}
+                for k, v in (res.get("metrics_by_id") or {}).items()
+            },
+            "recovery_metrics": _clip(res.get("recovery_metrics"), 1500),
+            "foregone_typical_output": res.get("foregone_typical_output"),
+            "note": res.get("note"),
+            "worst_case_scope": res.get("worst_case_scope"),
+        }
+    elif kind == "frontier" and res.get("points"):
+        keep["result"] = {
+            "label": res.get("label"),
+            "axes": res.get("axes"),
+            "counts": res.get("counts"),
+            "points": [
+                {
+                    k: p.get(k)
+                    for k in (
+                        "point_id",
+                        "setting",
+                        "solver_status",
+                        "dominance",
+                        "production_kg",
+                        "capital_commitment_pkr",
+                        "operating_cost_pkr",
+                        "tail_min_service_ratio",
+                        "min_service_ratio",
+                        "groundwater_m3",
+                        "same_portfolio_as",
+                        "run_id",
+                    )
+                }
+                for p in res["points"]
+            ],
+            "note": res.get("note"),
+        }
+    else:
+        keep["result"] = _clip(_drop_policy_ids(res), 6000)
+    call_id, tool = ctx.call()
+    keep["datasets"] = [d.descriptor() for d in D.for_analysis(ctx, a, call_id, tool)]
     return keep
+
+
+def _drop_policy_ids(o: Any) -> Any:
+    """Candidate-policy ID lists are long and meaningless to a reader; keep everything else."""
+    if isinstance(o, dict):
+        return {
+            k: _drop_policy_ids(v)
+            for k, v in o.items()
+            if k not in ("selected_candidate_policy_ids", "frozen_candidate_policy_ids")
+        }
+    if isinstance(o, list):
+        return [_drop_policy_ids(v) for v in o]
+    return o

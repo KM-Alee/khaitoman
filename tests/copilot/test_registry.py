@@ -27,11 +27,26 @@ SPEC_TOOLS = {
     "create_report",
     "navigate_view",
 }
+# Plain-language read tools and the one-step what-if added for lay questions (each wraps one service).
+INSIGHT_TOOLS = {
+    "get_plan_ladder",
+    "read_analysis",
+    "water_accounting",
+    "economics",
+    "equity",
+    "impact_sdg",
+    "action_plan",
+    "field_timeline",
+    "explain_decisions",
+    "methodology",
+    "run_what_if",
+}
 
 
 def test_registry_has_exactly_the_spec_tools():
     tools_for_role("planner")
-    assert set(REGISTRY) == SPEC_TOOLS
+    assert set(REGISTRY) == SPEC_TOOLS | INSIGHT_TOOLS
+    assert {n for n, t in REGISTRY.items() if t.mutation} & INSIGHT_TOOLS == {"run_what_if"}
 
 
 def test_every_schema_is_strict():
@@ -39,6 +54,35 @@ def test_every_schema_is_strict():
         assert t["strict"] is True
         assert check_strict(t["parameters"]) == [], (t["name"], check_strict(t["parameters"]))
         assert t["description"]
+
+
+def _model_fields(model, schema, path):
+    """Every Pydantic field (recursively) must reach the provider schema; a dropped field such as
+    ``title`` makes every strict call fail validation."""
+    from pydantic import BaseModel
+
+    props = schema["properties"]
+    assert set(model.model_fields) == set(props), (path, set(model.model_fields) ^ set(props))
+    for name, f in model.model_fields.items():
+        ann = f.annotation
+        for sub in getattr(ann, "__args__", ()) + (ann,):
+            inner = getattr(sub, "__args__", (sub,))
+            for t in inner:
+                if isinstance(t, type) and issubclass(t, BaseModel):
+                    node = props[name]
+                    node = node.get("items", node)
+                    _model_fields(t, node, f"{path}.{name}")
+
+
+def test_every_model_field_reaches_the_strict_schema():
+    from aabflow.copilot.answer_validation import FinalAnswer
+
+    _model_fields(FinalAnswer, FINAL_ANSWER_TOOL["parameters"], "final_answer")
+    assert (
+        "title" in FINAL_ANSWER_TOOL["parameters"]["properties"]["visuals"]["items"]["properties"]
+    )
+    for spec in REGISTRY.values():
+        _model_fields(spec.args, spec.openai_tool()["parameters"], spec.name)
 
 
 def test_tool_declarations():
