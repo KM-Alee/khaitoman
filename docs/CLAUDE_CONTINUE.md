@@ -18,7 +18,7 @@ Routers mounted, in order: system, pilots, onboarding, packages, jobs, scenarios
 
 ## Implement next, in this order
 
-1. Frontier, stress, and one surrogate preview. Six settings and nine stress cells must link to run records. Undeliverable cells have no fabricated yield. Time one in-domain preview after load. Do not retrain if the seeded model already passes.
+1. Frontier and stress on one real request. Undeliverable cells already drop yield when the frozen plan is not shared (`api/aabflow/services/analyses/jobs.py`). One in-domain preview after load was 6.822 ms, with a separate AquaCrop confirmation (`evidence/benchmarks/p04-preview-timing.json`). Do not retrain. Still run one six-setting frontier and one nine-cell stress if those saved results are not already linked to run records.
 2. Impact screen. Show the three cards, units, limitations, blocked and missing states, and `official_indicator=false`. Do not recompute metrics in the browser.
 3. Onboarding review and publish. Stale review returns 409. Publish pilot-b `reviewed-v2` from the real raw bundle. Do not overwrite `reviewed-v1`. Reuse the Delineate cache.
 4. Onboarding wizard screen wired to those routes.
