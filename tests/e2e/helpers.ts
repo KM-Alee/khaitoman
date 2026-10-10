@@ -17,8 +17,10 @@ export async function shot(page: Page, info: TestInfo, name: string, prefix = "r
 export async function waitForMap(page: Page, minFields = 1) {
   await page.waitForFunction(
     (n) => {
-      const m = (window as unknown as { __aabMap?: { debugState: () => { fields: number }; map: { loaded: () => boolean } } }).__aabMap;
-      return !!m && m.debugState().fields >= n && m.map.loaded();
+      const m = (window as unknown as { __aabMap?: { debugState: () => { fields: number }; map: { isStyleLoaded: () => boolean; areTilesLoaded: () => boolean } } }).__aabMap;
+      // Not map.loaded(): the animated flow particles update a GeoJSON source every frame,
+      // which keeps MapLibre's "sources dirty" flag set even when style and tiles are idle.
+      return !!m && m.debugState().fields >= n && m.map.isStyleLoaded() && m.map.areTilesLoaded();
     },
     minFields,
     { timeout: 60_000 },

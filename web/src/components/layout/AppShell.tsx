@@ -6,7 +6,7 @@
  * a field is selected. On tablets and phones both become sheets.
  */
 import { cn } from "@/lib/cn";
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { PanelLeftOpen, PanelRightOpen, SlidersHorizontal } from "lucide-react";
 import { useUI } from "@/app/store";
 import { BREAKPOINTS, useMediaQuery } from "@/app/environment";
@@ -24,7 +24,6 @@ import { CommandMenu } from "./CommandMenu";
 import { PresentationCues } from "./PresentationCues";
 import { ScenarioPanel } from "@/features/workspace/ScenarioPanel";
 import { useScenario } from "@/features/workspace/useScenario";
-import { useRef } from "react";
 
 interface ShellCtx {
   mobile: boolean;
@@ -198,8 +197,8 @@ function useGlobalShortcuts() {
   const set = useUI((s) => s.set);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      const t = e.target as HTMLElement | null;
-      const typing = !!t?.closest("input,textarea,select,[contenteditable=true],[role=combobox]");
+      const t = e.target;
+      const typing = t instanceof Element && !!t.closest("input,textarea,select,[contenteditable=true],[role=combobox]");
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
         set({ commandOpen: true });

@@ -193,6 +193,8 @@ export function useScenario() {
     async (kinds: PlanKind[] = ["B0", "B1", "P"]) => {
       const revId = await ensureRevision();
       if (!revId) return;
+      // Show the answer as it arrives (the inspector may be on a field from earlier).
+      useUI.getState().set({ inspectorTab: "result", inspectorOpen: true });
       const existing = useUI.getState().runsByRevision[revId] ?? {};
       for (const kind of kinds) {
         if (existing[kind]) continue; // immutable result already exists for this exact revision

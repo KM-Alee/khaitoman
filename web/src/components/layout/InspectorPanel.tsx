@@ -2,7 +2,7 @@
  * Right-hand inspector: the plan's answer (Plan screen), the selected field, and the pilot's
  * sources. Selecting a field anywhere switches to its details.
  */
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { PanelRightClose } from "lucide-react";
 import { useUI, type InspectorTab } from "@/app/store";
 import { usePilotData } from "@/app/pilotData";
@@ -24,9 +24,13 @@ export function InspectorPanel({ onClose, className }: { onClose?: () => void; c
   const tab: InspectorTab = stored === "actions" || stored === "copilot" ? "result" : stored;
   const shown = !onPlan && tab === "result" ? "field" : tab;
 
+  // Selecting a field opens it; clearing the selection on Plan goes back to the answer.
+  const hadField = useRef(!!sel.fieldId);
   useEffect(() => {
     if (sel.fieldId) set({ inspectorTab: "field" });
-  }, [sel.fieldId, set]);
+    else if (hadField.current && onPlan) set({ inspectorTab: "result" });
+    hadField.current = !!sel.fieldId;
+  }, [sel.fieldId, onPlan, set]);
 
   return (
     <aside aria-label="Inspector" className={cn("flex h-full min-h-0 flex-col border-l border-border bg-surface", className)} data-testid="inspector">

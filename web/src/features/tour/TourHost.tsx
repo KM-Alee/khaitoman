@@ -125,8 +125,8 @@ function TourRunner() {
   // Keyboard: → next, ← back, Esc exit (never while typing).
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      const t = e.target as HTMLElement | null;
-      if (t?.closest("input,textarea,select,[contenteditable=true]")) return;
+      const t = e.target;
+      if (t instanceof Element && t.closest("input,textarea,select,[contenteditable=true]")) return;
       if (e.key === "Escape") {
         e.preventDefault();
         exit();
