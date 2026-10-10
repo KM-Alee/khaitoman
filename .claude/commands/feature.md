@@ -9,4 +9,4 @@ Implement feature **$ARGUMENTS** for AabFlow.
 3. Implement backend domain logic first (typed Pydantic schemas, units from `aabflow.domain.units`, hashes from `aabflow.domain.hashes`), then API routes under `/api/v2`, then UI.
 4. Add tests for each rule the specs list, including the rejection cases. Run the relevant make targets until green.
 5. If the API changed, run `make contracts` so `web/src/generated/api.ts` matches.
-6. Update the feature's row in `docs/STATUS.md` with evidence, commit locally, and summarize what was built and what remains.
+6. Work on a branch (`feat/<id>-<slug>`, never `main`). Update the feature's row in `docs/STATUS.md` with evidence, then finish with the `/ship` steps (`.claude/commands/ship.md`) to open the PR for review. Report the PR URL, what was built, and what remains.

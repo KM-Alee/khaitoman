@@ -9,4 +9,4 @@ Something is failing: **$ARGUMENTS**
 3. Fix the cause, not the symptom. No skipped tests, broad excepts, version downgrades, or weakened assertions unless the cause truly is the dependency, in which case pin it in the manifest, run `make lock build`, and say why.
 4. Re-run the original command plus `make test`. Add a regression test when the bug was in our code.
 5. If the cause is non-obvious and will bite again, add one line about it to `CLAUDE.md`.
-6. Commit locally and explain the cause and fix in two or three sentences.
+6. Commit on the current branch (if on `main`, `git switch -c fix/<slug>` first). If that branch isn't already an open PR under review, open one with the `/ship` steps. Explain the cause and fix in two or three sentences.

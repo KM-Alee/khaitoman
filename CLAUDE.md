@@ -23,13 +23,13 @@ AICON hackathon build: irrigation and canal water-allocation planner. Full scope
 
 ## Working rules
 
-- Local git commits only; no remote push.
+- PR workflow (`docs/WORKFLOW.md`): KM-Alee builds, Aounuman (`Sipra-Aoun`) reviews. Never commit or push to `main`. Work on a branch and finish with `/ship`, which opens a PR. Reviews use `/review-pr <n>`: fix gaps on the PR branch, file `gap` issues for the rest, merge with a merge commit. No rebase or force-push of pushed branches.
 - Real data and executed pipelines only; fixtures are for tests and must be labelled.
 
 ## Claude Code workflow (`.claude/`)
 
 - Progress lives in `docs/STATUS.md` (M0–M8, F01–F20, AT01–AT18). Update rows only with evidence, in the same commit as the work.
-- Slash commands: `/milestone M2`, `/feature F05`, `/acceptance`, `/fix <error>`, `/spec <question>`, `/status`.
+- Slash commands: `/milestone M2`, `/feature F05`, `/acceptance`, `/fix <error>`, `/spec <question>`, `/status`, `/ship [ID]` (open a PR), `/review-pr <n>` (review, fix and merge).
 - Subagents for parallel work after schemas freeze (T13.2): `data-engineer`, `science-engineer`, `optimizer-engineer`, `frontend-engineer`; `spec-auditor` reviews diffs read-only. The main session owns shared contracts and integration.
-- Hooks: edited `.py` files are ruff-formatted/fixed in the api container (remaining errors come back to fix); before stopping, `make test` and web typecheck/vitest run for uncommitted changes and must pass.
-- `.env` is unreadable by Claude by design; `git push` is denied.
+- Hooks: `git_guard.sh` blocks commits on `main`, pushes to `main` and force-pushes; edited `.py` files are ruff-formatted/fixed in the api container (remaining errors come back to fix); before stopping, `make test` and web typecheck/vitest run for uncommitted changes and must pass.
+- `.env` is unreadable by Claude by design; `gh pr merge` asks first.

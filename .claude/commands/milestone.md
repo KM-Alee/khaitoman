@@ -11,5 +11,5 @@ Build milestone **$ARGUMENTS** for AabFlow.
 5. Every requirement gets a test (pytest under `tests/`, vitest beside the component, Playwright in `tests/e2e`). Use real data and executed pipelines; fixtures only in tests and labelled as such.
 6. Run `make test`, `make science-smoke` (if science changed), `make web-test` and `make web-build` (if web changed). Fix failures from the root cause.
 7. Update `docs/STATUS.md` rows with status and evidence (command and result, artifact path). Replace any `not implemented yet` Make target you made real.
-8. Commit locally with a clear message. Never push.
-9. Finish with: what passed (with evidence), what is still open in this milestone and why, and the next milestone's first step.
+8. Work on branches, never `main`. Open one PR per feature or coherent workstream as it lands (`/ship` steps in `.claude/commands/ship.md`), not one giant PR. Keep building while earlier PRs are in review. Stack dependent branches on the open PR branch as described in `docs/WORKFLOW.md`.
+9. Finish with: the PRs opened (URLs), what passed (with evidence), what is still open in this milestone and why, and the next milestone's first step.
