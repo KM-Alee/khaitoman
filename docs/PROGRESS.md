@@ -27,7 +27,7 @@ Acceptance tests with a named test in `tests/` today: AT02–AT12. **No test yet
 
 ### Uncommitted right now (being landed by the lead thread)
 
-About 40 modified and a few new files on `chore/pr-review-workflow`: backend tweaks (`api/aabflow/api/scenarios.py`, `services/*`, `copilot/tools/*`), retrained surrogate (`data/models/surrogate-v1/*`), pilot weather parquet (`data/libraries/weather/*.parquet`), Esri imagery work (`web/src/components/map/*`, `docs/IMAGERY.md`, `compose.yaml`, `Dockerfile`, `.env.example`, `tests/e2e/offline-imagery.spec.ts`), new tests (`tests/copilot/test_analysis_tools.py`, `tests/unit/test_surrogate_domain_coverage.py`). This is P00 below.
+Landed in PR #2 (`feat/p00-integrate-m1-m5`): backend tweaks (`api/aabflow/api/scenarios.py`, `services/*`, `copilot/tools/*`), retrained surrogate (`data/models/surrogate-v1/*`), pilot weather parquet (`data/libraries/weather/*.parquet`), Esri imagery work (`web/src/components/map/*`, `docs/IMAGERY.md`, `compose.yaml`, `Dockerfile`, `.env.example`, `tests/e2e/offline-imagery.spec.ts`), new tests (`tests/copilot/test_analysis_tools.py`, `tests/unit/test_surrogate_domain_coverage.py`).
 
 ### Known risks
 
@@ -45,7 +45,7 @@ Status values: `todo`, `building` (branch pushed, no PR yet), `review #n`, `done
 
 | ID | Milestone | Delivers | Needs | Status |
 |---|---|---|---|---|
-| P00 | M1–M5 | One PR with the whole current working tree (`git add .`; `.env` and `.xfer/` stay ignored), opened by the lead thread, including these plan docs: workflow, Esri imagery, surrogate retrain + domain-coverage test, pilot weather, copilot tool shapes. Refresh `docs/STATUS.md` with evidence for M0–M5 rows. | — | building (lead) |
+| P00 | M1–M5 | One PR with the whole current working tree (`git add .`; `.env` and `.xfer/` stay ignored), opened by the lead thread, including these plan docs: workflow, Esri imagery, surrogate retrain + domain-coverage test, pilot weather, copilot tool shapes. Refresh `docs/STATUS.md` with evidence for M0–M5 rows. | — | review #2 |
 | P01 | M2 | Pilot-b candidate libraries for all 4 seasons (`make candidates PILOT=pilot-b`). `make domain-tests` runs the AT02–AT04 tests and the water/property suites. | P00 | todo |
 | P02 | M1 | AT01 test (`tests/integration/test_pilot_packages.py`): both pilots have real scene/source IDs, ≥30 reviewed fields, valid directed graph, manifest hashes match. `make pilot-a`/`pilot-b` reproduce the package. | P00 | todo |
 | P03 | M3 | Mark AT05–AT08, AT12 with evidence; fill any rule in PRD §11.2 those tests miss. `make core-acceptance` v1 runs every AT test that exists. | P00 | todo |

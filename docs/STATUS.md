@@ -8,11 +8,11 @@ Status values: `not_started`, `in_progress`, `passed`, `failed`, `blocked`.
 | ID | Outcome | Status | Evidence / notes |
 |---|---|---|---|
 | M0 | Feasibility and contracts: envs locked, science/solver sample timed, data/hardware/provider access, schemas frozen | in_progress | Docker images built; `make doctor` all present (no GPU; CPU torch 2.14.1). Provider `gpt-6-luna` available (`make provider-check`). AquaCrop wheat on real Open-Meteo weather: warm-up 0.35 s, median 0.166 s/run (`evidence/benchmarks/crop-bench-*.json`) so ~2,900 runs ≈ 8 min single-process. CP-SAT T12.2 fixture passes. Domain contract frozen in `api/aabflow/domain/schemas`. Remaining: Delineate sample run (data stream) |
-| M1 | Real source packages: two AOIs, acquisition/import, inference/review, fields/graph/manifest, onboarding pipeline | not_started | |
-| M2 | Exact domain engine: two crops, weather, ledger, crop adapter, candidates; science batch launched | not_started | |
-| M3 | Decisions: baselines, all actions, live selection, constraints, economics/rights | not_started | |
-| M4 | Polished decision loop: workspace/compare, replay, report, visual system, error/stale | not_started | |
-| M5 | Expanded intelligence: frontier, stress/robust, surrogate, why-not/synergy | not_started | |
+| M1 | Real source packages: two AOIs, acquisition/import, inference/review, fields/graph/manifest, onboarding pipeline | in_progress | `pilot-a` and `pilot-b` `reviewed-v1` published in `data/pilots/index.json`. Missing AT01 test. |
+| M2 | Exact domain engine: two crops, weather, ledger, crop adapter, candidates; science batch launched | in_progress | Pilot weather parquets in `data/libraries/weather/*.parquet`. `tests/unit/test_surrogate_domain_coverage.py` passes (53 cases). Pilot-a candidates built; pilot-b pending (P01). |
+| M3 | Decisions: baselines, all actions, live selection, constraints, economics/rights | in_progress | Baseline ladder (B0, B1, P, R), constraints, solver routes implemented (`d9518bd`, `api/aabflow/services/runs`). Tests in `tests/scientific/test_real_pilot_decisions.py`. |
+| M4 | Polished decision loop: workspace/compare, replay, report, visual system, error/stale | in_progress | MapLibre workspace 3D, DEM decoding, optional Esri World Imagery with offline Sentinel-2 fallback (`web/src/components/map/engine.ts`, `tests/e2e/offline-imagery.spec.ts`). Vitest 49/49 passes. |
+| M5 | Expanded intelligence: frontier, stress/robust, surrogate, why-not/synergy | in_progress | Frontier and stress routes mounted under `/api/v2/analyses/`. `surrogate-v1` retrained for cotton & wheat with domain coverage verified across all 53 pilot scenarios. |
 | M6 | Complete core: impact/SDG, onboarding UI, evidence, export, offline/restart | not_started | |
 | M7 | Copilot (last): tool registry, provider loop, cards, bilingual, 30×3 eval | not_started | |
 | M8 | Release: regression, cold launch, rehearsals, release report | not_started | |
