@@ -44,7 +44,7 @@ services:
 
   demo:
     profiles: [demo, test]
-    build: { context: ., target: app }
+    build: { context: ., target: app, args: { VITE_ARCGIS_KEY: "${VITE_ARCGIS_KEY:-}" } }
     image: aabflow:local
     env_file: [{ path: .env, required: false }]
     ports: ["127.0.0.1:8000:8000"]

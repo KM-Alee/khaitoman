@@ -53,6 +53,10 @@ ENV HOME=/tmp
 CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
 
 FROM web-dev AS web-build
+# Optional display-only Esri basemap key (docs/IMAGERY.md); compose passes it from .env.
+# It ends up in the browser bundle by design, so restrict it to Basemaps in the ArcGIS dashboard.
+ARG VITE_ARCGIS_KEY=
+ENV VITE_ARCGIS_KEY=$VITE_ARCGIS_KEY
 COPY web/ ./
 COPY contracts/ /app/contracts/
 RUN npm run build

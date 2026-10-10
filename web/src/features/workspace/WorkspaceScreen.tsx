@@ -8,7 +8,7 @@ import { ResultBar, ResultStrip, type ResultState } from "./ResultStrip";
 import { useScenario } from "./useScenario";
 import { useShell } from "@/components/layout/AppShell";
 import { formatDate } from "@/lib/formatting";
-import { HD_IMAGERY_ATTRIBUTION, HD_IMAGERY_KEY } from "@/components/map/hdImagery";
+import { HD_IMAGERY_ATTRIBUTION, useHdStatus } from "@/components/map/hdImagery";
 
 export function WorkspaceScreen() {
   const { sel, pilot, map } = usePilotData();
@@ -30,7 +30,8 @@ export function WorkspaceScreen() {
   const im = map.data?.imagery[0];
   const showImagery = useUI((s) => s.showImagery);
   const showHd = useUI((s) => s.showHdImagery);
-  const hdOn = !!HD_IMAGERY_KEY && showImagery && showHd;
+  const hd = useHdStatus();
+  const hdOn = hd === "ok" && showImagery && showHd;
   return (
     <div className="relative flex min-h-0 flex-1 flex-col" data-testid="workspace">
       <MapSlot
