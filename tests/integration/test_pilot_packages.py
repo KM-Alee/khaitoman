@@ -234,6 +234,45 @@ def test_reproduce_mismatch_leaves_published_tree(tmp_path, monkeypatch):
     assert not (published.parent / "reviewed-v1.previous").exists()
 
 
+def test_reproduce_match_writes_nothing(tmp_path, monkeypatch):
+    """A byte-identical rebuild deletes only its stage and leaves the package untouched."""
+    published = tmp_path / "data" / "pilots" / "pilot-a" / "reviewed-v1"
+    shutil.copytree(_published("pilot-a"), published)
+    before = {
+        path.relative_to(published).as_posix(): file_sha256(path)
+        for path in published.rglob("*")
+        if path.is_file()
+    }
+    workdir = tmp_path / "intake"
+    workdir.mkdir()
+    (workdir / "intake.json").write_text(
+        json.dumps({"state": "published", "pilot_id": "pilot-a"}),
+        encoding="utf-8",
+    )
+
+    def fake_build(_workdir, stage, *_args, **_kwargs):
+        shutil.copytree(published, stage)
+
+    monkeypatch.setattr(pipeline, "_build_validated_stage", fake_build)
+    manifest, replaced = pipeline.reproduce_published(
+        workdir,
+        "pilot-a",
+        "reviewed-v1",
+        data_dir=tmp_path / "data",
+        repo_root=tmp_path,
+    )
+    after = {
+        path.relative_to(published).as_posix(): file_sha256(path)
+        for path in published.rglob("*")
+        if path.is_file()
+    }
+    assert replaced is False
+    assert after == before
+    assert manifest.pilot_id == "pilot-a"
+    assert not (published.parent / "reviewed-v1.partial").exists()
+    assert not (published.parent / "reviewed-v1.previous").exists()
+
+
 def _copy_package(tmp_path: Path) -> Path:
     dest = tmp_path / "pkg"
     shutil.copytree(_published("pilot-a"), dest)
