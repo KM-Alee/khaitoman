@@ -1,7 +1,7 @@
 {
   "version": 1,
   "model": "grok-4.7[effort=high,context=500k,fast=false]",
-  "max_workers": 3,
+  "max_workers": 6,
   "resources": {
     "contracts": 1,
     "gpu": 1,
