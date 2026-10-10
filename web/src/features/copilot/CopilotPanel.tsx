@@ -130,6 +130,16 @@ export function CopilotPanel() {
     setDraft("");
     void send(sel.pilotKey, m.slice(0, MAX_CHARS), context);
   };
+  // A question handed over from outside the panel (the landing Ask box) is sent once, after the
+  // run on screen has loaded so the turn is pinned to it.
+  const handed = useUI((s) => s.assistantDraft);
+  const setUI = useUI((s) => s.set);
+  useEffect(() => {
+    if (!handed || !ready || busy || (sel.runId && !runData)) return;
+    setUI({ assistantDraft: null });
+    if (handed.autoSend) ask(handed.text);
+    else setDraft(handed.text);
+  }, [handed, ready, busy, sel.runId, runData]); // eslint-disable-line react-hooks/exhaustive-deps
   const setLanguage = (l: CopilotLanguage) => {
     setLang(l);
     try {

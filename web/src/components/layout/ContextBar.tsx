@@ -3,6 +3,7 @@
  * switcher, the five-step journey, and the global actions: guided tour, "Ask AabFlow"
  * (assistant slot), a contextual primary action and a settings menu.
  */
+import { useState } from "react";
 import { NavLink, useNavigate } from "react-router";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import {
@@ -31,7 +32,8 @@ import { useUI } from "@/app/store";
 import { useHealth } from "@/lib/api/queries";
 import { formatDate, titleCase } from "@/lib/formatting";
 import { Button, IconButton } from "@/components/ui/Button";
-import { Tooltip } from "@/components/ui/primitives";
+import { Dialog, DialogContent, Tooltip } from "@/components/ui/primitives";
+import { AiStackStrip } from "./AiStackStrip";
 import { Wordmark, BrandMark } from "@/components/ui/Art";
 import { useScenario } from "@/features/workspace/useScenario";
 import { useRunContext } from "@/features/workspace/useRunContext";
@@ -225,8 +227,15 @@ function MoreMenu() {
   const motion = useUI((s) => s.motion);
   const presentation = useUI((s) => s.presentation);
   const navigate = useNavigate();
+  const [aiOpen, setAiOpen] = useState(false);
   const item = "flex cursor-pointer items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-[13px] text-ink outline-none data-[highlighted]:bg-surface-muted";
   return (
+    <>
+    <Dialog open={aiOpen} onOpenChange={setAiOpen}>
+      <DialogContent title="How the AI works" description="Four engines, each with a fact read from stored evidence. Pick one to see its proof." wide>
+        <AiStackStrip className="sm:grid-cols-2 lg:grid-cols-2" onPick={() => setAiOpen(false)} />
+      </DialogContent>
+    </Dialog>
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
         <IconButton label="More: theme, motion, presentation, commands">
@@ -235,6 +244,9 @@ function MoreMenu() {
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
         <DropdownMenu.Content sideOffset={6} align="end" className="z-[70] min-w-[240px] animate-pop rounded-[16px] border border-border bg-surface-raised p-1.5 shadow-3">
+          <DropdownMenu.Item className={item} onSelect={() => setAiOpen(true)} data-testid="menu-ai-stack">
+            <Sparkles size={15} aria-hidden /> How the AI works
+          </DropdownMenu.Item>
           <DropdownMenu.Item className={item} onSelect={() => set({ commandOpen: true })}>
             <Command size={15} aria-hidden /> Jump to… <span className="ml-auto text-[11px] text-ink-tertiary">Ctrl K</span>
           </DropdownMenu.Item>
@@ -268,5 +280,6 @@ function MoreMenu() {
         </DropdownMenu.Content>
       </DropdownMenu.Portal>
     </DropdownMenu.Root>
+    </>
   );
 }

@@ -16,7 +16,10 @@ import { useUI } from "@/app/store";
 import { JOURNEY } from "@/app/journey";
 import { useTour } from "@/features/tour/store";
 import { cn } from "@/lib/cn";
+import { AiStackStrip } from "@/components/layout/AiStackStrip";
 import { PilotPortrait } from "./PilotPortrait";
+import { HeadlineInsight } from "./HeadlineInsight";
+import { AskBox } from "./AskBox";
 
 const pilotHref = (p: PilotSummary, screen = "workspace") => `/p/${encodeURIComponent(p.pilot_id)}/${encodeURIComponent(p.pilot_version)}/${screen}`;
 
@@ -50,11 +53,12 @@ export function Landing({ pilots, notFound }: { pilots: ReturnType<typeof usePil
                 <span className="h-px w-6 bg-water" aria-hidden /> Irrigation planning for watercourse committees
               </p>
               <h1 className="display mt-4 max-w-[13ch] text-[46px] leading-[1.02] text-ink md:text-[68px]">Test the season before you spend.</h1>
-              <p className="mt-6 max-w-[56ch] text-[17px] leading-relaxed text-ink-secondary">
-                A watercourse committee can fund only some of the improvements its farmers need. AabFlow shows what each choice changes, what it costs, and which fields downstream
-                would still go short, before any money is spent.
+              <p className="mt-5 max-w-[56ch] text-[17px] leading-relaxed text-ink-secondary">
+                A watercourse committee can fund only some of the improvements its farmers need. AabFlow's AI shows what each choice changes, what it costs, and which fields
+                downstream would still go short, before any money is spent.
               </p>
-              <div className="mt-8 flex flex-wrap items-center gap-3">
+              <AskBox className="mt-7 max-w-[640px]" fallbackHref={first ? pilotHref(first) : null} />
+              <div className="mt-6 flex flex-wrap items-center gap-3">
                 <Button
                   variant="hero"
                   size="xl"
@@ -111,6 +115,21 @@ export function Landing({ pilots, notFound }: { pilots: ReturnType<typeof usePil
                 <Skeleton className="mx-auto aspect-square w-full max-w-[540px] rounded-[28px]" />
               ) : null}
             </div>
+          </div>
+        </section>
+
+        <section className="mx-auto flex max-w-[1280px] flex-col gap-6 px-4 pb-4 md:px-8" aria-label="What the AI found">
+          <HeadlineInsight
+            onSeeHow={() => {
+              set({ tourSeen: true });
+              startTour(0);
+            }}
+          />
+          <div>
+            <h2 className="eyebrow mb-3 flex items-center gap-2 text-water-deep">
+              <span className="h-px w-6 bg-water" aria-hidden /> AI inside: four engines, each with its proof
+            </h2>
+            <AiStackStrip />
           </div>
         </section>
 

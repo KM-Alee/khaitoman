@@ -4,6 +4,23 @@
  */
 
 export interface paths {
+    "/api/v2/ai-stack": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Ai Stack */
+        get: operations["ai_stack_api_v2_ai_stack_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v2/analyses": {
         parameters: {
             query?: never;
@@ -335,6 +352,26 @@ export interface paths {
          *     derive from the original turn, so a retry returns the existing branch/job/report instead of a duplicate.
          */
         post: operations["retry_turn_api_v2_copilot_turns__turn_id__retry_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/demo/headline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Demo Headline
+         * @description The landing story, from the seeded session's B0/B1/P runs (404 if any is missing).
+         */
+        get: operations["demo_headline_api_v2_demo_headline_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1232,6 +1269,61 @@ export interface components {
          * @enum {string}
          */
         ActionCategory: "timing" | "leveling" | "pond" | "shared_repair" | "pump_supplement";
+        /** AiEngine */
+        AiEngine: {
+            /**
+             * By Pilot
+             * @description sees only: pilot_id -> {raw_polygons, selected}
+             */
+            by_pilot?: {
+                [key: string]: {
+                    [key: string]: number;
+                };
+            };
+            /** Evidence Ref */
+            evidence_ref: string | null;
+            /**
+             * Fact
+             * @description one plain sentence built from the figures below
+             */
+            fact: string | null;
+            /** Fact Value */
+            fact_value: number | string | null;
+            /** Facts */
+            facts?: components["schemas"]["AiFact"][];
+            /**
+             * Id
+             * @enum {string}
+             */
+            id: "sees" | "predicts" | "plans" | "explains";
+            /** Label */
+            label: string;
+            /** Plain */
+            plain: string;
+            /** Reason */
+            reason?: string | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "available" | "unavailable";
+            /** Unit */
+            unit: string | null;
+        };
+        /** AiFact */
+        AiFact: {
+            /** Label */
+            label: string;
+            /** Unit */
+            unit?: string | null;
+            /** Value */
+            value: number | string | null;
+        };
+        /** AiStack */
+        AiStack: {
+            /** Engines */
+            engines: components["schemas"]["AiEngine"][];
+        };
         /** AnalysisAccepted */
         AnalysisAccepted: {
             /** Analysis Id */
@@ -1695,6 +1787,57 @@ export interface components {
             /** Tried Capital Budgets Pkr */
             tried_capital_budgets_pkr?: number[];
         };
+        /** DemoHeadline */
+        DemoHeadline: {
+            budget_used_fraction: components["schemas"]["Figure"];
+            capital_budget_pkr: components["schemas"]["Figure"];
+            /**
+             * Groundwater Above B0
+             * @description True when P pumps more groundwater than B0 (shown as a secondary line)
+             */
+            groundwater_above_b0: boolean | null;
+            /** Pilot Id */
+            pilot_id: string;
+            /** Pilot Version */
+            pilot_version: string;
+            /**
+             * Plans
+             * @description B0, B1, P
+             */
+            plans: {
+                [key: string]: components["schemas"]["PlanFigures"];
+            };
+            /**
+             * Production Gain Pct Vs B0
+             * @description B1, P vs B0 (%)
+             */
+            production_gain_pct_vs_b0: {
+                [key: string]: components["schemas"]["Figure"];
+            };
+            /**
+             * Run Created At
+             * @description run_id -> computed time
+             */
+            run_created_at: {
+                [key: string]: string;
+            };
+            /** Scenario Revision Id */
+            scenario_revision_id: string;
+            /** Season Id */
+            season_id: string;
+            /**
+             * Story
+             * @enum {string}
+             */
+            story: "tail_tradeoff" | "budget_efficiency" | "plain_gain";
+            /**
+             * Tail Service Change Pts
+             * @description B1, P vs B0 (percentage points)
+             */
+            tail_service_change_pts: {
+                [key: string]: components["schemas"]["Figure"];
+            };
+        };
         /** DemoRevision */
         DemoRevision: {
             /** Revision Id */
@@ -2076,6 +2219,23 @@ export interface components {
             source_model_ids?: string[];
             /** Supersedes */
             supersedes?: string[];
+        };
+        /**
+         * Figure
+         * @description One number shown on screen: a stored metric or a value derived from stored metrics.
+         */
+        Figure: {
+            /** Reason */
+            reason?: string | null;
+            /**
+             * Run Ids
+             * @description the run(s) this figure is read or derived from
+             */
+            run_ids: string[];
+            /** Unit */
+            unit: string;
+            /** Value */
+            value: number | null;
         };
         /** FollowUpsBlock */
         FollowUpsBlock: {
@@ -2892,6 +3052,15 @@ export interface components {
             state: components["schemas"]["PackageState"];
             /** Timezone */
             timezone: string;
+        };
+        /** PlanFigures */
+        PlanFigures: {
+            capital_commitment_pkr: components["schemas"]["Figure"];
+            groundwater_m3: components["schemas"]["Figure"];
+            production_kg: components["schemas"]["Figure"];
+            /** Run Id */
+            run_id: string;
+            tail_min_service_ratio: components["schemas"]["Figure"];
         };
         /**
          * PlanKind
@@ -4313,6 +4482,26 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    ai_stack_api_v2_ai_stack_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AiStack"];
+                };
+            };
+        };
+    };
     list_analyses_api_v2_analyses_get: {
         parameters: {
             query?: {
@@ -4956,6 +5145,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    demo_headline_api_v2_demo_headline_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DemoHeadline"];
                 };
             };
         };

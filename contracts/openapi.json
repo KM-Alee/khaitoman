@@ -58,6 +58,183 @@
         "title": "ActionCategory",
         "type": "string"
       },
+      "AiEngine": {
+        "additionalProperties": false,
+        "properties": {
+          "by_pilot": {
+            "additionalProperties": {
+              "additionalProperties": {
+                "type": "integer"
+              },
+              "type": "object"
+            },
+            "description": "sees only: pilot_id -> {raw_polygons, selected}",
+            "title": "By Pilot",
+            "type": "object"
+          },
+          "evidence_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence Ref"
+          },
+          "fact": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "one plain sentence built from the figures below",
+            "title": "Fact"
+          },
+          "fact_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fact Value"
+          },
+          "facts": {
+            "items": {
+              "$ref": "#/components/schemas/AiFact"
+            },
+            "title": "Facts",
+            "type": "array"
+          },
+          "id": {
+            "enum": [
+              "sees",
+              "predicts",
+              "plans",
+              "explains"
+            ],
+            "title": "Id",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "plain": {
+            "title": "Plain",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "status": {
+            "enum": [
+              "available",
+              "unavailable"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "plain",
+          "fact",
+          "fact_value",
+          "unit",
+          "evidence_ref",
+          "status"
+        ],
+        "title": "AiEngine",
+        "type": "object"
+      },
+      "AiFact": {
+        "additionalProperties": false,
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "label",
+          "value"
+        ],
+        "title": "AiFact",
+        "type": "object"
+      },
+      "AiStack": {
+        "additionalProperties": false,
+        "properties": {
+          "engines": {
+            "items": {
+              "$ref": "#/components/schemas/AiEngine"
+            },
+            "title": "Engines",
+            "type": "array"
+          }
+        },
+        "required": [
+          "engines"
+        ],
+        "title": "AiStack",
+        "type": "object"
+      },
       "AnalysisAccepted": {
         "additionalProperties": false,
         "properties": {
@@ -1366,6 +1543,102 @@
         "title": "DemoBudgetChange",
         "type": "object"
       },
+      "DemoHeadline": {
+        "additionalProperties": false,
+        "properties": {
+          "budget_used_fraction": {
+            "$ref": "#/components/schemas/Figure"
+          },
+          "capital_budget_pkr": {
+            "$ref": "#/components/schemas/Figure"
+          },
+          "groundwater_above_b0": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "True when P pumps more groundwater than B0 (shown as a secondary line)",
+            "title": "Groundwater Above B0"
+          },
+          "pilot_id": {
+            "title": "Pilot Id",
+            "type": "string"
+          },
+          "pilot_version": {
+            "title": "Pilot Version",
+            "type": "string"
+          },
+          "plans": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/PlanFigures"
+            },
+            "description": "B0, B1, P",
+            "title": "Plans",
+            "type": "object"
+          },
+          "production_gain_pct_vs_b0": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Figure"
+            },
+            "description": "B1, P vs B0 (%)",
+            "title": "Production Gain Pct Vs B0",
+            "type": "object"
+          },
+          "run_created_at": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "run_id -> computed time",
+            "title": "Run Created At",
+            "type": "object"
+          },
+          "scenario_revision_id": {
+            "title": "Scenario Revision Id",
+            "type": "string"
+          },
+          "season_id": {
+            "title": "Season Id",
+            "type": "string"
+          },
+          "story": {
+            "enum": [
+              "tail_tradeoff",
+              "budget_efficiency",
+              "plain_gain"
+            ],
+            "title": "Story",
+            "type": "string"
+          },
+          "tail_service_change_pts": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Figure"
+            },
+            "description": "B1, P vs B0 (percentage points)",
+            "title": "Tail Service Change Pts",
+            "type": "object"
+          }
+        },
+        "required": [
+          "story",
+          "pilot_id",
+          "pilot_version",
+          "season_id",
+          "scenario_revision_id",
+          "plans",
+          "capital_budget_pkr",
+          "production_gain_pct_vs_b0",
+          "tail_service_change_pts",
+          "budget_used_fraction",
+          "groundwater_above_b0",
+          "run_created_at"
+        ],
+        "title": "DemoHeadline",
+        "type": "object"
+      },
       "DemoRevision": {
         "additionalProperties": false,
         "properties": {
@@ -2568,6 +2841,53 @@
           "group"
         ],
         "title": "Field_",
+        "type": "object"
+      },
+      "Figure": {
+        "additionalProperties": false,
+        "description": "One number shown on screen: a stored metric or a value derived from stored metrics.",
+        "properties": {
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "run_ids": {
+            "description": "the run(s) this figure is read or derived from",
+            "items": {
+              "type": "string"
+            },
+            "title": "Run Ids",
+            "type": "array"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "value",
+          "unit",
+          "run_ids"
+        ],
+        "title": "Figure",
         "type": "object"
       },
       "FollowUpsBlock": {
@@ -4816,6 +5136,36 @@
           "seasons"
         ],
         "title": "PilotVersionDetail",
+        "type": "object"
+      },
+      "PlanFigures": {
+        "additionalProperties": false,
+        "properties": {
+          "capital_commitment_pkr": {
+            "$ref": "#/components/schemas/Figure"
+          },
+          "groundwater_m3": {
+            "$ref": "#/components/schemas/Figure"
+          },
+          "production_kg": {
+            "$ref": "#/components/schemas/Figure"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "tail_min_service_ratio": {
+            "$ref": "#/components/schemas/Figure"
+          }
+        },
+        "required": [
+          "run_id",
+          "production_kg",
+          "tail_min_service_ratio",
+          "capital_commitment_pkr",
+          "groundwater_m3"
+        ],
+        "title": "PlanFigures",
         "type": "object"
       },
       "PlanKind": {
@@ -8879,6 +9229,24 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/api/v2/ai-stack": {
+      "get": {
+        "operationId": "ai_stack_api_v2_ai_stack_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiStack"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Ai Stack"
+      }
+    },
     "/api/v2/analyses": {
       "get": {
         "operationId": "list_analyses_api_v2_analyses_get",
@@ -9872,6 +10240,25 @@
         "tags": [
           "copilot"
         ]
+      }
+    },
+    "/api/v2/demo/headline": {
+      "get": {
+        "description": "The landing story, from the seeded session's B0/B1/P runs (404 if any is missing).",
+        "operationId": "demo_headline_api_v2_demo_headline_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemoHeadline"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Demo Headline"
       }
     },
     "/api/v2/demo/session": {

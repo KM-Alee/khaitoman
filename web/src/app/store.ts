@@ -76,6 +76,8 @@ interface UIState {
   commandOpen: boolean;
   /** "Ask AabFlow" assistant slot (docs/UI_SYSTEM.md › Assistant slot). */
   assistantOpen: boolean;
+  /** A question handed to the assistant from outside it (landing Ask box); read once by CopilotPanel. */
+  assistantDraft: { text: string; autoSend: boolean } | null;
   /** Fields an assistant answer (or the tour) asked the map to highlight; null = none. */
   assistantHighlight: string[] | null;
   /** The visitor has opened or dismissed the guided tour at least once. */
@@ -124,6 +126,7 @@ export const useUI = create<UIState>()(
       inspectorTab: "result",
       commandOpen: false,
       assistantOpen: false,
+      assistantDraft: null,
       assistantHighlight: null,
       tourSeen: false,
       pendingRun: false,

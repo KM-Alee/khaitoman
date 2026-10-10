@@ -35,6 +35,7 @@ def _routers() -> list[APIRouter]:
         reports,
         runs,
         scenarios,
+        showcase,
         surrogate,
         system,
     )
@@ -52,6 +53,7 @@ def _routers() -> list[APIRouter]:
         analyses.router,
         surrogate.router,
         demo.router,
+        showcase.router,
         reports.router,
         copilot_router,
     ]
