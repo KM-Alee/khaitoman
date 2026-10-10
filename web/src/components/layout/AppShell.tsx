@@ -19,6 +19,8 @@ import { TopBar } from "./ContextBar";
 import { BottomNav, NAV } from "./NavigationRail";
 import { InspectorPanel } from "./InspectorPanel";
 import { AssistantPanel } from "./AssistantPanel";
+import { ResizeHandle, type PanelKey } from "./ResizeHandle";
+import { getEngine } from "@/components/map/runtime";
 import { JobTray, JobWatchers } from "./JobTray";
 import { CommandMenu } from "./CommandMenu";
 import { PresentationCues } from "./PresentationCues";
@@ -61,6 +63,15 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   useGlobalShortcuts();
 
+  const widths = useUI((s) => s.panelWidths);
+  const assistantFull = useUI((s) => s.assistantFull);
+  const setWidth = (k: PanelKey, w: number) => set({ panelWidths: { ...useUI.getState().panelWidths, [k]: w } });
+  // The map keeps its size in sync when a panel opens, closes, resizes or the chat goes full.
+  useEffect(() => {
+    const t = requestAnimationFrame(() => getEngine()?.resize());
+    return () => cancelAnimationFrame(t);
+  }, [widths, assistantOpen, assistantFull, scenarioOpen]);
+
   // "Open Plan settings" requests from the tour or an assistant answer.
   const settingsRequest = useUI((s) => s.settingsRequest);
   const firstReq = useRef(settingsRequest);
@@ -94,7 +105,10 @@ export function AppShell({ children }: { children: ReactNode }) {
         <TopBar compact={mobile} onOpenScenario={ctx.openScenario} />
         <div className="relative flex min-h-0 flex-1 print:block">
           {onPlan && docked && scenarioOpen && !presentation ? (
-            <ScenarioPanel className="w-[var(--scenario-w)] shrink-0" onCollapse={() => set({ scenarioOpen: false })} />
+            <div className="relative flex shrink-0" style={{ width: widths.scenario }}>
+              <ScenarioPanel className="w-full" onCollapse={() => set({ scenarioOpen: false })} />
+              <ResizeHandle panel="scenario" side="right" label="Resize plan settings" width={widths.scenario} onChange={(w) => setWidth("scenario", w)} />
+            </div>
           ) : null}
           <main
             id="main"
@@ -139,13 +153,24 @@ export function AppShell({ children }: { children: ReactNode }) {
               </div>
             ) : null}
           </main>
-          {docked && assistantOpen ? (
-            <AssistantPanel className="w-[var(--copilot-w)] shrink-0 animate-[sheet-r_220ms_var(--ease-out)_both]" onClose={() => set({ assistantOpen: false })} />
+          {docked && assistantOpen && assistantFull ? (
+            // Full chat: the conversation takes the whole work area; the map and screens stay underneath.
+            <div className="absolute inset-0 z-40 flex justify-center bg-canvas/95 backdrop-blur-sm animate-fadein" data-testid="assistant-full">
+              <AssistantPanel className="w-full max-w-[980px] border-x" onClose={() => set({ assistantOpen: false, assistantFull: false })} />
+            </div>
+          ) : docked && assistantOpen ? (
+            <div className="relative flex shrink-0 animate-[sheet-r_220ms_var(--ease-out)_both]" style={{ width: widths.assistant }}>
+              <ResizeHandle panel="assistant" side="left" label="Resize the assistant" width={widths.assistant} onChange={(w) => setWidth("assistant", w)} />
+              <AssistantPanel className="w-full" onClose={() => set({ assistantOpen: false })} />
+            </div>
           ) : docked && showInspector ? (
-            <InspectorPanel
-              className="w-[var(--inspector-w)] shrink-0"
-              onClose={() => (onPlan ? set({ inspectorOpen: false }) : sel.fieldId ? sel.setParams({ field: null }) : setDetailsOff(true))}
-            />
+            <div className="relative flex shrink-0" style={{ width: widths.inspector }}>
+              <ResizeHandle panel="inspector" side="left" label="Resize result and field details" width={widths.inspector} onChange={(w) => setWidth("inspector", w)} />
+              <InspectorPanel
+                className="w-full"
+                onClose={() => (onPlan ? set({ inspectorOpen: false }) : sel.fieldId ? sel.setParams({ field: null }) : setDetailsOff(true))}
+              />
+            </div>
           ) : docked && onPlan ? (
             <div className="absolute right-3 top-3 z-20">
               <IconButton label="Open result and field details" variant="secondary" className="shadow-2" onClick={() => set({ inspectorOpen: true })}>

@@ -5,16 +5,32 @@
  * screens it is a full-height sheet. It renders the copilot feature's `CopilotPanel`,
  * which reads its context (pilot, run, field, date, screen) from the URL selection.
  */
-import { Sparkles, X } from "lucide-react";
+import { useEffect } from "react";
+import { Maximize2, Minimize2, Sparkles, X } from "lucide-react";
+import { useUI } from "@/app/store";
 import { CopilotPanel } from "@/features/copilot/CopilotPanel";
 import { IconButton } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
 
 export function AssistantHeader({ onClose }: { onClose?: () => void }) {
+  const full = useUI((st) => st.assistantFull);
+  const set = useUI((st) => st.set);
+  // Esc leaves the full chat first (a second Esc is the shell's usual close).
+  useEffect(() => {
+    if (!full) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.stopPropagation();
+        set({ assistantFull: false });
+      }
+    };
+    window.addEventListener("keydown", onKey, true);
+    return () => window.removeEventListener("keydown", onKey, true);
+  }, [full, set]);
   return (
     <div className="flex h-14 shrink-0 items-center justify-between gap-2 border-b border-border px-4">
       <div className="flex min-w-0 items-center gap-2.5">
-        <span className="grid h-8 w-8 place-items-center rounded-[10px] bg-water-grad text-on-water shadow-1" aria-hidden>
+        <span className="grid h-8 w-8 place-items-center rounded-[10px] bg-water text-on-water" aria-hidden>
           <Sparkles size={16} />
         </span>
         <div className="min-w-0">
@@ -22,11 +38,22 @@ export function AssistantHeader({ onClose }: { onClose?: () => void }) {
           <p className="truncate text-[11.5px] leading-tight text-ink-tertiary">Answers cite the saved runs they come from</p>
         </div>
       </div>
-      {onClose ? (
-        <IconButton label="Close assistant" size="sm" onClick={onClose}>
-          <X size={16} />
+      <div className="flex shrink-0 items-center gap-1">
+        <IconButton
+          label={full ? "Back to the side panel" : "Open as a full chat"}
+          size="sm"
+          pressed={full}
+          onClick={() => set({ assistantFull: !full })}
+          data-testid="assistant-full-toggle"
+        >
+          {full ? <Minimize2 size={15} /> : <Maximize2 size={15} />}
         </IconButton>
-      ) : null}
+        {onClose ? (
+          <IconButton label="Close assistant" size="sm" onClick={onClose}>
+            <X size={16} />
+          </IconButton>
+        ) : null}
+      </div>
     </div>
   );
 }
