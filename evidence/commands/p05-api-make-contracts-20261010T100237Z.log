@@ -1,0 +1,17 @@
+=== make contracts 2026-10-10T10:02:37Z ===
+./scripts/agent_runtime.sh compose run --rm --no-deps api python -c "import json; from aabflow.main import app; open('contracts/openapi.json','w').write(json.dumps(app.openapi(), indent=2, sort_keys=True))"
+ Container aabflow-worker-p05-run1-api-run-1b5c090c9aff Creating 
+ Container aabflow-worker-p05-run1-api-run-1b5c090c9aff Created 
+./scripts/agent_runtime.sh compose run --rm --no-deps web npm run gen:api
+ Container aabflow-worker-p05-run1-web-run-7793f2ee1901 Creating 
+ Container aabflow-worker-p05-run1-web-run-7793f2ee1901 Created 
+
+> aabflow-web@2.0.0 gen:api
+> openapi-typescript ../contracts/openapi.json -o src/generated/api.ts
+
+✨ openapi-typescript 7.13.0
+🚀 ../contracts/openapi.json → src/generated/api.ts [97.4ms]
+EXIT:
+ contracts/openapi.json   | 342 +++++++++++++++++++++++++++++++++++++++++++++++
+ web/src/generated/api.ts | 212 +++++++++++++++++++++++++++++
+ 2 files changed, 554 insertions(+)

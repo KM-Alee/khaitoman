@@ -30,6 +30,7 @@ def _routers() -> list[APIRouter]:
         jobs,
         packages,
         pilots,
+        reports,
         runs,
         scenarios,
         surrogate,
@@ -47,6 +48,7 @@ def _routers() -> list[APIRouter]:
         runs.router,
         analyses.router,
         surrogate.router,
+        reports.router,
         copilot_router,
     ]
 
