@@ -2,6 +2,7 @@
  * SDG proxy cards for GET /runs/{id}/impact (PRD §8.5, T10).
  * Display-only: formulas, terms, units, limitations and statuses come from the payload.
  */
+import type React from "react";
 import { useMemo } from "react";
 import { ExternalLink, Info } from "lucide-react";
 import { useMediaQuery } from "@/app/environment";
@@ -45,11 +46,6 @@ function metricLabel(metric: MetricValue): string {
   return metric.label || METRIC_LABEL[metric.metric_id] || metric.metric_id.replace(/_/g, " ");
 }
 
-function flagText(value: boolean | null): string {
-  if (value === null) return "not returned";
-  return value ? "true" : "false";
-}
-
 export function SdgCards({ impact }: { impact: object }) {
   const view = useMemo(() => readCanonicalImpact(impact), [impact]);
   return (
@@ -69,10 +65,7 @@ export function SdgCards({ impact }: { impact: object }) {
           <SdgCardView key={card.card} card={card} />
         ))}
       </div>
-      <div className="grid gap-3 lg:grid-cols-[minmax(280px,1fr)_minmax(0,2fr)]">
-        <Co2Panel co2={view.co2} />
-        <FieldChanges view={view} />
-      </div>
+      <FieldChanges view={view} co2={<Co2Panel co2={view.co2} />} />
     </div>
   );
 }
@@ -213,7 +206,7 @@ function SdgCardBody({ card }: { card: CanonicalSdgCard }) {
         <p>
           Baseline <span className="font-mono text-ink">{card.baseline_run_id ? shortId(card.baseline_run_id) : "none"}</span>
         </p>
-        <p data-testid="official-indicator">official_indicator = {flagText(card.official_indicator)}</p>
+        <p data-testid="official-indicator">{officialText(card.official_indicator)}</p>
       </div>
     </>
   );
@@ -240,15 +233,15 @@ function TermSlot({ label, term }: { label: string; term: SdgTerm | null }) {
 function Co2Panel({ co2 }: { co2: CanonicalImpact["co2"] }) {
   const status = co2.status;
   return (
-    <section className="min-w-0 self-start rounded-[18px] border border-border bg-surface p-4 shadow-1" data-testid="co2" data-status={status ?? "missing"}>
+    <section className="min-w-0 rounded-[18px] border border-border bg-surface p-4 shadow-1" data-testid="co2" data-status={status ?? "missing"}>
       <Eyebrow>CO₂ estimate</Eyebrow>
       <p className="mt-2 text-[13px] font-medium text-ink" data-testid="co2-status">
         {status === "not_estimated" ? "Not estimated" : status ? statusLabel(status) : "CO₂ status was not returned."}
       </p>
       {status === "not_estimated" ? <p className="sr-only">not_estimated</p> : null}
-      {co2.reason ? <p className="mt-1 text-[12px] leading-snug text-ink-secondary">{co2.reason}</p> : null}
+      {co2.reason ? <p className="mt-1 text-[12px] leading-snug text-ink-secondary">{plainCodes(co2.reason)}</p> : null}
       <p className="mt-2 text-[12px] text-ink-secondary" data-testid="co2-indicator">
-        official_indicator = {flagText(co2.official_indicator)}
+        {officialText(co2.official_indicator)}
       </p>
       {status === "available" && co2.value !== null ? (
         <p className="num mt-2 text-[13px] text-ink">{formatWithUnit(co2.value, co2.unit ?? "")}</p>
@@ -261,13 +254,15 @@ function Co2Panel({ co2 }: { co2: CanonicalImpact["co2"] }) {
   );
 }
 
-function FieldChanges({ view }: { view: CanonicalImpact }) {
+function FieldChanges({ view, co2 }: { view: CanonicalImpact; co2: React.ReactNode }) {
   const summary = view.field_change_summary;
   const rows = view.distribution;
   const mode: "delta_kg" | "production_kg" = rows.some((row) => typeof row.delta_kg === "number") ? "delta_kg" : "production_kg";
   return (
     <div className="flex min-w-0 flex-col gap-3">
-      <Panel title="Field-change summary" className="self-start">
+      <div className="grid items-stretch gap-3 md:grid-cols-2">
+      {co2}
+      <Panel title="How fields changed vs the baseline">
         {summary.reported ? (
           <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-[12px]" data-testid="field-change-summary">
             <Count label="Worse off" value={summary.fields_worse_off} />
@@ -275,7 +270,7 @@ function FieldChanges({ view }: { view: CanonicalImpact }) {
             <Count label="Unchanged" value={summary.fields_unchanged} />
             <Count label="Not comparable" value={summary.fields_not_comparable} />
             <div className="col-span-2">
-              <dt className="text-ink-tertiary">Quantum</dt>
+              <dt className="text-ink-tertiary">Rounding step</dt>
               <dd className="num text-ink">{summary.quantum_kg === null ? "Not reported" : `${formatNumber(summary.quantum_kg, 3)} ${unitLabel(summary.unit)}`}</dd>
             </div>
           </dl>
@@ -283,6 +278,7 @@ function FieldChanges({ view }: { view: CanonicalImpact }) {
           <p data-testid="field-change-summary">Field-change summary was not returned. Counts are not calculated in the browser.</p>
         )}
       </Panel>
+      </div>
       <Distribution rows={rows} mode={mode} />
     </div>
   );
@@ -354,8 +350,8 @@ function Distribution({ rows, mode }: { rows: FieldChangeRow[]; mode: "delta_kg"
   const title = mode === "delta_kg" ? "Field production change" : "Production by field";
   const summary =
     mode === "delta_kg"
-      ? "Each bar is the server delta_kg. Missing and blocked comparisons stay empty rather than zero."
-      : "Each bar is the server production_kg. Missing values stay empty rather than zero.";
+      ? "Each bar is one field's change in modelled production against the baseline. Missing or blocked comparisons stay empty, never zero."
+      : "Each bar is one field's modelled production. Missing values stay empty, never zero.";
   return (
     <div>
       <ChartPanel
@@ -422,4 +418,14 @@ function DistributionGaps({ rows }: { rows: FieldChangeRow[] }) {
       ))}
     </ul>
   );
+}
+
+/** Plain words for the server's official_indicator flag (the raw value stays in data-official). */
+export function officialText(flag: boolean | null): string {
+  return flag === false ? "Project proxy, not an official SDG indicator" : flag === true ? "Marked as an official SDG indicator" : "Official-indicator status not returned";
+}
+
+/** Server reasons sometimes carry status codes ("not_estimated"); show them as words. */
+function plainCodes(text: string): string {
+  return text.replace(/\b(not_estimated|not_applicable)\b/g, (m) => m.replace("_", " "));
 }
