@@ -18,6 +18,8 @@ interface DemGrid {
   base: number; // elevation used outside the DEM footprint
   min: number;
   max: number;
+  lo: number;
+  step: number;
 }
 
 const grids = new Map<string, Promise<DemGrid>>();
@@ -41,23 +43,86 @@ export function decodeMapbox(r: number, g: number, b: number): number {
 }
 const clamp8 = (x: number) => (x < 0 ? 0 : x > 255 ? 255 : x);
 
+/**
+ * Decode an 8-bit, non-interlaced PNG (RGB or RGBA) straight from its bytes. Elevation is
+ * packed into pixel values, so it must never pass through a canvas: browsers with
+ * anti-fingerprinting (Brave, Firefox resistFingerprinting) or colour management perturb
+ * canvas readback, and a one-level change in Terrarium red is a 256 m spike.
+ */
+export async function decodePng(buf: ArrayBuffer): Promise<{ w: number; h: number; channels: number; px: Uint8Array }> {
+  const d = new DataView(buf);
+  const u8 = new Uint8Array(buf);
+  if (d.getUint32(0) !== 0x89504e47) throw new Error("not a PNG");
+  let off = 8;
+  let w = 0;
+  let h = 0;
+  let channels = 0;
+  const idat: Uint8Array[] = [];
+  while (off < u8.length) {
+    const len = d.getUint32(off);
+    const type = String.fromCharCode(u8[off + 4], u8[off + 5], u8[off + 6], u8[off + 7]);
+    const body = u8.subarray(off + 8, off + 8 + len);
+    if (type === "IHDR") {
+      w = d.getUint32(off + 8);
+      h = d.getUint32(off + 12);
+      const depth = body[8];
+      const color = body[9];
+      if (depth !== 8 || body[12] !== 0 || (color !== 2 && color !== 6)) throw new Error("unsupported DEM PNG");
+      channels = color === 6 ? 4 : 3;
+    } else if (type === "IDAT") idat.push(body);
+    else if (type === "IEND") break;
+    off += 12 + len;
+  }
+  const all = new Uint8Array(idat.reduce((n, c) => n + c.length, 0));
+  idat.reduce((o, c) => (all.set(c, o), o + c.length), 0);
+  const zipped = new ReadableStream<Uint8Array>({
+    start(ctrl) {
+      ctrl.enqueue(all);
+      ctrl.close();
+    },
+  }).pipeThrough(new DecompressionStream("deflate"));
+  const raw = new Uint8Array(await new Response(zipped).arrayBuffer());
+  const stride = w * channels;
+  const px = new Uint8Array(h * stride);
+  for (let y = 0; y < h; y++) {
+    const f = raw[y * (stride + 1)];
+    const src = raw.subarray(y * (stride + 1) + 1, (y + 1) * (stride + 1));
+    const row = y * stride;
+    for (let x = 0; x < stride; x++) {
+      const a = x >= channels ? px[row + x - channels] : 0;
+      const b = y > 0 ? px[row - stride + x] : 0;
+      const c = x >= channels && y > 0 ? px[row - stride + x - channels] : 0;
+      let v = src[x];
+      if (f === 1) v += a;
+      else if (f === 2) v += b;
+      else if (f === 3) v += (a + b) >> 1;
+      else if (f === 4) {
+        const p = a + b - c;
+        const pa = Math.abs(p - a);
+        const pb = Math.abs(p - b);
+        const pc = Math.abs(p - c);
+        v += pa <= pb && pa <= pc ? a : pb <= pc ? b : c;
+      }
+      px[row + x] = v & 255;
+    }
+  }
+  return { w, h, channels, px };
+}
+
 async function loadGrid(url: string, bounds: DemGrid["bounds"], encoding: "terrarium" | "mapbox"): Promise<DemGrid> {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`DEM ${res.status}`);
-  const bmp = await createImageBitmap(await res.blob(), { premultiplyAlpha: "none", colorSpaceConversion: "none" });
-  const c = new OffscreenCanvas(bmp.width, bmp.height);
-  const ctx = c.getContext("2d", { willReadFrequently: true })!;
-  ctx.drawImage(bmp, 0, 0);
-  const px = ctx.getImageData(0, 0, bmp.width, bmp.height).data;
-  const n = bmp.width * bmp.height;
+  const { w, h, channels, px } = await decodePng(await res.arrayBuffer());
+  const n = w * h;
   const elev = new Float32Array(n);
   let min = Infinity;
   let max = -Infinity;
   let sum = 0;
   let cnt = 0;
   for (let i = 0; i < n; i++) {
-    const a = px[i * 4 + 3];
-    const v = a === 0 ? Number.NaN : encoding === "mapbox" ? decodeMapbox(px[i * 4], px[i * 4 + 1], px[i * 4 + 2]) : decodeTerrarium(px[i * 4], px[i * 4 + 1], px[i * 4 + 2]);
+    const k = i * channels;
+    const transparent = channels === 4 && px[k + 3] === 0;
+    const v = transparent ? Number.NaN : encoding === "mapbox" ? decodeMapbox(px[k], px[k + 1], px[k + 2]) : decodeTerrarium(px[k], px[k + 1], px[k + 2]);
     elev[i] = v;
     if (Number.isFinite(v)) {
       if (v < min) min = v;
@@ -68,7 +133,32 @@ async function loadGrid(url: string, bounds: DemGrid["bounds"], encoding: "terra
   }
   const base = cnt ? sum / cnt : 0;
   for (let i = 0; i < n; i++) if (!Number.isFinite(elev[i])) elev[i] = base;
-  return { w: bmp.width, h: bmp.height, bounds, elev, base, min, max };
+  if (!cnt) {
+    min = 0;
+    max = 0;
+  }
+  const lo = min - 1;
+  const step = Math.max(0.02, (max + 1 - lo) / 765);
+  return { w, h, bounds, elev, base, min, max, lo, step };
+}
+
+/**
+ * Tiles are written in a noise-tolerant custom encoding: elevation = (R + G + B) · step + lo,
+ * with the three channels within one level of each other. A ±1 perturbation of any channel
+ * (canvas farbling, PNG round trips) moves the surface by one step — centimetres here —
+ * instead of hundreds of metres.
+ */
+function encodeTolerant(g: DemGrid, m: number): [number, number, number] {
+  const n = Math.max(0, Math.min(765, Math.round((m - g.lo) / g.step)));
+  const q = Math.floor(n / 3);
+  const r = n - q * 3;
+  return [Math.min(255, q + (r > 0 ? 1 : 0)), Math.min(255, q + (r > 1 ? 1 : 0)), q];
+}
+
+/** MapLibre raster-dem source fields for a registered DEM's tiles. */
+export async function demEncoding(url: string, bounds: DemGrid["bounds"], encoding: "terrarium" | "mapbox") {
+  const g = await gridFor(url, bounds, encoding);
+  return { encoding: "custom" as const, redFactor: g.step, greenFactor: g.step, blueFactor: g.step, baseShift: -g.lo }; // MapLibre subtracts baseShift
 }
 
 function tileLonLat(z: number, x: number, y: number, px: number, py: number): [number, number] {
@@ -107,7 +197,7 @@ async function renderTile(g: DemGrid, z: number, x: number, y: number): Promise<
   for (let py = 0; py < TILE; py++) {
     for (let px = 0; px < TILE; px++) {
       const [lon, lat] = tileLonLat(z, x, y, px + 0.5, py + 0.5);
-      const [r, gg, b] = encodeTerrarium(sample(g, lon, lat));
+      const [r, gg, b] = encodeTolerant(g, sample(g, lon, lat));
       const i = (py * TILE + px) * 4;
       img.data[i] = r;
       img.data[i + 1] = gg;
@@ -118,6 +208,12 @@ async function renderTile(g: DemGrid, z: number, x: number, y: number): Promise<
   ctx.putImageData(img, 0, 0);
   const blob = await c.convertToBlob({ type: "image/png" });
   return blob.arrayBuffer();
+}
+
+function gridFor(url: string, bounds: DemGrid["bounds"], encoding: "terrarium" | "mapbox") {
+  const key = `${url}|${bounds.join(",")}|${encoding}`;
+  if (!grids.has(key)) grids.set(key, loadGrid(url, bounds, encoding));
+  return grids.get(key)!;
 }
 
 /** Register the protocol once; returns the tile URL template for a DEM. */
@@ -147,8 +243,36 @@ export function demTileTemplate(url: string, bounds: DemGrid["bounds"], encoding
 }
 
 export async function demStats(url: string, bounds: DemGrid["bounds"], encoding: "terrarium" | "mapbox") {
-  const key = `${url}|${bounds.join(",")}|${encoding}`;
-  if (!grids.has(key)) grids.set(key, loadGrid(url, bounds, encoding));
-  const g = await grids.get(key)!;
+  const g = await gridFor(url, bounds, encoding);
   return { min: g.min, max: g.max, base: g.base };
+}
+
+/**
+ * MapLibre decodes DEM tiles through a canvas. Where readback is randomised beyond ±1 level
+ * (e.g. Firefox resistFingerprinting), relief would turn into noise, so terrain stays off.
+ */
+let readbackOk: boolean | null = null;
+export function canvasReadbackIsTrustworthy(): boolean {
+  if (readbackOk !== null) return readbackOk;
+  try {
+    const c = document.createElement("canvas");
+    c.width = 16;
+    c.height = 16;
+    const ctx = c.getContext("2d", { willReadFrequently: true })!;
+    const img = ctx.createImageData(16, 16);
+    for (let i = 0; i < img.data.length; i += 4) {
+      img.data[i] = (i * 7) & 255;
+      img.data[i + 1] = (i * 13) & 255;
+      img.data[i + 2] = (i * 29) & 255;
+      img.data[i + 3] = 255;
+    }
+    ctx.putImageData(img, 0, 0);
+    const back = ctx.getImageData(0, 0, 16, 16).data;
+    let worst = 0;
+    for (let i = 0; i < back.length; i++) worst = Math.max(worst, Math.abs(back[i] - img.data[i]));
+    readbackOk = worst <= 1;
+  } catch {
+    readbackOk = false;
+  }
+  return readbackOk;
 }

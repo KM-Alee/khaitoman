@@ -77,7 +77,7 @@ export function useScenario() {
       operating_budget_pkr: typeof sAny.default_operating_budget_pkr === "number" ? (sAny.default_operating_budget_pkr as number) : 250_000,
       objective: "production_kg",
       optimization_mode: "typical",
-      uncertainty_set_id: catalog.uncertainty.data?.sets?.[0]?.uncertainty_set_id ?? null,
+      uncertainty_set_id: catalog.uncertainty.data?.sets?.find((x) => (!x.pilot_id || x.pilot_id === sel.pilotId) && (!x.season_id || x.season_id === season.season_id))?.uncertainty_set_id ?? null,
       minimum_service_ratio: null,
       service_group: null,
       permit_groundwater: true,
@@ -85,6 +85,29 @@ export function useScenario() {
       excluded_instance_ids: [],
     });
   }, [draft, catalog.seasons.data, catalog.weather.data, catalog.weather.isLoading, catalog.uncertainty.data, catalog.uncertainty.isLoading, key, setDraft]);
+
+  // A draft saved in the browser can outlive the catalog it was built from (a re-published
+  // pilot, a renamed uncertainty set). Repair any id the published catalog no longer offers
+  // before it reaches the server and is rejected.
+  useEffect(() => {
+    if (!draft || catalog.weather.isLoading || catalog.uncertainty.isLoading || !catalog.seasons.data) return;
+    const seasons = catalog.seasons.data;
+    if (seasons.length && !seasons.some((x) => x.season_id === draft.season_id)) {
+      setDraft(key, null as unknown as ScenarioDraft);
+      return;
+    }
+    const fix: Partial<ScenarioDraft> = {};
+    const w = catalog.weather.data;
+    if (w?.length) {
+      const ok = draft.weather_scenario_ids.filter((id) => w.some((x) => x.weather_scenario_id === id));
+      if (ok.length !== draft.weather_scenario_ids.length || !ok.length) fix.weather_scenario_ids = ok.length ? ok : [(w.find((x) => x.is_typical) ?? w[0]).weather_scenario_id];
+    }
+    const sets = catalog.uncertainty.data?.sets?.filter((x) => (!x.pilot_id || x.pilot_id === sel.pilotId) && (!x.season_id || x.season_id === draft.season_id));
+    if (sets && draft.uncertainty_set_id && !sets.some((x) => x.uncertainty_set_id === draft.uncertainty_set_id)) fix.uncertainty_set_id = sets[0]?.uncertainty_set_id ?? null;
+    const profiles = catalog.uncertainty.data?.supplyProfiles;
+    if (profiles?.length && !profiles.some((x) => x.supply_profile_id === draft.supply_profile_id)) fix.supply_profile_id = profiles[0].supply_profile_id;
+    if (Object.keys(fix).length) patchDraft(key, fix);
+  }, [draft, catalog.seasons.data, catalog.weather.data, catalog.weather.isLoading, catalog.uncertainty.data, catalog.uncertainty.isLoading, key, setDraft, patchDraft, sel.pilotId]);
 
   const createScenario = useCreateScenario();
   const deriveRevision = useDeriveRevision();
