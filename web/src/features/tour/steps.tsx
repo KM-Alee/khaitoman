@@ -352,6 +352,18 @@ function FinishBody() {
   );
 }
 
+function InstantCropBody() {
+  return (
+    <>
+      <p>
+        Running the full crop model for one field takes seconds. A model we trained on tens of thousands of those runs answers in <Num>milliseconds</Num>, so you can drag the water
+        slider and watch the yield estimate move.
+      </p>
+      <p>It is labelled an approximate preview. One click on "Verify with crop model" runs the exact simulation and shows both side by side.</p>
+    </>
+  );
+}
+
 /* ------------------------------------------------------------------ the route */
 export const TOUR_STEPS: TourStep[] = [
   {
@@ -431,6 +443,16 @@ export const TOUR_STEPS: TourStep[] = [
     saved: (s) => ({ runId: s.base.runs.P }),
     tryIt: { label: "Scrub through the season", run: (c) => c.focus('[data-testid="date-slider"]') },
     seconds: 12,
+  },
+  {
+    id: "instant-crop",
+    chapter: "The season",
+    title: "Instant crop estimates",
+    Body: InstantCropBody,
+    route: (s) => `${base(s)}/explore${q({ tab: "surrogate", run: s.base.runs.P, field: s.focus_field_id })}`,
+    target: '[data-testid="instant-slider"]',
+    tryIt: { label: "Drag the water slider", run: (c) => c.focus('[data-testid="instant-slider"] [role="slider"]') },
+    seconds: 11,
   },
   {
     id: "frontier",

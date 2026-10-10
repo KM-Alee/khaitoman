@@ -187,7 +187,13 @@ function TourRunner() {
             <div className="flex flex-col gap-2.5 text-[14px] leading-relaxed text-ink-secondary">
               <cur.Body s={state.session} />
             </div>
-            {cur.saved ? <SavedLabel {...cur.saved(state.session)} /> : null}
+            {cur.saved ? (
+              <SavedLabel {...cur.saved(state.session)} />
+            ) : cur.placement !== "center" ? (
+              <p className="text-[12px] text-ink-tertiary" data-testid="tour-live">
+                <span className="rounded-full bg-water-soft px-2 py-0.5 font-medium text-water-deep">Live</span> computed on the server as you watch, not saved
+              </p>
+            ) : null}
             {missing ? <p className="text-[12px] text-warning">This part of the page did not appear; the step text still applies. Use Next to continue.</p> : null}
             {last ? (
               <FinishActions ctx={ctx} />

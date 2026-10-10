@@ -3161,6 +3161,11 @@ export interface components {
              */
             domain_status: "in_domain" | "out_of_domain";
             /**
+             * Elapsed Ms
+             * @description Server-measured time to compute this preview (create only; null on read)
+             */
+            elapsed_ms?: number | null;
+            /**
              * Estimate Kind
              * @default surrogate_preview
              * @constant

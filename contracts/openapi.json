@@ -5389,6 +5389,18 @@
             "title": "Domain Status",
             "type": "string"
           },
+          "elapsed_ms": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Server-measured time to compute this preview (create only; null on read)",
+            "title": "Elapsed Ms"
+          },
           "estimate_kind": {
             "const": "surrogate_preview",
             "default": "surrogate_preview",

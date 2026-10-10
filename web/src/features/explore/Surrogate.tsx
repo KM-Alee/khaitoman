@@ -13,7 +13,7 @@ import { describeError } from "@/lib/api/client";
 import { formatDate, formatDateTime, formatDelta, formatPercent, formatWithUnit, shortId } from "@/lib/formatting";
 import { Chip, EstimateBadge, JobBadge, StatePanel } from "@/components/status";
 import { Button, IconButton } from "@/components/ui/Button";
-import { Eyebrow, Select } from "@/components/ui/primitives";
+import { Eyebrow, Select, SliderField } from "@/components/ui/primitives";
 import { Rows } from "@/features/impact/viewKit";
 import { useAnalysisJob, useCreatePreview, usePreviewView, useVerifyPreview, type ExploreBase, type PreviewRequest, type PreviewView } from "./api";
 import { Card, CardHeader } from "./kit";
@@ -73,13 +73,13 @@ export function Surrogate({ base }: { base: ExploreBase }) {
     [field, season, weatherId, events, efficiency, sel.pilotId],
   );
 
-  // Debounced preview after the inputs settle (≥ 450 ms), never per keystroke.
+  // Debounced preview after the inputs settle (150 ms: the model answers in milliseconds).
   useEffect(() => {
     if (!body) return;
     if (debounce.current) clearTimeout(debounce.current);
     debounce.current = setTimeout(() => {
       create.mutate(body, { onSuccess: (p) => setPreviewId(p.preview_id) });
-    }, 450);
+    }, 150);
     return () => {
       if (debounce.current) clearTimeout(debounce.current);
     };
@@ -147,6 +147,20 @@ export function Surrogate({ base }: { base: ExploreBase }) {
         <div className="mt-2 text-[12px] text-ink-tertiary">
           {season ? `${season.label ?? season.season_id} · crop profile ${season.crop_profile_id}` : "Loading season…"}
           {field ? ` · soil ${field.soil_profile_id.replace(/^[^:]+:/, "")}` : ""}
+        </div>
+        <div className="mt-4 rounded-[14px] border border-water/25 bg-water-soft/40 p-3" data-testid="instant-slider">
+          <SliderField
+            label="Water per irrigation (instant AI estimate)"
+            value={events.length ? Math.max(...events.map((e) => e.mm)) : 75}
+            min={0}
+            max={150}
+            step={5}
+            unit="mm"
+            format={(v) => String(v)}
+            parse={(t) => Number(t)}
+            onChange={(v) => setEvents((xs) => xs.map((x) => ({ ...x, mm: v })))}
+            hint="Drag it: the trained model re-estimates the yield as you move. Then confirm one setting with the exact crop model."
+          />
         </div>
         <div className="mt-4">
           <div className="mb-1.5 flex items-center justify-between">
@@ -220,7 +234,14 @@ export function Surrogate({ base }: { base: ExploreBase }) {
             <div className="skeleton mt-3 h-8 w-40" />
           </div>
         ) : (
-          <PreviewCard p={p} stale={!!stale} onVerify={startVerify} verifying={verify.isPending} verifyError={verify.error} />
+          <PreviewCard
+            p={p}
+            stale={!!stale}
+            onVerify={startVerify}
+            verifying={verify.isPending}
+            verifyError={verify.error}
+            elapsedMs={create.data?.preview_id === p.preview_id ? (create.data.elapsed_ms ?? null) : null}
+          />
         )}
         {p && (p.verify_job_id || p.verification) ? <ExactCard p={p} jobState={verifyJob.data?.state ?? null} jobStage={verifyJob.data?.stage ?? null} jobError={verifyJob.data?.error ?? null} /> : null}
         <p className="px-1 text-[11px] leading-relaxed text-ink-tertiary">
@@ -231,7 +252,21 @@ export function Surrogate({ base }: { base: ExploreBase }) {
   );
 }
 
-function PreviewCard({ p, stale, onVerify, verifying, verifyError }: { p: PreviewView; stale: boolean; onVerify: () => void; verifying: boolean; verifyError: unknown }) {
+function PreviewCard({
+  p,
+  stale,
+  onVerify,
+  verifying,
+  verifyError,
+  elapsedMs,
+}: {
+  p: PreviewView;
+  stale: boolean;
+  onVerify: () => void;
+  verifying: boolean;
+  verifyError: unknown;
+  elapsedMs: number | null;
+}) {
   const ood = p.domain_status === "out_of_domain";
   const done = !!p.verification;
   const verifyBtn = (
@@ -268,8 +303,16 @@ function PreviewCard({ p, stale, onVerify, verifying, verifyError }: { p: Previe
           </div>
           <div className="mt-3 flex items-baseline gap-2">
             <Sparkles size={16} className="text-warning" aria-hidden />
-            <span className="num text-[28px] font-semibold tracking-[-0.02em] text-ink">{p.estimated_yield_kg_ha !== null ? formatWithUnit(p.estimated_yield_kg_ha, "kg/ha") : "—"}</span>
+            <span className="num text-[28px] font-semibold tracking-[-0.02em] text-ink" data-testid="preview-yield">
+              {p.estimated_yield_kg_ha !== null ? formatWithUnit(p.estimated_yield_kg_ha, "kg/ha") : "—"}
+            </span>
+            <span className="text-[12px] text-ink-tertiary">preview (AI estimate)</span>
           </div>
+          {elapsedMs !== null ? (
+            <p className="num mt-1 text-[12px] text-water-deep" data-testid="preview-elapsed">
+              Computed on the server in {elapsedMs < 10 ? elapsedMs.toFixed(1) : Math.round(elapsedMs)} ms (measured)
+            </p>
+          ) : null}
           {p.residual_band_kg_ha ? (
             <p className="num mt-1 text-[12px] text-ink-secondary">
               Held-out residual band {formatDelta(p.residual_band_kg_ha[0], "kg/ha")} to {formatDelta(p.residual_band_kg_ha[1], "kg/ha")} (empirical 5–95%, not a confidence interval)
@@ -306,6 +349,7 @@ function ExactCard({ p, jobState, jobStage, jobError }: { p: PreviewView; jobSta
         <>
           <div className="num mt-3 text-[28px] font-semibold tracking-[-0.02em] text-ink" data-testid="exact-yield">
             {v.exact_yield_kg_ha !== null ? formatWithUnit(v.exact_yield_kg_ha, "kg/ha") : "Not reported"}
+            <span className="ml-2 text-[12px] font-normal text-ink-tertiary">exact (crop model)</span>
           </div>
           <p className="mt-0.5 text-[12px] text-ink-secondary">
             {v.preview_minus_exact_kg_ha !== null
