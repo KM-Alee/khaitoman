@@ -241,6 +241,8 @@ the dashboard:
 `web/vercel.json` supplies build settings, the SPA history fallback and a temporary
 redirect from this project's `vercel.app` hostnames to `app.khmanan.site`, preserving
 paths and queries. Access cookies and CORS are configured for that canonical domain.
+Vercel's own authentication still applies first on protected team/preview aliases;
+the public production alias `khaitoman.vercel.app` redirects directly.
 API and
 `/assets` links resolve to the configured backend; Vite's bundled assets live
 under `/static`. JSON requests, both job/onboarding streams and copilot streams,
@@ -336,8 +338,9 @@ EventSource, map assets and the rendered workspace. It writes
 ## Executed public validation
 
 Latest `main` at `3cc65e3` was fast-forwarded into the serving branch. The report
-export contract fix `03f5ecc` is deployed as production Vercel deployment
-`dpl_FwyQERRpR2vWazzaKqNn3p1UTfHD` (Ready, build after ArcGIS replacement), with `app.khmanan.site` assigned.
+contract fix and connection recovery changes are deployed at `8262ae9` as production
+Vercel deployment `dpl_9xaQ66415QWEW5S3EVkc7zHmMWnT` (Ready, including the ArcGIS
+replacement), with `app.khmanan.site` assigned.
 The public bundle includes `https://api.khmanan.site`.
 
 - Docker `make test DC='docker compose -p aabflow-serving-validation'` after
@@ -351,6 +354,18 @@ The public bundle includes `https://api.khmanan.site`.
   real pilot-a workspace displays satellite imagery, 30 fields and canals.
   Origin logs record HTTP 200 for GeoJSON, imagery and terrain requests through
   the tunnel. No browser console errors were observed in these tested views.
+- The backend-unavailable complaint reproduced healthy loopback HTTP 200,
+  unauthenticated public HTTP 302 and `vercel.app` preflight HTTP 400. The public
+  production Vercel alias now returns HTTP 307 to the canonical frontend, preserving
+  its deep path and selected run query. Browser navigation confirmed Backend API
+  online, the real 30-field workspace and HD imagery after the redirect. The new
+  protected HTML login landing returned to that exact page with the existing owner
+  session; unauthenticated calls still returned HTTP 302. Unit tests exercised the
+  failed-fetch sign-in banner, retry recovery and rejection of untrusted return URLs.
+  Screenshot: `evidence/screenshots/laptop-connection-fixed-20261010.png`.
+- The second frozen update backed up to `.laptop/backup-20261010T181242Z`, including
+  vision and image metadata; SQLite integrity passed and the updated backend and
+  tunnel returned healthy. This update retained schema 4 and the real data.
 - Public UI created report `rpt_84f5b4b695644d38a3d2110d87b1dccc` from real saved
   run `run_5f2a5629def1436c8f8181f34188d783`; POST returned 202, the authenticated
   job SSE connection returned 200, and the UI reached succeeded. Downloaded
