@@ -154,7 +154,7 @@ function bars(b: VisualBlock, t: ChartTheme, lang: Lang): BuiltChart {
         const focus = id && highlight.has(id);
         return {
           value: v === null ? "-" : v,
-          itemStyle: { color: focus && !delta ? t.wheat : color, ...(focus ? { borderColor: t.ink, borderWidth: 1 } : {}) },
+          itemStyle: { color: focus && !delta && !multi ? t.wheat : color, ...(focus ? { borderColor: t.ink, borderWidth: 1 } : {}) },
         };
       }),
     };
