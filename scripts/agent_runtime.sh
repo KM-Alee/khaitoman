@@ -40,7 +40,7 @@ case "${1:-help}" in
   init)
     name=${2:-}; slot=${3:-}
     [[ "$name" =~ ^[a-z][a-z0-9-]{0,35}$ ]] || fail 'name must be a short lowercase slug'
-    [[ "$slot" =~ ^[1-3]$ ]] || fail 'slot must be 1, 2 or 3; lead allocates it globally'
+    [[ "$slot" =~ ^[1-6]$ ]] || fail 'slot must be 1..6; lead allocates it globally'
     [[ -f .git ]] || fail 'init requires a dedicated linked Git worktree'
     branch=$(git branch --show-current) || fail 'cannot identify worker Git branch'
     [[ -n "$branch" && "$branch" != main ]] || fail 'init requires a worker branch, not main or detached HEAD'
