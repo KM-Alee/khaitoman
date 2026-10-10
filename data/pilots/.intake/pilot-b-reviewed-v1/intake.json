@@ -63,7 +63,7 @@
   "source_mode": "raw_package",
   "bundle_ref": "data/raw/bundles/pilot-b/20261010T003841Z-798d10d2",
   "parent_canal_feature_id": "osm:way/488499235",
-  "review_version": 0,
+  "review_version": 1,
   "created_at": "2026-10-10T00:47:35Z",
   "history": [
     {
@@ -80,7 +80,34 @@
       "state": "awaiting_inference",
       "at": "2026-10-10T00:47:36Z",
       "detail": "docker compose -f compose.yaml -f vision/compose.vision.yaml --profile vision run --rm --no-deps -T vision python /app/vision/run_batch.py /app/vision/batches/50ca220c256bbf74.yaml --record /app/vision/runs/50ca220c256bbf74/run.json --label 50ca220c256bbf74"
+    },
+    {
+      "state": "processed",
+      "at": "2026-10-10T04:03:17Z",
+      "detail": "303 raw polygons"
+    },
+    {
+      "state": "needs_review",
+      "at": "2026-10-10T04:03:17Z",
+      "detail": "30 proposed fields"
+    },
+    {
+      "state": "reviewed",
+      "at": "2026-10-10T04:04:01Z",
+      "detail": "v1 by aabflow lead (rule-based review + visual overlay check of S2C_43RBQ_20250223_0_L2A)"
+    },
+    {
+      "state": "validated",
+      "at": "2026-10-10T04:04:09Z",
+      "detail": "package validators passed"
+    },
+    {
+      "state": "published",
+      "at": "2026-10-10T04:04:09Z",
+      "detail": "data/pilots/pilot-b/reviewed-v1"
     }
   ],
-  "state": "awaiting_inference"
+  "state": "published",
+  "review_started_at": "2026-10-10T04:03:17Z",
+  "published_ref": "data/pilots/pilot-b/reviewed-v1"
 }

@@ -8450,6 +8450,58 @@
         "crs": "{\"$schema\": \"https://proj.org/schemas/v0.7/projjson.schema.json\", \"type\": \"GeographicCRS\", \"name\": \"WGS 84\", \"datum_ensemble\": {\"name\": \"World Geodetic System 1984 ensemble\", \"members\": [{\"name\": \"World Geodetic System 1984 (Transit)\"}, {\"name\": \"World Geodetic System 1984 (G730)\"}, {\"name\": \"World Geodetic System 1984 (G873)\"}, {\"name\": \"World Geodetic System 1984 (G1150)\"}, {\"name\": \"World Geodetic System 1984 (G1674)\"}, {\"name\": \"World Geodetic System 1984 (G1762)\"}, {\"name\": \"World Geodetic System 1984 (G2139)\"}, {\"name\": \"World Geodetic System 1984 (G2296)\"}], \"ellipsoid\": {\"name\": \"WGS 84\", \"semi_major_axis\": 6378137, \"inverse_flattening\": 298.257223563}, \"accuracy\": \"2.0\", \"id\": {\"authority\": \"EPSG\", \"code\": 6326}}, \"coordinate_system\": {\"subtype\": \"ellipsoidal\", \"axis\": [{\"name\": \"Geodetic latitude\", \"abbreviation\": \"Lat\", \"direction\": \"north\", \"unit\": \"degree\"}, {\"name\": \"Geodetic longitude\", \"abbreviation\": \"Lon\", \"direction\": \"east\", \"unit\": \"degree\"}]}, \"scope\": \"Horizontal component of 3D system.\", \"area\": \"World.\", \"bbox\": {\"south_latitude\": -90, \"west_longitude\": -180, \"north_latitude\": 90, \"east_longitude\": 180}, \"id\": {\"authority\": \"EPSG\", \"code\": 4326}}",
         "rows": 13,
         "categorical_values": {
+          "grain_id": [
+            "PAK_456426_00286",
+            "PAK_456426_00741",
+            "PAK_456426_00749",
+            "PAK_456426_00750",
+            "PAK_456426_00751",
+            "PAK_456426_00752",
+            "PAK_456426_00753",
+            "PAK_456426_00754",
+            "PAK_456426_01012",
+            "PAK_456426_01039",
+            "PAK_456427_00120",
+            "PAK_456427_00326",
+            "PAK_456427_00334"
+          ],
+          "country": [
+            "Pakistan"
+          ],
+          "continent": [
+            "Asia"
+          ],
+          "country_iso": [
+            "PAK"
+          ],
+          "predicted_class": [
+            "canal"
+          ],
+          "osm_name": [
+            "R-1"
+          ],
+          "osm_label": [
+            "canal",
+            "ditch",
+            "river"
+          ],
+          "tags": [
+            "{ \"visible\": false }",
+            "{ \"visible\": false, \"layer\": \"-1\", \"tunnel\": \"culvert\" }",
+            "{ \"visible\": false, \"name\": \"R-1\" }",
+            "{ \"visible\": false, \"usage\": \"irrigation\", \"width\": \"10\" }",
+            "{ \"visible\": false, \"width\": \"20\" }"
+          ],
+          "osm_source": [],
+          "canal_use": [
+            "Agricultural"
+          ],
+          "koppen_class_code": [
+            "BWh"
+          ],
+          "version": [
+            "v.1.0.0"
+          ],
           "alt_name": []
         }
       }

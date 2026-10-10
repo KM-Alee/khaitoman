@@ -1,0 +1,30 @@
+[
+  {
+    "soil_profile_id": "pilot-b:soil-siltloam",
+    "engine_soil_type": "SiltLoam",
+    "archetype": "Rechna doab silt-loam alluvium (prior)",
+    "initial_water": "pct_taw:50",
+    "evidence_ids": [
+      "asm:soil-archetypes",
+      "asm:initial-soil-water"
+    ],
+    "limitations": [
+      "AquaCrop predefined class; not a measured hydraulic profile",
+      "assigned per watercourse command area, not per field survey"
+    ]
+  },
+  {
+    "soil_profile_id": "pilot-b:soil-loam",
+    "engine_soil_type": "Loam",
+    "archetype": "Rechna doab loam alluvium (prior)",
+    "initial_water": "pct_taw:50",
+    "evidence_ids": [
+      "asm:soil-archetypes",
+      "asm:initial-soil-water"
+    ],
+    "limitations": [
+      "AquaCrop predefined class; not a measured hydraulic profile",
+      "assigned per watercourse command area, not per field survey"
+    ]
+  }
+]

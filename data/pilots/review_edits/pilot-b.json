@@ -1,0 +1,20 @@
+{
+  "reviewer": "aabflow lead (rule-based review + visual overlay check of S2C_43RBQ_20250223_0_L2A)",
+  "field_edits": [
+    {
+      "model_id": "da:50ca220c256bbf74:237",
+      "action": "reject",
+      "reason": "bright bare/built-up yard next to the white paved strip north-east of the distributary bend; no cropped parcel boundary visible in the 10 m image"
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:327",
+      "action": "reject",
+      "reason": "polygon sits on the bare embankment strip between the main canal and the distributary; not an irrigated parcel"
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:288",
+      "action": "reject",
+      "reason": "small bright built-up patch at the village track junction; parcel outline not distinguishable"
+    }
+  ]
+}

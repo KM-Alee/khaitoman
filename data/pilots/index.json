@@ -4,5 +4,11 @@
     "pilot_version": "reviewed-v1",
     "name": "Lower Chenab representative pilot A",
     "published_at": "2026-10-10T00:52:42Z"
+  },
+  {
+    "pilot_id": "pilot-b",
+    "pilot_version": "reviewed-v1",
+    "name": "Lower Chenab representative pilot B",
+    "published_at": "2026-10-10T04:04:09Z"
   }
 ]

@@ -1,0 +1,5555 @@
+{
+  "pilot_id": "pilot-b",
+  "summary": {
+    "rules_version": "field-review-rules-1.1.0",
+    "config": {
+      "target_count": 30,
+      "min_area_m2": 5000.0,
+      "max_area_m2": 150000.0,
+      "min_compactness": 0.3,
+      "min_width_m": 45.0,
+      "min_rectangularity": 0.7,
+      "fill_hole_m2": 1500.0,
+      "minor_part_fraction": 0.05,
+      "aoi_inside_fraction": 0.98,
+      "overlap_tolerance": 0.01,
+      "edge_buffer_m": 0.0
+    },
+    "raw_polygons": 303,
+    "rejected": 261,
+    "eligible": 42,
+    "selected": 30,
+    "selected_corrected": 1,
+    "selected_correction_rate": 0.0333,
+    "overlap_pairs_resolved": 0,
+    "manual_edits": 3,
+    "selection_method": "top-ranked eligible polygons by quality score (0.5·rectangularity + 0.3·compactness/0.785 + 0.2·log10(area)/5)",
+    "accuracy_metrics": "not_estimated: no independent reference boundaries",
+    "review_started_at": "2026-10-10T04:03:17Z",
+    "review_finished_at": "2026-10-10T04:04:01Z"
+  },
+  "reviewer": "aabflow lead (rule-based review + visual overlay check of S2C_43RBQ_20250223_0_L2A)",
+  "reviewed_at": "2026-10-10T04:04:01Z",
+  "id_map": {
+    "da:50ca220c256bbf74:415": "pilot-b:field-002",
+    "da:50ca220c256bbf74:266": "pilot-b:field-003",
+    "da:50ca220c256bbf74:243": "pilot-b:field-004",
+    "da:50ca220c256bbf74:267": "pilot-b:field-005",
+    "da:50ca220c256bbf74:422": "pilot-b:field-006",
+    "da:50ca220c256bbf74:414": "pilot-b:field-007",
+    "da:50ca220c256bbf74:103": "pilot-b:field-008",
+    "da:50ca220c256bbf74:175": "pilot-b:field-009",
+    "da:50ca220c256bbf74:191": "pilot-b:field-010",
+    "da:50ca220c256bbf74:424": "pilot-b:field-011",
+    "da:50ca220c256bbf74:429": "pilot-b:field-012",
+    "da:50ca220c256bbf74:285": "pilot-b:field-014",
+    "da:50ca220c256bbf74:309": "pilot-b:field-015",
+    "da:50ca220c256bbf74:326": "pilot-b:field-016",
+    "da:50ca220c256bbf74:324": "pilot-b:field-017",
+    "da:50ca220c256bbf74:336": "pilot-b:field-018",
+    "da:50ca220c256bbf74:337": "pilot-b:field-019",
+    "da:50ca220c256bbf74:343": "pilot-b:field-021",
+    "da:50ca220c256bbf74:353": "pilot-b:field-022",
+    "da:50ca220c256bbf74:358": "pilot-b:field-023",
+    "da:50ca220c256bbf74:359": "pilot-b:field-024",
+    "da:50ca220c256bbf74:373": "pilot-b:field-025",
+    "da:50ca220c256bbf74:389": "pilot-b:field-026",
+    "da:50ca220c256bbf74:39": "pilot-b:field-027",
+    "da:50ca220c256bbf74:46": "pilot-b:field-028",
+    "da:50ca220c256bbf74:70": "pilot-b:field-029",
+    "da:50ca220c256bbf74:38": "pilot-b:field-030",
+    "da:50ca220c256bbf74:270": "pilot-b:field-031",
+    "da:50ca220c256bbf74:299": "pilot-b:field-032",
+    "da:50ca220c256bbf74:314": "pilot-b:field-033"
+  },
+  "manual_edits": [
+    {
+      "model_id": "da:50ca220c256bbf74:237",
+      "action": "reject",
+      "reason": "bright bare/built-up yard next to the white paved strip north-east of the distributary bend; no cropped parcel boundary visible in the 10 m image",
+      "geometry_wgs84": null,
+      "parts_wgs84": null,
+      "other_model_ids": []
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:327",
+      "action": "reject",
+      "reason": "polygon sits on the bare embankment strip between the main canal and the distributary; not an irrigated parcel",
+      "geometry_wgs84": null,
+      "parts_wgs84": null,
+      "other_model_ids": []
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:288",
+      "action": "reject",
+      "reason": "small bright built-up patch at the village track junction; parcel outline not distinguishable",
+      "geometry_wgs84": null,
+      "parts_wgs84": null,
+      "other_model_ids": []
+    }
+  ],
+  "entries": [
+    {
+      "model_id": "da:50ca220c256bbf74:10",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:10"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:102",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:102"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:103",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:103"
+      ],
+      "decision": "accepted",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 26025.0,
+        "perimeter_m": 785.0,
+        "compactness": 0.5307,
+        "min_width_m": 164.74,
+        "length_m": 215.65,
+        "rectangularity": 0.7326,
+        "holes": 0,
+        "quality": 0.7457,
+        "rank": 12
+      },
+      "field_id": "pilot-b:field-008"
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:105",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:105"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:107",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:107"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 61% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.605
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:108",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:108"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:109",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:109"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:110",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:110"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:112",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:112"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0025
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:114",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:114"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:117",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:117"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 98% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.9791
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:119",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:119"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:12",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:12"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:121",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:121"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:122",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:122"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:124",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:124"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 87% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.8688
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:125",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:125"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:126",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:126"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "irregular outline: rectangularity 0.65 < 0.7"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 6137.5,
+        "perimeter_m": 480.0,
+        "compactness": 0.3347,
+        "min_width_m": 61.07,
+        "length_m": 154.0,
+        "rectangularity": 0.6526,
+        "holes": 0,
+        "quality": 0.6057
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:127",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:127"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:128",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:128"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:130",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:130"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:132",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:132"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:133",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:133"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:135",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:135"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 5% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0466
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:136",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:136"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:137",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:137"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 95% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.9495
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:139",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:139"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:14",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:14"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 2675 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 2675.0,
+        "perimeter_m": 295.0,
+        "compactness": 0.3863,
+        "min_width_m": 53.89,
+        "length_m": 78.93,
+        "rectangularity": 0.6289,
+        "holes": 0,
+        "quality": 0.5992
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:141",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:141"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 44% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.4384
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:142",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:142"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:143",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:143"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:144",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:144"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:147",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:147"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:148",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:148"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 3% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0269
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:149",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:149"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 90% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.8994
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:150",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:150"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 29% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.2949
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:151",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:151"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:152",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:152"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:157",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:157"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 4331 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 4331.25,
+        "perimeter_m": 405.0,
+        "compactness": 0.3318,
+        "min_width_m": 52.21,
+        "length_m": 115.05,
+        "rectangularity": 0.7211,
+        "holes": 0,
+        "quality": 0.6328
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:158",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:158"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:16",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:16"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:160",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:160"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:161",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:161"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:162",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:162"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 4581 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 4581.25,
+        "perimeter_m": 385.0,
+        "compactness": 0.3884,
+        "min_width_m": 68.78,
+        "length_m": 105.94,
+        "rectangularity": 0.6288,
+        "holes": 0,
+        "quality": 0.6093
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:163",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:163"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:164",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:164"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:165",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:165"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:167",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:167"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 19% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.1941
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:169",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:169"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 11% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.1059
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:170",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:170"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 51% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.5063
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:171",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:171"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:172",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:172"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:173",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:173"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:174",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:174"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:175",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:175"
+      ],
+      "decision": "accepted",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 7218.75,
+        "perimeter_m": 435.0,
+        "compactness": 0.4794,
+        "min_width_m": 88.06,
+        "length_m": 105.74,
+        "rectangularity": 0.7752,
+        "holes": 0,
+        "quality": 0.7251,
+        "rank": 17
+      },
+      "field_id": "pilot-b:field-009"
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:176",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:176"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "sliver/irregular: compactness 0.22 < 0.3"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 13231.25,
+        "perimeter_m": 865.0,
+        "compactness": 0.2222,
+        "min_width_m": 65.87,
+        "length_m": 289.14,
+        "rectangularity": 0.6947,
+        "holes": 0,
+        "quality": 0.5971
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:177",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:177"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 31% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.3078
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:178",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:178"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 4825 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 4825.0,
+        "perimeter_m": 360.0,
+        "compactness": 0.4678,
+        "min_width_m": 71.12,
+        "length_m": 86.02,
+        "rectangularity": 0.7886,
+        "holes": 0,
+        "quality": 0.7204
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:181",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:181"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 62% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.6222
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:182",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:182"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:184",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:184"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 6% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0626
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:185",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:185"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:186",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:186"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:187",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:187"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:189",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:189"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:19",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:19"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:191",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:191"
+      ],
+      "decision": "accepted",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 5731.25,
+        "perimeter_m": 390.0,
+        "compactness": 0.4735,
+        "min_width_m": 64.48,
+        "length_m": 110.94,
+        "rectangularity": 0.8011,
+        "holes": 0,
+        "quality": 0.7318,
+        "rank": 15
+      },
+      "field_id": "pilot-b:field-010"
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:193",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:193"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:194",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:194"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:195",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:195"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "irregular outline: rectangularity 0.52 < 0.7"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 15193.75,
+        "perimeter_m": 790.0,
+        "compactness": 0.3059,
+        "min_width_m": 139.79,
+        "length_m": 210.78,
+        "rectangularity": 0.5157,
+        "holes": 0,
+        "quality": 0.542
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:196",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:196"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "irregular outline: rectangularity 0.69 < 0.7"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 14031.25,
+        "perimeter_m": 615.0,
+        "compactness": 0.4662,
+        "min_width_m": 141.32,
+        "length_m": 143.98,
+        "rectangularity": 0.6896,
+        "holes": 0,
+        "quality": 0.6888
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:197",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:197"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:198",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:198"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:2",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:2"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:200",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:200"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:201",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:201"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:203",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:203"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "irregular outline: rectangularity 0.56 < 0.7"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 8281.25,
+        "perimeter_m": 575.0,
+        "compactness": 0.3148,
+        "min_width_m": 103.75,
+        "length_m": 142.42,
+        "rectangularity": 0.5604,
+        "holes": 0,
+        "quality": 0.5572
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:204",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:204"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 2912 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 2912.5,
+        "perimeter_m": 345.0,
+        "compactness": 0.3075,
+        "min_width_m": 68.05,
+        "length_m": 82.79,
+        "rectangularity": 0.517,
+        "holes": 0,
+        "quality": 0.5146
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:205",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:205"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:208",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:208"
+      ],
+      "decision": "rejected",
+      "actions": [
+        "clipped_to_aoi"
+      ],
+      "reasons": [
+        "irregular outline: rectangularity 0.63 < 0.7"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.9853,
+        "area_m2": 10161.22,
+        "perimeter_m": 578.41,
+        "compactness": 0.3817,
+        "min_width_m": 117.5,
+        "length_m": 137.01,
+        "rectangularity": 0.6312,
+        "holes": 0,
+        "quality": 0.6218
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:209",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:209"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:210",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:210"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "irregular outline: rectangularity 0.64 < 0.7"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 6112.5,
+        "perimeter_m": 400.0,
+        "compactness": 0.4801,
+        "min_width_m": 77.5,
+        "length_m": 122.5,
+        "rectangularity": 0.6438,
+        "holes": 0,
+        "quality": 0.6568
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:212",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:212"
+      ],
+      "decision": "eligible_not_selected",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 12568.75,
+        "perimeter_m": 645.0,
+        "compactness": 0.3796,
+        "min_width_m": 82.87,
+        "length_m": 198.34,
+        "rectangularity": 0.7647,
+        "holes": 0,
+        "quality": 0.6914,
+        "rank": 36
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:214",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:214"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 3975 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 3975.0,
+        "perimeter_m": 385.0,
+        "compactness": 0.337,
+        "min_width_m": 47.2,
+        "length_m": 126.51,
+        "rectangularity": 0.6656,
+        "holes": 0,
+        "quality": 0.6056
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:215",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:215"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:216",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:216"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:219",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:219"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:22",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:22"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:220",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:220"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:222",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:222"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 4250 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 4250.0,
+        "perimeter_m": 410.0,
+        "compactness": 0.3177,
+        "min_width_m": 51.63,
+        "length_m": 124.84,
+        "rectangularity": 0.6594,
+        "holes": 0,
+        "quality": 0.5962
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:223",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:223"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 1% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0099
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:224",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:224"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "irregular outline: rectangularity 0.66 < 0.7"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 6525.0,
+        "perimeter_m": 495.0,
+        "compactness": 0.3346,
+        "min_width_m": 83.83,
+        "length_m": 118.03,
+        "rectangularity": 0.6595,
+        "holes": 0,
+        "quality": 0.6102
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:227",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:227"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 63% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.6299
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:228",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:228"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 4375 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 4375.0,
+        "perimeter_m": 320.0,
+        "compactness": 0.5369,
+        "min_width_m": 71.78,
+        "length_m": 79.22,
+        "rectangularity": 0.7694,
+        "holes": 0,
+        "quality": 0.7355
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:229",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:229"
+      ],
+      "decision": "eligible_not_selected",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 7368.75,
+        "perimeter_m": 485.0,
+        "compactness": 0.3937,
+        "min_width_m": 75.97,
+        "length_m": 138.03,
+        "rectangularity": 0.7028,
+        "holes": 0,
+        "quality": 0.6566,
+        "rank": 42
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:232",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:232"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:233",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:233"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 66% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.6585
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:236",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:236"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:237",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:237"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "manual: bright bare/built-up yard next to the white paved strip north-east of the distributary bend; no cropped parcel boundary visible in the 10 m image",
+        "manual rejection: bright bare/built-up yard next to the white paved strip north-east of the distributary bend; no cropped parcel boundary visible in the 10 m image"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 44087.5,
+        "perimeter_m": 1315.0,
+        "compactness": 0.3204,
+        "min_width_m": 136.75,
+        "length_m": 388.06,
+        "rectangularity": 0.8308,
+        "holes": 0,
+        "quality": 0.7236
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:238",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:238"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:239",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:239"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:240",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:240"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:242",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:242"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "irregular outline: rectangularity 0.69 < 0.7"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 16287.5,
+        "perimeter_m": 690.0,
+        "compactness": 0.4299,
+        "min_width_m": 131.89,
+        "length_m": 179.13,
+        "rectangularity": 0.6894,
+        "holes": 0,
+        "quality": 0.6775
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:243",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:243"
+      ],
+      "decision": "accepted",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 7606.25,
+        "perimeter_m": 450.0,
+        "compactness": 0.472,
+        "min_width_m": 73.77,
+        "length_m": 122.91,
+        "rectangularity": 0.8389,
+        "holes": 0,
+        "quality": 0.7551,
+        "rank": 9
+      },
+      "field_id": "pilot-b:field-004"
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:244",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:244"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "irregular outline: rectangularity 0.62 < 0.7"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 5212.5,
+        "perimeter_m": 400.0,
+        "compactness": 0.4094,
+        "min_width_m": 69.57,
+        "length_m": 121.39,
+        "rectangularity": 0.6172,
+        "holes": 0,
+        "quality": 0.6137
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:245",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:245"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:246",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:246"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:247",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:247"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:249",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:249"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:250",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:250"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 2588 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 2587.5,
+        "perimeter_m": 270.0,
+        "compactness": 0.446,
+        "min_width_m": 43.6,
+        "length_m": 82.73,
+        "rectangularity": 0.7173,
+        "holes": 0,
+        "quality": 0.6656
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:251",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:251"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:252",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:252"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:253",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:253"
+      ],
+      "decision": "eligible_not_selected",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 7081.25,
+        "perimeter_m": 470.0,
+        "compactness": 0.4028,
+        "min_width_m": 64.0,
+        "length_m": 140.5,
+        "rectangularity": 0.7875,
+        "holes": 0,
+        "quality": 0.7017,
+        "rank": 31
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:254",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:254"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:255",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:255"
+      ],
+      "decision": "eligible_not_selected",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 8800.0,
+        "perimeter_m": 575.0,
+        "compactness": 0.3345,
+        "min_width_m": 65.41,
+        "length_m": 175.01,
+        "rectangularity": 0.7688,
+        "holes": 0,
+        "quality": 0.67,
+        "rank": 40
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:256",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:256"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 2525 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 2525.0,
+        "perimeter_m": 240.0,
+        "compactness": 0.5509,
+        "min_width_m": 53.03,
+        "length_m": 65.41,
+        "rectangularity": 0.7279,
+        "holes": 0,
+        "quality": 0.7106
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:258",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:258"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:259",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:259"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "sliver/irregular: compactness 0.24 < 0.3"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 21200.0,
+        "perimeter_m": 1060.0,
+        "compactness": 0.2371,
+        "min_width_m": 69.33,
+        "length_m": 357.79,
+        "rectangularity": 0.8547,
+        "holes": 0,
+        "quality": 0.691
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:26",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:26"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:260",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:260"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 19% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.1865
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:261",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:261"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 3662 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 3662.5,
+        "perimeter_m": 290.0,
+        "compactness": 0.5473,
+        "min_width_m": 65.98,
+        "length_m": 68.33,
+        "rectangularity": 0.8124,
+        "holes": 0,
+        "quality": 0.7579
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:262",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:262"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:263",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:263"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 2919 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 2918.75,
+        "perimeter_m": 260.0,
+        "compactness": 0.5426,
+        "min_width_m": 52.84,
+        "length_m": 68.2,
+        "rectangularity": 0.8099,
+        "holes": 0,
+        "quality": 0.7509
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:266",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:266"
+      ],
+      "decision": "accepted",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 16156.25,
+        "perimeter_m": 635.0,
+        "compactness": 0.5035,
+        "min_width_m": 108.31,
+        "length_m": 201.18,
+        "rectangularity": 0.7414,
+        "holes": 0,
+        "quality": 0.7315,
+        "rank": 16
+      },
+      "field_id": "pilot-b:field-003"
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:267",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:267"
+      ],
+      "decision": "accepted",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 11868.75,
+        "perimeter_m": 670.0,
+        "compactness": 0.3323,
+        "min_width_m": 71.93,
+        "length_m": 197.8,
+        "rectangularity": 0.8343,
+        "holes": 0,
+        "quality": 0.7071,
+        "rank": 27
+      },
+      "field_id": "pilot-b:field-005"
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:268",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:268"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 33% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.333
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:269",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:269"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:27",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:27"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:270",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:270"
+      ],
+      "decision": "accepted",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 7275.0,
+        "perimeter_m": 460.0,
+        "compactness": 0.432,
+        "min_width_m": 64.53,
+        "length_m": 147.24,
+        "rectangularity": 0.7657,
+        "holes": 0,
+        "quality": 0.7024,
+        "rank": 30
+      },
+      "field_id": "pilot-b:field-031"
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:272",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:272"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 3212 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 3212.5,
+        "perimeter_m": 295.0,
+        "compactness": 0.4639,
+        "min_width_m": 45.38,
+        "length_m": 90.98,
+        "rectangularity": 0.7782,
+        "holes": 0,
+        "quality": 0.7067
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:273",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:273"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:275",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:275"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:276",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:276"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "irregular outline: rectangularity 0.62 < 0.7"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 5818.75,
+        "perimeter_m": 425.0,
+        "compactness": 0.4048,
+        "min_width_m": 67.54,
+        "length_m": 138.46,
+        "rectangularity": 0.6222,
+        "holes": 0,
+        "quality": 0.6164
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:278",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:278"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 4875 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 4875.0,
+        "perimeter_m": 595.0,
+        "compactness": 0.173,
+        "min_width_m": 73.49,
+        "length_m": 129.34,
+        "rectangularity": 0.5129,
+        "holes": 0,
+        "quality": 0.4701
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:279",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:279"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:281",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:281"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:282",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:282"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 15% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.1479
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:283",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:283"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:285",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:285"
+      ],
+      "decision": "accepted",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 5193.75,
+        "perimeter_m": 360.0,
+        "compactness": 0.5036,
+        "min_width_m": 76.35,
+        "length_m": 81.25,
+        "rectangularity": 0.8373,
+        "holes": 0,
+        "quality": 0.7597,
+        "rank": 6
+      },
+      "field_id": "pilot-b:field-014"
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:287",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:287"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:288",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:288"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "manual: small bright built-up patch at the village track junction; parcel outline not distinguishable",
+        "manual rejection: small bright built-up patch at the village track junction; parcel outline not distinguishable"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 6987.5,
+        "perimeter_m": 400.0,
+        "compactness": 0.5488,
+        "min_width_m": 89.45,
+        "length_m": 100.54,
+        "rectangularity": 0.777,
+        "holes": 0,
+        "quality": 0.752
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:29",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:29"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 2919 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 2918.75,
+        "perimeter_m": 270.0,
+        "compactness": 0.5031,
+        "min_width_m": 51.47,
+        "length_m": 71.01,
+        "rectangularity": 0.7985,
+        "holes": 0,
+        "quality": 0.7301
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:290",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:290"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:291",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:291"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:296",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:296"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:299",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:299"
+      ],
+      "decision": "accepted",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 5537.5,
+        "perimeter_m": 390.0,
+        "compactness": 0.4575,
+        "min_width_m": 74.53,
+        "length_m": 98.2,
+        "rectangularity": 0.7566,
+        "holes": 0,
+        "quality": 0.7029,
+        "rank": 29
+      },
+      "field_id": "pilot-b:field-032"
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:3",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:3"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:30",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:30"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:302",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:302"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:306",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:306"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:309",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:309"
+      ],
+      "decision": "accepted",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 15237.5,
+        "perimeter_m": 705.0,
+        "compactness": 0.3853,
+        "min_width_m": 83.21,
+        "length_m": 225.35,
+        "rectangularity": 0.8127,
+        "holes": 0,
+        "quality": 0.7209,
+        "rank": 23
+      },
+      "field_id": "pilot-b:field-015"
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:310",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:310"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:311",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:311"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:313",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:313"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 4419 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 4418.75,
+        "perimeter_m": 335.0,
+        "compactness": 0.4948,
+        "min_width_m": 65.0,
+        "length_m": 102.5,
+        "rectangularity": 0.6632,
+        "holes": 0,
+        "quality": 0.6665
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:314",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:314"
+      ],
+      "decision": "accepted",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 8525.0,
+        "perimeter_m": 475.0,
+        "compactness": 0.4748,
+        "min_width_m": 83.43,
+        "length_m": 139.11,
+        "rectangularity": 0.7346,
+        "holes": 0,
+        "quality": 0.706,
+        "rank": 28
+      },
+      "field_id": "pilot-b:field-033"
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:315",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:315"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:316",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:316"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "sliver/irregular: compactness 0.26 < 0.3"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 6175.0,
+        "perimeter_m": 550.0,
+        "compactness": 0.2565,
+        "min_width_m": 87.93,
+        "length_m": 125.64,
+        "rectangularity": 0.559,
+        "holes": 0,
+        "quality": 0.5292
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:317",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:317"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:318",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:318"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 4744 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 4743.75,
+        "perimeter_m": 325.0,
+        "compactness": 0.5644,
+        "min_width_m": 77.5,
+        "length_m": 80.0,
+        "rectangularity": 0.7651,
+        "holes": 0,
+        "quality": 0.7453
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:320",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:320"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:321",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:321"
+      ],
+      "decision": "eligible_not_selected",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 9925.0,
+        "perimeter_m": 555.0,
+        "compactness": 0.4049,
+        "min_width_m": 86.67,
+        "length_m": 151.16,
+        "rectangularity": 0.7576,
+        "holes": 0,
+        "quality": 0.6934,
+        "rank": 35
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:322",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:322"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:323",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:323"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 31% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.3105
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:324",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:324"
+      ],
+      "decision": "accepted",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 5143.75,
+        "perimeter_m": 360.0,
+        "compactness": 0.4988,
+        "min_width_m": 73.59,
+        "length_m": 94.34,
+        "rectangularity": 0.7409,
+        "holes": 0,
+        "quality": 0.7095,
+        "rank": 26
+      },
+      "field_id": "pilot-b:field-017"
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:325",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:325"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 4606 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 4606.25,
+        "perimeter_m": 370.0,
+        "compactness": 0.4228,
+        "min_width_m": 53.94,
+        "length_m": 119.2,
+        "rectangularity": 0.7164,
+        "holes": 0,
+        "quality": 0.6663
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:326",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:326"
+      ],
+      "decision": "accepted",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 22206.25,
+        "perimeter_m": 805.0,
+        "compactness": 0.4306,
+        "min_width_m": 145.59,
+        "length_m": 176.75,
+        "rectangularity": 0.8629,
+        "holes": 0,
+        "quality": 0.7699,
+        "rank": 2
+      },
+      "field_id": "pilot-b:field-016"
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:327",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:327"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "manual: polygon sits on the bare embankment strip between the main canal and the distributary; not an irrigated parcel",
+        "manual rejection: polygon sits on the bare embankment strip between the main canal and the distributary; not an irrigated parcel"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 11668.75,
+        "perimeter_m": 610.0,
+        "compactness": 0.3941,
+        "min_width_m": 87.1,
+        "length_m": 167.79,
+        "rectangularity": 0.7984,
+        "holes": 0,
+        "quality": 0.7125
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:33",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:33"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 88% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.8785
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:331",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:331"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "irregular outline: rectangularity 0.69 < 0.7"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 15300.0,
+        "perimeter_m": 720.0,
+        "compactness": 0.3709,
+        "min_width_m": 113.34,
+        "length_m": 196.73,
+        "rectangularity": 0.6862,
+        "holes": 0,
+        "quality": 0.6522
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:332",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:332"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "irregular outline: rectangularity 0.59 < 0.7"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 9706.25,
+        "perimeter_m": 550.0,
+        "compactness": 0.4032,
+        "min_width_m": 96.05,
+        "length_m": 172.52,
+        "rectangularity": 0.5857,
+        "holes": 0,
+        "quality": 0.6064
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:334",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:334"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "irregular outline: rectangularity 0.62 < 0.7"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 8325.0,
+        "perimeter_m": 555.0,
+        "compactness": 0.3396,
+        "min_width_m": 90.22,
+        "length_m": 149.74,
+        "rectangularity": 0.6162,
+        "holes": 0,
+        "quality": 0.5947
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:336",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:336"
+      ],
+      "decision": "accepted",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 6656.25,
+        "perimeter_m": 420.0,
+        "compactness": 0.4742,
+        "min_width_m": 72.29,
+        "length_m": 109.29,
+        "rectangularity": 0.8425,
+        "holes": 0,
+        "quality": 0.7554,
+        "rank": 8
+      },
+      "field_id": "pilot-b:field-018"
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:337",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:337"
+      ],
+      "decision": "accepted",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 7268.75,
+        "perimeter_m": 460.0,
+        "compactness": 0.4317,
+        "min_width_m": 67.38,
+        "length_m": 130.46,
+        "rectangularity": 0.8269,
+        "holes": 0,
+        "quality": 0.7329,
+        "rank": 14
+      },
+      "field_id": "pilot-b:field-019"
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:34",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:34"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:340",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:340"
+      ],
+      "decision": "eligible_not_selected",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 5162.5,
+        "perimeter_m": 410.0,
+        "compactness": 0.3859,
+        "min_width_m": 54.78,
+        "length_m": 123.42,
+        "rectangularity": 0.7636,
+        "holes": 0,
+        "quality": 0.6778,
+        "rank": 39
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:342",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:342"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 3031 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 3031.25,
+        "perimeter_m": 295.0,
+        "compactness": 0.4377,
+        "min_width_m": 51.48,
+        "length_m": 78.19,
+        "rectangularity": 0.7531,
+        "holes": 0,
+        "quality": 0.6831
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:343",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:343"
+      ],
+      "decision": "accepted",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 8362.5,
+        "perimeter_m": 495.0,
+        "compactness": 0.4289,
+        "min_width_m": 67.83,
+        "length_m": 145.85,
+        "rectangularity": 0.8453,
+        "holes": 0,
+        "quality": 0.7435,
+        "rank": 13
+      },
+      "field_id": "pilot-b:field-021"
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:345",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:345"
+      ],
+      "decision": "eligible_not_selected",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 14137.5,
+        "perimeter_m": 745.0,
+        "compactness": 0.3201,
+        "min_width_m": 75.45,
+        "length_m": 230.26,
+        "rectangularity": 0.8138,
+        "holes": 0,
+        "quality": 0.6952,
+        "rank": 34
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:346",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:346"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "sliver/irregular: compactness 0.29 < 0.3"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 14650.0,
+        "perimeter_m": 800.0,
+        "compactness": 0.2877,
+        "min_width_m": 117.07,
+        "length_m": 219.33,
+        "rectangularity": 0.5706,
+        "holes": 0,
+        "quality": 0.5619
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:348",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:348"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "sliver/irregular: compactness 0.30 < 0.3"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 19506.25,
+        "perimeter_m": 910.0,
+        "compactness": 0.296,
+        "min_width_m": 152.78,
+        "length_m": 237.15,
+        "rectangularity": 0.5384,
+        "holes": 0,
+        "quality": 0.5539
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:349",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:349"
+      ],
+      "decision": "eligible_not_selected",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 6562.5,
+        "perimeter_m": 450.0,
+        "compactness": 0.4072,
+        "min_width_m": 71.98,
+        "length_m": 116.79,
+        "rectangularity": 0.7806,
+        "holes": 0,
+        "quality": 0.6986,
+        "rank": 32
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:350",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:350"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "sliver/irregular: compactness 0.21 < 0.3"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 18087.5,
+        "perimeter_m": 1030.0,
+        "compactness": 0.2142,
+        "min_width_m": 68.29,
+        "length_m": 328.7,
+        "rectangularity": 0.8058,
+        "holes": 0,
+        "quality": 0.6551
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:351",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:351"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 4356 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 4356.25,
+        "perimeter_m": 325.0,
+        "compactness": 0.5183,
+        "min_width_m": 72.52,
+        "length_m": 81.7,
+        "rectangularity": 0.7352,
+        "holes": 0,
+        "quality": 0.7112
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:353",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:353"
+      ],
+      "decision": "accepted",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 7287.5,
+        "perimeter_m": 445.0,
+        "compactness": 0.4625,
+        "min_width_m": 78.23,
+        "length_m": 118.83,
+        "rectangularity": 0.7839,
+        "holes": 0,
+        "quality": 0.7232,
+        "rank": 20
+      },
+      "field_id": "pilot-b:field-022"
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:354",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:354"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 3050 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 3050.0,
+        "perimeter_m": 275.0,
+        "compactness": 0.5068,
+        "min_width_m": 53.59,
+        "length_m": 74.6,
+        "rectangularity": 0.7629,
+        "holes": 0,
+        "quality": 0.7145
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:355",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:355"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 4269 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 4268.75,
+        "perimeter_m": 315.0,
+        "compactness": 0.5406,
+        "min_width_m": 59.6,
+        "length_m": 92.16,
+        "rectangularity": 0.7771,
+        "holes": 0,
+        "quality": 0.7404
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:356",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:356"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 2594 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 2593.75,
+        "perimeter_m": 255.0,
+        "compactness": 0.5013,
+        "min_width_m": 46.42,
+        "length_m": 74.2,
+        "rectangularity": 0.7531,
+        "holes": 0,
+        "quality": 0.7047
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:357",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:357"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 3656 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 3656.25,
+        "perimeter_m": 325.0,
+        "compactness": 0.435,
+        "min_width_m": 59.94,
+        "length_m": 80.91,
+        "rectangularity": 0.7539,
+        "holes": 0,
+        "quality": 0.6857
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:358",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:358"
+      ],
+      "decision": "accepted",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 22606.25,
+        "perimeter_m": 835.0,
+        "compactness": 0.4074,
+        "min_width_m": 151.77,
+        "length_m": 189.09,
+        "rectangularity": 0.7878,
+        "holes": 0,
+        "quality": 0.7238,
+        "rank": 19
+      },
+      "field_id": "pilot-b:field-023"
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:359",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:359"
+      ],
+      "decision": "accepted",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 40031.25,
+        "perimeter_m": 1235.0,
+        "compactness": 0.3298,
+        "min_width_m": 136.31,
+        "length_m": 324.43,
+        "rectangularity": 0.9052,
+        "holes": 0,
+        "quality": 0.7627,
+        "rank": 5
+      },
+      "field_id": "pilot-b:field-024"
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:36",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:36"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:360",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:360"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 3594 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 3593.75,
+        "perimeter_m": 300.0,
+        "compactness": 0.5018,
+        "min_width_m": 59.6,
+        "length_m": 74.17,
+        "rectangularity": 0.813,
+        "holes": 0,
+        "quality": 0.7405
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:361",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:361"
+      ],
+      "decision": "eligible_not_selected",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 7687.5,
+        "perimeter_m": 515.0,
+        "compactness": 0.3642,
+        "min_width_m": 70.75,
+        "length_m": 135.56,
+        "rectangularity": 0.8015,
+        "holes": 0,
+        "quality": 0.6954,
+        "rank": 33
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:37",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:37"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:372",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:372"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:373",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:373"
+      ],
+      "decision": "accepted",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 21262.5,
+        "perimeter_m": 745.0,
+        "compactness": 0.4814,
+        "min_width_m": 142.26,
+        "length_m": 175.29,
+        "rectangularity": 0.8526,
+        "holes": 0,
+        "quality": 0.7834,
+        "rank": 1
+      },
+      "field_id": "pilot-b:field-025"
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:374",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:374"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:375",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:375"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 2806 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 2806.25,
+        "perimeter_m": 270.0,
+        "compactness": 0.4837,
+        "min_width_m": 52.23,
+        "length_m": 81.12,
+        "rectangularity": 0.6623,
+        "holes": 0,
+        "quality": 0.6539
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:376",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:376"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "irregular outline: rectangularity 0.69 < 0.7"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 7787.5,
+        "perimeter_m": 470.0,
+        "compactness": 0.443,
+        "min_width_m": 77.29,
+        "length_m": 145.68,
+        "rectangularity": 0.6917,
+        "holes": 0,
+        "quality": 0.6708
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:377",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:377"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 3825 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 3825.0,
+        "perimeter_m": 310.0,
+        "compactness": 0.5002,
+        "min_width_m": 66.5,
+        "length_m": 72.5,
+        "rectangularity": 0.7934,
+        "holes": 0,
+        "quality": 0.7312
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:378",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:378"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "sliver/irregular: compactness 0.19 < 0.3"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 19531.25,
+        "perimeter_m": 1125.0,
+        "compactness": 0.1939,
+        "min_width_m": 80.43,
+        "length_m": 330.05,
+        "rectangularity": 0.7357,
+        "holes": 0,
+        "quality": 0.6136
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:379",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:379"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:38",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:38"
+      ],
+      "decision": "corrected",
+      "actions": [
+        "clipped_to_aoi"
+      ],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 0.9857,
+        "area_m2": 24550.04,
+        "perimeter_m": 808.77,
+        "compactness": 0.4716,
+        "min_width_m": 135.14,
+        "length_m": 219.71,
+        "rectangularity": 0.8269,
+        "holes": 0,
+        "quality": 0.7693,
+        "rank": 3
+      },
+      "field_id": "pilot-b:field-030"
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:380",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:380"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 3406 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 3406.25,
+        "perimeter_m": 310.0,
+        "compactness": 0.4454,
+        "min_width_m": 49.23,
+        "length_m": 94.89,
+        "rectangularity": 0.7291,
+        "holes": 0,
+        "quality": 0.6761
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:381",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:381"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "irregular outline: rectangularity 0.66 < 0.7"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 8862.5,
+        "perimeter_m": 575.0,
+        "compactness": 0.3368,
+        "min_width_m": 83.7,
+        "length_m": 161.0,
+        "rectangularity": 0.6577,
+        "holes": 0,
+        "quality": 0.6155
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:382",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:382"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 3125 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 3125.0,
+        "perimeter_m": 265.0,
+        "compactness": 0.5592,
+        "min_width_m": 52.5,
+        "length_m": 80.0,
+        "rectangularity": 0.744,
+        "holes": 0,
+        "quality": 0.7255
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:383",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:383"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 4525 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 4525.0,
+        "perimeter_m": 390.0,
+        "compactness": 0.3739,
+        "min_width_m": 54.16,
+        "length_m": 108.33,
+        "rectangularity": 0.7712,
+        "holes": 0,
+        "quality": 0.6747
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:384",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:384"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:385",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:385"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:386",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:386"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 2506 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 2506.25,
+        "perimeter_m": 255.0,
+        "compactness": 0.4843,
+        "min_width_m": 45.96,
+        "length_m": 79.55,
+        "rectangularity": 0.6855,
+        "holes": 0,
+        "quality": 0.6638
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:387",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:387"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:388",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:388"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 76% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.7617
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:389",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:389"
+      ],
+      "decision": "accepted",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 27800.0,
+        "perimeter_m": 980.0,
+        "compactness": 0.3637,
+        "min_width_m": 143.27,
+        "length_m": 237.8,
+        "rectangularity": 0.816,
+        "holes": 0,
+        "quality": 0.7248,
+        "rank": 18
+      },
+      "field_id": "pilot-b:field-026"
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:39",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:39"
+      ],
+      "decision": "accepted",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 10956.25,
+        "perimeter_m": 560.0,
+        "compactness": 0.439,
+        "min_width_m": 84.77,
+        "length_m": 164.17,
+        "rectangularity": 0.7873,
+        "holes": 0,
+        "quality": 0.723,
+        "rank": 22
+      },
+      "field_id": "pilot-b:field-027"
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:390",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:390"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:391",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:391"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:392",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:392"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 96% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.9594
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:393",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:393"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 4% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0359
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:394",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:394"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:395",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:395"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:396",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:396"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:397",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:397"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:398",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:398"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:399",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:399"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:40",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:40"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 3331 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 3331.25,
+        "perimeter_m": 270.0,
+        "compactness": 0.5742,
+        "min_width_m": 59.63,
+        "length_m": 70.94,
+        "rectangularity": 0.7874,
+        "holes": 0,
+        "quality": 0.754
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:400",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:400"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:401",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:401"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:402",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:402"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:403",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:403"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:404",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:404"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 4% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0385
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:405",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:405"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 3050 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 3050.0,
+        "perimeter_m": 290.0,
+        "compactness": 0.4557,
+        "min_width_m": 50.0,
+        "length_m": 95.0,
+        "rectangularity": 0.6421,
+        "holes": 0,
+        "quality": 0.6346
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:406",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:406"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:407",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:407"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 10% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.096
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:408",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:408"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "sliver/irregular: compactness 0.16 < 0.3"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 8431.25,
+        "perimeter_m": 805.0,
+        "compactness": 0.1635,
+        "min_width_m": 51.85,
+        "length_m": 259.68,
+        "rectangularity": 0.6262,
+        "holes": 0,
+        "quality": 0.5326
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:409",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:409"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:41",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:41"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:410",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:410"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 4100 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 4100.0,
+        "perimeter_m": 320.0,
+        "compactness": 0.5031,
+        "min_width_m": 68.33,
+        "length_m": 73.79,
+        "rectangularity": 0.8132,
+        "holes": 0,
+        "quality": 0.7434
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:411",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:411"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 50% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.5021
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:412",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:412"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 2719 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 2718.75,
+        "perimeter_m": 265.0,
+        "compactness": 0.4865,
+        "min_width_m": 47.69,
+        "length_m": 77.14,
+        "rectangularity": 0.739,
+        "holes": 0,
+        "quality": 0.6928
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:413",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:413"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "irregular outline: rectangularity 0.69 < 0.7"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 11556.25,
+        "perimeter_m": 570.0,
+        "compactness": 0.447,
+        "min_width_m": 95.6,
+        "length_m": 175.28,
+        "rectangularity": 0.6896,
+        "holes": 0,
+        "quality": 0.6781
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:414",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:414"
+      ],
+      "decision": "accepted",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 37206.25,
+        "perimeter_m": 1120.0,
+        "compactness": 0.3727,
+        "min_width_m": 133.42,
+        "length_m": 317.67,
+        "rectangularity": 0.8779,
+        "holes": 0,
+        "quality": 0.7642,
+        "rank": 4
+      },
+      "field_id": "pilot-b:field-007"
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:415",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:415"
+      ],
+      "decision": "accepted",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 40600.0,
+        "perimeter_m": 1220.0,
+        "compactness": 0.3428,
+        "min_width_m": 135.99,
+        "length_m": 338.55,
+        "rectangularity": 0.8818,
+        "holes": 0,
+        "quality": 0.7562,
+        "rank": 7
+      },
+      "field_id": "pilot-b:field-002"
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:416",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:416"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "sliver/irregular: compactness 0.28 < 0.3"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 18350.0,
+        "perimeter_m": 905.0,
+        "compactness": 0.2815,
+        "min_width_m": 120.93,
+        "length_m": 249.62,
+        "rectangularity": 0.6079,
+        "holes": 0,
+        "quality": 0.5821
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:417",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:417"
+      ],
+      "decision": "eligible_not_selected",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 28906.25,
+        "perimeter_m": 1000.0,
+        "compactness": 0.3632,
+        "min_width_m": 137.58,
+        "length_m": 287.97,
+        "rectangularity": 0.7296,
+        "holes": 0,
+        "quality": 0.682,
+        "rank": 38
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:418",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:418"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "sliver/irregular: compactness 0.30 < 0.3"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 14687.5,
+        "perimeter_m": 785.0,
+        "compactness": 0.2995,
+        "min_width_m": 73.45,
+        "length_m": 251.45,
+        "rectangularity": 0.7952,
+        "holes": 0,
+        "quality": 0.6787
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:419",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:419"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 3331 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 3331.25,
+        "perimeter_m": 350.0,
+        "compactness": 0.3417,
+        "min_width_m": 47.5,
+        "length_m": 127.5,
+        "rectangularity": 0.5501,
+        "holes": 0,
+        "quality": 0.5465
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:42",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:42"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:420",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:420"
+      ],
+      "decision": "eligible_not_selected",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 11206.25,
+        "perimeter_m": 685.0,
+        "compactness": 0.3001,
+        "min_width_m": 70.04,
+        "length_m": 195.0,
+        "rectangularity": 0.8205,
+        "holes": 0,
+        "quality": 0.6869,
+        "rank": 37
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:421",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:421"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 61% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.6119
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:422",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:422"
+      ],
+      "decision": "accepted",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 31900.0,
+        "perimeter_m": 1000.0,
+        "compactness": 0.4009,
+        "min_width_m": 143.57,
+        "length_m": 266.05,
+        "rectangularity": 0.8352,
+        "holes": 0,
+        "quality": 0.751,
+        "rank": 10
+      },
+      "field_id": "pilot-b:field-006"
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:423",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:423"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 36% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.3612
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:424",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:424"
+      ],
+      "decision": "accepted",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 14481.25,
+        "perimeter_m": 740.0,
+        "compactness": 0.3323,
+        "min_width_m": 75.92,
+        "length_m": 221.98,
+        "rectangularity": 0.8593,
+        "holes": 0,
+        "quality": 0.7231,
+        "rank": 21
+      },
+      "field_id": "pilot-b:field-011"
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:425",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:425"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:426",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:426"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "sliver/irregular: compactness 0.27 < 0.3"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 11487.5,
+        "perimeter_m": 725.0,
+        "compactness": 0.2746,
+        "min_width_m": 61.17,
+        "length_m": 236.03,
+        "rectangularity": 0.7957,
+        "holes": 0,
+        "quality": 0.6652
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:427",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:427"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "irregular outline: rectangularity 0.57 < 0.7"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 23012.5,
+        "perimeter_m": 970.0,
+        "compactness": 0.3073,
+        "min_width_m": 111.2,
+        "length_m": 362.03,
+        "rectangularity": 0.5716,
+        "holes": 0,
+        "quality": 0.5777
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:428",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:428"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "sliver/irregular: compactness 0.28 < 0.3"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 5375.0,
+        "perimeter_m": 490.0,
+        "compactness": 0.2813,
+        "min_width_m": 64.17,
+        "length_m": 155.48,
+        "rectangularity": 0.5387,
+        "holes": 0,
+        "quality": 0.5261
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:429",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:429"
+      ],
+      "decision": "accepted",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 33968.75,
+        "perimeter_m": 1025.0,
+        "compactness": 0.4063,
+        "min_width_m": 206.57,
+        "length_m": 218.3,
+        "rectangularity": 0.7533,
+        "holes": 0,
+        "quality": 0.7132,
+        "rank": 25
+      },
+      "field_id": "pilot-b:field-012"
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:43",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:43"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:430",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:430"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "irregular outline: rectangularity 0.55 < 0.7"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 12618.75,
+        "perimeter_m": 610.0,
+        "compactness": 0.4262,
+        "min_width_m": 132.5,
+        "length_m": 172.5,
+        "rectangularity": 0.5521,
+        "holes": 0,
+        "quality": 0.603
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:431",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:431"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 4138 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 4137.5,
+        "perimeter_m": 310.0,
+        "compactness": 0.541,
+        "min_width_m": 55.0,
+        "length_m": 100.0,
+        "rectangularity": 0.7523,
+        "holes": 0,
+        "quality": 0.7276
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:432",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:432"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "irregular outline: rectangularity 0.67 < 0.7"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 5137.5,
+        "perimeter_m": 445.0,
+        "compactness": 0.326,
+        "min_width_m": 62.99,
+        "length_m": 121.5,
+        "rectangularity": 0.6713,
+        "holes": 0,
+        "quality": 0.6087
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:433",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:433"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 3438 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 3437.5,
+        "perimeter_m": 280.0,
+        "compactness": 0.551,
+        "min_width_m": 58.5,
+        "length_m": 81.0,
+        "rectangularity": 0.7254,
+        "holes": 0,
+        "quality": 0.7147
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:434",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:434"
+      ],
+      "decision": "eligible_not_selected",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 7050.0,
+        "perimeter_m": 470.0,
+        "compactness": 0.4011,
+        "min_width_m": 76.44,
+        "length_m": 128.13,
+        "rectangularity": 0.7198,
+        "holes": 0,
+        "quality": 0.6671,
+        "rank": 41
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:44",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:44"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 88% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.8765
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:46",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:46"
+      ],
+      "decision": "accepted",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 5768.75,
+        "perimeter_m": 390.0,
+        "compactness": 0.4766,
+        "min_width_m": 66.94,
+        "length_m": 104.01,
+        "rectangularity": 0.8285,
+        "holes": 0,
+        "quality": 0.7468,
+        "rank": 11
+      },
+      "field_id": "pilot-b:field-028"
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:47",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:47"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:48",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:48"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:49",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:49"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:51",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:51"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:52",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:52"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:54",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:54"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:57",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:57"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:58",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:58"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 2844 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 2843.75,
+        "perimeter_m": 275.0,
+        "compactness": 0.4725,
+        "min_width_m": 51.5,
+        "length_m": 77.64,
+        "rectangularity": 0.7112,
+        "holes": 0,
+        "quality": 0.6743
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:59",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:59"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:6",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:6"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:60",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:60"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:61",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:61"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:63",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:63"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:64",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:64"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 4938 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 4937.5,
+        "perimeter_m": 350.0,
+        "compactness": 0.5065,
+        "min_width_m": 65.72,
+        "length_m": 95.27,
+        "rectangularity": 0.7886,
+        "holes": 0,
+        "quality": 0.7356
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:65",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:65"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:66",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:66"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:67",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:67"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:69",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:69"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:70",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:70"
+      ],
+      "decision": "accepted",
+      "actions": [],
+      "reasons": [],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 8037.5,
+        "perimeter_m": 480.0,
+        "compactness": 0.4384,
+        "min_width_m": 75.42,
+        "length_m": 135.83,
+        "rectangularity": 0.7846,
+        "holes": 0,
+        "quality": 0.716,
+        "rank": 24
+      },
+      "field_id": "pilot-b:field-029"
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:72",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:72"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:75",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:75"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 36% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.3635
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:76",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:76"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:77",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:77"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 3031 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 3031.25,
+        "perimeter_m": 265.0,
+        "compactness": 0.5424,
+        "min_width_m": 51.73,
+        "length_m": 83.41,
+        "rectangularity": 0.7025,
+        "holes": 0,
+        "quality": 0.6978
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:79",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:79"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:80",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:80"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:82",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:82"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 4300 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 4300.0,
+        "perimeter_m": 350.0,
+        "compactness": 0.4411,
+        "min_width_m": 68.3,
+        "length_m": 80.79,
+        "rectangularity": 0.7793,
+        "holes": 0,
+        "quality": 0.7036
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:84",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:84"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:86",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:86"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:89",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:89"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "area 2700 m² < 5000 m² (unreliable at 10 m)"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 1.0,
+        "area_m2": 2700.0,
+        "perimeter_m": 330.0,
+        "compactness": 0.3116,
+        "min_width_m": 54.46,
+        "length_m": 87.79,
+        "rectangularity": 0.5647,
+        "holes": 0,
+        "quality": 0.5387
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:90",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:90"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0049
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:91",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:91"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 2% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0151
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:92",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:92"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:93",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:93"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:94",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:94"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:96",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:96"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:97",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:97"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:98",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:98"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 0% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.0
+      },
+      "field_id": null
+    },
+    {
+      "model_id": "da:50ca220c256bbf74:99",
+      "source_model_ids": [
+        "da:50ca220c256bbf74:99"
+      ],
+      "decision": "rejected",
+      "actions": [],
+      "reasons": [
+        "only 12% inside the AOI"
+      ],
+      "metrics": {
+        "aoi_inside_fraction": 0.1152
+      },
+      "field_id": null
+    }
+  ]
+}

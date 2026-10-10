@@ -85,11 +85,14 @@ vision-shell:
 water-tests:      ## chronology, network, roster, pond, pump invariants (unit + property)
 	$(API) pytest -q tests/unit/test_water_*.py tests/property
 
+pilot-a pilot-b:  ## onboarding pipeline -> reviewed, validated, published pilot package (exit 3: run printed vision command, rerun)
+	$(API) python scripts/publish_pilot.py --pilot $@ --version reviewed-v1
+
 candidates:       ## exact experiments + candidate libraries, e.g. make candidates PILOT=pilot-a
 	$(API) python scripts/science_build_libraries.py $(or $(PILOT),pilot-a)
 
 train-surrogate:  ## fixed-split surrogate training, evaluation artifacts and gate
 	$(API) python scripts/science_train_surrogate.py
 
-pilot-a pilot-b domain-tests core-acceptance copilot-evals release-check:
+domain-tests core-acceptance copilot-evals release-check:
 	@echo "make $@: not implemented yet" >&2; exit 1

@@ -404,15 +404,30 @@
     "inference_key": "50ca220c256bbf74",
     "batch": "vision/batches/50ca220c256bbf74.yaml",
     "command": "docker compose -f compose.yaml -f vision/compose.vision.yaml --profile vision run --rm --no-deps -T vision python /app/vision/run_batch.py /app/vision/batches/50ca220c256bbf74.yaml --record /app/vision/runs/50ca220c256bbf74/run.json --label 50ca220c256bbf74",
-    "state": "pending"
+    "state": "done",
+    "run_record": "vision/runs/50ca220c256bbf74/run.json",
+    "wall_seconds": 100.125,
+    "device": "cpu",
+    "raw_polygons": 303,
+    "gpkg_sha256": "34c4f40f3968d573232fcc6a71d62048941a89917380c86b33f1293ad41dceaa",
+    "input_sha256": "4733c68cfc3a1dcd45070824d38b8890323f005a0f349e261a707c0e85db205e",
+    "checkpoints": {
+      "/app/data/models/delineate-anything/DelineateAnythingv2.pt": "46700b8a279b07922953a11adaeb5e658d9a2384b6334c8e0a3090886218915a"
+    },
+    "upstream_commit": "",
+    "base_config": "/app/vision/configs/conf_pilot_s2_sr4.yaml",
+    "base_config_sha256": "b0ce2227ca6fc5db731e28504d2689e8533463f8971e72c1ba48270947df54ef",
+    "started_at": "2026-10-10T00:50:42.483621+00:00",
+    "finished_at": "2026-10-10T00:52:22.608146+00:00",
+    "cache_hit": true
   },
   "warnings": [
     "S2B_43RBP_20241210_0_L2A: published offset NOT applied: it would make valid pixels negative, so DNs are treated as offset-free (scale only)",
     "S2C_43RBQ_20250223_0_L2A: published offset NOT applied: it would make valid pixels negative, so DNs are treated as offset-free (scale only)"
   ],
-  "blockers": [
-    "inference_pending: docker compose -f compose.yaml -f vision/compose.vision.yaml --profile vision run --rm --no-deps -T vision python /app/vision/run_batch.py /app/vision/batches/50ca220c256bbf74.yaml --record /app/vision/runs/50ca220c256bbf74/run.json --label 50ca220c256bbf74"
+  "blockers": [],
+  "cache_hits": [
+    "delineate:50ca220c256bbf74"
   ],
-  "cache_hits": [],
-  "processed_at": "2026-10-10T00:47:36Z"
+  "processed_at": "2026-10-10T04:03:17Z"
 }
