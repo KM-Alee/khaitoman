@@ -296,12 +296,33 @@ def _metric(m: dict[str, Any]) -> dict[str, Any]:
 
 
 def _clip(obj: Any, limit: int) -> Any:
+    """Fit ``obj`` within ``limit`` JSON chars by trimming long lists and rounding floats,
+    never by cutting the JSON text (a cut excerpt loses IDs the model needs)."""
     import json
 
-    s = json.dumps(obj, default=str)
-    if len(s) <= limit:
-        return obj
-    return {"truncated": True, "excerpt": s[:limit]}
+    def compact(o: Any, max_list: int | None) -> Any:
+        if isinstance(o, float):
+            return float(f"{o:.6g}")
+        if isinstance(o, dict):
+            return {k: compact(v, max_list) for k, v in o.items()}
+        if isinstance(o, list):
+            items = [compact(v, max_list) for v in (o if max_list is None else o[:max_list])]
+            if max_list is not None and len(o) > max_list:
+                items.append({"omitted_items": len(o) - max_list})
+            return items
+        return o
+
+    for max_list in (None, 24, 12, 6, 3, 1):
+        out = compact(obj, max_list)
+        if len(json.dumps(out, default=str)) <= limit:
+            return out
+    if isinstance(obj, dict):  # keep scalars (IDs, statuses, totals); drop nested detail
+        return {
+            **{k: v for k, v in obj.items() if not isinstance(v, (dict, list))},
+            "truncated": True,
+            "omitted_keys": sorted(k for k, v in obj.items() if isinstance(v, (dict, list))),
+        }
+    return {"truncated": True}
 
 
 def job_view(job: dict[str, Any]) -> dict[str, Any]:

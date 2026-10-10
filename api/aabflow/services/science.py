@@ -38,13 +38,27 @@ class ScienceBindings(Protocol):
     def season_context(self, pilot_id: str, season_id: str, pilot_version: str) -> Any: ...
 
     def evaluate_policy(
-        self, policy: CandidatePolicy, ctx: Any, resolved_supply: Any, weather_scenario_id: str, config_id: str,
-        *, state_id: str, extra_closures: tuple = (),
+        self,
+        policy: CandidatePolicy,
+        ctx: Any,
+        resolved_supply: Any,
+        weather_scenario_id: str,
+        config_id: str,
+        *,
+        state_id: str,
+        extra_closures: tuple = (),
     ) -> StateOutcome: ...
 
     def reconstruct(
-        self, policy_ids: list[str], library: CandidateLibrary, state_id: str, config_id: str,
-        *, resolved_supply: Any = None, extra_closures: tuple = (), policies: dict | None = None,
+        self,
+        policy_ids: list[str],
+        library: CandidateLibrary,
+        state_id: str,
+        config_id: str,
+        *,
+        resolved_supply: Any = None,
+        extra_closures: tuple = (),
+        policies: dict | None = None,
     ) -> tuple[list[LedgerEvent], PhysicalValidationReport]: ...
 
     def load_trajectory(self, crop_outcome_hash: str) -> Any: ...
@@ -53,7 +67,9 @@ class ScienceBindings(Protocol):
 
 
 def _unavailable(what: str, exc: Exception) -> DomainError:
-    return DomainError(ErrorCode.ASSET_UNAVAILABLE, f"science entry point unavailable ({what}): {exc}")
+    return DomainError(
+        ErrorCode.ASSET_UNAVAILABLE, f"science entry point unavailable ({what}): {exc}"
+    )
 
 
 class ProductionScience:
@@ -71,7 +87,9 @@ class ProductionScience:
         try:
             return load_library(pilot_id, season_id, library_hash)
         except FileNotFoundError as exc:
-            raise DomainError(ErrorCode.ASSET_UNAVAILABLE, f"candidate library unavailable: {exc}") from exc
+            raise DomainError(
+                ErrorCode.ASSET_UNAVAILABLE, f"candidate library unavailable: {exc}"
+            ) from exc
 
     def resolve_supply(self, profile, extra_uniform_reduction=0.0):
         from aabflow.water.roster import resolve_supply
@@ -88,19 +106,51 @@ class ProductionScience:
 
         return season_context(pilot_id, season_id, pilot_version)
 
-    def evaluate_policy(self, policy, ctx, resolved_supply, weather_scenario_id, config_id, *, state_id,
-                        extra_closures=()):
+    def evaluate_policy(
+        self,
+        policy,
+        ctx,
+        resolved_supply,
+        weather_scenario_id,
+        config_id,
+        *,
+        state_id,
+        extra_closures=(),
+    ):
         from aabflow.water.ledger import evaluate_policy
 
-        return evaluate_policy(policy, ctx, resolved_supply, weather_scenario_id, config_id, state_id=state_id,
-                               extra_closures=tuple(extra_closures))
+        return evaluate_policy(
+            policy,
+            ctx,
+            resolved_supply,
+            weather_scenario_id,
+            config_id,
+            state_id=state_id,
+            extra_closures=tuple(extra_closures),
+        )
 
-    def reconstruct(self, policy_ids, library, state_id, config_id, *, resolved_supply=None, extra_closures=(),
-                    policies=None):
+    def reconstruct(
+        self,
+        policy_ids,
+        library,
+        state_id,
+        config_id,
+        *,
+        resolved_supply=None,
+        extra_closures=(),
+        policies=None,
+    ):
         from aabflow.water.ledger import reconstruct
 
-        return reconstruct(policy_ids, library, state_id, config_id, resolved_supply=resolved_supply,
-                           extra_closures=tuple(extra_closures), policies=policies)
+        return reconstruct(
+            policy_ids,
+            library,
+            state_id,
+            config_id,
+            resolved_supply=resolved_supply,
+            extra_closures=tuple(extra_closures),
+            policies=policies,
+        )
 
     def load_trajectory(self, crop_outcome_hash):
         from aabflow.science.experiments import load_outcome, load_trajectory

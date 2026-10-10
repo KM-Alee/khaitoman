@@ -10,12 +10,13 @@
  * on the client from the package PNG, GeoJSON from /assets. No glyphs/sprites are used —
  * labels are DOM markers — so nothing is fetched from a remote host (AT15).
  */
-import { HD_IMAGERY_ATTRIBUTION, HD_IMAGERY_KEY, hdImageryTiles } from "./hdImagery";
+import { HD_IMAGERY_ATTRIBUTION, HD_IMAGERY_KEY, hdActive, hdImageryTiles, isRejection, markHdRejected, subscribeHd } from "./hdImagery";
 import maplibregl, {
   type GeoJSONSource,
   type LngLatBoundsLike,
   type Map as MLMap,
   type MapGeoJSONFeature,
+  type ExpressionSpecification,
   type StyleSpecification,
 } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -97,6 +98,17 @@ interface EdgeGeom {
   edge: Edge;
   path: Polyline;
   assumed: boolean;
+}
+
+const isDark = () => document.documentElement.dataset.theme === "dark";
+
+/** Esri imagery is far crisper and greener than Sentinel-2: mute it so result colours read first. */
+function hdPaint(dark: boolean) {
+  return { "raster-opacity": 1, "raster-saturation": dark ? -0.42 : -0.28, "raster-contrast": dark ? 0.06 : 0.02, "raster-brightness-max": dark ? 0.72 : 0.9, "raster-brightness-min": 0 };
+}
+function parcelLineOpacity(hd: boolean): ExpressionSpecification {
+  const k = hd ? 0.6 : 1;
+  return ["interpolate", ["linear"], ["zoom"], 12.5, 0.12 * k, 14.5, 0.42 * k, 16, 0.55 * k];
 }
 
 function bboxOfCorners(c: LngLat[], pad = 0.01): [number, number, number, number] {
@@ -208,6 +220,7 @@ export class MapEngine {
   private flowEnabled = true;
   private imageryVisible = true;
   private hdVisible = true;
+  private offHd: () => void = () => {};
   private rawVisible = false;
   private parcelsVisible = true;
   private dataKey = "";
@@ -229,7 +242,7 @@ export class MapEngine {
       pitch: 0,
       maxPitch: 72,
       pixelRatio: Math.min(window.devicePixelRatio || 1, 2),
-      attributionControl: opts.secondary ? false : { compact: true },
+      attributionControl: opts.secondary && !hdActive() ? false : { compact: true },
       canvasContextAttributes: { antialias: true },
       fadeDuration: 0,
       dragRotate: true,
@@ -237,6 +250,12 @@ export class MapEngine {
       cancelPendingTileRequestsWhileZooming: true,
     });
     this.map.getCanvas().setAttribute("aria-label", "Pilot map. Use [ and ] to move between fields, Enter to select, Escape to clear.");
+    // A rejected/expired Esri key: drop the HD layer everywhere; Sentinel-2 underneath remains.
+    this.map.on("error", (e) => {
+      const ev = e as unknown as { sourceId?: string; error?: { status?: number } };
+      if (ev.sourceId === SRC.imageryHd && isRejection(ev.error?.status)) markHdRejected();
+    });
+    this.offHd = subscribeHd(() => this.dropHd());
     this.loaded = new Promise((res) => this.map.once("load", () => res()));
     this.loaded.then(() => {
       this.applySky();
@@ -386,21 +405,21 @@ export class MapEngine {
     }
 
     // --- high-res display basemap (optional, online)
-    if (HD_IMAGERY_KEY) {
+    if (HD_IMAGERY_KEY && hdActive()) {
       m.addSource(SRC.imageryHd, {
         type: "raster",
         tiles: [hdImageryTiles(HD_IMAGERY_KEY)],
         tileSize: 256,
         maxzoom: 19,
         attribution: HD_IMAGERY_ATTRIBUTION,
-        ...(im && im.corners.length === 4 ? { bounds: bboxOfCorners(im.corners as LngLat[]) } : {}),
+        ...(im && im.corners.length === 4 ? { bounds: bboxOfCorners(im.corners as LngLat[], 0.04) } : {}),
       });
       m.addLayer({
         id: "imagery-hd",
         type: "raster",
         source: SRC.imageryHd,
         layout: { visibility: this.imageryVisible && this.hdVisible ? "visible" : "none" },
-        paint: { "raster-opacity": 1, "raster-saturation": -0.3, "raster-contrast": 0.04, "raster-brightness-max": 0.9, "raster-fade-duration": 180, "raster-resampling": "linear" },
+        paint: { ...hdPaint(isDark()), "raster-fade-duration": 180, "raster-resampling": "linear" },
       });
     }
 
@@ -475,7 +494,7 @@ export class MapEngine {
         layout: { visibility: this.parcelsVisible ? "visible" : "none", "line-join": "round" },
         paint: {
           "line-color": dark ? "#e8f1ee" : "#fffdf5",
-          "line-opacity": ["interpolate", ["linear"], ["zoom"], 12.5, 0.12, 14.5, 0.42, 16, 0.55],
+          "line-opacity": parcelLineOpacity(this.hdShown()),
           "line-width": ["interpolate", ["linear"], ["zoom"], 13, 0.4, 16, 1.1],
         },
       });
@@ -724,6 +743,7 @@ export class MapEngine {
     if (!this.map.isStyleLoaded()) return;
     this.map.setPaintProperty("bg", "background-color", cssVar("--map-bg"));
     if (this.map.getLayer("aoi-mask")) this.map.setPaintProperty("aoi-mask", "fill-color", maskColor());
+    if (this.map.getLayer("imagery-hd")) for (const [k, v] of Object.entries(hdPaint(isDark()))) this.map.setPaintProperty("imagery-hd", k, v);
     this.applySky();
   }
 
@@ -774,8 +794,21 @@ export class MapEngine {
     this.hdVisible = on;
     this.syncHd();
   }
+  private hdShown() {
+    return !!this.map.getLayer("imagery-hd") && this.imageryVisible && this.hdVisible;
+  }
   private syncHd() {
-    if (this.map.getLayer("imagery-hd")) this.map.setLayoutProperty("imagery-hd", "visibility", this.imageryVisible && this.hdVisible ? "visible" : "none");
+    if (!this.map.getLayer("imagery-hd")) return;
+    const on = this.hdShown();
+    this.map.setLayoutProperty("imagery-hd", "visibility", on ? "visible" : "none");
+    // Sharp imagery already shows every bund; quieten the parcel web so modeled fields lead.
+    if (this.map.getLayer("parcels-line")) this.map.setPaintProperty("parcels-line", "line-opacity", parcelLineOpacity(on));
+  }
+  private dropHd() {
+    if (this.destroyed) return;
+    if (this.map.getLayer("imagery-hd")) this.map.removeLayer("imagery-hd");
+    if (this.map.getSource(SRC.imageryHd)) this.map.removeSource(SRC.imageryHd);
+    if (this.map.getLayer("parcels-line")) this.map.setPaintProperty("parcels-line", "line-opacity", parcelLineOpacity(false));
   }
   setParcelsVisible(on: boolean) {
     this.parcelsVisible = on;
@@ -1070,9 +1103,10 @@ export class MapEngine {
     const b = this.fieldBBox.get(id);
     if (!b) return;
     const three = this.opts.mode === "3d" && !this.opts.reducedMotion;
-    const cam = this.map.cameraForBounds(b as LngLatBoundsLike, { padding: paddingFor(this.map, 0.3), maxZoom: this.map.getContainer().clientHeight < 520 ? 15.6 : 16.5, bearing: this.map.getBearing(), pitch: three ? 58 : 0 });
+    const cam = this.map.cameraForBounds(b as LngLatBoundsLike, { padding: paddingFor(this.map, 0.3), maxZoom: this.hdShown() ? 17.4 : this.map.getContainer().clientHeight < 520 ? 15.6 : 16.5, bearing: this.map.getBearing(), pitch: three ? 58 : 0 });
     if (!cam) return;
-    const zoom = Math.min(16.2, (cam.zoom ?? 15) - 0.6);
+    // Sub-metre imagery holds up closer in; 10 m Sentinel-2 turns to mush past ~16.
+    const zoom = Math.min(this.hdShown() ? 17 : 16.2, (cam.zoom ?? 15) - 0.6);
     const opts = { center: cam.center, zoom, pitch: three ? 58 : 0, bearing: this.map.getBearing() };
     if (this.opts.reducedMotion) this.map.jumpTo(opts);
     else this.map.easeTo({ ...opts, duration: 420, easing: easeOutCubic });
@@ -1118,6 +1152,7 @@ export class MapEngine {
 
   destroy() {
     this.destroyed = true;
+    this.offHd();
     cancelAnimationFrame(this.raf);
     cancelAnimationFrame(this.orbitRaf);
     this.selMarker?.remove();

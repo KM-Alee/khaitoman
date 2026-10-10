@@ -25,6 +25,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
+from aabflow.config import DATA_DIR
 from aabflow.domain.hashes import content_hash, file_sha256
 from aabflow.domain.schemas import Crop
 from aabflow.science import crop_profiles, scenarios, soils
@@ -183,6 +184,7 @@ class DesignRow:
     weather_sha: str
     sim_start: date
     sim_end: date
+    source: str = "science-discovery"
 
 
 def build_design(crop: Crop, pilot_id: str | None = None) -> list[DesignRow]:
@@ -206,7 +208,19 @@ def build_design(crop: Crop, pilot_id: str | None = None) -> list[DesignRow]:
                 rng = np.random.default_rng(int(content_hash([crop.value, y, soil, eff])[:8], 16))
                 for fam, sched in design_schedules(crop, planting, rng):
                     rows.append(
-                        DesignRow(crop, label, planting, soil, eff, fam, sched, sha, start, end)
+                        DesignRow(
+                            crop,
+                            label,
+                            planting,
+                            soil,
+                            eff,
+                            fam,
+                            sched,
+                            sha,
+                            start,
+                            end,
+                            pilot_id or "science-discovery",
+                        )
                     )
     return rows
 
@@ -264,6 +278,7 @@ def execute_design(rows: list[DesignRow], workers: int | None = None) -> pd.Data
             {
                 "experiment_hash": h,
                 "year": r.year_label,
+                "weather_source": r.source,
                 "soil": r.soil,
                 "app_eff": r.eff,
                 "family": r.family,
@@ -372,11 +387,15 @@ def train_and_evaluate(df: pd.DataFrame, crop: Crop) -> tuple[Any, dict[str, Any
         )
         if len(hold_dev)
         else None,
-        "test_ranking": within_context_spearman(test_main, "pred", ["soil", "app_eff"]),
+        "test_ranking": within_context_spearman(
+            test_main, "pred", ["weather_source", "soil", "app_eff"]
+        ),
         "baseline_test": regression_metrics(
             test_main["yield_kg_ha"].to_numpy(), test_main["baseline"].to_numpy(), reference
         ),
-        "decision_regret": decision_regret(test_main, "pred"),
+        "decision_regret": [
+            f for _, g in test_main.groupby("weather_source") for f in decision_regret(g, "pred")
+        ],
         "residual_band_kg_ha": [float(np.quantile(resid, 0.05)), float(np.quantile(resid, 0.95))],
         "pilot_note": "Weather is one ERA5 grid point (discovery series); pilot-level metrics equal the grid-cell "
         "metrics while pilots share that cell.",
@@ -414,8 +433,14 @@ def train_all(workers: int | None = None, crops=(Crop.wheat, Crop.cotton)) -> di
         "adapter_version": ADAPTER_VERSION,
         "crops": {},
     }
+    pilots = training_pilots()
+    summary["weather_sources"] = ["science-discovery", *pilots]
     for crop in crops:
+        # Pool the discovery archive with every published pilot's own series so the trained
+        # domain covers the weather scenarios the pilots actually use (T8.2 domain checks).
         rows = build_design(crop)
+        for pid in pilots:
+            rows += build_design(crop, pid)
         df = execute_design(rows, workers=workers)
         data_path = out_dir / f"training-{crop.value}.parquet"
         df.to_parquet(data_path, index=False)
@@ -456,6 +481,14 @@ def train_all(workers: int | None = None, crops=(Crop.wheat, Crop.cotton)) -> di
         models_dir() / "surrogate-latest.json", json.dumps({"model_version": MODEL_VERSION})
     )
     return summary
+
+
+def training_pilots() -> list[str]:
+    """Published pilots whose package weather joins the training pool."""
+    idx = DATA_DIR / "pilots" / "index.json"
+    if not idx.exists():
+        return []
+    return sorted({p["pilot_id"] for p in json.loads(idx.read_text())})
 
 
 def model_dir(version: str = MODEL_VERSION) -> Path:

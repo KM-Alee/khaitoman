@@ -25,6 +25,7 @@ from aabflow.services.pilots import PilotRepository
 
 def _routers() -> list[APIRouter]:
     from aabflow.api import analyses, jobs, pilots, runs, scenarios, surrogate, system
+    from aabflow.copilot.router import router as copilot_router
 
     return [
         system.router,
@@ -34,6 +35,7 @@ def _routers() -> list[APIRouter]:
         runs.router,
         analyses.router,
         surrogate.router,
+        copilot_router,
     ]
 
 

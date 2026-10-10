@@ -101,7 +101,10 @@ def ensure_index(conn: sqlite3.Connection, pilots: PilotRepository) -> str:
         conn.execute("DELETE FROM evidence_fts")
         conn.executemany(
             "INSERT INTO evidence_fts (doc_id, kind, pilot_id, title, body, source_url) VALUES (?,?,?,?,?,?)",
-            [(d["doc_id"], d["kind"], d["pilot_id"], d["title"], d["body"], d["source_url"]) for d in docs],
+            [
+                (d["doc_id"], d["kind"], d["pilot_id"], d["title"], d["body"], d["source_url"])
+                for d in docs
+            ],
         )
         conn.execute(
             "INSERT INTO meta (key, value) VALUES ('evidence_corpus_hash', ?) "
@@ -130,7 +133,12 @@ def fts_query(text: str) -> str | None:
 
 
 def search(
-    conn: sqlite3.Connection, q: str, *, pilot_id: str | None = None, kind: str | None = None, limit: int = 10
+    conn: sqlite3.Connection,
+    q: str,
+    *,
+    pilot_id: str | None = None,
+    kind: str | None = None,
+    limit: int = 10,
 ) -> list[dict[str, Any]]:
     query = fts_query(q)
     if query is None:

@@ -182,7 +182,11 @@ class PilotRepository:
             features: dict[str, dict[str, Any]] = {}
             fc = _opt_json(d / "fields.geojson") or {"features": []}
             for feat in fc.get("features", []):
-                props = {k: v for k, v in (feat.get("properties") or {}).items() if k in FieldRecord.model_fields}
+                props = {
+                    k: v
+                    for k, v in (feat.get("properties") or {}).items()
+                    if k in FieldRecord.model_fields
+                }
                 rec = FieldRecord.model_validate(props)
                 fields[rec.field_id] = rec
                 features[rec.field_id] = feat
@@ -194,18 +198,31 @@ class PilotRepository:
                 sid: [RosterWindow.model_validate(w) for w in ws]
                 for sid, ws in (roster_raw.get("seasons", roster_raw) or {}).items()
             }
-            refs = [ServiceReference.model_validate(r) for r in _opt_json(d / "service_reference.json") or []]
-            assets = {a["asset_id"]: Asset.model_validate(a) for a in _opt_json(d / "assets.json") or []}
+            refs = [
+                ServiceReference.model_validate(r)
+                for r in _opt_json(d / "service_reference.json") or []
+            ]
+            assets = {
+                a["asset_id"]: Asset.model_validate(a) for a in _opt_json(d / "assets.json") or []
+            }
             iv = _opt_json(d / "interventions.json") or {}
             types = {t["type_id"]: InterventionType.model_validate(t) for t in iv.get("types", [])}
             instances = {
-                i["instance_id"]: InterventionInstance.model_validate(i) for i in iv.get("instances", [])
+                i["instance_id"]: InterventionInstance.model_validate(i)
+                for i in iv.get("instances", [])
             }
-            soils = {s["soil_profile_id"]: SoilProfile.model_validate(s) for s in _opt_json(d / "soils.json") or []}
-            evidence = {e["evidence_id"]: EvidenceRecord.model_validate(e) for e in _opt_json(d / "evidence.json") or []}
+            soils = {
+                s["soil_profile_id"]: SoilProfile.model_validate(s)
+                for s in _opt_json(d / "soils.json") or []
+            }
+            evidence = {
+                e["evidence_id"]: EvidenceRecord.model_validate(e)
+                for e in _opt_json(d / "evidence.json") or []
+            }
         except (ValueError, KeyError, TypeError) as exc:
             raise DomainError(
-                ErrorCode.ASSET_UNAVAILABLE, f"pilot package {pilot_id}/{version} failed to parse: {exc}"
+                ErrorCode.ASSET_UNAVAILABLE,
+                f"pilot package {pilot_id}/{version} failed to parse: {exc}",
             ) from exc
         terrain = None
         if (d / "terrain" / "dem.json").exists() and (d / "terrain" / "dem.png").exists():
@@ -219,7 +236,9 @@ class PilotRepository:
                 except ValueError:
                     pass
         pkg_hash = pilot.package_sha256 or (
-            file_sha256(d / "manifest.json") if (d / "manifest.json").exists() else file_sha256(d / "pilot.json")
+            file_sha256(d / "manifest.json")
+            if (d / "manifest.json").exists()
+            else file_sha256(d / "pilot.json")
         )
         return PilotPackage(
             pilot_id=pilot_id,
@@ -246,7 +265,9 @@ class PilotRepository:
         )
 
     # ----------------------------------------------------------------- lookup
-    def find_field(self, field_id: str, pilot_id: str | None, pilot_version: str | None) -> PilotPackage:
+    def find_field(
+        self, field_id: str, pilot_id: str | None, pilot_version: str | None
+    ) -> PilotPackage:
         candidates = (
             [self.package(pilot_id, pilot_version)]
             if pilot_id
@@ -261,7 +282,12 @@ class PilotRepository:
     def asset_path(self, pilot_id: str, version: str, rel: str) -> Path:
         """Validated path of a servable package file; raises NOT_FOUND otherwise."""
         pkg = self.package(pilot_id, version)
-        if not rel or "\\" in rel or rel.startswith("/") or any(p in ("", ".", "..") for p in rel.split("/")):
+        if (
+            not rel
+            or "\\" in rel
+            or rel.startswith("/")
+            or any(p in ("", ".", "..") for p in rel.split("/"))
+        ):
             raise not_found("asset", rel)
         p = (pkg.directory / rel).resolve()
         base = pkg.directory.resolve()

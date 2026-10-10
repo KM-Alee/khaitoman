@@ -23,9 +23,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "api"))
 
-from aabflow.ingestion.common import read_json  # noqa: E402
-from aabflow.ingestion.onboarding import pipeline  # noqa: E402
-from aabflow.ingestion.pilot_aois import PILOTS  # noqa: E402
+from aabflow.ingestion.common import read_json
+from aabflow.ingestion.onboarding import pipeline
+from aabflow.ingestion.pilot_aois import PILOTS
 
 EXIT_AWAITING_INFERENCE = 3
 
@@ -44,8 +44,16 @@ def main() -> int:
     ap.add_argument("--version", default="reviewed-v1")
     ap.add_argument("--bundle", type=Path, help="raw bundle dir (default: latest for the pilot)")
     ap.add_argument("--data-dir", type=Path, default=ROOT / "data")
-    ap.add_argument("--workdir", type=Path, help="intake workdir (default data/pilots/.intake/<pilot>-<version>)")
-    ap.add_argument("--edits", type=Path, help="reviewer edits JSON (default data/pilots/review_edits/<pilot>.json)")
+    ap.add_argument(
+        "--workdir",
+        type=Path,
+        help="intake workdir (default data/pilots/.intake/<pilot>-<version>)",
+    )
+    ap.add_argument(
+        "--edits",
+        type=Path,
+        help="reviewer edits JSON (default data/pilots/review_edits/<pilot>.json)",
+    )
     ap.add_argument("--reviewer", default=None)
     ap.add_argument("--until", choices=["process", "review", "publish"], default="publish")
     args = ap.parse_args()
@@ -70,7 +78,11 @@ def main() -> int:
     st = pipeline.status(wd)
     if st["state"] in ("created", "awaiting_inference", "failed", "acquired_raw"):
         out = pipeline.process(st["intake_id"], wd, progress=progress)
-        print(json.dumps({k: out[k] for k in ("state", "blockers", "warnings", "cache_hits")}, indent=1))
+        print(
+            json.dumps(
+                {k: out[k] for k in ("state", "blockers", "warnings", "cache_hits")}, indent=1
+            )
+        )
         if out["state"] == "awaiting_inference":
             print("run in the vision container:\n  " + out["inference_command"])
             return EXIT_AWAITING_INFERENCE
@@ -84,7 +96,9 @@ def main() -> int:
         edits = read_json(ep) if ep.exists() else {"field_edits": []}
         if args.reviewer:
             edits["reviewer"] = args.reviewer
-        edits.setdefault("reviewer", "aabflow data stream (rule-based review + visual overlay check)")
+        edits.setdefault(
+            "reviewer", "aabflow data stream (rule-based review + visual overlay check)"
+        )
         r = pipeline.apply_review(wd, edits, st["review_version"])
         print(json.dumps(r, indent=1))
         if r["blockers"]:
@@ -92,7 +106,9 @@ def main() -> int:
     if args.until == "review":
         return 0
     m = pipeline.publish(wd, args.pilot, args.version, data_dir=args.data_dir)
-    print(f"published {args.pilot}/{args.version}: {len(m.files)} files, {len(m.source_ids)} source ids")
+    print(
+        f"published {args.pilot}/{args.version}: {len(m.files)} files, {len(m.source_ids)} source ids"
+    )
     return 0
 
 

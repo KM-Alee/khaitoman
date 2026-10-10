@@ -114,18 +114,26 @@ def get_scenario(scenario_id: str, conn: Conn) -> ScenarioView:
         "WHERE scenario_id = ? ORDER BY created_at",
         (scenario_id,),
     ).fetchall()
-    return ScenarioView(scenario_id=scenario_id, pilot_id=row["pilot_id"], label=row["label"],
-                        head_revision_id=row["head_revision_id"], revisions=[dict(r) for r in revs])
+    return ScenarioView(
+        scenario_id=scenario_id,
+        pilot_id=row["pilot_id"],
+        label=row["label"],
+        head_revision_id=row["head_revision_id"],
+        revisions=[dict(r) for r in revs],
+    )
 
 
 @router.post("/scenarios/{scenario_id}/revisions", status_code=201, response_model=RevisionView)
-def create_revision(scenario_id: str, body: RevisionCreate, state: State, conn: Conn, idem: IdemKey = None):
+def create_revision(
+    scenario_id: str, body: RevisionCreate, state: State, conn: Conn, idem: IdemKey = None
+):
     def create():
         rid = svc.derive_revision(conn, state, scenario_id, body.parent_revision_id, body.changes)
         return 201, svc.revision_view(conn, rid)
 
-    return run_idempotent(conn, f"POST /scenarios/{scenario_id}/revisions", idem, body.model_dump(mode="json"),
-                          create)
+    return run_idempotent(
+        conn, f"POST /scenarios/{scenario_id}/revisions", idem, body.model_dump(mode="json"), create
+    )
 
 
 @router.get("/scenario-revisions/{revision_id}", response_model=RevisionView)
@@ -134,25 +142,53 @@ def get_revision(revision_id: str, conn: Conn) -> dict:
 
 
 @router.post("/scenario-revisions/{revision_id}/solve", status_code=202, response_model=JobAccepted)
-def solve(revision_id: str, state: State, conn: Conn, body: SolveRequest | None = None, idem: IdemKey = None):
+def solve(
+    revision_id: str,
+    state: State,
+    conn: Conn,
+    body: SolveRequest | None = None,
+    idem: IdemKey = None,
+):
     body = body or SolveRequest()
     rev, deps = svc.get_revision(conn, revision_id)
     req = rev.request
     if body.plan_kind is PlanKind.R and not req.uncertainty_set_id:
-        raise invalid("plan R (robust) requires the revision to name an uncertainty_set_id",
-                      {"uncertainty_set_id": "missing"})
-    if body.plan_kind in (PlanKind.B0, PlanKind.B1) and req.optimization_mode is OptimizationMode.worst_case:
-        raise invalid("B0/B1 are typical-state baselines; use a typical-mode revision", {"plan_kind": body.plan_kind})
+        raise invalid(
+            "plan R (robust) requires the revision to name an uncertainty_set_id",
+            {"uncertainty_set_id": "missing"},
+        )
+    if (
+        body.plan_kind in (PlanKind.B0, PlanKind.B1)
+        and req.optimization_mode is OptimizationMode.worst_case
+    ):
+        raise invalid(
+            "B0/B1 are typical-state baselines; use a typical-mode revision",
+            {"plan_kind": body.plan_kind},
+        )
     pkg = state.pilots.package(req.pilot_id, req.pilot_version)
     if deps.get("pilot_package_sha256") != pkg.package_hash:
-        raise DomainError(ErrorCode.VERSION_CONFLICT, "pilot package changed since this revision was created",
-                          extra={"dependency_diff": {"revision": deps.get("pilot_package_sha256"),
-                                                     "current": pkg.package_hash}})
-    lib = rev.candidate_library_hash or state.catalog.latest_library_hash(req.pilot_id, req.season_id)
+        raise DomainError(
+            ErrorCode.VERSION_CONFLICT,
+            "pilot package changed since this revision was created",
+            extra={
+                "dependency_diff": {
+                    "revision": deps.get("pilot_package_sha256"),
+                    "current": pkg.package_hash,
+                }
+            },
+        )
+    lib = rev.candidate_library_hash or state.catalog.latest_library_hash(
+        req.pilot_id, req.season_id
+    )
     if lib is None:
-        raise DomainError(ErrorCode.ASSET_UNAVAILABLE, "no published candidate library for this pilot/season")
-    payload = {"scenario_revision_id": revision_id, "plan_kind": body.plan_kind.value,
-               "time_limit_s": body.time_limit_s}
+        raise DomainError(
+            ErrorCode.ASSET_UNAVAILABLE, "no published candidate library for this pilot/season"
+        )
+    payload = {
+        "scenario_revision_id": revision_id,
+        "plan_kind": body.plan_kind.value,
+        "time_limit_s": body.time_limit_s,
+    }
 
     def create():
         jid = queue.enqueue(conn, "solve", payload, content_hash(payload), subject_id=revision_id)
@@ -161,4 +197,6 @@ def solve(revision_id: str, state: State, conn: Conn, body: SolveRequest | None 
         row = queue.get(conn, jid)
         return 202, {"job_id": jid, "job": queue.row_to_job(row).model_dump(mode="json")}
 
-    return run_idempotent(conn, f"POST /scenario-revisions/{revision_id}/solve", idem, payload, create)
+    return run_idempotent(
+        conn, f"POST /scenario-revisions/{revision_id}/solve", idem, payload, create
+    )

@@ -50,7 +50,9 @@ class Catalog:
 
     # ------------------------------------------------------------------ seasons
     def seasons(self) -> list[Season]:
-        return self._cached("seasons.json", lambda raw: [Season.model_validate(s) for s in raw or []])
+        return self._cached(
+            "seasons.json", lambda raw: [Season.model_validate(s) for s in raw or []]
+        )
 
     def season(self, season_id: str) -> Season | None:
         return next((s for s in self.seasons() if s.season_id == season_id), None)
@@ -66,7 +68,9 @@ class Catalog:
     def _weather_raw(self) -> dict:
         return self._cached("weather_scenarios.json", lambda raw: raw or {})
 
-    def weather_scenarios(self, pilot_id: str | None, season_id: str | None) -> list[WeatherScenario]:
+    def weather_scenarios(
+        self, pilot_id: str | None, season_id: str | None
+    ) -> list[WeatherScenario]:
         raw = self._weather_raw()
         cell = (raw.get("pilot_grid_cells") or {}).get(pilot_id) if pilot_id else None
         rows = None
@@ -93,17 +97,34 @@ class Catalog:
             rows = [r for r in rows if r["supply_profile_id"] not in ids] + list(by_pilot)
         return [SupplyProfile.model_validate(r) for r in rows]
 
-    def supply_profile(self, pilot_id: str, season_id: str, profile_id: str) -> SupplyProfile | None:
-        return next((p for p in self.supply_profiles(pilot_id, season_id) if p.supply_profile_id == profile_id), None)
+    def supply_profile(
+        self, pilot_id: str, season_id: str, profile_id: str
+    ) -> SupplyProfile | None:
+        return next(
+            (
+                p
+                for p in self.supply_profiles(pilot_id, season_id)
+                if p.supply_profile_id == profile_id
+            ),
+            None,
+        )
 
     def uncertainty_sets(self, pilot_id: str | None, season_id: str | None) -> list[UncertaintySet]:
-        rows = [UncertaintySet.model_validate(u) for u in self._supply_raw().get("uncertainty_sets") or []]
+        rows = [
+            UncertaintySet.model_validate(u)
+            for u in self._supply_raw().get("uncertainty_sets") or []
+        ]
         return [
-            u for u in rows if (pilot_id is None or u.pilot_id == pilot_id) and (season_id is None or u.season_id == season_id)
+            u
+            for u in rows
+            if (pilot_id is None or u.pilot_id == pilot_id)
+            and (season_id is None or u.season_id == season_id)
         ]
 
     def uncertainty_set(self, set_id: str) -> UncertaintySet | None:
-        return next((u for u in self.uncertainty_sets(None, None) if u.uncertainty_set_id == set_id), None)
+        return next(
+            (u for u in self.uncertainty_sets(None, None) if u.uncertainty_set_id == set_id), None
+        )
 
     # ------------------------------------------------------------------ library
     def latest_library_hash(self, pilot_id: str, season_id: str) -> str | None:
@@ -122,7 +143,11 @@ class Catalog:
     def library_summary(self, pilot_id: str, season_id: str) -> dict[str, Any]:
         h = self.latest_library_hash(pilot_id, season_id)
         if h is None:
-            return {"ready": False, "candidate_library_hash": None, "reason": "no published candidate library"}
+            return {
+                "ready": False,
+                "candidate_library_hash": None,
+                "reason": "no published candidate library",
+            }
         lib = _load(self.root / pilot_id / season_id / h / "library.json") or {}
         cov = lib.get("coverage") or []
         return {
@@ -130,7 +155,9 @@ class Catalog:
             "candidate_library_hash": h,
             "pilot_version": lib.get("pilot_version"),
             "state_ids": lib.get("state_ids", []),
-            "configurations": [c.get("shared_configuration_id") for c in lib.get("configurations", [])],
+            "configurations": [
+                c.get("shared_configuration_id") for c in lib.get("configurations", [])
+            ],
             "retained_policies": sum(int(c.get("retained", 0)) for c in cov),
             "fields": len(cov),
             "generator_version": lib.get("generator_version"),
@@ -140,13 +167,18 @@ class Catalog:
     # ------------------------------------------------------------------- prices
     def prices(self) -> list[dict[str, Any]]:
         """Dated crop price records ``[{crop, season_id?, price_pkr_per_kg, evidence_id, observed_on, basis}]``."""
-        return self._cached("prices.json", lambda raw: [r for r in raw or [] if isinstance(r, dict)])
+        return self._cached(
+            "prices.json", lambda raw: [r for r in raw or [] if isinstance(r, dict)]
+        )
 
     def price(self, crop: str | None, season_id: str) -> dict[str, Any] | None:
         rows = [
-            r for r in self.prices()
-            if r.get("crop") == crop and r.get("season_id") in (None, season_id)
-            and r.get("price_pkr_per_kg") and r.get("evidence_id")
+            r
+            for r in self.prices()
+            if r.get("crop") == crop
+            and r.get("season_id") in (None, season_id)
+            and r.get("price_pkr_per_kg")
+            and r.get("evidence_id")
         ]
         rows.sort(key=lambda r: (r.get("season_id") is None, str(r.get("observed_on", ""))))
         return rows[0] if rows else None

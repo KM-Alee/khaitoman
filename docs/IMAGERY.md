@@ -1,6 +1,6 @@
 # High-resolution map imagery: plan and integration guide
 
-Status: **decided 2026-10-10**. Development now targets this setup.
+Status: **decided and implemented 2026-10-10**. Development now targets this setup.
 
 ## Decision
 
@@ -36,52 +36,31 @@ https://ibasemaps-api.arcgis.com/arcgis/rest/services/World_Imagery/MapServer/ti
 
 Layer order in the MapLibre style: `bg` → `imagery` (Sentinel-2 canvas) → **`imagery-hd`** (Esri raster) → `hillshade` → `aoi-mask` → parcels, canals, fields, assets. The Esri source is bounded to the package scene's bbox plus about 1 km, so we don't fetch tiles nobody sees. Terrain (raster-dem) drapes both imagery layers.
 
-### Already implemented (web thread, 2026-10-10, uncommitted)
+### Implemented (web thread, 2026-10-10, uncommitted)
+
+The key is in the repo-root `.env`, added at pablo's request.
 
 | File | What |
 |---|---|
 | `web/vite.config.ts` | `envDir` points at the repo root, so the dev server reads `VITE_*` from `.env`. |
-| `web/src/components/map/hdImagery.ts` | `HD_IMAGERY_KEY`, `HD_IMAGERY_ATTRIBUTION`, `hdImageryTiles(key)`. This is the only place the URL lives. |
-| `web/src/components/map/engine.ts` | Adds the `imagery-hd` raster source and layer when a key is set. `setHdImageryVisible()`. Visible only when both "imagery" and "HD" are on. |
-| `web/src/app/store.ts` | Persisted `showHdImagery: true`. |
-| `web/src/components/map/MapBinder.tsx`, `SecondaryMap.tsx` | Push the toggle into the engines. |
-| `web/src/components/map/MapSlot.tsx` | Layers menu switch "High-res imagery (Esri)". It is disabled with the hint "Add VITE_ARCGIS_KEY to .env" when there is no key. |
-| `web/src/features/workspace/WorkspaceScreen.tsx` | The credit chip shows the Esri attribution plus "analysis: Sentinel-2 …" when HD is on. |
+| `web/src/components/map/hdImagery.ts` | The tile URL, attribution and key. Session-wide key health (`ok` / `rejected` / `off`) with `useHdStatus()`. |
+| `web/src/components/map/engine.ts` | `imagery-hd` raster above Sentinel-2. Bounds are the scene bbox plus about 4 km, so the dimmed surroundings look real. Theme-aware muting (`hdPaint`). The parcel outlines quieten when HD is visible. Field fly-to goes closer (z17 instead of z16.2) when sharp imagery is on. A 401/403/498/499 from Esri drops the layer on every map. The compare view's secondary map keeps its attribution when HD is active. |
+| `web/src/app/store.ts`, `MapBinder.tsx`, `SecondaryMap.tsx` | Persisted `showHdImagery` toggle, pushed into both engines. |
+| `web/src/components/map/MapSlot.tsx` | Layers switch "High-res imagery (Esri)", with hints for no key and for a rejected key. |
+| `web/src/features/workspace/WorkspaceScreen.tsx` | The credit chip shows the Esri attribution plus "analysis: Sentinel-2 …". |
+| `web/src/features/onboarding/AoiDrawMap.tsx` | Esri basemap under the AOI drawing map. The graticule fades when it's on. Rejection is handled. |
+| `Dockerfile`, `compose.yaml` | The `web-build` stage takes `ARG VITE_ARCGIS_KEY`. The `demo` service passes it from `.env`, so `make demo` and `make ui-checks` get it. |
+| `.env.example` | Documents the optional key. |
+| `tests/e2e/offline-imagery.spec.ts` (+ `fixtures/hd-tile.png`) | Mocked tiles: token present, switch toggles the layer, attribution contains Esri, network failure keeps Sentinel-2 with no page errors, and a 498 response drops the layer and disables the switch. Without a key, it asserts the switch is disabled. |
 
-This was verified with Playwright, using mocked tiles intercepted on `ibasemaps-api.arcgis.com`:
-- 31 tile requests carried the token.
-- The layer renders under the fields.
-- The toggle switches back to Sentinel-2 and the credit updates.
-- tsc is clean and vitest passes 49/49.
+Report and export: nothing in the app snapshots the map canvas today, so there is nothing for Esri tiles to leak into. **Any future export feature must hide `imagery-hd` first.**
 
-### Remaining work (for the integrating agent)
+Presentation mode hides the credit chip, but MapLibre's attribution control, which carries the Esri credit, stays visible.
 
-1. **`.env.example`**: add a commented `# VITE_ARCGIS_KEY=` line explaining that it is optional and display-only, and link to this doc.
-2. **Frozen demo build (`make demo`)**: `.env` is in `.dockerignore`, so the `web-build` stage never sees the key.
-   - In `Dockerfile`'s `web-build` stage, add `ARG VITE_ARCGIS_KEY=` and `ENV VITE_ARCGIS_KEY=$VITE_ARCGIS_KEY` before `npm run build`.
-   - In `compose.yaml`, give the `demo` service build `args: { VITE_ARCGIS_KEY: "${VITE_ARCGIS_KEY:-}" }`. Compose interpolates from `.env` automatically.
-   - Empty is fine: the app falls back to Sentinel-2.
-3. **Attribution on every surface**:
-   - The compare view's secondary map has `attributionControl: false`. When HD is on, show the Esri credit in the compare screen instead (one shared chip is enough).
-   - Check presentation mode, where `present-hide` hides the workspace credit chip. The MapLibre compact attribution control must stay visible there.
-   - Check Replay and Explore map screens too.
-4. **Onboarding AOI map (`web/src/features/onboarding/AoiDrawMap.tsx`)**: when a key is set, use the same Esri tiles (via `hdImageryTiles`) as the background, so drawing the AOI is easier. Drawing an AOI is user input, not derived data, so this is allowed. Fall back to the current background without a key.
-5. **Reports and exports**: find every place that snapshots the map canvas (report screen, PNG/PDF export, share). Hide `imagery-hd` during the snapshot and restore it afterwards, so exports contain only Sentinel-2.
-6. **Failure handling**:
-   - If tiles return 401/403 (bad or expired key), stop requesting them for the session: remove the layer, and switch the layers-menu hint to "Esri key rejected, showing Sentinel-2".
-   - When offline (network error), do nothing special; Sentinel-2 underneath already shows.
-   - Never surface a toast storm.
-7. **Styling pass**:
-   - Esri imagery is far sharper and greener than Sentinel-2. Retune the `imagery-hd` paint values (saturation, brightness-max) so server-coloured fields and canals still read first, in both light and dark themes.
-   - Consider lowering `parcels-line` opacity slightly when HD is on.
-8. **E2E tests (`tests/e2e/`)**: add a Playwright spec that runs the dev server with `VITE_ARCGIS_KEY=testkey`. Intercept `**/ibasemaps-api.arcgis.com/**` with a fixture PNG and assert:
-   - (a) tile requests are made and carry the token;
-   - (b) the layers switch toggles them off and on;
-   - (c) the credit text shows the Esri attribution;
-   - (d) with the route aborted, the map still renders and there are no page errors;
-   - (e) without the key, the switch is disabled.
-   Never hit the real Esri API in CI.
-9. **Docs**: mention the optional key in the README quick start and add a line to `docs/STATUS.md`. The lead thread owns STATUS.md and commits.
+### Remaining
+
+- Check real imagery in a browser on the laptop. The build sandboxes can't reach `ibasemaps-api.arcgis.com`, so only mocked tiles were tested.
+- Add a line to `docs/STATUS.md` and the README quick start. The lead thread owns these.
 
 ### Out of scope
 

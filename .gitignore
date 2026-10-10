@@ -25,6 +25,7 @@ data/app.sqlite*
 !data/**/.gitkeep
 !data/**/SHA256SUMS
 !data/**/manifest.json
+*.aux.xml
 
 # Transfer scratch between Claude sandboxes and the laptop (safe to delete)
 .xfer/

@@ -1,35 +1,35 @@
 {
  "model_version": "surrogate-v1",
- "created_at": "2026-10-10T00:42:13.395946+00:00",
+ "created_at": "2026-10-10T04:04:42.892539+00:00",
  "adapter_version": "aabflow-aquacrop-adapter-1.0.0",
  "crops": {
   "wheat": {
    "test": {
     "n": 66,
-    "mae_kg_ha": 194.43633268633377,
-    "rmse_kg_ha": 243.73165768597997,
-    "bias_kg_ha": -82.12126313791907,
-    "nmae": 0.025174379117089137,
-    "reference_yield_kg_ha": 7723.580064556367
+    "mae_kg_ha": 287.2387485710469,
+    "rmse_kg_ha": 331.70561435122704,
+    "bias_kg_ha": -231.20456422952773,
+    "nmae": 0.03678644183501178,
+    "reference_yield_kg_ha": 7808.27756757016
    },
    "test_ranking": {
     "contexts": 6,
-    "median_spearman": 0.9681818181818183,
-    "min_spearman": 0.9066082746806284
+    "median_spearman": 0.9772727272727273,
+    "min_spearman": 0.9248315565837565
    },
    "decision_regret_summary": {
     "n": 12,
-    "median": 0.0009429085513296075,
-    "max": 0.006688047840653367,
-    "median_kg": 97.15823828253633
+    "median": 0.0009450765393840734,
+    "max": 0.006010958301584605,
+    "median_kg": 94.55356667867454
    },
    "baseline_test": {
     "n": 66,
-    "mae_kg_ha": 927.1744878957527,
-    "rmse_kg_ha": 1372.8686551096519,
-    "bias_kg_ha": 266.23079635172894,
-    "nmae": 0.12004465288714639,
-    "reference_yield_kg_ha": 7723.580064556367
+    "mae_kg_ha": 929.6808175211369,
+    "rmse_kg_ha": 1365.375488896435,
+    "bias_kg_ha": 244.9879504586495,
+    "nmae": 0.1190634950507327,
+    "reference_yield_kg_ha": 7808.27756757016
    },
    "gate_results": {
     "nmae": true,
@@ -41,13 +41,13 @@
    },
    "passed": true,
    "loyo_cv": {
-    "nmae_mean": 0.03916382509468907,
-    "nmae_max": 0.08094104466044391,
-    "nmae_std": 0.01904062465877003
+    "nmae_mean": 0.05095645973386922,
+    "nmae_max": 0.10217728247694839,
+    "nmae_std": 0.019444816759730643
    },
    "samples": {
-    "total": 1870,
-    "fit_pool": 1648,
+    "total": 3450,
+    "fit_pool": 3096,
     "test": 66,
     "holdout_family_test": 6,
     "years": 26
@@ -55,31 +55,31 @@
   },
   "cotton": {
    "test": {
-    "n": 66,
-    "mae_kg_ha": 221.58697625270835,
-    "rmse_kg_ha": 278.82917427116786,
-    "bias_kg_ha": -195.84986437859803,
-    "nmae": 0.06737465758144595,
-    "reference_yield_kg_ha": 3288.877215959764
+    "n": 198,
+    "mae_kg_ha": 301.79275730249327,
+    "rmse_kg_ha": 374.21707174480696,
+    "bias_kg_ha": -282.08426627367896,
+    "nmae": 0.09270232339794425,
+    "reference_yield_kg_ha": 3255.503705198243
    },
    "test_ranking": {
-    "contexts": 6,
-    "median_spearman": 0.9772727272727273,
-    "min_spearman": 0.9545454545454546
+    "contexts": 18,
+    "median_spearman": 0.9681818181818183,
+    "min_spearman": 0.9272727272727275
    },
    "decision_regret_summary": {
-    "n": 12,
-    "median": 0.005715333936546755,
-    "max": 0.012646940347686335,
-    "median_kg": 347.69635810667387
+    "n": 36,
+    "median": 0.0008730512243914536,
+    "max": 0.01496240441214026,
+    "median_kg": 42.98995519244636
    },
    "baseline_test": {
-    "n": 66,
-    "mae_kg_ha": 470.0677383928447,
-    "rmse_kg_ha": 642.2610340862412,
-    "bias_kg_ha": -117.26782764634991,
-    "nmae": 0.14292650881333344,
-    "reference_yield_kg_ha": 3288.877215959764
+    "n": 198,
+    "mae_kg_ha": 494.64494460502567,
+    "rmse_kg_ha": 701.4148425588058,
+    "bias_kg_ha": -240.37377334270005,
+    "nmae": 0.15194114011149756,
+    "reference_yield_kg_ha": 3255.503705198243
    },
    "gate_results": {
     "nmae": true,
@@ -91,19 +91,24 @@
    },
    "passed": true,
    "loyo_cv": {
-    "nmae_mean": 0.06879459211893466,
-    "nmae_max": 0.14950783349697644,
-    "nmae_std": 0.02383877960075495
+    "nmae_mean": 0.07404463833110064,
+    "nmae_max": 0.14873383045085892,
+    "nmae_std": 0.025300858565452052
    },
    "samples": {
-    "total": 1871,
-    "fit_pool": 1649,
-    "test": 66,
-    "holdout_family_test": 6,
+    "total": 3599,
+    "fit_pool": 3101,
+    "test": 198,
+    "holdout_family_test": 18,
     "years": 26
    }
   }
  },
+ "weather_sources": [
+  "science-discovery",
+  "pilot-a",
+  "pilot-b"
+ ],
  "passed": true,
- "wall_s": 119.5
+ "wall_s": 801.7
 }

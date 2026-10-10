@@ -1,13 +1,15 @@
 /**
  * Constrained polygon drawing for onboarding (T10.3): click to add vertices, click the first
- * vertex or press Enter to close, Backspace to undo, Escape to clear. Uses only local
- * context layers (published pilots' AOIs and imagery) — no remote basemap tiles.
+ * vertex or press Enter to close, Backspace to undo, Escape to clear. Context layers are the
+ * published pilots' AOIs and package imagery; with VITE_ARCGIS_KEY set, Esri World Imagery sits
+ * underneath as a display-only basemap (docs/IMAGERY.md) so canals and fields are visible to trace.
  */
 import { useEffect, useRef } from "react";
 import maplibregl, { type GeoJSONSource } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { cssVar } from "@/components/map/palette";
 import type { LngLat } from "@/components/map/geo";
+import { HD_IMAGERY_ATTRIBUTION, HD_IMAGERY_KEY, hdActive, hdImageryTiles, isRejection, markHdRejected } from "@/components/map/hdImagery";
 
 export interface ContextLayer {
   id: string;
@@ -52,7 +54,18 @@ export function AoiDrawMap({
     });
     mapRef.current = m;
     m.getCanvas().setAttribute("aria-label", "AOI drawing map. Click to add vertices; Enter closes the polygon; Backspace removes the last vertex.");
+    m.on("error", (e) => {
+      const ev = e as unknown as { sourceId?: string; error?: { status?: number } };
+      if (ev.sourceId === "hd" && isRejection(ev.error?.status)) {
+        markHdRejected();
+        if (m.getLayer("hd")) m.removeLayer("hd");
+      }
+    });
     m.on("load", () => {
+      if (hdActive()) {
+        m.addSource("hd", { type: "raster", tiles: [hdImageryTiles(HD_IMAGERY_KEY)], tileSize: 256, maxzoom: 19, attribution: HD_IMAGERY_ATTRIBUTION });
+        m.addLayer({ id: "hd", type: "raster", source: "hd", paint: { "raster-saturation": -0.2, "raster-fade-duration": 150 } });
+      }
       context.forEach((c, i) => {
         if (c.image?.url && c.image.corners.length === 4) {
           m.addSource(`ctx-img-${i}`, { type: "image", url: c.image.url, coordinates: c.image.corners as [LngLat, LngLat, LngLat, LngLat] });
@@ -67,7 +80,7 @@ export function AoiDrawMap({
       for (let x = 60; x <= 80; x += 0.1) lines.push({ type: "Feature", properties: {}, geometry: { type: "LineString", coordinates: [[x, 23], [x, 37]] } });
       for (let y = 23; y <= 37; y += 0.1) lines.push({ type: "Feature", properties: {}, geometry: { type: "LineString", coordinates: [[60, y], [80, y]] } });
       m.addSource("grid", { type: "geojson", data: { type: "FeatureCollection", features: lines } });
-      m.addLayer({ id: "grid", type: "line", source: "grid", paint: { "line-color": cssVar("--border-strong"), "line-width": 0.5, "line-opacity": 0.5 } });
+      m.addLayer({ id: "grid", type: "line", source: "grid", paint: { "line-color": cssVar("--border-strong"), "line-width": 0.5, "line-opacity": hdActive() ? 0.18 : 0.5 } });
       m.addSource("draw", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
       m.addLayer({ id: "draw-fill", type: "fill", source: "draw", filter: ["==", ["geometry-type"], "Polygon"], paint: { "fill-color": water, "fill-opacity": 0.18 } });
       m.addLayer({ id: "draw-line", type: "line", source: "draw", filter: ["!=", ["geometry-type"], "Point"], paint: { "line-color": water, "line-width": 2.5 } });

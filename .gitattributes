@@ -1,0 +1,16 @@
+# Ensure LF line endings across all platforms so models and scripts load properly in Docker
+* text=auto eol=lf
+
+# LightGBM booster model files require LF line endings
+data/models/**/*.txt text eol=lf
+
+# Binary data files
+*.parquet binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gpkg binary
+*.pt binary
+*.sqlite binary
+*.sqlite3 binary

@@ -20,7 +20,7 @@ import { Popover, PopoverContent, PopoverTrigger, Segmented, Switch } from "@/co
 import { attachMap, detachMap, getEngine, useMapRuntime } from "./runtime";
 import { METRIC_DEFS, useFieldVisuals, type FieldVisualResult } from "./useFieldVisuals";
 import type { FieldVisual } from "./engine";
-import { HD_IMAGERY_KEY } from "./hdImagery";
+import { useHdStatus } from "./hdImagery";
 import { MapLegend } from "./MapLegend";
 
 export interface MapSlotProps {
@@ -220,6 +220,7 @@ function MapControls({ compact, metric, metricControlled }: { compact?: boolean;
   const showRaw = useUI((s) => s.showRawFields);
   const showParcels = useUI((s) => s.showParcels);
   const showHd = useUI((s) => s.showHdImagery);
+  const hd = useHdStatus();
   const showTerrain = useUI((s) => s.showTerrain);
   const reduced = useReducedMotion();
   const terrain = getEngine()?.terrainInfo();
@@ -289,13 +290,15 @@ function MapControls({ compact, metric, metricControlled }: { compact?: boolean;
                 <Switch
                   label="High-res imagery (Esri)"
                   description={
-                    HD_IMAGERY_KEY
+                    hd === "ok"
                       ? "Sub-metre display basemap, online only; analysis stays on Sentinel-2"
-                      : "Add VITE_ARCGIS_KEY to .env to enable"
+                      : hd === "rejected"
+                        ? "Esri key rejected; showing Sentinel-2"
+                        : "Add VITE_ARCGIS_KEY to .env to enable"
                   }
-                  checked={!!HD_IMAGERY_KEY && showHd}
+                  checked={hd === "ok" && showHd}
                   onChange={(v) => set({ showHdImagery: v })}
-                  disabled={!HD_IMAGERY_KEY || !showImagery}
+                  disabled={hd !== "ok" || !showImagery}
                 />
                 <Switch
                   label="All delineated parcels"

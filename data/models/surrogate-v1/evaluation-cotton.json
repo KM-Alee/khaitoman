@@ -3,10 +3,10 @@
  "model_version": "surrogate-v1",
  "feature_version": "surrogate-features-v1",
  "samples": {
-  "total": 1871,
-  "fit_pool": 1649,
-  "test": 66,
-  "holdout_family_test": 6,
+  "total": 3599,
+  "fit_pool": 3101,
+  "test": 198,
+  "holdout_family_test": 18,
   "years": 26
  },
  "split_manifest": {
@@ -48,295 +48,295 @@
    {
     "year": "2000",
     "n": 66,
-    "mae_kg_ha": 158.1421661195493,
-    "rmse_kg_ha": 219.58835036268258,
-    "bias_kg_ha": 27.25357329383251,
-    "nmae": 0.04808393738511764,
-    "reference_yield_kg_ha": 3288.877215959764
+    "mae_kg_ha": 154.22378882501914,
+    "rmse_kg_ha": 207.2868936972109,
+    "bias_kg_ha": 85.14986291681062,
+    "nmae": 0.04737324936192254,
+    "reference_yield_kg_ha": 3255.503705198243
    },
    {
     "year": "2001",
     "n": 66,
-    "mae_kg_ha": 176.6487459561672,
-    "rmse_kg_ha": 218.62834226320072,
-    "bias_kg_ha": 134.54144992161517,
-    "nmae": 0.05371095798254584,
-    "reference_yield_kg_ha": 3288.877215959764
+    "mae_kg_ha": 259.1266279975746,
+    "rmse_kg_ha": 306.59472897210753,
+    "bias_kg_ha": 247.6226861679824,
+    "nmae": 0.07959647767680705,
+    "reference_yield_kg_ha": 3255.503705198243
    },
    {
     "year": "2002",
     "n": 66,
-    "mae_kg_ha": 209.93528032678844,
-    "rmse_kg_ha": 322.1625937898545,
-    "bias_kg_ha": -132.33636527156213,
-    "nmae": 0.06383189962460331,
-    "reference_yield_kg_ha": 3288.877215959764
+    "mae_kg_ha": 195.53491079606485,
+    "rmse_kg_ha": 320.22935896571005,
+    "bias_kg_ha": -91.0361341360784,
+    "nmae": 0.06006287459720701,
+    "reference_yield_kg_ha": 3255.503705198243
    },
    {
     "year": "2003",
     "n": 66,
-    "mae_kg_ha": 196.71890076984667,
-    "rmse_kg_ha": 338.3960934736402,
-    "bias_kg_ha": 102.39994613694569,
-    "nmae": 0.059813391577903566,
-    "reference_yield_kg_ha": 3288.877215959764
+    "mae_kg_ha": 222.80171760299046,
+    "rmse_kg_ha": 360.036608861045,
+    "bias_kg_ha": 193.20242790531185,
+    "nmae": 0.06843847766083959,
+    "reference_yield_kg_ha": 3255.503705198243
    },
    {
     "year": "2004",
     "n": 66,
-    "mae_kg_ha": 184.3544432610527,
-    "rmse_kg_ha": 306.2625759920503,
-    "bias_kg_ha": 92.58156965717124,
-    "nmae": 0.05605391480303535,
-    "reference_yield_kg_ha": 3288.877215959764
+    "mae_kg_ha": 172.97801744171028,
+    "rmse_kg_ha": 275.6726969510428,
+    "bias_kg_ha": 147.12155473630142,
+    "nmae": 0.05313402567028466,
+    "reference_yield_kg_ha": 3255.503705198243
    },
    {
     "year": "2005",
     "n": 65,
-    "mae_kg_ha": 251.49030704512617,
-    "rmse_kg_ha": 290.50575086642164,
-    "bias_kg_ha": 238.71721143637436,
-    "nmae": 0.07646691880886651,
-    "reference_yield_kg_ha": 3288.877215959764
+    "mae_kg_ha": 318.0622547176655,
+    "rmse_kg_ha": 373.86089894697346,
+    "bias_kg_ha": 315.89001671132047,
+    "nmae": 0.09769985953626711,
+    "reference_yield_kg_ha": 3255.503705198243
    },
    {
     "year": "2006",
     "n": 66,
-    "mae_kg_ha": 216.23579703916926,
-    "rmse_kg_ha": 255.25844017608173,
-    "bias_kg_ha": 148.65695565914797,
-    "nmae": 0.06574760407285897,
-    "reference_yield_kg_ha": 3288.877215959764
+    "mae_kg_ha": 186.31001876388385,
+    "rmse_kg_ha": 213.72858373633233,
+    "bias_kg_ha": 117.16607501486978,
+    "nmae": 0.057229244883485256,
+    "reference_yield_kg_ha": 3255.503705198243
    },
    {
     "year": "2007",
     "n": 66,
-    "mae_kg_ha": 158.5757620287709,
-    "rmse_kg_ha": 190.47847783041976,
-    "bias_kg_ha": 94.24091431502676,
-    "nmae": 0.04821577444705401,
-    "reference_yield_kg_ha": 3288.877215959764
+    "mae_kg_ha": 153.972787917625,
+    "rmse_kg_ha": 188.05708322570578,
+    "bias_kg_ha": 102.93474302134227,
+    "nmae": 0.047296148879132936,
+    "reference_yield_kg_ha": 3255.503705198243
    },
    {
     "year": "2008",
     "n": 66,
-    "mae_kg_ha": 220.44140045608225,
-    "rmse_kg_ha": 264.52488680074237,
-    "bias_kg_ha": -108.33047813852555,
-    "nmae": 0.06702633938000413,
-    "reference_yield_kg_ha": 3288.877215959764
+    "mae_kg_ha": 224.79142526502545,
+    "rmse_kg_ha": 271.7671051707142,
+    "bias_kg_ha": -167.13645516951829,
+    "nmae": 0.06904966039697283,
+    "reference_yield_kg_ha": 3255.503705198243
    },
    {
     "year": "2009",
     "n": 66,
-    "mae_kg_ha": 182.144394453914,
-    "rmse_kg_ha": 287.57076063813486,
-    "bias_kg_ha": 95.43731302102107,
-    "nmae": 0.0553819381185869,
-    "reference_yield_kg_ha": 3288.877215959764
+    "mae_kg_ha": 153.9482797023196,
+    "rmse_kg_ha": 210.614064563884,
+    "bias_kg_ha": 115.9181176535631,
+    "nmae": 0.0472886206384904,
+    "reference_yield_kg_ha": 3255.503705198243
    },
    {
     "year": "2010",
     "n": 66,
-    "mae_kg_ha": 249.48883880309796,
-    "rmse_kg_ha": 294.8695601592541,
-    "bias_kg_ha": 222.8065536122815,
-    "nmae": 0.07585836211592711,
-    "reference_yield_kg_ha": 3288.877215959764
+    "mae_kg_ha": 299.4569304696042,
+    "rmse_kg_ha": 337.18570935791706,
+    "bias_kg_ha": 284.3255803321792,
+    "nmae": 0.09198482249964719,
+    "reference_yield_kg_ha": 3255.503705198243
    },
    {
     "year": "2011",
     "n": 66,
-    "mae_kg_ha": 305.46804670648544,
-    "rmse_kg_ha": 420.3565801731708,
-    "bias_kg_ha": 239.59125177074446,
-    "nmae": 0.09287912763181201,
-    "reference_yield_kg_ha": 3288.877215959764
+    "mae_kg_ha": 288.3901510672162,
+    "rmse_kg_ha": 412.3401199651814,
+    "bias_kg_ha": 215.1312020916583,
+    "nmae": 0.08858541632335656,
+    "reference_yield_kg_ha": 3255.503705198243
    },
    {
     "year": "2012",
     "n": 66,
-    "mae_kg_ha": 491.7129071957118,
-    "rmse_kg_ha": 624.4974971702536,
-    "bias_kg_ha": 473.74799272288885,
-    "nmae": 0.14950783349697644,
-    "reference_yield_kg_ha": 3288.877215959764
+    "mae_kg_ha": 484.20353612109847,
+    "rmse_kg_ha": 613.3238814947902,
+    "bias_kg_ha": 465.98966061178896,
+    "nmae": 0.14873383045085892,
+    "reference_yield_kg_ha": 3255.503705198243
    },
    {
     "year": "2013",
     "n": 66,
-    "mae_kg_ha": 226.84175788027267,
-    "rmse_kg_ha": 269.7699165212073,
-    "bias_kg_ha": -193.01394310308405,
-    "nmae": 0.06897240090918853,
-    "reference_yield_kg_ha": 3288.877215959764
+    "mae_kg_ha": 247.28175112973244,
+    "rmse_kg_ha": 295.97807157992634,
+    "bias_kg_ha": -223.64334245051157,
+    "nmae": 0.07595806164646164,
+    "reference_yield_kg_ha": 3255.503705198243
    },
    {
     "year": "2014",
-    "n": 66,
-    "mae_kg_ha": 286.4844915428142,
-    "rmse_kg_ha": 345.1999665269909,
-    "bias_kg_ha": 257.7363699061889,
-    "nmae": 0.08710708023778017,
-    "reference_yield_kg_ha": 3288.877215959764
+    "n": 198,
+    "mae_kg_ha": 295.5674948148654,
+    "rmse_kg_ha": 332.63706977115487,
+    "bias_kg_ha": 278.20907454902516,
+    "nmae": 0.09079009627386277,
+    "reference_yield_kg_ha": 3255.503705198243
    },
    {
     "year": "2015",
-    "n": 66,
-    "mae_kg_ha": 186.62375712318828,
-    "rmse_kg_ha": 225.62098279742497,
-    "bias_kg_ha": -27.822837678700544,
-    "nmae": 0.0567439113316754,
-    "reference_yield_kg_ha": 3288.877215959764
+    "n": 198,
+    "mae_kg_ha": 167.44014211540548,
+    "rmse_kg_ha": 217.0876732315693,
+    "bias_kg_ha": 51.34705689332888,
+    "nmae": 0.05143294472312979,
+    "reference_yield_kg_ha": 3255.503705198243
    },
    {
     "year": "2016",
-    "n": 66,
-    "mae_kg_ha": 116.8076812109944,
-    "rmse_kg_ha": 151.0588698546202,
-    "bias_kg_ha": -44.29959403614782,
-    "nmae": 0.03551597507020567,
-    "reference_yield_kg_ha": 3288.877215959764
+    "n": 198,
+    "mae_kg_ha": 145.5208577462933,
+    "rmse_kg_ha": 192.1932005156825,
+    "bias_kg_ha": -100.87536557927746,
+    "nmae": 0.04469995150487222,
+    "reference_yield_kg_ha": 3255.503705198243
    },
    {
     "year": "2017",
-    "n": 66,
-    "mae_kg_ha": 103.55125140926683,
-    "rmse_kg_ha": 133.47401972014367,
-    "bias_kg_ha": -1.6763763362772406,
-    "nmae": 0.031485289540992605,
-    "reference_yield_kg_ha": 3288.877215959764
+    "n": 198,
+    "mae_kg_ha": 135.7983662651242,
+    "rmse_kg_ha": 157.8772745130658,
+    "bias_kg_ha": -64.24759998576715,
+    "nmae": 0.0417134731096412,
+    "reference_yield_kg_ha": 3255.503705198243
    },
    {
     "year": "2018",
-    "n": 66,
-    "mae_kg_ha": 188.81771593279512,
-    "rmse_kg_ha": 253.92492677950625,
-    "bias_kg_ha": -121.62099894919209,
-    "nmae": 0.057410995769781,
-    "reference_yield_kg_ha": 3288.877215959764
+    "n": 198,
+    "mae_kg_ha": 224.05917990994502,
+    "rmse_kg_ha": 288.9610734884847,
+    "bias_kg_ha": -192.5488361610434,
+    "nmae": 0.06882473503322306,
+    "reference_yield_kg_ha": 3255.503705198243
    },
    {
     "year": "2019",
-    "n": 66,
-    "mae_kg_ha": 263.612124139845,
-    "rmse_kg_ha": 327.2689312617812,
-    "bias_kg_ha": -228.61956319983096,
-    "nmae": 0.0801526195203117,
-    "reference_yield_kg_ha": 3288.877215959764
+    "n": 198,
+    "mae_kg_ha": 266.80241031179037,
+    "rmse_kg_ha": 341.4312165299207,
+    "bias_kg_ha": -221.02043406188233,
+    "nmae": 0.08195426406235452,
+    "reference_yield_kg_ha": 3255.503705198243
    },
    {
     "year": "2020",
-    "n": 66,
-    "mae_kg_ha": 338.3760298103401,
-    "rmse_kg_ha": 395.3338008518782,
-    "bias_kg_ha": -280.7803957325144,
-    "nmae": 0.10288496881802711,
-    "reference_yield_kg_ha": 3288.877215959764
+    "n": 198,
+    "mae_kg_ha": 400.30445546119336,
+    "rmse_kg_ha": 466.2708623155141,
+    "bias_kg_ha": -384.78961297383313,
+    "nmae": 0.12296237132889913,
+    "reference_yield_kg_ha": 3255.503705198243
    },
    {
     "year": "2021",
-    "n": 66,
-    "mae_kg_ha": 264.2074732462852,
-    "rmse_kg_ha": 326.8747624412766,
-    "bias_kg_ha": -162.0020878966202,
-    "nmae": 0.08033363847217503,
-    "reference_yield_kg_ha": 3288.877215959764
+    "n": 198,
+    "mae_kg_ha": 324.346688923572,
+    "rmse_kg_ha": 411.18326734708995,
+    "bias_kg_ha": -179.9046749161083,
+    "nmae": 0.09963026256295444,
+    "reference_yield_kg_ha": 3255.503705198243
    },
    {
     "year": "2022",
-    "n": 66,
-    "mae_kg_ha": 193.72676108984,
-    "rmse_kg_ha": 255.25455266725893,
-    "bias_kg_ha": -112.21630178308274,
-    "nmae": 0.058903616148925295,
-    "reference_yield_kg_ha": 3288.877215959764
+    "n": 198,
+    "mae_kg_ha": 235.1569855439229,
+    "rmse_kg_ha": 295.15061708084454,
+    "bias_kg_ha": -188.7627967372009,
+    "nmae": 0.07223367160308701,
+    "reference_yield_kg_ha": 3255.503705198243
    },
    {
     "year": "2023",
-    "n": 66,
-    "mae_kg_ha": 178.05025593724812,
-    "rmse_kg_ha": 217.7461818793351,
-    "bias_kg_ha": 70.1074755983752,
-    "nmae": 0.054137094286534286,
-    "reference_yield_kg_ha": 3288.877215959764
+    "n": 198,
+    "mae_kg_ha": 192.82807468311424,
+    "rmse_kg_ha": 241.00701445105565,
+    "bias_kg_ha": -5.319625871942614,
+    "nmae": 0.05923140998894118,
+    "reference_yield_kg_ha": 3255.503705198243
    },
    {
     "year": "2024",
-    "n": 66,
-    "mae_kg_ha": 307.9678755455814,
-    "rmse_kg_ha": 390.14750682307493,
-    "bias_kg_ha": -276.71175779999504,
-    "nmae": 0.09363921342247795,
-    "reference_yield_kg_ha": 3288.877215959764
+    "n": 198,
+    "mae_kg_ha": 277.4080073312941,
+    "rmse_kg_ha": 368.7642304545436,
+    "bias_kg_ha": -224.7384831195109,
+    "nmae": 0.08521200786481715,
+    "reference_yield_kg_ha": 3255.503705198243
    }
   ],
-  "nmae_mean": 0.06879459211893466,
-  "nmae_max": 0.14950783349697644,
-  "nmae_std": 0.02383877960075495
+  "nmae_mean": 0.07404463833110064,
+  "nmae_max": 0.14873383045085892,
+  "nmae_std": 0.025300858565452052
  },
  "test": {
-  "n": 66,
-  "mae_kg_ha": 221.58697625270835,
-  "rmse_kg_ha": 278.82917427116786,
-  "bias_kg_ha": -195.84986437859803,
-  "nmae": 0.06737465758144595,
-  "reference_yield_kg_ha": 3288.877215959764
+  "n": 198,
+  "mae_kg_ha": 301.79275730249327,
+  "rmse_kg_ha": 374.21707174480696,
+  "bias_kg_ha": -282.08426627367896,
+  "nmae": 0.09270232339794425,
+  "reference_yield_kg_ha": 3255.503705198243
  },
  "test_by_soil": {
   "aquacrop-loam-pct50": {
-   "n": 22,
-   "mae_kg_ha": 206.67554422564578,
-   "rmse_kg_ha": 264.12051078266387,
-   "bias_kg_ha": -191.64316472285182,
-   "nmae": 0.06284076013015083,
-   "reference_yield_kg_ha": 3288.877215959764
+   "n": 66,
+   "mae_kg_ha": 308.28016011840924,
+   "rmse_kg_ha": 399.2318272202955,
+   "bias_kg_ha": -306.85702514317853,
+   "nmae": 0.09469507272443316,
+   "reference_yield_kg_ha": 3255.503705198243
   },
   "aquacrop-sandyloam-pct50": {
-   "n": 22,
-   "mae_kg_ha": 316.4193424521599,
-   "rmse_kg_ha": 365.1679645934633,
-   "bias_kg_ha": -280.8106349622007,
-   "nmae": 0.09620892531855194,
-   "reference_yield_kg_ha": 3288.877215959764
+   "n": 66,
+   "mae_kg_ha": 407.3524315926235,
+   "rmse_kg_ha": 452.738791568043,
+   "bias_kg_ha": -378.4574221565117,
+   "nmae": 0.1251273131534703,
+   "reference_yield_kg_ha": 3255.503705198243
   },
   "aquacrop-siltloam-pct50": {
-   "n": 22,
-   "mae_kg_ha": 141.66604208031947,
-   "rmse_kg_ha": 173.57948811076676,
-   "bias_kg_ha": -115.0957934507415,
-   "nmae": 0.04307428729563512,
-   "reference_yield_kg_ha": 3288.877215959764
+   "n": 66,
+   "mae_kg_ha": 189.74568019644724,
+   "rmse_kg_ha": 236.12874687260418,
+   "bias_kg_ha": -160.93835152134673,
+   "nmae": 0.0582845843159293,
+   "reference_yield_kg_ha": 3255.503705198243
   }
  },
  "test_holdout_family": {
-  "n": 6,
-  "mae_kg_ha": 300.7908318683648,
-  "rmse_kg_ha": 345.34499074644674,
-  "bias_kg_ha": -285.69671681639426,
-  "nmae": 0.09145699645116964,
-  "reference_yield_kg_ha": 3288.877215959764
+  "n": 18,
+  "mae_kg_ha": 389.4093581355306,
+  "rmse_kg_ha": 424.9202014139575,
+  "bias_kg_ha": -389.4093581355306,
+  "nmae": 0.11961570110141148,
+  "reference_yield_kg_ha": 3255.503705198243
  },
  "dev_holdout_family": {
-  "n": 150,
-  "mae_kg_ha": 222.52249942708173,
-  "rmse_kg_ha": 299.5119142396995,
-  "bias_kg_ha": 10.19322630413518,
-  "nmae": 0.06765910820484825,
-  "reference_yield_kg_ha": 3288.877215959764
+  "n": 282,
+  "mae_kg_ha": 244.1116638669257,
+  "rmse_kg_ha": 322.28406767775937,
+  "bias_kg_ha": 8.754067868087763,
+  "nmae": 0.07498429919681526,
+  "reference_yield_kg_ha": 3255.503705198243
  },
  "test_ranking": {
-  "contexts": 6,
-  "median_spearman": 0.9772727272727273,
-  "min_spearman": 0.9545454545454546
+  "contexts": 18,
+  "median_spearman": 0.9681818181818183,
+  "min_spearman": 0.9272727272727275
  },
  "baseline_test": {
-  "n": 66,
-  "mae_kg_ha": 470.0677383928447,
-  "rmse_kg_ha": 642.2610340862412,
-  "bias_kg_ha": -117.26782764634991,
-  "nmae": 0.14292650881333344,
-  "reference_yield_kg_ha": 3288.877215959764
+  "n": 198,
+  "mae_kg_ha": 494.64494460502567,
+  "rmse_kg_ha": 701.4148425588058,
+  "bias_kg_ha": -240.37377334270005,
+  "nmae": 0.15194114011149756,
+  "reference_yield_kg_ha": 3255.503705198243
  },
  "decision_regret": [
   {
@@ -376,8 +376,1016 @@
    "water_cap_m3": 34830.0,
    "budget_fraction": 0.35,
    "shortage_multiplier": 1.0,
-   "exact_optimum_kg": 54795.51864207613,
-   "surrogate_choice_exact_kg": 54795.51864207613,
+   "exact_optimum_kg": 53238.324579228494,
+   "surrogate_choice_exact_kg": 53238.324579228494,
+   "regret_kg": 0.0,
+   "regret": 0.0
+  },
+  {
+   "fixture_id": "regret-01",
+   "fields": [
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 1.51
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 1.89
+    },
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.01
+    },
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 2.11
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.99
+    },
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 2.59
+    }
+   ],
+   "water_cap_m3": 57430.0,
+   "budget_fraction": 0.5,
+   "shortage_multiplier": 1.0,
+   "exact_optimum_kg": 65345.6638630241,
+   "surrogate_choice_exact_kg": 65345.6638630241,
+   "regret_kg": 0.0,
+   "regret": 0.0
+  },
+  {
+   "fixture_id": "regret-02",
+   "fields": [
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 1.32
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 2.23
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 1.09
+    },
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.07
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.03
+    },
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.93
+    }
+   ],
+   "water_cap_m3": 52580.0,
+   "budget_fraction": 0.65,
+   "shortage_multiplier": 1.0,
+   "exact_optimum_kg": 49899.05176398219,
+   "surrogate_choice_exact_kg": 49867.30705131353,
+   "regret_kg": 31.744712668660213,
+   "regret": 0.0006361786756752354
+  },
+  {
+   "fixture_id": "regret-03",
+   "fields": [
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 1.99
+    },
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.5
+    },
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 1.02
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.38
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.38
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.4
+    }
+   ],
+   "water_cap_m3": 64560.0,
+   "budget_fraction": 0.8,
+   "shortage_multiplier": 1.0,
+   "exact_optimum_kg": 48971.0179061458,
+   "surrogate_choice_exact_kg": 48898.63034165133,
+   "regret_kg": 72.38756449446373,
+   "regret": 0.0014781715306223845
+  },
+  {
+   "fixture_id": "regret-04",
+   "fields": [
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 1.31
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 1.54
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.76
+    },
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.02
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 2.69
+    },
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.28
+    }
+   ],
+   "water_cap_m3": 30820.0,
+   "budget_fraction": 0.35,
+   "shortage_multiplier": 0.78,
+   "exact_optimum_kg": 49127.90149321958,
+   "surrogate_choice_exact_kg": 48995.768358592126,
+   "regret_kg": 132.13313462745282,
+   "regret": 0.0026895741648091617
+  },
+  {
+   "fixture_id": "regret-05",
+   "fields": [
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.02
+    },
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.74
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 1.72
+    },
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.2
+    },
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.12
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.78
+    }
+   ],
+   "water_cap_m3": 41820.0,
+   "budget_fraction": 0.5,
+   "shortage_multiplier": 0.78,
+   "exact_optimum_kg": 55510.46679451193,
+   "surrogate_choice_exact_kg": 55510.46679451193,
+   "regret_kg": 0.0,
+   "regret": 0.0
+  },
+  {
+   "fixture_id": "regret-06",
+   "fields": [
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.76
+    },
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 2.96
+    },
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 2.18
+    },
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.21
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.28
+    },
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.35
+    }
+   ],
+   "water_cap_m3": 61660.0,
+   "budget_fraction": 0.65,
+   "shortage_multiplier": 0.78,
+   "exact_optimum_kg": 67714.01332306197,
+   "surrogate_choice_exact_kg": 67250.48665532879,
+   "regret_kg": 463.52666773318197,
+   "regret": 0.006845358072659305
+  },
+  {
+   "fixture_id": "regret-07",
+   "fields": [
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.8
+    },
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 1.19
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 2.94
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 1.43
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.34
+    },
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.6
+    }
+   ],
+   "water_cap_m3": 59270.0,
+   "budget_fraction": 0.8,
+   "shortage_multiplier": 0.78,
+   "exact_optimum_kg": 58828.87673547253,
+   "surrogate_choice_exact_kg": 58828.87673547253,
+   "regret_kg": 0.0,
+   "regret": 0.0
+  },
+  {
+   "fixture_id": "regret-08",
+   "fields": [
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.69
+    },
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 2.89
+    },
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.81
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 2.14
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.29
+    },
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 1.38
+    }
+   ],
+   "water_cap_m3": 39940.0,
+   "budget_fraction": 0.35,
+   "shortage_multiplier": 1.0,
+   "exact_optimum_kg": 58768.8975859354,
+   "surrogate_choice_exact_kg": 58768.8975859354,
+   "regret_kg": 0.0,
+   "regret": 0.0
+  },
+  {
+   "fixture_id": "regret-09",
+   "fields": [
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.77
+    },
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 2.28
+    },
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 2.14
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.75
+    },
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 1.82
+    },
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.48
+    }
+   ],
+   "water_cap_m3": 51590.0,
+   "budget_fraction": 0.5,
+   "shortage_multiplier": 1.0,
+   "exact_optimum_kg": 59266.14555105615,
+   "surrogate_choice_exact_kg": 58719.77581930258,
+   "regret_kg": 546.3697317535698,
+   "regret": 0.00921891792815997
+  },
+  {
+   "fixture_id": "regret-10",
+   "fields": [
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.1
+    },
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 1.64
+    },
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 2.5
+    },
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.05
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.74
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 1.06
+    }
+   ],
+   "water_cap_m3": 53300.0,
+   "budget_fraction": 0.65,
+   "shortage_multiplier": 1.0,
+   "exact_optimum_kg": 49814.084791058674,
+   "surrogate_choice_exact_kg": 49673.6746721542,
+   "regret_kg": 140.41011890447407,
+   "regret": 0.002818683099236159
+  },
+  {
+   "fixture_id": "regret-11",
+   "fields": [
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.86
+    },
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.05
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.75
+    },
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.69
+    },
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.18
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 2.37
+    }
+   ],
+   "water_cap_m3": 88000.0,
+   "budget_fraction": 0.8,
+   "shortage_multiplier": 1.0,
+   "exact_optimum_kg": 64916.09289168859,
+   "surrogate_choice_exact_kg": 64916.09289168859,
+   "regret_kg": 0.0,
+   "regret": 0.0
+  },
+  {
+   "fixture_id": "regret-00",
+   "fields": [
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.45
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.6
+    },
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.75
+    },
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.01
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 2.64
+    },
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.59
+    }
+   ],
+   "water_cap_m3": 34830.0,
+   "budget_fraction": 0.35,
+   "shortage_multiplier": 1.0,
+   "exact_optimum_kg": 52948.70518339962,
+   "surrogate_choice_exact_kg": 52948.70518339962,
+   "regret_kg": 0.0,
+   "regret": 0.0
+  },
+  {
+   "fixture_id": "regret-01",
+   "fields": [
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 1.51
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 1.89
+    },
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.01
+    },
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 2.11
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.99
+    },
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 2.59
+    }
+   ],
+   "water_cap_m3": 57430.0,
+   "budget_fraction": 0.5,
+   "shortage_multiplier": 1.0,
+   "exact_optimum_kg": 65140.638449942344,
+   "surrogate_choice_exact_kg": 65140.638449942344,
+   "regret_kg": 0.0,
+   "regret": 0.0
+  },
+  {
+   "fixture_id": "regret-02",
+   "fields": [
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 1.32
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 2.23
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 1.09
+    },
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.07
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.03
+    },
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.93
+    }
+   ],
+   "water_cap_m3": 52580.0,
+   "budget_fraction": 0.65,
+   "shortage_multiplier": 1.0,
+   "exact_optimum_kg": 49830.746878446655,
+   "surrogate_choice_exact_kg": 49806.962672139205,
+   "regret_kg": 23.784206307449494,
+   "regret": 0.00047729981582389047
+  },
+  {
+   "fixture_id": "regret-03",
+   "fields": [
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 1.99
+    },
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.5
+    },
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 1.02
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.38
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.38
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.4
+    }
+   ],
+   "water_cap_m3": 64560.0,
+   "budget_fraction": 0.8,
+   "shortage_multiplier": 1.0,
+   "exact_optimum_kg": 48863.894107231856,
+   "surrogate_choice_exact_kg": 48809.65890951562,
+   "regret_kg": 54.235197716232506,
+   "regret": 0.0011099237731076717
+  },
+  {
+   "fixture_id": "regret-04",
+   "fields": [
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 1.31
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 1.54
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.76
+    },
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.02
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 2.69
+    },
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.28
+    }
+   ],
+   "water_cap_m3": 30820.0,
+   "budget_fraction": 0.35,
+   "shortage_multiplier": 0.78,
+   "exact_optimum_kg": 48819.473017374075,
+   "surrogate_choice_exact_kg": 48662.470694710115,
+   "regret_kg": 157.0023226639605,
+   "regret": 0.003215977415571157
+  },
+  {
+   "fixture_id": "regret-05",
+   "fields": [
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.02
+    },
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.74
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 1.72
+    },
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.2
+    },
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.12
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.78
+    }
+   ],
+   "water_cap_m3": 41820.0,
+   "budget_fraction": 0.5,
+   "shortage_multiplier": 0.78,
+   "exact_optimum_kg": 55185.8648095549,
+   "surrogate_choice_exact_kg": 55185.8648095549,
+   "regret_kg": 0.0,
+   "regret": 0.0
+  },
+  {
+   "fixture_id": "regret-06",
+   "fields": [
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.76
+    },
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 2.96
+    },
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 2.18
+    },
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.21
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.28
+    },
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.35
+    }
+   ],
+   "water_cap_m3": 61660.0,
+   "budget_fraction": 0.65,
+   "shortage_multiplier": 0.78,
+   "exact_optimum_kg": 67458.93451434368,
+   "surrogate_choice_exact_kg": 67044.35929329084,
+   "regret_kg": 414.5752210528444,
+   "regret": 0.006145593968204375
+  },
+  {
+   "fixture_id": "regret-07",
+   "fields": [
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.8
+    },
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 1.19
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 2.94
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 1.43
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.34
+    },
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.6
+    }
+   ],
+   "water_cap_m3": 59270.0,
+   "budget_fraction": 0.8,
+   "shortage_multiplier": 0.78,
+   "exact_optimum_kg": 58759.94058701802,
+   "surrogate_choice_exact_kg": 58759.94058701802,
+   "regret_kg": 0.0,
+   "regret": 0.0
+  },
+  {
+   "fixture_id": "regret-08",
+   "fields": [
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.69
+    },
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 2.89
+    },
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.81
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 2.14
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.29
+    },
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 1.38
+    }
+   ],
+   "water_cap_m3": 39940.0,
+   "budget_fraction": 0.35,
+   "shortage_multiplier": 1.0,
+   "exact_optimum_kg": 58484.57638942165,
+   "surrogate_choice_exact_kg": 58484.57638942165,
+   "regret_kg": 0.0,
+   "regret": 0.0
+  },
+  {
+   "fixture_id": "regret-09",
+   "fields": [
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.77
+    },
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 2.28
+    },
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 2.14
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.75
+    },
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 1.82
+    },
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.48
+    }
+   ],
+   "water_cap_m3": 51590.0,
+   "budget_fraction": 0.5,
+   "shortage_multiplier": 1.0,
+   "exact_optimum_kg": 58950.1003089599,
+   "surrogate_choice_exact_kg": 58461.43079308059,
+   "regret_kg": 488.66951587931544,
+   "regret": 0.00828954511219113
+  },
+  {
+   "fixture_id": "regret-10",
+   "fields": [
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.1
+    },
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 1.64
+    },
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 2.5
+    },
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.05
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.74
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 1.06
+    }
+   ],
+   "water_cap_m3": 53300.0,
+   "budget_fraction": 0.65,
+   "shortage_multiplier": 1.0,
+   "exact_optimum_kg": 49657.937071995155,
+   "surrogate_choice_exact_kg": 49488.68538827961,
+   "regret_kg": 169.25168371554173,
+   "regret": 0.003408351085349296
+  },
+  {
+   "fixture_id": "regret-11",
+   "fields": [
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.86
+    },
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.05
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.75
+    },
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.69
+    },
+    {
+     "soil": "aquacrop-loam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.18
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 2.37
+    }
+   ],
+   "water_cap_m3": 88000.0,
+   "budget_fraction": 0.8,
+   "shortage_multiplier": 1.0,
+   "exact_optimum_kg": 64831.14037319542,
+   "surrogate_choice_exact_kg": 64831.14037319542,
+   "regret_kg": 0.0,
+   "regret": 0.0
+  },
+  {
+   "fixture_id": "regret-00",
+   "fields": [
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.45
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.6
+    },
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.75
+    },
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 1.01
+    },
+    {
+     "soil": "aquacrop-sandyloam-pct50",
+     "app_eff": 0.75,
+     "area_ha": 2.64
+    },
+    {
+     "soil": "aquacrop-siltloam-pct50",
+     "app_eff": 0.6,
+     "area_ha": 2.59
+    }
+   ],
+   "water_cap_m3": 34830.0,
+   "budget_fraction": 0.35,
+   "shortage_multiplier": 1.0,
+   "exact_optimum_kg": 54795.518642076124,
+   "surrogate_choice_exact_kg": 54795.518642076124,
    "regret_kg": 0.0,
    "regret": 0.0
   },
@@ -544,10 +1552,10 @@
    "water_cap_m3": 30820.0,
    "budget_fraction": 0.35,
    "shortage_multiplier": 0.78,
-   "exact_optimum_kg": 51395.3006998328,
-   "surrogate_choice_exact_kg": 51380.308688270765,
-   "regret_kg": 14.99201156203344,
-   "regret": 0.00029170004568301346
+   "exact_optimum_kg": 51395.300699832784,
+   "surrogate_choice_exact_kg": 51380.30868827076,
+   "regret_kg": 14.992011562026164,
+   "regret": 0.00029170004568287197
   },
   {
    "fixture_id": "regret-05",
@@ -629,9 +1637,9 @@
    "budget_fraction": 0.65,
    "shortage_multiplier": 0.78,
    "exact_optimum_kg": 69841.80229946935,
-   "surrogate_choice_exact_kg": 69492.88213664318,
-   "regret_kg": 348.9201628261653,
-   "regret": 0.004995864243738401
+   "surrogate_choice_exact_kg": 68796.80100859194,
+   "regret_kg": 1045.0012908774079,
+   "regret": 0.01496240441214026
   },
   {
    "fixture_id": "regret-07",
@@ -713,9 +1721,9 @@
    "budget_fraction": 0.35,
    "shortage_multiplier": 1.0,
    "exact_optimum_kg": 60659.7140793181,
-   "surrogate_choice_exact_kg": 60313.24152593092,
-   "regret_kg": 346.4725533871824,
-   "regret": 0.005711740627958417
+   "surrogate_choice_exact_kg": 60659.7140793181,
+   "regret_kg": 0.0,
+   "regret": 0.0
   },
   {
    "fixture_id": "regret-09",
@@ -755,9 +1763,9 @@
    "budget_fraction": 0.5,
    "shortage_multiplier": 1.0,
    "exact_optimum_kg": 61156.43360288064,
-   "surrogate_choice_exact_kg": 61156.43360288064,
-   "regret_kg": 0.0,
-   "regret": 0.0
+   "surrogate_choice_exact_kg": 60335.94648598619,
+   "regret_kg": 820.4871168944519,
+   "regret": 0.013416202818860985
   },
   {
    "fixture_id": "regret-10",
@@ -797,9 +1805,9 @@
    "budget_fraction": 0.65,
    "shortage_multiplier": 1.0,
    "exact_optimum_kg": 50758.52853487698,
-   "surrogate_choice_exact_kg": 50468.24420311591,
-   "regret_kg": 290.284331761075,
-   "regret": 0.005718927245135092
+   "surrogate_choice_exact_kg": 50411.314965867634,
+   "regret_kg": 347.21356900934916,
+   "regret": 0.006840497134797225
   },
   {
    "fixture_id": "regret-11",
@@ -845,8 +1853,8 @@
   }
  ],
  "residual_band_kg_ha": [
-  -569.6351196777514,
-  70.52867209262445
+  -741.5307313122428,
+  62.10180414439138
  ],
  "pilot_note": "Weather is one ERA5 grid point (discovery series); pilot-level metrics equal the grid-cell metrics while pilots share that cell.",
  "gates": {
@@ -857,10 +1865,10 @@
   "min_decision_fixtures": 10
  },
  "decision_regret_summary": {
-  "n": 12,
-  "median": 0.005715333936546755,
-  "max": 0.012646940347686335,
-  "median_kg": 347.69635810667387
+  "n": 36,
+  "median": 0.0008730512243914536,
+  "max": 0.01496240441214026,
+  "median_kg": 42.98995519244636
  },
  "gate_results": {
   "nmae": true,
@@ -945,10 +1953,10 @@
    ],
    "preplant_et0_mm": [
     79.19,
-    106.00999999999999
+    108.58000000000001
    ],
    "season_p_mm": [
-    97.7,
+    82.1,
     373.2
    ],
    "season_et0_mm": [
@@ -956,7 +1964,7 @@
     1141.65
    ],
    "season_balance_mm": [
-    -977.0500000000001,
+    -1039.1100000000001,
     423.62000000000035
    ],
    "hot_days_late": [
@@ -972,23 +1980,23 @@
     279.0
    ],
    "w0_p_mm": [
-    1.2,
+    0.9999999999999999,
     56.20000000000001
    ],
    "w0_et0_mm": [
     223.91,
-    286.4
+    290.61
    ],
    "w0_tmax": [
     35.85714285714286,
-    41.95428571428572
+    42.25428571428572
    ],
    "w0_tmin": [
-    23.542857142857144,
+    23.1,
     28.94285714285714
    ],
    "w0_balance_mm": [
-    -275.47999999999996,
+    -287.61,
     36.01999999999995
    ],
    "w1_irr_mm": [
@@ -1005,7 +2013,7 @@
    ],
    "w1_et0_mm": [
     209.88000000000005,
-    262.59000000000003
+    266.75
    ],
    "w1_tmax": [
     37.699999999999996,
@@ -1013,10 +2021,10 @@
    ],
    "w1_tmin": [
     27.571428571428573,
-    30.54571428571429
+    30.791428571428572
    ],
    "w1_balance_mm": [
-    -247.79,
+    -261.94000000000005,
     157.86
    ],
    "w2_irr_mm": [
@@ -1029,23 +2037,23 @@
    ],
    "w2_p_mm": [
     9.2,
-    236.6
+    248.10000000000002
    ],
    "w2_et0_mm": [
-    161.19,
+    158.11,
     249.59
    ],
    "w2_tmax": [
-    35.04571428571429,
+    34.294285714285714,
     39.80285714285714
    ],
    "w2_tmin": [
-    28.12,
+    27.12,
     30.591428571428573
    ],
    "w2_balance_mm": [
     -240.39000000000001,
-    251.95999999999998
+    266.54
    ],
    "w3_irr_mm": [
     0.0,
@@ -1068,11 +2076,11 @@
     38.720000000000006
    ],
    "w3_tmin": [
-    27.002857142857142,
+    26.60285714285714,
     29.331428571428567
    ],
    "w3_balance_mm": [
-    -192.9,
+    -210.82,
     293.33500000000004
    ],
    "w4_irr_mm": [
@@ -1084,24 +2092,24 @@
     166.73999999999998
    ],
    "w4_p_mm": [
-    4.4,
-    88.2
+    4.1000000000000005,
+    89.2
    ],
    "w4_et0_mm": [
     290.76,
-    349.07
+    357.95
    ],
    "w4_tmax": [
     28.289887640449436,
-    31.37865168539326
+    31.99438202247191
    ],
    "w4_tmin": [
-    16.43370786516854,
-    19.65505617977528
+    16.249438202247187,
+    19.70674157303371
    ],
    "w4_balance_mm": [
-    -339.37,
-    -124.98499999999999
+    -345.68999999999994,
+    -123.70499999999993
    ]
   },
   "max_daily_depth_mm": 150.0,
@@ -1110,10 +2118,10 @@
  },
  "artifacts": {
   "model": "model-cotton.txt",
-  "model_sha256": "b16ed630192b15ccd1bfa42b43bc8b59a48fda2a2d98da4fad991ecf9a7d4fa5",
+  "model_sha256": "4b07f579c9cae501c79a5c23971493727e87b2db3b1b9f5be98affc63f245e7e",
   "training_data": "training-cotton.parquet",
-  "training_data_sha256": "d6493b5f3266508e00d2337c5f431da1f1068b7dc15b472e9208730c41516c2d",
-  "design_rows": 1872,
-  "executed_rows": 1871
+  "training_data_sha256": "89745df31c662d6e6dae468a74db7dd6399ec98550df6a73a5880dcb80bdcb56",
+  "design_rows": 3600,
+  "executed_rows": 3599
  }
 }

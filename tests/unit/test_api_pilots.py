@@ -37,7 +37,13 @@ def test_map_refs_resolve_to_served_assets(client):
     assert {e["edge_id"] for e in m["network"]["edges"]} == {"e-main", "e-head", "e-tail"}
     assert any(e["geometry_ref"] is None for e in m["network"]["edges"])
     assert m["field_groups"]["fixture-a:f3"] == "tail"
-    for url in (m["fields_url"], m["aoi_url"], m["canals_url"], m["imagery"][0]["url"], m["terrain"]["url"]):
+    for url in (
+        m["fields_url"],
+        m["aoi_url"],
+        m["canals_url"],
+        m["imagery"][0]["url"],
+        m["terrain"]["url"],
+    ):
         r = client.get(url)
         assert r.status_code == 200, url
     assert client.get(m["fields_url"]).headers["content-type"].startswith("application/geo+json")
@@ -82,16 +88,22 @@ def test_seasons_weather_uncertainty(client):
     s = client.get("/api/v2/seasons", params={"pilot_id": fx.PILOT_ID}).json()["seasons"]
     assert {x["season"]["season_id"] for x in s} == {fx.SEASON_ID, fx.SEASON_LATE}
     assert all(x["library"]["ready"] is False for x in s)
-    w = client.get("/api/v2/weather-scenarios", params={"season_id": fx.SEASON_ID}).json()["weather_scenarios"]
+    w = client.get("/api/v2/weather-scenarios", params={"season_id": fx.SEASON_ID}).json()[
+        "weather_scenarios"
+    ]
     assert sorted(x["weather_scenario_id"] for x in w) == sorted(fx.WEATHER)
-    u = client.get("/api/v2/uncertainty-sets", params={"pilot_id": fx.PILOT_ID, "season_id": fx.SEASON_ID}).json()
+    u = client.get(
+        "/api/v2/uncertainty-sets", params={"pilot_id": fx.PILOT_ID, "season_id": fx.SEASON_ID}
+    ).json()
     assert len(u["uncertainty_sets"][0]["states"]) == 9
     assert len(u["supply_profiles"]) == 3
     assert client.get("/api/v2/weather-scenarios", params={"season_id": "nope"}).status_code == 404
 
 
 def test_interventions_eligibility(client):
-    r = client.get("/api/v2/interventions", params={"pilot_id": fx.PILOT_ID, "season_id": fx.SEASON_ID}).json()
+    r = client.get(
+        "/api/v2/interventions", params={"pilot_id": fx.PILOT_ID, "season_id": fx.SEASON_ID}
+    ).json()
     by = {i["instance"]["instance_id"]: i for i in r["interventions"]}
     assert by[fx.LEVEL]["eligible"] is True
     late = by["fixture-a:f4:pond-late"]
@@ -99,7 +111,8 @@ def test_interventions_eligibility(client):
     nocost = by["fixture-a:f2:level-nocost"]
     assert nocost["eligible"] is False and "capex missing" in nocost["reasons"][0]
     naive = client.get(
-        "/api/v2/interventions", params={"pilot_id": fx.PILOT_ID, "decision_at": "2026-10-10T08:00:00"}
+        "/api/v2/interventions",
+        params={"pilot_id": fx.PILOT_ID, "decision_at": "2026-10-10T08:00:00"},
     )
     assert naive.status_code == 422 and naive.json()["code"] == "INVALID_INPUT"
 
@@ -109,7 +122,9 @@ def test_evidence_lookup_and_search(client):
     assert e["record"]["kind"] == "assumption" and e["pilot_ids"] == [fx.PILOT_ID]
     hits = client.get("/api/v2/evidence/search", params={"q": "shared pump"}).json()["results"]
     assert any(h["doc_id"] == "ev-fixture-assets" for h in hits)
-    m = client.get("/api/v2/evidence/search", params={"q": "infeasible finite candidate"}).json()["results"]
+    m = client.get("/api/v2/evidence/search", params={"q": "infeasible finite candidate"}).json()[
+        "results"
+    ]
     assert any(h["kind"] == "methodology" for h in m)
     md = client.get("/api/v2/evidence/method:solver-proof-scope").json()
     assert md["document"]["kind"] == "methodology"
