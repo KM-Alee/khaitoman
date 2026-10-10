@@ -39,3 +39,8 @@ data/libraries/*/*/*/policies.jsonl
 
 # Generated proof packages (`make evidence-pack`); built at release time, not committed
 evidence/pack/
+
+# Local run outputs
+.claude/worktrees/
+data/onboarding/
+evidence/playwright-output/
