@@ -50,7 +50,7 @@ export function useRefLabel() {
   return (kind: RefKind, id: string) => {
     switch (kind) {
       case "run":
-        return `run ${shortId(id)}`;
+        return shortId(id);
       case "field":
         return fieldIndex.get(id)?.label ?? id.replace(/^[^:]+:/, "");
       case "comparison":
@@ -166,10 +166,8 @@ function MetricCard({ b, lang }: { b: BlockOf<"metric">; lang: Lang }) {
     >
       <span className={cn("truncate text-[11.5px] font-medium text-ink-secondary", isUrdu(lang) && "text-left")}>{b.label ?? b.metric_id.replace(/_/g, " ")}</span>
       <MetricValueView metric={metric} size="lg" />
-      <span className="flex items-center gap-1 text-[10.5px] text-ink-tertiary">
+      <span className="truncate text-[10.5px] text-ink-tertiary" title={b.run_id}>
         {basis ? basis.en : b.basis}
-        <span aria-hidden>·</span>
-        <bdi className="font-mono">{shortId(b.run_id)}</bdi>
       </span>
     </button>
   );
@@ -197,7 +195,7 @@ export function comparisonPairs(b: BlockOf<"comparison">): { key: string; label:
       const n = seen.get(d.metric_id) ?? 0; // older answers: pairs follow each other in order
       seen.set(d.metric_id, n + 1);
       key = `pair-${n}`;
-      label = b.run_ids.length === 2 ? "Before → after" : `Pair ${n + 1}`;
+      label = b.run_ids.length === 2 ? "Before → after" : `${shortId(b.run_ids[0])} → ${shortId(b.run_ids[n + 1] ?? "")}`;
     }
     if (!groups.has(key)) groups.set(key, { key, label, deltas: [] });
     groups.get(key)!.deltas.push(d);

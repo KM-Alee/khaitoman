@@ -80,7 +80,7 @@ export function CopilotPanel() {
   const busy = conv.turns.some(isBusy);
   const runData = run.data;
   const fieldLabel = sel.fieldId ? (fieldIndex.get(sel.fieldId)?.label ?? sel.fieldId.replace(/^[^:]+:/, "")) : null;
-  const pilotName = (pilot.data as { name?: string } | undefined)?.name ?? sel.pilotId ?? "";
+  const pilotName = pilot.data?.pilot?.name ?? sel.pilotId ?? "";
 
   const context: UIContext = useMemo(
     () => ({
@@ -194,7 +194,7 @@ export function CopilotPanel() {
         ) : null}
       </div>
 
-      <div ref={scroller} className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3.5 py-4" role="log" aria-live="polite" aria-relevant="additions" aria-label="Conversation">
+      <div ref={scroller} className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3.5 py-4" role="log" aria-live="polite" aria-relevant="additions" aria-label="Conversation" tabIndex={0}>
         {gate.kind === "unavailable" ? (
           <div className="flex flex-col gap-3">
             <StatePanel state="blocked" compact title={gate.title} art="trust">
@@ -236,10 +236,10 @@ export function CopilotPanel() {
           }}
         >
           <div className="mb-2 flex items-center justify-between gap-2">
-            <Segmented size="sm" label="Answer language" value={lang} onChange={setLanguage} options={LANGS.map((l) => ({ value: l.value, label: l.label, title: l.title }))} />
+            <Segmented size="sm" label="Answer language" value={lang} onChange={setLanguage} options={LANGS.map((l) => ({ value: l.value, label: l.value === "ur" ? <span lang="ur" className="urdu leading-none">{l.label}</span> : l.label, title: l.title }))} />
             <span className="truncate text-[11px] text-ink-tertiary">Hosted model · {gate.model}</span>
           </div>
-          <div className="flex items-end gap-2 rounded-[14px] border border-border bg-surface-raised px-2.5 py-2 shadow-1 focus-within:border-water/60">
+          <div className="flex items-end gap-2 rounded-[14px] border border-border bg-surface-raised px-2.5 py-2 shadow-1 focus-within:border-water focus-within:ring-2 focus-within:ring-focus/40">
             <textarea
               ref={input}
               value={draft}
@@ -254,7 +254,7 @@ export function CopilotPanel() {
               dir="auto"
               placeholder={lang === "ur" ? "اپنا سوال لکھیں…" : "Ask about this plan, a field, money or water…"}
               aria-label="Your question"
-              className="max-h-40 min-h-[24px] flex-1 resize-none bg-transparent text-[13.5px] leading-relaxed text-ink outline-none placeholder:text-ink-tertiary"
+              className="max-h-40 min-h-[24px] flex-1 resize-none bg-transparent text-[13.5px] leading-relaxed text-ink outline-none placeholder:text-ink-tertiary focus-visible:outline-none"
               style={{ fieldSizing: "content" } as CSSProperties}
               data-testid="copilot-input"
             />

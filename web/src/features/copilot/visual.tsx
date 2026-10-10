@@ -3,7 +3,7 @@
  * a field map, dated steps or a table. Every view has a table twin, copy, expand and a
  * source footer (tool, run/analysis IDs, basis). Values are only formatted, never computed.
  */
-import { useMemo, useState, type ReactNode } from "react";
+import { Component, useMemo, useState, type ReactNode } from "react";
 import { BarChart3, CalendarClock, Check, Copy, Database, Map as MapIcon, Maximize2, Table2, Wand2 } from "lucide-react";
 import { EChart, chartTokens } from "@/components/charts/EChart";
 import { cssVar } from "@/components/map/palette";
@@ -15,7 +15,7 @@ import { useResolvedTheme } from "@/app/environment";
 import { usePilotData } from "@/app/pilotData";
 import { formatDate, shortId } from "@/lib/formatting";
 import { cn } from "@/lib/cn";
-import { buildChart, type ChartTheme } from "./charts";
+import { buildChart, splitByUnit, type ChartTheme } from "./charts";
 import { BASIS_TEXT, cellText, colLabel, displayUnit, statusWord, toTSV, type Lang } from "./format";
 import { refKind, useCopilotNav } from "./nav";
 import type { Row, VisualBlock } from "./types";
@@ -78,7 +78,7 @@ export function VisualTable({ b, lang, maxHeight = 320 }: { b: VisualBlock; lang
   const cols = b.columns.filter((c) => !(c.kind === "text" && b.columns.some((x) => x.unit_column === c.key)));
   const hl = new Set(b.highlight_ids ?? []);
   return (
-    <div className="overflow-auto rounded-[12px] border border-border" style={{ maxHeight }}>
+    <div className="overflow-auto rounded-[12px] border border-border" style={{ maxHeight }} tabIndex={0} role="region" aria-label={`${b.title}: data table`}>
       <table className="w-full border-collapse text-[12px]" data-testid="copilot-visual-table">
         <caption className="sr-only">{b.title}</caption>
         <thead className="sticky top-0 bg-surface-muted">
@@ -96,7 +96,15 @@ export function VisualTable({ b, lang, maxHeight = 320 }: { b: VisualBlock; lang
             return (
               <tr key={i} className={cn("border-t border-border/70", focus && "bg-wheat-soft/60")}>
                 {cols.map((c) => (
-                  <td key={c.key} className={cn("px-2 py-1 text-ink", c.kind === "number" ? "num text-right" : "text-left", c.kind === "id" && "font-mono text-[11px] text-ink-secondary")}>
+                  <td
+                    key={c.key}
+                    className={cn(
+                      "px-2 py-1 text-ink",
+                      c.kind === "number" ? "num whitespace-nowrap text-right" : "text-left",
+                      (c.kind === "category" || c.kind === "status" || c.kind === "date") && "whitespace-nowrap",
+                      c.kind === "id" && "font-mono text-[11px] text-ink-secondary",
+                    )}
+                  >
                     {cellText(r[c.key], c, r, lang)}
                   </td>
                 ))}
@@ -184,7 +192,7 @@ function rings(g: GeoJSON.Geometry | null): Ring[] {
 }
 
 export function FieldMapView({ b, lang, height = 260 }: { b: VisualBlock; lang: Lang; height?: number }) {
-  const { fieldIndex } = usePilotData();
+  const { fieldIndex, canalsFC } = usePilotData();
   const t = useChartTheme();
   const nav = useCopilotNav();
   const idKey = b.encoding.id ?? b.columns.find((c) => c.ref === "field")?.key;
@@ -194,6 +202,12 @@ export function FieldMapView({ b, lang, height = 260 }: { b: VisualBlock; lang: 
   for (const r of b.rows) if (idKey && typeof r[idKey] === "string") byId.set(r[idKey] as string, r);
   const hl = new Set(b.highlight_ids ?? []);
   const shapes = [...fieldIndex.values()].map((f) => ({ id: f.id, label: f.label, rings: rings(f.geometry) })).filter((s) => s.rings.length);
+  const canals: Ring[] = [];
+  for (const f of canalsFC?.features ?? []) {
+    const g = f.geometry;
+    if (g?.type === "LineString") canals.push(g.coordinates as Ring);
+    else if (g?.type === "MultiLineString") for (const l of g.coordinates) canals.push(l as Ring);
+  }
   if (!shapes.length || !vc) return <VisualTable b={b} lang={lang} />;
   // Projection bounds (presentational): equirectangular with a cos(latitude) x-scale.
   let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity; // prettier-ignore
@@ -201,8 +215,9 @@ export function FieldMapView({ b, lang, height = 260 }: { b: VisualBlock; lang: 
   const k = Math.cos(((minY + maxY) / 2) * (Math.PI / 180));
   const W = 400;
   const H = Math.max(160, Math.min(320, (W * (maxY - minY)) / Math.max(1e-9, (maxX - minX) * k)));
-  const sx = (x: number) => ((x - minX) / Math.max(1e-12, maxX - minX)) * (W - 16) + 8;
-  const sy = (y: number) => H - 8 - ((y - minY) / Math.max(1e-12, maxY - minY)) * (H - 16);
+  const sx = (x: number) => ((x - minX) / Math.max(1e-12, maxX - minX)) * (W - 24) + 12;
+  const sy = (y: number) => H - 12 - ((y - minY) / Math.max(1e-12, maxY - minY)) * (H - 24);
+  const path = (ring: Ring, close: boolean) => `M${ring.map(([x, y]) => `${sx(x).toFixed(1)},${sy(y).toFixed(1)}`).join("L")}${close ? "Z" : ""}`;
   const numeric = vc.kind === "number";
   const vals = b.rows.map((r) => r[vc.key]).filter((v): v is number => typeof v === "number");
   const lo = vals.length ? Math.min(...vals) : 0;
@@ -228,6 +243,11 @@ export function FieldMapView({ b, lang, height = 260 }: { b: VisualBlock; lang: 
   return (
     <figure className="flex flex-col gap-2" data-testid="copilot-map">
       <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`${b.title}: field map`} className="w-full rounded-[12px] bg-surface-muted" style={{ maxHeight: height }}>
+        <g aria-hidden>
+          {canals.map((ring, i) => (
+            <path key={i} d={path(ring, false)} fill="none" stroke={t.water} strokeOpacity={0.45} strokeWidth={1.4} strokeLinecap="round" />
+          ))}
+        </g>
         {shapes.map((s) => {
           const r = byId.get(s.id);
           const focus = hl.has(s.id);
@@ -235,18 +255,21 @@ export function FieldMapView({ b, lang, height = 260 }: { b: VisualBlock; lang: 
             <g key={s.id} onClick={() => nav.open("field", s.id)} className="cursor-pointer">
               <title>{`${s.label}: ${r ? cellText(r[vc.key], vc, r, lang) : "not in this answer"}`}</title>
               {s.rings.map((ring, i) => (
-                <path
-                  key={i}
-                  d={`M${ring.map(([x, y]) => `${sx(x).toFixed(1)},${sy(y).toFixed(1)}`).join("L")}Z`}
-                  fill={colorFor(r)}
-                  stroke={focus ? t.ink : t.surface}
-                  strokeWidth={focus ? 2 : 0.8}
-                  opacity={r ? 1 : 0.45}
-                />
+                <path key={i} d={path(ring, true)} fill={colorFor(r)} stroke={focus ? t.ink : t.ink3} strokeWidth={focus ? 2.2 : 0.9} strokeLinejoin="round" opacity={r ? 1 : 0.45} />
               ))}
             </g>
           );
         })}
+        {shapes
+          .filter((s) => hl.has(s.id))
+          .map((s) => {
+            const [x, y] = s.rings[0][0];
+            return (
+              <text key={`l-${s.id}`} x={sx(x) + 4} y={sy(y) - 4} fontSize={10} fontWeight={600} fill={t.ink} stroke={t.surface} strokeWidth={3} paintOrder="stroke" aria-hidden>
+                {s.label}
+              </text>
+            );
+          })}
       </svg>
       <figcaption className="flex flex-wrap items-center justify-between gap-2 text-[11.5px] text-ink-secondary">
         {numeric ? (
@@ -277,7 +300,36 @@ export function FieldMapView({ b, lang, height = 260 }: { b: VisualBlock; lang: 
 
 /* ------------------------------------------------------------------ chart */
 
+/** One chart failing to draw must never take the conversation down: fall back to its data table. */
+class ChartBoundary extends Component<{ fallback: ReactNode; children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  render() {
+    return this.state.failed ? this.props.fallback : this.props.children;
+  }
+}
+
 function ChartBody({ b, lang, tall }: { b: VisualBlock; lang: Lang; tall?: boolean }) {
+  const parts = ["bar", "grouped_bar", "stacked_bar", "delta_bar", "line", "area"].includes(b.chart) ? splitByUnit(b) : [b];
+  if (parts.length === 1) return <OneChart b={b} lang={lang} tall={tall} />;
+  return (
+    <div className="flex flex-col gap-3">
+      {parts.map((p) => {
+        const c = p.columns.find((x) => x.key === p.encoding.y?.[0]);
+        return (
+          <div key={(p.encoding.y ?? []).join(",")}>
+            <p className="px-1 text-[11.5px] font-medium text-ink-secondary">{(p.encoding.y ?? []).map((k) => colLabel(p.columns.find((x) => x.key === k)!, lang)).join(" · ") || c?.label}</p>
+            <OneChart b={p} lang={lang} tall={tall} />
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function OneChart({ b, lang, tall }: { b: VisualBlock; lang: Lang; tall?: boolean }) {
   const t = useChartTheme();
   const nav = useCopilotNav();
   const built = useMemo(() => buildChart(b, t, lang), [b, t, lang]);
@@ -438,7 +490,22 @@ export function VisualCard({ b, lang }: { b: VisualBlock; lang: Lang }) {
           </Chip>
         ) : null}
       </div>
-      <div className="min-w-0">{view === "visual" || !hasTwin ? <VisualBody b={b} lang={lang} /> : <VisualTable b={b} lang={lang} />}</div>
+      <div className="min-w-0">
+        {view === "visual" || !hasTwin ? (
+          <ChartBoundary
+            fallback={
+              <div className="flex flex-col gap-2">
+                <p className="text-[12px] text-ink-secondary">This chart could not be drawn here; these are its values.</p>
+                <VisualTable b={b} lang={lang} />
+              </div>
+            }
+          >
+            <VisualBody b={b} lang={lang} />
+          </ChartBoundary>
+        ) : (
+          <VisualTable b={b} lang={lang} />
+        )}
+      </div>
       {b.truncated ? (
         <p className="text-[11.5px] text-ink-tertiary">
           Showing {b.rows.length} of {b.row_count} rows
@@ -448,7 +515,11 @@ export function VisualCard({ b, lang }: { b: VisualBlock; lang: Lang }) {
       <Dialog open={expanded} onOpenChange={setExpanded}>
         <DialogContent title={b.title} description={[b.caption, unitsLine(b)].filter(Boolean).join(" · ")} wide>
           <div className="flex flex-col gap-4 p-5">
-            {hasTwin ? <VisualBody b={b} lang={lang} tall /> : null}
+            {hasTwin ? (
+              <ChartBoundary fallback={null}>
+                <VisualBody b={b} lang={lang} tall />
+              </ChartBoundary>
+            ) : null}
             <VisualTable b={b} lang={lang} maxHeight={480} />
             <SourceFooter b={b} />
           </div>

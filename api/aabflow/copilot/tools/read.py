@@ -346,7 +346,7 @@ async def comparison_view(
     roster = await ctx.field_roster()
     made = [
         D.plans_side_by_side(ctx, res, labels_by_run or {}, call_id, tool, extra_views),
-        D.field_deltas(ctx, res, roster, call_id, tool, pair=pair),
+        D.field_deltas(ctx, res, roster, call_id, tool, pair=pair, labels=labels_by_run),
         D.incremental_steps(ctx, res, call_id, tool) if steps else None,
     ]
     return {

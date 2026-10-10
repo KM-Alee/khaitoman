@@ -76,12 +76,13 @@ export function cellText(v: unknown, col: VisualColumn, row: Row, lang: Lang = "
 }
 
 /** Compact axis ticks for a unit (PKR in lakh/crore, kg as t, ratios as %). */
-export function axisFormatter(unit: string | null | undefined): (v: number) => string {
+export function axisFormatter(unit: string | null | undefined, maxAbs = 0): (v: number) => string {
   switch (unit) {
     case "PKR":
       return (v) => formatPKRCompact(v).replace("PKR ", "");
     case "kg":
-      return (v) => formatMass(v);
+      // Display conversion only (lib/formatting does the same): one unit along the whole axis.
+      return maxAbs >= 10_000 ? (v) => `${formatNumber(v / 1000, Math.abs(v) < 10_000 && v !== 0 ? 1 : 0)} t` : (v) => formatMass(v);
     case "ratio":
     case "fraction":
       return (v) => formatPercent(v);
@@ -90,6 +91,12 @@ export function axisFormatter(unit: string | null | undefined): (v: number) => s
     default:
       return (v) => formatNumber(v, autoDigits(v));
   }
+}
+
+/** Axis title only when the tick labels do not already carry the unit. */
+export function axisName(unit: string | null | undefined): string {
+  if (!unit || ["kg", "ratio", "fraction", "m3", "count"].includes(unit)) return "";
+  return displayUnit(unit);
 }
 
 /** Tab-separated copy of the rows exactly as served (header carries units). */

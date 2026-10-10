@@ -52,13 +52,16 @@ test("bar values are the served row values, one per row, gaps stay gaps", () => 
   }
 });
 
-test("the stress heatmap keeps undeliverable cells out of the coloured series", () => {
+test("the stress matrix draws one tile per cell; undeliverable cells are tiles without a value", () => {
   const hm = smokeVisuals("S3").find((v) => v.chart === "heatmap")!;
-  const [filled, empty] = seriesOf(hm);
+  const built = buildChart(hm, T, "en")!;
+  const [tiles] = (built.option as { series: Series[] }).series;
+  expect(tiles.type).toBe("custom");
+  expect(tiles.data).toHaveLength(hm.rows.length);
   const deliverable = hm.rows.filter((r) => typeof r.production_kg === "number");
-  expect(filled.data).toHaveLength(deliverable.length);
-  expect(empty.data).toHaveLength(hm.rows.length - deliverable.length);
-  expect((filled.data as [number, number, number][]).map((d) => d[2])).toEqual(deliverable.map((r) => r.production_kg));
+  const order = hm.rows.map((_, i) => built.rowAt(0, i)!);
+  expect(order.slice(0, deliverable.length).map((r) => r.production_kg)).toEqual(deliverable.map((r) => r.production_kg));
+  expect(order.slice(deliverable.length).every((r) => r.production_kg === null && r.status === "undeliverable")).toBe(true);
 });
 
 test("the water sankey links carry the ledger volumes", () => {
@@ -111,4 +114,12 @@ test("copied data keeps server values and units", () => {
   const tsv = toTSV(sk.columns, sk.rows).split("\n");
   expect(tsv[0]).toContain("[m3]");
   expect(tsv[1].split("\t")[2]).toBe(String(sk.rows[0].m3));
+});
+
+test("bar columns with different units become separate panels, never a second axis", async () => {
+  const { splitByUnit } = await import("./charts");
+  const side = smokeVisuals("S5").find((v) => v.chart === "grouped_bar")!;
+  const parts = splitByUnit(side);
+  expect(parts.length).toBeGreaterThan(1);
+  for (const p of parts) expect(new Set((p.encoding.y ?? []).map((k) => side.columns.find((c) => c.key === k)!.unit)).size).toBe(1);
 });

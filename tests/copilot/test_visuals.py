@@ -167,3 +167,8 @@ def test_action_kind_follows_the_id():
     assert action_for_id("cmp_abc") == "open_comparison"
     assert action_for_id("rpt_abc") == "open_report"
     assert action_for_id("pilot-a:field-001") == "open_field"
+
+
+def test_numeric_y_on_a_map_or_heatmap_means_the_colour_value(store):
+    m = materialize(spec(chart="map", y=["production_kg"]), store, "v1")
+    assert m.issues == [] and m.block.encoding.value == "production_kg"

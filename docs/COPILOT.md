@@ -277,10 +277,35 @@ Seven `gpt-6-luna` turns on real pilot-a wheat 2027-28 runs (B0/B1/P/R, fixed-pl
 
 S3's second hosted call stalled past the remaining budget; the turn ended with the honest
 fallback (server-built heatmap of the saved stress test, no prose). The 40 s per-call cap with
-one forced-final retry was added after this run and is covered by
-`test_stalled_provider_call_is_retried_once_for_the_answer`; it has not been re-measured live.
+one forced-final retry was added after this run (`test_stalled_provider_call_is_retried_once_for_the_answer`).
+Re-measured live once (`evidence/copilot/smoke-20261010T141112Z.json`): S3 completed in 21.0 s,
+3 rounds (4.2 s + 10.5 s + 5.3 s); the middle round was a regeneration because the model put
+the measured value in `y` of a heatmap, which the server now accepts as the colour value.
 
-## 10. Verification
+## 10. Chat UI (`web/src/features/copilot`)
+
+| File | Role |
+|---|---|
+| `index.ts` | Exports `CopilotPanel` (mounted by the assistant slot) and `CopilotLauncher` |
+| `types.ts` | Contract types from `generated/api.ts`, typed SSE event union, `endsStream` |
+| `api.ts` | Client for the routes in §1 (+ deterministic `/runs/{id}/explanations`) |
+| `stream.ts` | SSE with event-log catch-up, resume from the last event id, backoff, polling fallback, buffered-proxy watchdog |
+| `conversation.ts` | Zustand store per pilot; pure `applyEvent` reducer over every event type; send/retry/cancel/restore/openSession |
+| `blocks.tsx` | Exhaustive `BlockView`; `AnswerView` layout (badges, headline, text, metric strip, visuals, caveats, actions, follow-ups); RTL for Urdu |
+| `visual.tsx`, `charts.ts` | Visual card (chart/data twin, copy TSV, expand, show on map, source footer, error boundary); pure ECharts option builders; SVG field map with canals; dated steps; metric cards |
+| `nav.ts` | Citations, actions, chart clicks and view intents → `useAppActions` (open run/analysis/compare, select/highlight fields) |
+| `suggestions.ts` | Starter questions by screen, run and field (always one Urdu example) |
+| `TurnCard.tsx`, `CopilotPanel.tsx` | Live progress steps, honest terminal states with retry, background-job visuals, composer, language switch, history, offline state |
+
+Rules kept in the UI: values are only formatted (`lib/formatting`), never computed; `null` is a
+gap; bar/line columns with different units become small multiples (no second axis); at most four
+categorical colours in the validated order series-1, -2, -4, -3 (slots 5 and 6 of the design
+palette fail colour-vision separation). Checks: `web/src/features/copilot/*.test.ts(x)` (labelled
+fixtures copied from the live smoke transcript), `tests/e2e/journey-copilot.spec.ts` (one live
+question through the UI) and `tests/e2e/a11y-copilot.spec.ts` (recorded answers, axe and
+screenshots of every chart kind at desktop and mobile).
+
+## 11. Verification
 
 - `tests/copilot/*`: scripted-provider (labelled fixture) tests for the tool loop, schemas,
   number tracing, visual materialization, context pinning / ID injection, failures, events,

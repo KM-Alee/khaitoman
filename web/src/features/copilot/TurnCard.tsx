@@ -204,8 +204,8 @@ export function TurnCard({ t, ctx, onRetry, onStop, latest }: { t: LiveTurn; ctx
               System message, not the assistant
             </Chip>
           ) : null}
-          {blocks.length ? <AnswerView blocks={blocks} ctx={{ ...ctx, lang, busy: ctx.busy || busy }} /> : null}
           <StateNote t={t} onRetry={canRetry && latest ? onRetry : undefined} />
+          {blocks.length ? <AnswerView blocks={blocks} ctx={{ ...ctx, lang, busy: ctx.busy || busy }} /> : null}
           {t.pendingJobIds.length && !t.jobsSettled ? (
             <p className="inline-flex items-center gap-1.5 text-[12px] text-ink-secondary" role="status">
               <Loader2 size={12} aria-hidden className="[animation:spin_1s_linear_infinite]" /> Still calculating in the background; results appear here when ready.

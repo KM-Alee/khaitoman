@@ -1,0 +1,614 @@
+{
+ "kind": "copilot-live-smoke",
+ "note": "Live hosted-model smoke on real pilot data; not the T11.8 30x3 evaluation and not AT17.",
+ "started_at": "2026-10-10T14:11:12.245833+00:00",
+ "model": "gpt-6-luna",
+ "key_configured": true,
+ "pilot": {
+  "pilot_id": "pilot-a",
+  "pilot_version": "reviewed-v1",
+  "season_id": "wheat-rabi-2027-28"
+ },
+ "turns": [
+  {
+   "case": "S3",
+   "covers": "stress / robustness with heatmap",
+   "message": "How robust is our plan if we get a dry year or the canal water is cut?",
+   "turn_id": "turn_e9f8129b27754b308085295e60c153dc",
+   "status": "completed",
+   "language": "en",
+   "wall_s": 21.0,
+   "latency_ms": 20152,
+   "rounds": 3,
+   "timings": {
+    "provider_calls": [
+     {
+      "calls": [
+       "get_context",
+       "read_analysis",
+       "impact_sdg"
+      ],
+      "forced_final": false,
+      "latency_ms": 4186,
+      "round": 1,
+      "usage": {
+       "input_tokens": 6711,
+       "output_tokens": 116,
+       "total_tokens": 6827
+      }
+     },
+     {
+      "calls": [
+       "final_answer"
+      ],
+      "forced_final": false,
+      "latency_ms": 10495,
+      "rejected": [
+       "ds1: y column 'production_kg' is number, needs category/id/date/text/status/bool"
+      ],
+      "round": 2,
+      "usage": {
+       "input_tokens": 14552,
+       "output_tokens": 789,
+       "total_tokens": 15341
+      }
+     },
+     {
+      "calls": [
+       "final_answer"
+      ],
+      "forced_final": false,
+      "latency_ms": 5346,
+      "round": 3,
+      "usage": {
+       "input_tokens": 15427,
+       "output_tokens": 557,
+       "total_tokens": 15984
+      }
+     }
+    ],
+    "provider_ms": 20027,
+    "tool_ms": 109,
+    "tools": [
+     {
+      "call_id": "call_hjFVjKqTodT4wuBqijKt1awW",
+      "ms": 23,
+      "round": 1,
+      "status": "succeeded",
+      "tool": "get_context"
+     },
+     {
+      "call_id": "call_AI3UuFmW6WkSUsLG3PGq4wnS",
+      "ms": 38,
+      "round": 1,
+      "status": "succeeded",
+      "tool": "read_analysis"
+     },
+     {
+      "call_id": "call_orKMOw5xJBXFUZZxLftCYQPR",
+      "ms": 48,
+      "round": 1,
+      "status": "succeeded",
+      "tool": "impact_sdg"
+     }
+    ],
+    "total_ms": 20152
+   },
+   "model": "gpt-6-luna",
+   "prompt_version": "copilot-prompt-2.1.0",
+   "tool_schema_version": "tools-a3cc2c9c802cf55b",
+   "provider_request_ids": [
+    "resp_02057f2a282c9986006aca47a50fb087d2b2370cea9581109b",
+    "resp_02057f2a282c9986006aca47a9526087d2b9798103c7c681fb",
+    "resp_02057f2a282c9986006aca47b385e487d2a6f85cd8d9d8df59"
+   ],
+   "tool_calls": [
+    {
+     "call_id": "call_hjFVjKqTodT4wuBqijKt1awW",
+     "round": 1,
+     "tool": "get_context",
+     "arguments": {},
+     "status": "succeeded",
+     "error": null,
+     "datasets": []
+    },
+    {
+     "call_id": "call_AI3UuFmW6WkSUsLG3PGq4wnS",
+     "round": 1,
+     "tool": "read_analysis",
+     "arguments": {
+      "analysis_id": null,
+      "kind": "stress",
+      "mode": "fixed_plan"
+     },
+     "status": "succeeded",
+     "error": null,
+     "datasets": [
+      {
+       "dataset_id": "ds1",
+       "kind": "stress_matrix",
+       "title": "Stress test (same plan in every condition)",
+       "rows": 9,
+       "charts": [
+        "table",
+        "heatmap",
+        "bar"
+       ]
+      }
+     ]
+    },
+    {
+     "call_id": "call_orKMOw5xJBXFUZZxLftCYQPR",
+     "round": 1,
+     "tool": "impact_sdg",
+     "arguments": {
+      "baseline_run_id": "run_d443ef4b48dc47f989b0a9de6a64c296",
+      "run_id": "run_2890504a54914055a4aa9fb831cd0b30"
+     },
+     "status": "succeeded",
+     "error": null,
+     "datasets": [
+      {
+       "dataset_id": "ds2",
+       "kind": "sdg_cards",
+       "title": "Sustainable Development Goal proxies",
+       "rows": 3,
+       "charts": [
+        "table",
+        "kpi"
+       ]
+      }
+     ]
+    }
+   ],
+   "created_refs": [],
+   "error": null,
+   "answer_validated": true,
+   "answer_issues": [],
+   "block_types": [
+    "run_badge",
+    "headline",
+    "text",
+    "visual",
+    "uncertainty",
+    "follow_ups"
+   ],
+   "visuals": [
+    {
+     "chart": "heatmap",
+     "title": "Plan delivery under dry weather and canal supply tests",
+     "dataset_kind": "stress_matrix",
+     "rows": 9,
+     "source": {
+      "tool": "read_analysis",
+      "call_id": "call_AI3UuFmW6WkSUsLG3PGq4wnS",
+      "run_ids": [
+       "run_2890504a54914055a4aa9fb831cd0b30",
+       "run_4cbfa7162257481c9f092d9cf76f1855",
+       "run_39f8598cbff4445e80a1a4fd2c5c384f",
+       "run_616273afd9604af594c4b4bc2cf2c0d2",
+       "run_a8e3381cb81f41f0982e755a76898c60",
+       "run_61ec2d54e3f2471ba8ccb94efb27f84e",
+       "run_8d075474aef3480bbaea058a4fc8cf79",
+       "run_43177a5af38b4b1fb5124f1e29206372",
+       "run_91671b60a40d4f48a5f5513d83fb8200",
+       "run_db02369a6be04ff08fcf59015ca931a7"
+      ],
+      "analysis_ids": [
+       "ana_8537cbc214884f83979aa086df33ce32"
+      ],
+      "comparison_ids": [],
+      "revision_ids": [],
+      "endpoint": "/analyses/ana_8537cbc214884f83979aa086df33ce32"
+     }
+    }
+   ],
+   "answer": {
+    "language": "en",
+    "blocks": [
+     {
+      "type": "run_badge",
+      "role": "context",
+      "run_id": "run_2890504a54914055a4aa9fb831cd0b30",
+      "plan_kind": "P",
+      "solver_status": "OPTIMAL",
+      "outcome": "plan",
+      "scenario_revision_id": "rev_7a29b20550b44ee7a3c2a746f6c8791c",
+      "pilot_id": "pilot-a",
+      "pilot_version": "reviewed-v1",
+      "season_id": "wheat-rabi-2027-28",
+      "label": null
+     },
+     {
+      "type": "headline",
+      "text": "The plan handles a dry year with nominal canal supply, but not the tested canal cuts under its current schedule.",
+      "citations": [],
+      "withheld": false
+     },
+     {
+      "type": "text",
+      "text": "In the fixed-plan test, the dry-year/nominal-supply case remains deliverable, with modeled production of 79,074 kg; the typical/nominal case is 154,118 kg. All six tested cases with either a 22% shortage or a 14-day interruption are undeliverable, so the test cannot report production for those cases.",
+      "citations": [
+       {
+        "ref_id": "ana_8537cbc214884f83979aa086df33ce32",
+        "kind": "analysis",
+        "auto": false
+       },
+       {
+        "ref_id": "run_2890504a54914055a4aa9fb831cd0b30",
+        "kind": "run",
+        "auto": false
+       },
+       {
+        "ref_id": "run_4cbfa7162257481c9f092d9cf76f1855",
+        "kind": "run",
+        "auto": true
+       },
+       {
+        "ref_id": "run_a8e3381cb81f41f0982e755a76898c60",
+        "kind": "run",
+        "auto": true
+       },
+       {
+        "ref_id": "run_39f8598cbff4445e80a1a4fd2c5c384f",
+        "kind": "run",
+        "auto": true
+       }
+      ],
+      "withheld": false
+     },
+     {
+      "type": "visual",
+      "visual_id": "v1",
+      "chart": "heatmap",
+      "title": "Plan delivery under dry weather and canal supply tests",
+      "caption": "The dry-year case works with nominal supply; every tested shortage or interruption case is marked undeliverable.",
+      "dataset_id": "ds1",
+      "dataset_kind": "stress_matrix",
+      "columns": [
+       {
+        "key": "weather",
+        "label": "Weather",
+        "label_ur": "موسم",
+        "kind": "category",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "supply",
+        "label": "Canal supply",
+        "label_ur": "نہری فراہمی",
+        "kind": "category",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "state_id",
+        "label": "State",
+        "label_ur": null,
+        "kind": "id",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "production_kg",
+        "label": "Crop production",
+        "label_ur": "فصل کی پیداوار",
+        "kind": "number",
+        "unit": "kg",
+        "unit_column": null,
+        "basis": "model_output",
+        "ref": null
+       },
+       {
+        "key": "deliverable",
+        "label": "Plan deliverable",
+        "label_ur": "منصوبہ قابل عمل",
+        "kind": "bool",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "status",
+        "label": "Status",
+        "label_ur": "حالت",
+        "kind": "status",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "violations",
+        "label": "Broken delivery rules",
+        "label_ur": null,
+        "kind": "number",
+        "unit": "count",
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "solver_status",
+        "label": "Solver status",
+        "label_ur": "حل کی حالت",
+        "kind": "status",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": null
+       },
+       {
+        "key": "run_id",
+        "label": "Run",
+        "label_ur": "رن",
+        "kind": "id",
+        "unit": null,
+        "unit_column": null,
+        "basis": null,
+        "ref": "run"
+       }
+      ],
+      "rows": [
+       {
+        "deliverable": true,
+        "production_kg": 79074.0,
+        "run_id": "run_4cbfa7162257481c9f092d9cf76f1855",
+        "solver_status": "OPTIMAL",
+        "state_id": "dry__nominal-roster-v1",
+        "status": "deliverable",
+        "supply": "nominal roster",
+        "violations": 0,
+        "weather": "dry"
+       },
+       {
+        "deliverable": false,
+        "production_kg": null,
+        "run_id": "run_39f8598cbff4445e80a1a4fd2c5c384f",
+        "solver_status": "INFEASIBLE",
+        "state_id": "dry__shortage-22pct-v1",
+        "status": "undeliverable",
+        "supply": "22% shortage",
+        "violations": 22,
+        "weather": "dry"
+       },
+       {
+        "deliverable": false,
+        "production_kg": null,
+        "run_id": "run_616273afd9604af594c4b4bc2cf2c0d2",
+        "solver_status": "INFEASIBLE",
+        "state_id": "dry__interruption-14d-v1",
+        "status": "undeliverable",
+        "supply": "14-day interruption",
+        "violations": 30,
+        "weather": "dry"
+       },
+       {
+        "deliverable": true,
+        "production_kg": 154118.0,
+        "run_id": "run_a8e3381cb81f41f0982e755a76898c60",
+        "solver_status": "OPTIMAL",
+        "state_id": "typical__nominal-roster-v1",
+        "status": "deliverable",
+        "supply": "nominal roster",
+        "violations": 0,
+        "weather": "typical"
+       },
+       {
+        "deliverable": false,
+        "production_kg": null,
+        "run_id": "run_61ec2d54e3f2471ba8ccb94efb27f84e",
+        "solver_status": "INFEASIBLE",
+        "state_id": "typical__shortage-22pct-v1",
+        "status": "undeliverable",
+        "supply": "22% shortage",
+        "violations": 22,
+        "weather": "typical"
+       },
+       {
+        "deliverable": false,
+        "production_kg": null,
+        "run_id": "run_8d075474aef3480bbaea058a4fc8cf79",
+        "solver_status": "INFEASIBLE",
+        "state_id": "typical__interruption-14d-v1",
+        "status": "undeliverable",
+        "supply": "14-day interruption",
+        "violations": 30,
+        "weather": "typical"
+       },
+       {
+        "deliverable": true,
+        "production_kg": 187492.0,
+        "run_id": "run_43177a5af38b4b1fb5124f1e29206372",
+        "solver_status": "OPTIMAL",
+        "state_id": "wet__nominal-roster-v1",
+        "status": "deliverable",
+        "supply": "nominal roster",
+        "violations": 0,
+        "weather": "wet"
+       },
+       {
+        "deliverable": false,
+        "production_kg": null,
+        "run_id": "run_91671b60a40d4f48a5f5513d83fb8200",
+        "solver_status": "INFEASIBLE",
+        "state_id": "wet__shortage-22pct-v1",
+        "status": "undeliverable",
+        "supply": "22% shortage",
+        "violations": 22,
+        "weather": "wet"
+       },
+       {
+        "deliverable": false,
+        "production_kg": null,
+        "run_id": "run_db02369a6be04ff08fcf59015ca931a7",
+        "solver_status": "INFEASIBLE",
+        "state_id": "wet__interruption-14d-v1",
+        "status": "undeliverable",
+        "supply": "14-day interruption",
+        "violations": 30,
+        "weather": "wet"
+       }
+      ],
+      "row_count": 9,
+      "truncated": false,
+      "encoding": {
+       "x": "supply",
+       "y": [
+        "weather"
+       ],
+       "series": "weather",
+       "value": "production_kg",
+       "label": null,
+       "color": null,
+       "source": null,
+       "target": null,
+       "id": "run_id",
+       "status": "status"
+      },
+      "highlight_ids": [],
+      "source": {
+       "tool": "read_analysis",
+       "call_id": "call_AI3UuFmW6WkSUsLG3PGq4wnS",
+       "run_ids": [
+        "run_2890504a54914055a4aa9fb831cd0b30",
+        "run_4cbfa7162257481c9f092d9cf76f1855",
+        "run_39f8598cbff4445e80a1a4fd2c5c384f",
+        "run_616273afd9604af594c4b4bc2cf2c0d2",
+        "run_a8e3381cb81f41f0982e755a76898c60",
+        "run_61ec2d54e3f2471ba8ccb94efb27f84e",
+        "run_8d075474aef3480bbaea058a4fc8cf79",
+        "run_43177a5af38b4b1fb5124f1e29206372",
+        "run_91671b60a40d4f48a5f5513d83fb8200",
+        "run_db02369a6be04ff08fcf59015ca931a7"
+       ],
+       "analysis_ids": [
+        "ana_8537cbc214884f83979aa086df33ce32"
+       ],
+       "comparison_ids": [],
+       "revision_ids": [],
+       "endpoint": "/analyses/ana_8537cbc214884f83979aa086df33ce32"
+      },
+      "basis": [
+       "model_output",
+       "solver_result"
+      ],
+      "notes": [
+       "Undeliverable cells have no production: the plan's dated deliveries break the rules in that condition (not a low yield).",
+       "worst within the tested states only; no probability of success is implied",
+       "3 highlight ID(s) not in this dataset were ignored"
+      ],
+      "interactions": [
+       {
+        "on": "select_cell",
+        "column": "run_id",
+        "intent": "open_run"
+       }
+      ],
+      "table_fallback": true,
+      "auto": false
+     },
+     {
+      "type": "uncertainty",
+      "text": "“Undeliverable” means this plan’s dated deliveries and operations fail the modeled delivery constraints; it is not a zero-yield estimate or proof that no alternative is possible. This is a fixed-plan test, and production is modeled by an uncalibrated crop model; the test does not imply probabilities for these conditions.",
+      "citations": [
+       {
+        "ref_id": "ana_8537cbc214884f83979aa086df33ce32",
+        "kind": "analysis",
+        "auto": false
+       }
+      ],
+      "withheld": false
+     },
+     {
+      "type": "follow_ups",
+      "questions": [
+       "Would you like me to test a recovery plan that re-schedules operations for each condition?",
+       "Should I compare the plan against a tail-protection or shortage scenario?",
+       "Would you like a field-by-field view of who is most exposed?"
+      ]
+     }
+    ],
+    "needs_clarification": false,
+    "clarification_question": null,
+    "validated": true,
+    "issues": [],
+    "deterministic": false
+   },
+   "event_types": [
+    "turn_started",
+    "thinking",
+    "tool_started",
+    "tool_started",
+    "tool_started",
+    "tool_finished",
+    "dataset_ready",
+    "tool_finished",
+    "dataset_ready",
+    "tool_finished",
+    "thinking",
+    "thinking",
+    "thinking",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer_block",
+    "answer",
+    "turn_finished",
+    "jobs_settled"
+   ]
+  }
+ ],
+ "copilot_status": {
+  "configured": true,
+  "state": "ready",
+  "reason": null,
+  "model": "gpt-6-luna",
+  "prompt_version": "copilot-prompt-2.1.0",
+  "tool_schema_version": "tools-a3cc2c9c802cf55b",
+  "offline_note": "Hosted chat needs internet and a configured key. Saved results, deterministic explanations and controls work offline; there is no offline generative assistant."
+ },
+ "prepared": {
+  "revision_id": "rev_7a29b20550b44ee7a3c2a746f6c8791c",
+  "runs": {
+   "B0": "run_d443ef4b48dc47f989b0a9de6a64c296",
+   "B1": "run_2bb3cd9af01747a4b942f432b8b5e32e",
+   "P": "run_2890504a54914055a4aa9fb831cd0b30",
+   "R": "run_173e90b98ab34edb9886f3f4b9ca7f8c"
+  },
+  "stress_analysis_id": "ana_8537cbc214884f83979aa086df33ce32",
+  "stress_state": "succeeded",
+  "frontier_analysis_id": "ana_bd1a7153559f4bb79a9c3c2b28009257",
+  "frontier_state": "succeeded",
+  "prepare_s": 35.2
+ },
+ "sessions": {
+  "main": "cps_0e4574d57aed470bb2cc4baef53e9775"
+ },
+ "finished_at": "2026-10-10T14:12:08.715577+00:00",
+ "summary": {
+  "turns": 1,
+  "statuses": {
+   "S3": "completed"
+  },
+  "wall_s": {
+   "min": 21.0,
+   "max": 21.0
+  },
+  "provider_call_ms": [
+   4186,
+   10495,
+   5346
+  ]
+ }
+}

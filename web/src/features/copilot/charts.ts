@@ -6,7 +6,7 @@
  */
 import type { EOption } from "@/components/charts/EChart";
 import { formatDateShort } from "@/lib/formatting";
-import { axisFormatter, cellText, colLabel, displayUnit, statusWord, unitOf, type Lang } from "./format";
+import { axisFormatter, axisName, cellText, colLabel, displayUnit, statusWord, unitOf, type Lang } from "./format";
 import type { ChartKind, Row, VisualBlock, VisualColumn } from "./types";
 
 export interface ChartTheme {
@@ -109,7 +109,8 @@ function bars(b: VisualBlock, t: ChartTheme, lang: Lang): BuiltChart {
   const cats = rows.map((r) => catLabel(b, r, x, lang));
   const horizontal = rows.length > 7 || cats.some((c) => c.length > 14);
   const unit = unitOf(col(b, ys[0])!, rows[0]);
-  const fmt = axisFormatter(unit);
+  const maxAbs = Math.max(0, ...rows.flatMap((r) => ys.map((k) => Math.abs(num(r[k]) ?? 0))));
+  const fmt = axisFormatter(unit, maxAbs);
   const delta = b.chart === "delta_bar";
   const stacked = b.chart === "stacked_bar";
   const colorKey = b.encoding.color && col(b, b.encoding.color)?.kind !== "number" ? b.encoding.color : null;
@@ -126,7 +127,12 @@ function bars(b: VisualBlock, t: ChartTheme, lang: Lang): BuiltChart {
       stack: stacked ? "total" : undefined,
       barMaxWidth: horizontal ? 16 : 34,
       barGap: "18%",
-      itemStyle: { borderRadius: stacked ? 0 : horizontal ? [0, 4, 4, 0] : [4, 4, 0, 0], borderColor: t.surface, borderWidth: stacked || multi ? 1 : 0 },
+      itemStyle: {
+        color: multi ? t.series[si % t.series.length] : t.water,
+        borderRadius: stacked ? 0 : horizontal ? [0, 4, 4, 0] : [4, 4, 0, 0],
+        borderColor: t.surface,
+        borderWidth: stacked || multi ? 1 : 0,
+      },
       label: {
         show: !multi && rows.length <= 12,
         position: horizontal ? "right" : "top",
@@ -148,7 +154,7 @@ function bars(b: VisualBlock, t: ChartTheme, lang: Lang): BuiltChart {
         const focus = id && highlight.has(id);
         return {
           value: v === null ? "-" : v,
-          itemStyle: { color: focus && !delta ? t.wheat : color, opacity: highlight.size && !focus ? 0.55 : 1, ...(focus ? { borderColor: t.ink, borderWidth: 1.5 } : {}) },
+          itemStyle: { color: focus && !delta ? t.wheat : color, ...(focus ? { borderColor: t.ink, borderWidth: 1 } : {}) },
         };
       }),
     };
@@ -164,9 +170,10 @@ function bars(b: VisualBlock, t: ChartTheme, lang: Lang): BuiltChart {
   };
   const valAxis = {
     type: "value",
-    name: displayUnit(unit),
+    name: axisName(unit),
+    splitNumber: 4,
     nameTextStyle: { color: t.ink3, fontSize: 11 },
-    axisLabel: { color: t.ink3, fontSize: 11, formatter: fmt },
+    axisLabel: { color: t.ink3, fontSize: 11, formatter: fmt, hideOverlap: true },
     splitLine: { lineStyle: { color: t.border, opacity: 0.7 } },
   };
   const legend = multi || colorKey
@@ -230,9 +237,10 @@ function lines(b: VisualBlock, t: ChartTheme, lang: Lang): BuiltChart {
       xAxis: { type: "category", data: cats, boundaryGap: !area, axisLine: { lineStyle: { color: t.border } }, axisTick: { show: false }, axisLabel: { color: t.ink3, fontSize: 11, hideOverlap: true } },
       yAxis: {
         type: "value",
-        name: units.length === 1 ? units[0] : "",
+        name: units.length === 1 ? axisName(col(b, ys[0])?.unit) : "",
+        splitNumber: 4,
         nameTextStyle: { color: t.ink3, fontSize: 11 },
-        axisLabel: { color: t.ink3, fontSize: 11, formatter: axisFormatter(col(b, ys[0])?.unit) },
+        axisLabel: { color: t.ink3, fontSize: 11, formatter: axisFormatter(col(b, ys[0])?.unit, Math.max(0, ...rows.flatMap((r) => ys.map((k) => Math.abs(num(r[k]) ?? 0))))) },
         splitLine: { lineStyle: { color: t.border, opacity: 0.7 } },
       },
       series: ys.map((k, i) => {
@@ -315,15 +323,17 @@ function points(b: VisualBlock, t: ChartTheme, lang: Lang): BuiltChart {
         nameLocation: "middle",
         nameGap: 28,
         nameTextStyle: { color: t.ink3, fontSize: 11 },
-        axisLabel: { color: t.ink3, fontSize: 11, formatter: axisFormatter(xc.unit) },
+        splitNumber: 4,
+        axisLabel: { color: t.ink3, fontSize: 11, formatter: axisFormatter(xc.unit, Math.max(0, ...plotted.map((r) => Math.abs(num(r[xk]) ?? 0)))), hideOverlap: true },
         splitLine: { lineStyle: { color: t.border, opacity: 0.5 } },
         scale: true,
       },
       yAxis: {
         type: "value",
-        name: displayUnit(yc.unit),
+        name: axisName(yc.unit),
+        splitNumber: 4,
         nameTextStyle: { color: t.ink3, fontSize: 11 },
-        axisLabel: { color: t.ink3, fontSize: 11, formatter: axisFormatter(yc.unit) },
+        axisLabel: { color: t.ink3, fontSize: 11, formatter: axisFormatter(yc.unit, Math.max(0, ...plotted.map((r) => Math.abs(num(r[yk]) ?? 0)))) },
         splitLine: { lineStyle: { color: t.border, opacity: 0.7 } },
         scale: true,
       },
@@ -352,7 +362,13 @@ function heatmap(b: VisualBlock, t: ChartTheme, lang: Lang): BuiltChart {
     (v === null ? empty : filled).push({ value: cell, row: r });
   }
   const vals = filled.map((f) => f.value[2]);
+  const lo = vals.length ? Math.min(...vals) : 0;
+  const hi = vals.length ? Math.max(...vals) : 0;
+  // Colour step per served value (presentational only; no new number is shown).
+  const step = (v: number) => (hi > lo ? Math.min(5, Math.floor(((v - lo) / (hi - lo)) * 6)) : 4);
   const label = (row: Row, v: number | null) => (v === null ? (sk && row[sk] ? statusWord(String(row[sk])).replace("No plan in this condition", "No plan") : "No value") : cellText(v, vc, row, lang));
+  const cells = [...filled.map((f) => ({ ...f, has: true })), ...empty.map((e) => ({ ...e, has: false }))];
+  type Api = { value: (i: number) => number; coord: (v: number[]) => number[]; size: (v: number[]) => number[] };
   return {
     option: {
       textStyle: { fontFamily: t.font, color: t.ink2 },
@@ -360,33 +376,52 @@ function heatmap(b: VisualBlock, t: ChartTheme, lang: Lang): BuiltChart {
       tooltip: {
         ...tooltipBase(t),
         trigger: "item",
-        formatter: (p: { seriesIndex: number; dataIndex: number }) => rowTooltip(b, (p.seriesIndex === 0 ? filled : empty)[p.dataIndex]?.row, lang, [xk, yk, vk]),
+        formatter: (p: { dataIndex: number }) => rowTooltip(b, cells[p.dataIndex]?.row, lang, [xk, yk, vk]),
       },
       xAxis: { type: "category", data: xs, splitArea: { show: false }, axisTick: { show: false }, axisLine: { show: false }, axisLabel: { color: t.ink2, fontSize: 11, interval: 0, width: 96, overflow: "break" } },
       yAxis: { type: "category", data: ys, axisTick: { show: false }, axisLine: { show: false }, axisLabel: { color: t.ink2, fontSize: 11, formatter: (v: string) => v.charAt(0).toUpperCase() + v.slice(1) } },
-      // Colour only: the scale's ends come from the served values and are never printed as new numbers.
-      visualMap: vals.length
-        ? { show: false, seriesIndex: 0, min: Math.min(...vals), max: Math.max(...vals) === Math.min(...vals) ? Math.min(...vals) + 1 : Math.max(...vals), inRange: { color: [t.seq[1], t.seq[3], t.seq[5]] } }
-        : undefined,
       series: [
         {
-          type: "heatmap",
+          // Cells drawn as rounded tiles: filled = deliverable with production; hatched = no plan.
+          type: "custom",
           name: colLabel(vc, lang),
-          data: filled.map((f) => f.value),
-          itemStyle: { borderColor: t.surface, borderWidth: 3, borderRadius: 8 },
-          label: { show: true, fontSize: 12, fontWeight: 600, color: "#fff", formatter: (p: { dataIndex: number }) => label(filled[p.dataIndex].row, filled[p.dataIndex].value[2]) },
-        },
-        {
-          type: "heatmap",
-          name: "No plan",
-          data: empty.map((e) => e.value),
-          itemStyle: { color: t.muted, borderColor: t.surface, borderWidth: 3, borderRadius: 8, decal: { symbol: "line", rotation: Math.PI / 4, dashArrayX: [1, 0], dashArrayY: [2, 5], color: t.border } },
-          label: { show: true, fontSize: 11, color: t.ink2, formatter: (p: { dataIndex: number }) => label(empty[p.dataIndex].row, null) },
+          renderItem: (_p: unknown, api: Api) => {
+            const i = api.value(2);
+            const c = cells[i];
+            const [cx, cy] = api.coord([api.value(0), api.value(1)]);
+            const [w, h] = api.size([1, 1]);
+            const fill = c.has ? t.seq[step(c.value[2])] : t.muted;
+            const dark = c.has && step(c.value[2]) >= 3;
+            return {
+              type: "group",
+              children: [
+                {
+                  type: "rect",
+                  shape: { x: cx - w / 2 + 3, y: cy - h / 2 + 3, width: w - 6, height: h - 6, r: 10 },
+                  style: c.has ? { fill } : { fill, stroke: t.border, lineWidth: 1, lineDash: [4, 3] },
+                },
+                {
+                  type: "text",
+                  style: {
+                    x: cx,
+                    y: cy,
+                    text: label(c.row, c.has ? c.value[2] : null),
+                    align: "center",
+                    verticalAlign: "middle",
+                    fill: c.has ? (dark ? "#ffffff" : t.ink) : t.ink2,
+                    font: `${c.has ? 600 : 500} ${c.has ? 12 : 11}px ${t.font}`,
+                  },
+                },
+              ],
+            };
+          },
+          data: cells.map((c, i) => [c.value[0], c.value[1], i]),
+          encode: { x: 0, y: 1 },
         },
       ],
     },
     height: Math.max(180, ys.length * 62 + 70),
-    rowAt: (s, i) => (s === 0 ? filled : empty)[i]?.row,
+    rowAt: (_s, i) => [...filled, ...empty][i]?.row,
   };
 }
 
@@ -398,7 +433,11 @@ function sankey(b: VisualBlock, t: ChartTheme, lang: Lang): BuiltChart {
   const vk = b.encoding.value!;
   const vc = col(b, vk)!;
   const links = b.rows.filter((r) => num(r[vk]) !== null && str(r[sk]) !== str(r[tk]));
-  const names = uniq(links.flatMap((r) => [r[sk], r[tk]]));
+  const pretty = (v: unknown) => {
+    const x = str(v);
+    return /^[a-z0-9_]+$/.test(x) ? (x.charAt(0).toUpperCase() + x.slice(1)).replace(/_/g, " ") : x;
+  };
+  const names = uniq(links.flatMap((r) => [pretty(r[sk]), pretty(r[tk])]));
   const nodeColor = (n: string) => (/loss|lost|evapor|seepage|spill/i.test(n) ? t.warning : /ground|pump/i.test(n) ? t.series[1] : /pond/i.test(n) ? t.series[2] : /field|applied|outlet/i.test(n) ? t.series[3] : t.water);
   return {
     option: {
@@ -412,24 +451,50 @@ function sankey(b: VisualBlock, t: ChartTheme, lang: Lang): BuiltChart {
       series: [
         {
           type: "sankey",
-          left: 4,
-          right: 110,
+          left: 92,
+          right: 108,
           top: 8,
           bottom: 8,
           nodeWidth: 12,
-          nodeGap: 12,
+          nodeGap: 16,
+          layoutIterations: 48,
+          // Sources are labelled on their left, everything else on the right, so labels never sit on links' starts.
+          levels: [{ depth: 0, label: { position: "left", width: 84 } }],
           draggable: false,
           emphasis: { focus: "adjacency" },
-          label: { color: t.ink, fontSize: 11 },
+          label: {
+            color: t.ink,
+            fontSize: 10.5,
+            width: 104,
+            overflow: "break",
+            backgroundColor: t.surface,
+            padding: [2, 4],
+            borderRadius: 4,
+          },
           lineStyle: { color: "gradient", opacity: 0.32, curveness: 0.5 },
           data: names.map((n) => ({ name: n, itemStyle: { color: nodeColor(n), borderColor: nodeColor(n) } })),
-          links: links.map((r) => ({ source: str(r[sk]), target: str(r[tk]), value: num(r[vk]) })),
+          links: links.map((r) => ({ source: pretty(r[sk]), target: pretty(r[tk]), value: num(r[vk]) })),
         },
       ],
     },
     height: Math.max(220, names.length * 34),
     rowAt: (_s, i) => links[i],
   };
+}
+
+/**
+ * One axis per chart: bar/line y columns with different units become separate panels
+ * (small multiples), never a second scale on the same axis.
+ */
+export function splitByUnit(b: VisualBlock): VisualBlock[] {
+  const ys = (b.encoding.y ?? []).filter((k) => col(b, k));
+  const groups = new Map<string, string[]>();
+  for (const k of ys) {
+    const u = col(b, k)?.unit ?? col(b, k)?.unit_column ?? "";
+    groups.set(u, [...(groups.get(u) ?? []), k]);
+  }
+  if (groups.size <= 1) return [b];
+  return [...groups.values()].map((y) => ({ ...b, encoding: { ...b.encoding, y } }));
 }
 
 export function buildChart(b: VisualBlock, t: ChartTheme, lang: Lang): BuiltChart | null {
