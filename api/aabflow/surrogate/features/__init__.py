@@ -21,9 +21,10 @@ import pandas as pd
 from aabflow.domain.schemas import Crop, CropProfile, SoilProfile
 from aabflow.science import crop_profiles, soils
 
-FEATURE_VERSION = "surrogate-features-v1"
-N_WINDOWS = 5
-WINDOW_DAYS = {Crop.wheat: 30, Crop.cotton: 35}
+FEATURE_VERSION = "surrogate-features-v2"
+# Fortnight inputs preserve timing differences that a monthly mean hides.
+N_WINDOWS = 14
+WINDOW_DAYS = {Crop.wheat: 14, Crop.cotton: 14}
 HOT_C = {Crop.wheat: 35.0, Crop.cotton: 45.0}
 
 
@@ -79,9 +80,36 @@ def feature_names(crop: Crop) -> list[str]:
             f"w{k}_et0_mm",
             f"w{k}_tmax",
             f"w{k}_tmin",
+            f"w{k}_rain_days",
+            f"w{k}_heat_days",
             f"w{k}_balance_mm",
         ]
     return names
+
+
+def weather_feature_names(crop: Crop) -> list[str]:
+    """Weather-only inputs, independent of irrigation and soil; no fitted transform."""
+    return [
+        name
+        for name in feature_names(crop)
+        if name
+        in {"preplant_p_mm", "preplant_et0_mm", "season_p_mm", "season_et0_mm", "hot_days_late"}
+        or any(
+            name == f"w{k}_{suffix}"
+            for k in range(N_WINDOWS)
+            for suffix in ("p_mm", "et0_mm", "tmax", "tmin", "rain_days", "heat_days")
+        )
+    ]
+
+
+def linear_component_prediction(frame: pd.DataFrame, evaluation: dict) -> np.ndarray:
+    component = evaluation.get("linear_component")
+    if component is None:
+        return np.zeros(len(frame))
+    return (
+        frame[component["features"]].to_numpy() @ np.asarray(component["coefficients"])
+        + component["intercept"]
+    )
 
 
 def compute_features(
@@ -150,6 +178,8 @@ def compute_features(
         f[f"w{k}_et0_mm"] = float(et0[m].sum())
         f[f"w{k}_tmax"] = float(tmax[m].mean()) if m.any() else 0.0
         f[f"w{k}_tmin"] = float(tmin[m].mean()) if m.any() else 0.0
+        f[f"w{k}_rain_days"] = float((p[m] >= 1.0).sum())
+        f[f"w{k}_heat_days"] = float((tmax[m] >= HOT_C[crop.crop]).sum())
         f[f"w{k}_balance_mm"] = f[f"w{k}_p_mm"] + f[f"w{k}_net_mm"] - f[f"w{k}_et0_mm"]
     _ = timedelta  # planting-relative arithmetic only
     return {n: f[n] for n in feature_names(crop.crop)}

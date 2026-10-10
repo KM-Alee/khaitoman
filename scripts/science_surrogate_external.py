@@ -1,7 +1,7 @@
 """Untouched external evaluation of the trained surrogate on a pilot's package weather.
 
 usage: python scripts/science_surrogate_external.py <pilot_id>
-Writes data/models/surrogate-v1/external-<pilot>.json.
+Writes data/models/<current-training-version>/external-<pilot>.json.
 """
 
 from __future__ import annotations

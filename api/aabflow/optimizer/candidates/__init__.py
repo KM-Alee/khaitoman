@@ -820,17 +820,28 @@ def _res_map(p: CandidatePolicy, o: StateOutcome) -> dict[tuple[str, str], float
     return {(u.resource_id, u.interval_id): u.volume_m3 for u in src}
 
 
-def dominates(a: CandidatePolicy, b: CandidatePolicy) -> bool:
+def _dominance_view(policy: CandidatePolicy):
+    return (
+        frozenset(policy.required_instance_ids),
+        frozenset(policy.uses_asset_ids),
+        {outcome.state_id: outcome for outcome in policy.outcomes},
+        {outcome.state_id: _res_map(policy, outcome) for outcome in policy.outcomes},
+    )
+
+
+def dominates(a: CandidatePolicy, b: CandidatePolicy, *, _views=None) -> bool:
     """Safe dominance (T5.6): a at least as good as b on every criterion, all states."""
     if a.candidate_policy_id == b.candidate_policy_id:
         return False
-    if not set(a.required_instance_ids) <= set(b.required_instance_ids):
+    av = _views[id(a)] if _views is not None else _dominance_view(a)
+    bv = _views[id(b)] if _views is not None else _dominance_view(b)
+    if not av[0] <= bv[0]:
         return False
-    if not set(a.uses_asset_ids) <= set(b.uses_asset_ids):
+    if not av[1] <= bv[1]:
         return False
     if a.seasonal_opex_pkr > b.seasonal_opex_pkr or a.pump_volume_m3 > b.pump_volume_m3 + 1e-9:
         return False
-    ao = {o.state_id: o for o in a.outcomes}
+    ao = av[2]
     for ob in b.outcomes:
         oa = ao.get(ob.state_id)
         if oa is None:
@@ -845,7 +856,7 @@ def dominates(a: CandidatePolicy, b: CandidatePolicy) -> bool:
             return False
         if oa.terminal_pond_m3 < ob.terminal_pond_m3 - 1e-9:
             return False
-        ra, rb = _res_map(a, oa), _res_map(b, ob)
+        ra, rb = av[3][oa.state_id], bv[3][ob.state_id]
         for k, v in ra.items():
             if v > rb.get(k, 0.0) + 1e-9:
                 return False
@@ -856,6 +867,7 @@ def prune(
     policies: list[CandidatePolicy], keep_families: Iterable[str] = ("rainfed", "baseline_B0")
 ) -> tuple[list[CandidatePolicy], int]:
     keep = set(keep_families)
+    views = {id(policy): _dominance_view(policy) for policy in policies}
     retained: list[CandidatePolicy] = []
     removed = 0
     for p in policies:
@@ -863,10 +875,12 @@ def prune(
             retained.append(p)
             continue
         if any(
-            dominates(q, p)
+            dominates(q, p, _views=views)
             for q in policies
             if q is not p
-            and not (dominates(p, q) and q.candidate_policy_hash > p.candidate_policy_hash)
+            and not (
+                dominates(p, q, _views=views) and q.candidate_policy_hash > p.candidate_policy_hash
+            )
         ):
             removed += 1
             continue
@@ -1059,15 +1073,39 @@ def build_from_context(
 
 
 def publish_library(res: BuildResult) -> CandidateLibrary:
+    """Publish once per content hash; a rebuild may restore ignored policy dumps.
+
+    Runtime build statistics belong to the current build result, while the
+    original publication metadata remains frozen on disk (PRD §8.6, T3.6).
+    """
     lib = res.library
     d = libraries_dir() / lib.pilot_id / lib.season_id / lib.candidate_library_hash
     d.mkdir(parents=True, exist_ok=True)
-    tmp = d / ".policies.jsonl.tmp"
-    with tmp.open("w") as fh:
-        for p in res.policies:
-            fh.write(p.model_dump_json(exclude_defaults=True) + "\n")
-    tmp.replace(d / "policies.jsonl")
-    atomic_write_text(d / "library.json", lib.model_dump_json(indent=1))
+    metadata_path = d / "library.json"
+    policies_path = d / "policies.jsonl"
+    if metadata_path.exists():
+        original = CandidateLibrary.model_validate_json(metadata_path.read_text())
+        runtime_fields = {"created_at", "build_stats"}
+        if original.model_dump(exclude=runtime_fields) != lib.model_dump(exclude=runtime_fields):
+            raise CandidateError(
+                "refusing to replace immutable library metadata under the same hash"
+            )
+        lib = lib.model_copy(update={"created_at": original.created_at})
+    if policies_path.exists():
+        with policies_path.open() as fh:
+            original_policies = [
+                CandidatePolicy.model_validate_json(line) for line in fh if line.strip()
+            ]
+        if original_policies != res.policies:
+            raise CandidateError("refusing to replace immutable policies under the same hash")
+    else:
+        tmp = d / ".policies.jsonl.tmp"
+        with tmp.open("w") as fh:
+            for p in res.policies:
+                fh.write(p.model_dump_json(exclude_defaults=True) + "\n")
+        tmp.replace(policies_path)
+    if not metadata_path.exists():
+        atomic_write_text(metadata_path, lib.model_dump_json(indent=1))
     atomic_write_text(
         libraries_dir() / lib.pilot_id / lib.season_id / "latest.json",
         json.dumps(
@@ -1094,6 +1132,10 @@ def build_library(
 ) -> CandidateLibrary:
     """Generate, validate and publish an immutable candidate library (STREAMS.md entry point)."""
     ctx = build_season_context(load_pilot(pilot_id, pilot_version), season_id)
+    if extra_templates is None:
+        from aabflow.optimizer.candidates.adequacy import retained_templates
+
+        extra_templates = retained_templates(pilot_id, season_id)
     return publish_library(
         build_from_context(ctx, workers=workers, progress=progress, extra_templates=extra_templates)
     )

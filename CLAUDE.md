@@ -26,6 +26,8 @@ AICON hackathon build: irrigation and canal water-allocation planner. Full scope
 - **"ai continue"**: when the user says it, follow `docs/CONTINUE.md`. It detects the role (builder or reviewer) and takes the next step from `docs/PROGRESS.md` (PR queue) and `docs/REVIEW_PLAN.md` (reviewer checklist and milestone gates).
 - PR workflow (`docs/WORKFLOW.md`): KM-Alee builds, Aounuman (`Sipra-Aoun`) reviews. Never commit or push to `main`. Work on a branch and finish with `/ship`, which opens a PR. Reviews use `/review-pr <n>`: fix gaps on the PR branch, file `gap` issues for the rest, merge with a merge commit. No rebase or force-push of pushed branches.
 - Real data and executed pipelines only; fixtures are for tests and must be labelled.
+- Prefer the available GPU for supported workloads. Use `make train-surrogate GPU=1` for LightGBM training through `compose.gpu.yaml`; record the device and executed evaluation. AquaCrop and CP-SAT keep their current CPU backends. Do not claim GPU use from configuration alone.
+- **No unfinished work held back.** Complete every requirement, rejection case, and validation in the selected chunk before shipping. Fix all actionable self-review findings, including should-fix items; do not defer them to the reviewer, a later PR, or a gap issue just to finish sooner. Keep working through root causes until the required checks pass. Only a concrete external blocker or an explicit user decision can leave requested work incomplete; report it honestly and never claim completion. Statistical held-out data and tests remain mandatory where the specs require them.
 
 ## Claude Code workflow (`.claude/`)
 

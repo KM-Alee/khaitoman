@@ -93,11 +93,17 @@ def _check_treatments(outs, seasons_mm):
         tr = load_trajectory(o)
         assert tr["gross_irrigation_mm"].sum() == pytest.approx(mm)
         assert np.isfinite(tr.select_dtypes("number").to_numpy()).all()
+        raw = pd.read_parquet(experiment_dir(o.experiment_hash) / "raw_simulation_results.parquet")
+        assert list(raw.columns) == RESULT_COLUMNS
+        assert o.yield_kg_ha == pytest.approx(float(raw["Dry yield (tonne/ha)"].iloc[0]) * 1000)
+        assert o.raw_output_refs and all(
+            (paths.experiments_dir() / ref).is_file() for ref in o.raw_output_refs
+        )
     assert len({round(o.yield_kg_ha, 3) for o in outs}) == len(outs)  # treatments actually differ
     assert len({o.experiment_hash for o in outs}) == len(outs)
 
 
-def test_gate2_wheat_three_treatments(sci):
+def test_at02_gate2_wheat_three_treatments(sci):
     outs = [wheat(sci, []), wheat(sci, WHEAT_A), wheat(sci, WHEAT_B)]
     _check_treatments(outs, [0, 225, 280])
     rain, a, b = outs
@@ -107,7 +113,7 @@ def test_gate2_wheat_three_treatments(sci):
     assert rain.actual_harvest_date <= a.actual_harvest_date  # stressed crop matures earlier
 
 
-def test_gate3_cotton_three_treatments(sci):
+def test_at02_gate3_cotton_three_treatments(sci):
     outs = [cotton(sci, []), cotton(sci, COTTON_A), cotton(sci, COTTON_B)]
     _check_treatments(outs, [0, 225, 360])
     assert outs[2].yield_kg_ha > outs[0].yield_kg_ha

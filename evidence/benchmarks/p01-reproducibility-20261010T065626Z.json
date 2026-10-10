@@ -1,0 +1,53 @@
+{
+  "pilot_id": "pilot-b",
+  "pilot_version": "reviewed-v1",
+  "initial_build": "evidence/benchmarks/science-library-pilot-b-20261010T065119Z.json",
+  "rebuild": "evidence/benchmarks/science-library-pilot-b-20261010T065626Z.json",
+  "passed": true,
+  "seasons": {
+    "wheat-rabi-2026-27": {
+      "candidate_library_hash": "7fe55c700d29fb9f2c270ad887ea25697f34d65a03ff8285cb41564d36bce1bd",
+      "hash_reproduced": true,
+      "policies_retained": 854,
+      "original_created_at": "2026-10-10T06:41:12.149780+00:00",
+      "metadata_sha256": "c265d33c5c4f769eadb83a9ba2b0be3f782228b799029916fb66ba068a8b25ca",
+      "policies_sha256": "65c81c7da03759cc235b3b3aa6787d45035479f1703ce55de839733e986b5ea9",
+      "first_successful_experiments_executed": 1863,
+      "rebuild_successful_experiments_executed": 0,
+      "rebuild_experiments_cached": 1893
+    },
+    "wheat-rabi-2027-28": {
+      "candidate_library_hash": "79c28165a39ea52535bf80c88273a1f530ec2b59632ec5c1e5bd848171a92960",
+      "hash_reproduced": true,
+      "policies_retained": 3913,
+      "original_created_at": "2026-10-10T06:44:41.781853+00:00",
+      "metadata_sha256": "713774be46f48e1b06cdcfb911af1fa4194cdd06c3b545723db2b7d08f25fb2c",
+      "policies_sha256": "0c9c9b438b562e583fd4a32b8139a58723b764e0d32718cd3de96cabc082e5d0",
+      "first_successful_experiments_executed": 3510,
+      "rebuild_successful_experiments_executed": 0,
+      "rebuild_experiments_cached": 3558
+    },
+    "cotton-kharif-2027": {
+      "candidate_library_hash": "95d5ef221aeb850c87dcfd89e0227c57e683c32913151626d975f2dbd44290a0",
+      "hash_reproduced": true,
+      "policies_retained": 4096,
+      "original_created_at": "2026-10-10T06:49:30.685442+00:00",
+      "metadata_sha256": "b0a3dae3d10a213877ec36b2f4532f6c2fd58c55346ebc66136e668e30d572a6",
+      "policies_sha256": "c54cd12501a53ce2a2b84c4250a87062ddfc5cb0fd42657e1a5b52af2694887e",
+      "first_successful_experiments_executed": 2562,
+      "rebuild_successful_experiments_executed": 0,
+      "rebuild_experiments_cached": 2562
+    },
+    "wheat-rabi-2024-25": {
+      "candidate_library_hash": "f3595e1f91bc9ff210e6f058201512c611b7b05f28a76f12581fde466ccec974",
+      "hash_reproduced": true,
+      "policies_retained": 873,
+      "original_created_at": "2026-10-10T06:51:14.329856+00:00",
+      "metadata_sha256": "1bfbccfbd06881be1d13a399811b8e7a4b156c0a23d6f9178ab511a9ffa69899",
+      "policies_sha256": "676b7216455c16f433ad51c4b0e6ff6ef41528910c36070f1f0fbe222ff76edd",
+      "first_successful_experiments_executed": 2057,
+      "rebuild_successful_experiments_executed": 0,
+      "rebuild_experiments_cached": 2137
+    }
+  }
+}
