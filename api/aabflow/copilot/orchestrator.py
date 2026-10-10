@@ -5,7 +5,9 @@ function calls (reads concurrently, mutations one at a time) -> function outputs
 call_id -> ... -> validated final answer with server-rendered cards and visuals.
 
 Limits per turn: 8 model rounds, 12 tool calls, 3 new analytical jobs, 90 s wall
-time. Provider failures end the turn with a typed error and no invented result.
+time. Plan mode ("Plan my season", ``mode="plan"``) uses ``PLAN_LIMITS``, appends the planner recipe to
+the instructions, runs a round's compute tools concurrently, emits a ``plan_step`` event after every
+finished tool call and checks the decision-brief layout (missing parts become honest caveats). Provider failures end the turn with a typed error and no invented result.
 Cancellation stops the loop, cancels jobs this turn started and discards its view
 intents. Progress is published as events (see ``contract.EventType``) for SSE.
 """
@@ -29,6 +31,7 @@ from aabflow.copilot.answer_validation import (
     Facts,
     FinalAnswer,
     apply_fallback,
+    apply_plan_layout,
     order_blocks,
     validate_answer,
 )
@@ -58,6 +61,50 @@ class TurnLimits:
     max_jobs: int = 3
     wall_s: float = 90.0
     provider_call_s: float = PROVIDER_CALL_CAP_S
+
+
+# "Plan my season": a full investigation (understand -> test -> decide) in one turn.
+PLAN_LIMITS = TurnLimits(
+    max_rounds=6, max_tool_calls=20, max_jobs=10, wall_s=240.0, provider_call_s=40.0
+)
+
+# plan_step phases by tool; any other tool (context, ladder, saved analyses, what-ifs) is "understand".
+PLAN_TEST_TOOLS = frozenset(
+    {
+        "build_frontier",
+        "run_stress_test",
+        "evaluate_alternative",
+        "equity",
+        "analyze_sensitivity",
+        "analyze_synergy",
+        "impact_sdg",
+        "preview_policy",
+    }
+)
+PLAN_DECIDE_TOOLS = frozenset({"create_report", "action_plan", "navigate_view"})
+_FIELD_LIST_KEYS = ("fields_worse_off", "lowest_service_fields", "target_field_ids", "field_ids")
+MAX_STEP_FIELDS = 40
+
+
+def plan_phase(tool: str) -> str:
+    if tool in PLAN_DECIDE_TOOLS:
+        return "decide"
+    if tool in PLAN_TEST_TOOLS:
+        return "test"
+    return "understand"
+
+
+def step_field_ids(result: Any) -> list[str]:
+    """Field IDs a tool result names as affected (equity losers, lowest-service fields, targets)."""
+    out: list[str] = []
+    if not isinstance(result, dict):
+        return out
+    for key in _FIELD_LIST_KEYS:
+        for item in result.get(key) or []:
+            fid = item.get("field_id") if isinstance(item, dict) else item
+            if isinstance(fid, str) and fid not in out:
+                out.append(fid)
+    return out[:MAX_STEP_FIELDS]
 
 
 @dataclass
@@ -164,6 +211,7 @@ class Turn:
         memory: list[dict[str, Any]] | None = None,
         known_ids: set[str] | None = None,
         idem_namespace: str | None = None,
+        mode: str = "chat",
     ):
         self.provider = provider
         self.backend = backend
@@ -177,6 +225,8 @@ class Turn:
         self.memory = memory or []
         self.known_ids = known_ids or set()
         self.idem_namespace = idem_namespace
+        self.mode = mode
+        self._steps = 0
         self.conn = connect()
         store.ensure(self.conn)
         self._seen_calls: dict[str, dict[str, Any]] = {}
@@ -205,11 +255,13 @@ class Turn:
             PROMPT_VERSION,
             tool_schema_version(),
             self.idem_namespace,
+            self.mode,
         )
         self.emit(
             "turn_started",
             {
                 "turn_id": self.turn_id,
+                "mode": self.mode,
                 "context": ctx.prompt_view(),
                 "language": ctx.language,
                 "badge": {
@@ -272,7 +324,9 @@ class Turn:
         tools = openai_tools(ctx.role, [FINAL_ANSWER_TOOL])
         digest = await workspace_digest(self.backend, ctx)
         notes = list(ctx.notes) + ([lang_note] if lang_note else [])
-        instructions = build_instructions(ctx.prompt_view(), self.memory, notes, digest)
+        instructions = build_instructions(
+            ctx.prompt_view(), self.memory, notes, digest, mode=self.mode
+        )
         items: list[dict[str, Any]] = [{"role": "user", "content": self.message}]
         prev: str | None = None
         rounds = calls_made = 0
@@ -567,7 +621,11 @@ class Turn:
                 )
                 continue
             spec = REGISTRY.get(c.name)
-            (muts if spec is not None and spec.mutation else reads).append(c)
+            # plan mode: a round's analyses (frontier, stress, why-not) run concurrently; creates stay serial
+            serial = spec is not None and (
+                spec.semantics == "create" if self.mode == "plan" else spec.mutation
+            )
+            (muts if serial else reads).append(c)
 
         async def one(c):
             outputs[c.call_id] = await self._call(c, tctx, facts, rnd)
@@ -638,6 +696,7 @@ class Turn:
                     "duration_ms": 0,
                 },
             )
+            self._plan_step(c.call_id, c.name, activity, result, tctx)
             return _fit(result, spec.max_result_chars)
         pk = store.start_call(self.conn, self.turn_id, c.call_id, rnd, c.name, canon, idem)
         self.emit(
@@ -703,7 +762,36 @@ class Turn:
                 "created": list(tctx.created),
             },
         )
+        self._plan_step(c.call_id, c.name, activity, result, tctx)
         return _fit(result, spec.max_result_chars)
+
+    def _plan_step(
+        self, call_id: str, tool: str, activity: str, result: dict[str, Any], tctx: ToolCtx
+    ) -> None:
+        """Plan mode: right after tool_finished, say which phase this was and what it made or touched."""
+        if self.mode != "plan":
+            return
+        self._steps += 1
+        mine = [c for c in tctx.created if tctx.created_by.get(c["ref_id"]) == call_id]
+
+        def newest(kind: str) -> str | None:
+            return next((c["ref_id"] for c in reversed(mine) if c["kind"] == kind), None)
+
+        self.emit(
+            "plan_step",
+            {
+                "step": self._steps,
+                "phase": plan_phase(tool),
+                "label": activity,
+                "tool": tool,
+                "call_id": call_id,
+                "ok": bool(result.get("ok", False)),
+                "run_id": newest("run"),
+                "analysis_id": newest("analysis"),
+                "report_id": newest("report"),
+                "field_ids": step_field_ids(result),
+            },
+        )
 
     async def _finalize(self, ans: FinalAnswer, facts: Facts, tctx: ToolCtx, *, last_try: bool):
         v = await validate_answer(ans, facts, tctx)
@@ -741,6 +829,8 @@ class Turn:
             "validated": v.ok,
             "issues": v.issues + [f"{w}: unsupported numbers {b}" for w, b in v.numeric_issues],
         }
+        if self.mode == "plan" and not ans.needs_clarification:
+            out["blocks"] = apply_plan_layout(out["blocks"], "completed")
         return self._checked(out)
 
     def _checked(self, out: dict[str, Any]) -> dict[str, Any]:
@@ -807,7 +897,9 @@ class Turn:
         }.get(status, "I could not finish this answer.")
         blocks: list[dict[str, Any]] = [{"type": "uncertainty", "text": msg, "citations": []}]
         visuals = []
-        for ds in list(tctx.datasets.items.values())[:2]:
+        # a partial plan brief shows every result the investigation already produced (up to the visual cap)
+        shown = 4 if self.mode == "plan" else 2
+        for ds in list(tctx.datasets.items.values())[:shown]:
             vb = default_visual(ds, f"v{len(visuals) + 1}")
             if vb is not None:
                 visuals.append(vb.model_dump(mode="json"))
@@ -835,6 +927,8 @@ class Turn:
             "issues": [],
             "deterministic": True,
         }
+        if self.mode == "plan":
+            out["blocks"] = apply_plan_layout(out["blocks"], status)
         return self._checked(out)
 
     async def _pending_jobs(self, tctx: ToolCtx) -> list[str]:

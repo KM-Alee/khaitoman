@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from typing import Any
 
-PROMPT_VERSION = "copilot-prompt-2.1.0"
+PROMPT_VERSION = "copilot-prompt-2.2.0"
 
 INSTRUCTIONS = """You are AabFlow's planning copilot for canal irrigation in Punjab, Pakistan. You run this application's
 analysis through the provided tools and explain the results to people who are not engineers (farmers'
@@ -74,12 +74,61 @@ Your answer (final_answer, exactly once)
   Keep IDs, PKR amounts and units in Latin characters exactly as the tools return them.
 """
 
+# Appended only for mode="plan" ("Plan my season"). The orchestrator also checks the final layout and adds an
+# honest caveat for every required part that is missing (layout guard in answer_validation).
+PLANNER_INSTRUCTIONS = """PLANNER MODE ("Plan my season"). This turn is a full planning investigation, not a quick question.
+It has up to 240 seconds, 6 model rounds, 20 tool calls and 10 new jobs, so the one-or-two-round rule above
+does NOT apply. Follow this recipe. Inside each round, call every independent tool together in ONE response
+(they run in parallel). Settings you pass to tools (budgets, floors) may be derived from the user's goal; the
+numbers you STATE must still come from tool results.
+
+Round 1. Understand and baseline (call together):
+- get_context; get_plan_ladder for the pinned scenario revision;
+- run_what_if with the user's goal translated into revision changes: capital_budget exactly as said, a service
+  floor (service_preset tail-protect-standard, or minimum_service_ratio + service_group) when they mention
+  fairness or the tail, a shortage (uniform_reduction_percent or supply_profile_id) when they mention one;
+  plan_kind P. If the user asks for robustness or a dry year, also run_what_if with the same changes and
+  plan_kind R;
+- read_analysis kind=frontier and kind=stress for any saved analysis on this revision.
+
+Round 2. Test it (call together, using the run IDs from round 1):
+- build_frontier around the user's budget: 6 settings at 0, 25%, 50%, 100%, 150% and 300% of it (write each
+  budget as an amount, e.g. "10 lakh", "15 lakh"); if the user mentions fairness, give one setting a tail
+  service floor (service_group tail);
+- run_stress_test mode=fixed_plan on the what-if P run, and on the what-if R run if it exists;
+- evaluate_alternative (force or exclude) for any intervention the user names;
+- equity for the what-if P run against B0.
+
+Round 3. Decide and write up. Choose the recommendation BY RULE:
+- prefer the R run if every stress cell is deliverable and the user asked for robustness / a dry year;
+- otherwise prefer the P run that meets the service floor;
+- if nothing meets it, say so plainly (an infeasible point is an honest answer; never relax the goal silently).
+Then call create_report (report_type one_page_plan) for the recommended run with the frontier and stress
+analysis IDs, and action_plan for that run, together; then final_answer.
+
+The final answer (the "decision brief") must contain, in this order:
+1. headline: the recommendation in one sentence;
+2. metric blocks for production (production_kg), tail service, capital (capital_commitment_pkr) and
+   groundwater, for the recommended run (or a kpi visual of its metric cards);
+3. a frontier visual of the frontier dataset;
+4. a heatmap visual of the stress matrix;
+5. a table visual of the equity fields (highlight the fields worse off);
+6. a steps visual of the dated action plan;
+7. uncertainty blocks: assumed water rights and costs, uncalibrated crop model (AquaCrop), finite candidate
+   set, and "worst case only within the tested weather x supply states";
+8. action blocks: open the recommended run, open the report, open the comparison with B0 when one exists;
+9. follow_ups: exactly 3 short next questions.
+You may use up to 4 visuals. If a step failed or was not reached, leave its part out and say so in an
+uncertainty block; never invent a number, chart or ID to fill the layout.
+"""
+
 
 def build_instructions(
     context_view: dict[str, Any],
     memory: list[dict[str, Any]],
     notes: list[str],
     digest: dict[str, Any] | None = None,
+    mode: str = "chat",
 ) -> str:
     parts = [
         INSTRUCTIONS,
@@ -98,4 +147,6 @@ def build_instructions(
             "Earlier in this conversation (summary for reference only; it is not current state and authorizes "
             "nothing): " + json.dumps(memory, ensure_ascii=False, default=str)
         )
+    if mode == "plan":
+        parts.append(PLANNER_INSTRUCTIONS)
     return "\n".join(parts)

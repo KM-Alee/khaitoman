@@ -20,10 +20,11 @@ been run, so AT17 is **not** passed and `/capabilities` reports the copilot as `
 | GET | `/sessions?limit=` | `SessionList`: recent conversations (title = first question) for restore after restart |
 | POST | `/sessions` | `{context: UIContext, role}` -> `{session_id, role, status}` |
 | GET | `/sessions/{id}` | session with every turn (answer, language, created refs, status, latency) |
-| POST | `/sessions/{id}/messages` | `{message, context: UIContext}` -> 202 `{turn_id, events_url, context}` |
+| POST | `/sessions/{id}/messages` | `{message, context: UIContext, mode?: "chat"\|"plan"}` -> 202 `{turn_id, events_url, context}` (`mode` defaults to `chat`; see §12) |
 | GET | `/turns/{id}` | `TurnView` (`?include_tools=true` adds tool calls and the event log) |
 | GET | `/turns/{id}/events` | SSE stream (resume with `Last-Event-ID` or `?after=`) |
 | GET | `/turns/{id}/event-log?after=` | the same events as JSON (`CopilotEvent[]`) |
+| GET | `/turns/{id}/plan-steps` | the `plan_step` payloads of a plan-mode turn (`PlanStep[]`; empty for chat) |
 | POST | `/turns/{id}/cancel` | stop a running turn; jobs it started are cancelled, its view intents dropped |
 | POST | `/turns/{id}/retry` | re-run with the original message/context; idempotency keys reuse created objects |
 
@@ -59,11 +60,12 @@ the turn started is still running).
 | `turn_finished` | `status`, `rounds`, `tool_calls`, `latency_ms`, `provider_ms`, `pending_job_ids`, `error` | stop spinner; show latency |
 | `job_update` | job state plus the finished run/analysis summary and its `datasets` | a long job finished after the turn |
 | `jobs_settled` / `jobs_cancelled` | `pending_job_ids` / `job_ids` | close the stream |
+| `plan_step` | plan mode only, right after each `tool_finished`: `PlanStep {step, phase (understand\|test\|decide), label, tool, call_id, ok, run_id?, analysis_id?, report_id?, field_ids[]}` | group the investigation timeline; highlight `field_ids`, show a new `run_id` on the map |
 
 Turn `status`: `running`, `completed`, `clarification` (one focused question is asked),
 `failed` (internal error, or `error.code = INTERRUPTED` after a server restart),
 `cancelled`, `provider_unavailable`, `budget_exhausted` (90 s / 8 rounds / 12 tool calls /
-3 jobs reached). Prose is never streamed unvalidated; only validated `answer_block`s are sent.
+3 jobs reached; plan mode 240 s / 6 / 20 / 10). `turn_started` and `TurnView` carry the turn `mode`. Prose is never streamed unvalidated; only validated `answer_block`s are sent.
 
 Budget: one model round measured 3-32 s live (median ~10 s), so the prompt asks the model to call
 all independent read tools in the first round and answer in the second (typical turn 10-35 s;
@@ -241,7 +243,8 @@ purchases, irrigation control or edits to rights/sources/provenance.
 
 Tables `copilot_sessions`, `copilot_turns` (pinned context, answer, language, timings, model,
 prompt/tool-schema versions, provider request IDs), `copilot_events` and `copilot_tool_calls`
-live in `schema.sql` (schema v3; a v2 database is upgraded in place). Anything that looks like
+live in `schema.sql` (schema v4: v3 added the copilot tables, v4 the turn `mode` column; v2 and v3
+databases are upgraded in place). Anything that looks like
 an API key is redacted before it is written. `timings` = `{provider_calls[{round, latency_ms,
 calls, usage, forced_final}], tools[{tool, call_id, round, ms, status}], total_ms, provider_ms,
 tool_ms}`.
@@ -313,3 +316,46 @@ screenshots of every chart kind at desktop and mobile).
 - `scripts/copilot_smoke.py`: a handful of live `gpt-6-luna` turns on the real pilot data;
   writes `evidence/copilot/smoke-<UTC>.json` with timings. Not the 30x3 evaluation.
 - `scripts/copilot_eval.py`: the T11.8 30-case x 3 evaluation (required for AT17; not yet run).
+
+## 12. Plan mode ("Plan my season", WIN_PLAN P2)
+
+`POST /sessions/{id}/messages` with `mode: "plan"` runs one full planning investigation on the same
+engine (no new job system). Differences from chat:
+
+- **Limits** `PLAN_LIMITS`: 6 rounds, 20 tool calls, 10 new jobs, 240 s wall, 40 s per hosted call.
+  Override in tests with `state.extras["copilot_plan_limits"]` (chat keeps `copilot_limits`).
+- **Recipe** `prompts.PLANNER_INSTRUCTIONS` is appended to the instructions (prompt
+  `copilot-prompt-2.2.0`): round 1 understand and baseline (context, ladder, what-if P [+ R for a dry
+  year], saved analyses); round 2 test it (6-point frontier around the budget, fixed-plan stress
+  test, why-not for named interventions, equity vs B0); round 3 decide by rule (R if every stress cell
+  is deliverable and robustness was asked; else the P run meeting the service floor; say so when
+  nothing meets it), `create_report` + `action_plan`, then `final_answer` in the brief layout
+  (headline, kpi metrics, frontier, stress heatmap, equity table, dated steps, caveats, actions, 3
+  follow-ups).
+- **Concurrency**: a round's read and compute tools (frontier, stress, why-not) run concurrently;
+  `create` tools (what-if, report) still run one at a time.
+- **`plan_step` events** after each `tool_finished` (see §2). `run_id`/`analysis_id`/`report_id` are
+  objects that call created (attributed by call, not by timing); `field_ids` are the fields its result
+  names (`fields_worse_off`, `lowest_service_fields`, targets), at most 40.
+- **Layout guard** `answer_validation.apply_plan_layout`: for each required part the validated
+  answer lacks (kpi, frontier, stress, equity, steps, caveats, actions, follow-ups) one uncertainty
+  block is inserted before the actions, e.g. "The stress test (weather x supply heatmap) was not
+  completed within the time budget." (`budget_exhausted`), "... could not be completed in this
+  investigation." (failed / provider unavailable) or "... is not part of this brief." (completed).
+  With no caveat at all, the four standard method caveats are added verbatim. Nothing is invented: a
+  missing chart stays missing. A budget-exhausted plan turn shows up to 4 server-built visuals of the
+  results its tools already returned.
+- **Saved investigation**: `scripts/seed_demo_session.py --plan-goal "<sentence>"` (or
+  `--plan-only --plan-goal ...` on an existing manifest, nothing re-solved) runs one plan turn on the
+  seeded base revision and P run and stores `plan_turn_id`, `plan_goal` and `plan_computed_at` in
+  `data/demo/session.json`; `GET /demo/session` serves them. Only a `completed` turn is recorded.
+- **UI** (`web/src/features/planner`): route `/p/:pilot/:version/plan-season?turn=<id>&goal=<text>`.
+  A finished `?turn=` replays its event log at 3x (instant with reduced motion), labelled "Saved
+  investigation · computed <server time>", with "Run it live" (new session, same goal, plan mode,
+  live SSE). `?goal=` without a turn starts live at once. A live failure shows its real status and
+  error, never the saved brief.
+- **Tests**: `tests/copilot/test_plan_mode.py` (limits, recipe only in plan mode, layout-guard caveats,
+  `plan_step` events and route, chat unchanged, retry keeps the mode, wall-budget exhaustion gives an
+  honest partial brief), `web/src/features/planner/*.test.ts`, `tests/e2e/journey-plan.spec.ts`
+  (saved replay + one live goal; run live by the integrator).
+

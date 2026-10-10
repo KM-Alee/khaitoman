@@ -79,6 +79,7 @@ class ToolCtx:
     cancel: asyncio.Event = field(default_factory=asyncio.Event)
     idem_namespace: str | None = None  # a retried turn reuses its original turn's keys
     datasets: DatasetStore = field(default_factory=DatasetStore)
+    created_by: dict[str, str] = field(default_factory=dict)  # ref_id -> call_id that created it
     _cache: dict[str, Any] = field(default_factory=dict)
 
     def call(self) -> tuple[str | None, str]:
@@ -136,6 +137,9 @@ class ToolCtx:
 
     def note_created(self, kind: str, ref_id: str, label: str) -> None:
         self.session_ids.add(ref_id)
+        cur = CURRENT_CALL.get()
+        if cur is not None:
+            self.created_by.setdefault(ref_id, cur[0])
         if not any(c["ref_id"] == ref_id for c in self.created):
             self.created.append({"kind": kind, "ref_id": ref_id, "label": label})
 

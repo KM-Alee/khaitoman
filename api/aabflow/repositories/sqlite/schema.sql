@@ -2,13 +2,14 @@
 -- v2: job leases/stages/payloads, idempotency, scenarios, runs, analyses,
 --     comparisons, reports, surrogate previews, onboarding, evidence FTS5.
 -- v3: copilot sessions, turns (with language and timings), events and tool calls.
+-- v4: copilot_turns.mode (chat | plan, the "Plan my season" planner mode).
 PRAGMA journal_mode = WAL;
 
 CREATE TABLE IF NOT EXISTS meta (
     key   TEXT PRIMARY KEY,
     value TEXT NOT NULL
 );
-INSERT OR IGNORE INTO meta (key, value) VALUES ('schema_version', '3');
+INSERT OR IGNORE INTO meta (key, value) VALUES ('schema_version', '4');
 
 CREATE TABLE IF NOT EXISTS jobs (
     job_id          TEXT PRIMARY KEY,
@@ -170,7 +171,8 @@ CREATE TABLE IF NOT EXISTS copilot_turns (
     latency_ms          INTEGER,
     idem_namespace      TEXT,
     language            TEXT,
-    timings             TEXT
+    timings             TEXT,
+    mode                TEXT NOT NULL DEFAULT 'chat'
 );
 CREATE INDEX IF NOT EXISTS copilot_turns_session ON copilot_turns(session_id, seq);
 CREATE TABLE IF NOT EXISTS copilot_events (

@@ -1,4 +1,4 @@
-"""Copilot persistence in the app SQLite database (tables in ``schema.sql``, v3).
+"""Copilot persistence in the app SQLite database (tables in ``schema.sql``, v4).
 
 Sessions, turns (pinned context, answer, language, timings, audit fields), the
 resumable event log for SSE and every tool call with its arguments, idempotency key
@@ -79,6 +79,7 @@ def create_turn(
     prompt_version: str,
     tool_schema_version: str,
     idem_namespace: str | None = None,
+    mode: str = "chat",
 ) -> int:
     with tx(conn):
         seq = conn.execute(
@@ -87,7 +88,7 @@ def create_turn(
         ).fetchone()[0]
         conn.execute(
             "INSERT INTO copilot_turns (turn_id, session_id, seq, created_at, status, user_message, context, model, "
-            "prompt_version, tool_schema_version, idem_namespace) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+            "prompt_version, tool_schema_version, idem_namespace, mode) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
             (
                 turn_id,
                 session_id,
@@ -100,6 +101,7 @@ def create_turn(
                 prompt_version,
                 tool_schema_version,
                 idem_namespace,
+                mode,
             ),
         )
     return seq

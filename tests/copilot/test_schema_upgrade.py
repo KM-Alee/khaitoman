@@ -1,4 +1,5 @@
-"""Schema v2 -> v3: copilot tables move into schema.sql; an old database keeps its transcripts."""
+"""Schema upgrades: v2 -> v4 (copilot tables move into schema.sql; an old database keeps its transcripts)
+and v3 -> v4 (the turn mode column)."""
 
 from __future__ import annotations
 
@@ -27,7 +28,7 @@ def test_v2_database_upgrades_in_place(tmp_path):
     c = connect(db)
     c.executescript(V2_TURNS)
     c.close()
-    assert init_db(db) == SCHEMA_VERSION == "3"
+    assert init_db(db) == SCHEMA_VERSION == "4"
     c = connect(db)
     try:
         t = store.get_turn(c, "turn_old")
@@ -51,7 +52,7 @@ def test_v2_database_upgrades_in_place(tmp_path):
         assert t["timings"] == {"total_ms": 5} and t["language"] == "ur"
     finally:
         c.close()
-    assert init_db(db) == "3"  # idempotent
+    assert init_db(db) == "4"  # idempotent
 
 
 def test_fresh_database_has_copilot_tables(tmp_path):
@@ -63,3 +64,21 @@ def test_fresh_database_has_copilot_tables(tmp_path):
     finally:
         c.close()
     assert {"copilot_sessions", "copilot_turns", "copilot_events", "copilot_tool_calls"} <= names
+
+
+def test_v3_database_gains_turn_mode(tmp_path):
+    db = tmp_path / "v3.sqlite"
+    c = connect(db)
+    c.executescript(
+        V2_TURNS.replace("('schema_version', '2')", "('schema_version', '3')").replace(
+            "idem_namespace TEXT);", "idem_namespace TEXT, language TEXT, timings TEXT);"
+        )
+    )
+    c.close()
+    assert init_db(db) == "4"
+    c = connect(db)
+    try:
+        t = store.get_turn(c, "turn_old")
+        assert t["user_message"] == "hello" and t["mode"] == "chat"
+    finally:
+        c.close()
