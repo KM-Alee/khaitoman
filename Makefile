@@ -3,7 +3,7 @@
 .NOTPARALLEL:
 .PHONY: help setup build deps up down logs shell lock doctor provider-check test lint science-smoke \
         contracts web-test web-build ui-checks demo vision-weights vision-shell \
-        water-tests pilot-a pilot-b candidates analyses-evidence demo-seed train-surrogate library-adequacy domain-tests core-acceptance evidence-pack copilot-evals release-check
+        water-tests pilot-a pilot-b candidates analyses-evidence demo-seed train-surrogate library-adequacy domain-tests core-acceptance evidence-pack print-brief copilot-evals release-check
 
 DC   := docker compose
 ifeq ($(GPU),1)
@@ -114,6 +114,9 @@ core-acceptance: ## v1: run each existing AT test once; fail on failures; list A
 
 evidence-pack:    ## PRD §13.3 proof package -> evidence/pack/<UTC ts>/ (manifest, capability report); reads only existing artifacts
 	$(API) python scripts/build_evidence_pack.py
+
+print-brief:      ## W6: PDF of the seeded plan's action-plan report -> evidence/print/brief-<UTC>.pdf (make up + make demo-seed first)
+	$(DC) --profile test run --rm --no-deps -e BASE_URL=$${BASE_URL:-http://web:5173} e2e node ../scripts/print_brief.mjs
 
 copilot-evals release-check:
 	@echo "make $@: not implemented yet" >&2; exit 1

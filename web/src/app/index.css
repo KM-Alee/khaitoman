@@ -551,8 +551,25 @@ p {
 }
 
 @media print {
-  .no-print {
+  .no-print,
+  [data-testid="app-shell"] > header,
+  #main ~ *,
+  [data-testid="job-tray"],
+  [data-tour-host] {
     display: none !important;
+  }
+  #main {
+    display: block !important;
+  }
+  [data-print-brief] [data-print-detail] {
+    display: none !important;
+  }
+  table {
+    break-inside: auto;
+  }
+  tr,
+  li {
+    break-inside: avoid;
   }
   body {
     background: #fff;

@@ -72,9 +72,9 @@ export function ReportScreen() {
   const downloads = ((report.data?.downloads as { kind: string; url: string; label?: string }[] | undefined) ?? []).filter((d) => d.url);
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col" data-testid="report">
+    <div className="flex min-h-0 flex-1 flex-col print:block" data-testid="report">
       <ImpactNav />
-      <div className="min-h-0 flex-1 overflow-y-auto bg-canvas">
+      <div className="min-h-0 flex-1 overflow-y-auto bg-canvas print:overflow-visible print:bg-white">
         {!sel.runId ? (
           <div className="mx-auto max-w-[560px] p-6 pt-10">
             <StatePanel state="empty" art="plan" title="No plan to report yet" action={{ label: "Find the best plan first", onClick: () => sel.go("workspace") }}>
@@ -103,8 +103,11 @@ export function ReportScreen() {
               </div>
               <div className="no-print flex flex-wrap gap-2">
                 <DataDownloads runId={r.run_id} run={r} />
-                <Button variant="secondary" icon={<Printer size={15} />} onClick={() => window.print()}>
-                  Print / PDF
+                <Button variant="secondary" icon={<Printer size={15} />} onClick={() => printBrief()} data-testid="print-brief">
+                  Print one-page brief
+                </Button>
+                <Button variant="ghost" icon={<Printer size={15} />} onClick={() => window.print()}>
+                  Print full plan
                 </Button>
                 <Button variant="primary" icon={<FileText size={15} />} busy={create.isPending} onClick={() => void exportReport()} data-testid="export-report">
                   Export versioned package
@@ -295,7 +298,7 @@ function ActionsSection({ runId }: { runId: string }) {
   const fields = (ids: string[]) => (ids.length ? ids.map(label).join(", ") : "None");
   const d = q.data;
   return (
-    <section className="mt-7" aria-labelledby="act-h">
+    <section className="mt-7" aria-labelledby="act-h" data-print-detail>
       <h2 id="act-h" className="text-[15px] font-semibold text-ink">
         Actions{d && d.available !== false ? ` (${d.actions.length})` : ""}
       </h2>
@@ -404,4 +407,16 @@ function Fact({ k, v, mono }: { k: string; v: string; mono?: boolean }) {
       <dd className={cn("break-words text-ink", mono && "font-mono text-[11px]")}>{v}</dd>
     </div>
   );
+}
+
+/** One-page brief: the summary and incremental view, without the per-action detail. */
+export function printBrief() {
+  const el = document.documentElement;
+  el.dataset.printBrief = "1";
+  const done = () => {
+    delete el.dataset.printBrief;
+    window.removeEventListener("afterprint", done);
+  };
+  window.addEventListener("afterprint", done);
+  window.print();
 }

@@ -90,9 +90,9 @@ export function AppShell({ children }: { children: ReactNode }) {
       <MapBinder />
       <JobWatchers />
       <PendingRun />
-      <div className="flex h-dvh w-full flex-col overflow-hidden bg-canvas text-ink" data-testid="app-shell" data-screen={sel.screen}>
+      <div className="flex h-dvh w-full flex-col overflow-hidden bg-canvas text-ink print:block print:h-auto print:overflow-visible print:bg-white" data-testid="app-shell" data-screen={sel.screen}>
         <TopBar compact={mobile} onOpenScenario={ctx.openScenario} />
-        <div className="relative flex min-h-0 flex-1">
+        <div className="relative flex min-h-0 flex-1 print:block">
           {onPlan && docked && scenarioOpen && !presentation ? (
             <ScenarioPanel className="w-[var(--scenario-w)] shrink-0" onCollapse={() => set({ scenarioOpen: false })} />
           ) : null}
