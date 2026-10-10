@@ -27,7 +27,7 @@ Every PR: `git status` clean, branch current with its base (merge, never rebase)
 | P07 | PRD §5.3, T9.1, AT16 | Runs the **real** pilot-b raw bundle through process → review → publish as a new immutable version. Stale review PATCH returns 409. Publish blocked on structural errors. Libraries from older versions flagged. UI wizard drives it end to end. | Publish that overwrites `reviewed-v1`. Inference "done" without a vision run. |
 | P08 | T9.3–T9.5, §13.3 | Import rejects: wrong manifest version, path traversal, duplicate names, oversize/expanded size, bad formats, hash mismatch, existing version. Never executes archive content. Evidence pack written to `evidence/pack/<ts>/`. | Missing rejection tests. |
 | P09 | AT15, AT18, T12.4 | Offline test really blocks non-loopback sockets. `scripts/offline_check.py` passes on a fresh `make web-build`. Restart: completed runs re-verify hashes, running job → interrupted with reason, tampered artifact refused, new draft shows no stale result. | Offline test that only mocks the network client. |
-| P10 | PRD §10, T11, AT17 | Read `evidence/copilot/eval-*.json` yourself: 30 cases × 3, real services, pass rate per spec. Bilingual (en/ur) answers. Turns under 90 s. `make copilot-evals` reproduces. Re-run 3–5 cases live. | Eval run against the scripted fake model. Cases removed or weakened. |
+| P10 | PRD §10, T11, AT17 | User waived the 30×3 eval on 2026-10-10. Confirm AT17 is not marked passed and the case file was not deleted or weakened. Existing copilot unit tests pass. | A STATUS row that marks AT17 passed without the 90 runs. Cases removed to fake a pass. |
 | P11 | PRD §9, AT13, AT14 | Same metric value, unit and run ID in report, UI and copilot for one run (check by hand too). Six screens pass Playwright + axe at 3 viewports, keyboard, contrast, loading/error/stale, reduced motion. Screenshots committed in `evidence/screenshots/`. Esri imagery toggled in a real browser. | Snapshot tests with no a11y assertions. |
 | P12 | PRD §13.2 | Playwright drives the full stage route through the UI against the real API (no mocked `fetch`). Run it yourself with `make ui-checks` or the e2e target. | Route steps skipped or stubbed. |
 | P13 | PRD §11.1, §13.3, F20 | Cold `make demo` from a clean clone. Timings recorded against §11.1 (UI ≤5 s, solve p50 ≤5 s / p95 ≤15 s, frontier ≤60 s, stress ≤60 s, preview ≤300 ms, report ≤5 s). Capability report marks every F and AT with artifact paths; STATUS matches it. | Any F or AT marked passed without an artifact. |
@@ -43,7 +43,7 @@ Run a gate on `main` after the last PR of that milestone merges. Record the resu
 | G3 | P03 | `make core-acceptance`, `make up` and run a live plan in the UI | AT05–AT08, AT12 green; plan changes when budget changes. |
 | G5 | P04 | Explore screen: frontier, stress, why-not, surrogate in the UI | AT09–AT11 green and visible in the UI. |
 | G6 | P09 | AT15, AT16, AT18 tests; report download from the UI | All green, report opens offline. |
-| G7 | P10 | 3–5 live copilot turns in the UI, en and ur | AT17 green, cards render. |
+| G7 | P10 | No 30×3 run. AT17 remains unpassed by the 2026-10-10 user decision. | AT17 marked passed. |
 | G4 | P11 | AT13, AT14 | Green with screenshots. |
 | G8 | P13 | `make release-check` from a clean clone | Every F01–F20 and AT01–AT18 has a status backed by an artifact. |
 

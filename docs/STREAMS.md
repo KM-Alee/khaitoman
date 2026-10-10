@@ -1,6 +1,6 @@
 # Parallel build streams (integration contract)
 
-The ownership contracts below remain the stream boundaries. Queue-wide parallel work now follows [`AGENT_WORKFLOW.md`](AGENT_WORKFLOW.md) and [`agent-dag.json`](agent-dag.json): isolated local worktrees, one writer per checkout, at most three direct workers and parent-owned shared contracts, commits and `docs/STATUS.md`. Do not run concurrent writers in the old shared checkout arrangement.
+The ownership contracts below remain the stream boundaries. Queue-wide parallel work now follows [`AGENT_WORKFLOW.md`](AGENT_WORKFLOW.md) and [`agent-dag.json`](agent-dag.json): isolated local worktrees, one writer per checkout, at most six direct workers and parent-owned shared contracts, commits and `docs/STATUS.md`. Do not run concurrent writers in the old shared checkout arrangement.
 
 ## Rules for every stream
 
