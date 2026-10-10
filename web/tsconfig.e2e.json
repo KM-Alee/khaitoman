@@ -26,6 +26,7 @@
     "../tests/e2e/onboarding.spec.ts",
     "../tests/e2e/impact.spec.ts",
     "../tests/e2e/journey-copilot.spec.ts",
-    "../tests/e2e/a11y-copilot.spec.ts"
+    "../tests/e2e/a11y-copilot.spec.ts",
+    "../tests/e2e/journey-tour.spec.ts"
   ]
 }
