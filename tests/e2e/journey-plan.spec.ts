@@ -54,9 +54,11 @@ test("saved investigation replays, then one live goal produces a brief", async (
   test.skip(!status.configured, "no hosted-model key configured: live planning unavailable");
   await page.getByTestId("plan-run-live").click();
   await expect(page.getByTestId("plan-source")).toContainText("Live investigation");
-  await expect(page).toHaveURL(/turn=turn_/, { timeout: 30_000 });
-  const liveTurn = new URL(page.url()).searchParams.get("turn");
-  expect(liveTurn).not.toBe(demo.plan_turn_id);
+  // The live turn's id replaces the saved one in ?turn= once the server accepts the goal.
+  const turnParam = () => new URL(page.url()).searchParams.get("turn");
+  await expect.poll(turnParam, { timeout: 30_000 }).toMatch(/^turn_/);
+  await expect.poll(turnParam, { timeout: 30_000 }).not.toBe(demo.plan_turn_id);
+  const liveTurn = turnParam();
   await expect(page.getByTestId("plan-timeline-row").first()).toBeVisible({ timeout: 60_000 });
   await shot(page, info, "plan-live-working", "plan");
   await expect(screen).toHaveAttribute("data-phase", /done|error/, { timeout: 260_000 });
