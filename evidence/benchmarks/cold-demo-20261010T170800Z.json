@@ -1,0 +1,25 @@
+{
+  "check": "W8 cold start: make down, then make demo (frozen app image)",
+  "started_at": "2026-10-10T17:07:55.533Z",
+  "base_url": "http://demo:8000",
+  "ms_to_first_healthy_response": 3052,
+  "ms_to_landing_with_headline": 3426,
+  "ms_to_first_tour_step": 3864,
+  "health": {
+    "status": "ok",
+    "contract_version": "2.0.0",
+    "schema_version": "4",
+    "database": "ok",
+    "pilots_published": 3,
+    "libraries_ready": 12,
+    "workers": 2,
+    "dispatcher": "running",
+    "versions": {
+      "aquacrop": "3.1.0",
+      "ortools": "9.15.6755",
+      "fastapi": "0.141.1",
+      "pydantic": "2.13.5",
+      "lightgbm": "4.7.0"
+    }
+  }
+}
