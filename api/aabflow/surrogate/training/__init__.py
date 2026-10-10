@@ -42,7 +42,7 @@ from aabflow.surrogate.validation import (
     within_context_spearman,
 )
 
-MODEL_VERSION = "surrogate-v1"
+MODEL_VERSION = "surrogate-v2"
 SOILS = ["aquacrop-siltloam-pct50", "aquacrop-loam-pct50", "aquacrop-sandyloam-pct50"]
 EFFS = [0.6, 0.75]
 FAMILIES = [
@@ -185,6 +185,7 @@ class DesignRow:
     sim_start: date
     sim_end: date
     source: str = "science-discovery"
+    calendar_season_id: str | None = None
 
 
 def build_design(crop: Crop, pilot_id: str | None = None) -> list[DesignRow]:
@@ -222,6 +223,46 @@ def build_design(crop: Crop, pilot_id: str | None = None) -> list[DesignRow]:
                             pilot_id or "science-discovery",
                         )
                     )
+    return rows
+
+
+def build_calendar_design(crop: Crop, pilot_id: str) -> list[DesignRow]:
+    """Execute published analogs on their target calendars, keeping source-year splits.
+
+    Mapping a non-leap historical season onto a leap-year planning season adds
+    a weather day. Historical-date designs alone therefore do not cover every
+    published feature window. Group each mapped experiment with its ORIGINAL
+    weather year, so copies of held-out weather never enter the training pool.
+    """
+    rows = []
+    for season in crop_profiles.SEASONS.values():
+        if season.crop is not crop:
+            continue
+        for weather in scenarios.load_weather_scenarios(season.season_id, pilot_id):
+            year = weather.analog_season_start.year
+            label = f"{year}-{str(year + 1)[-2:]}" if crop is Crop.wheat else str(year)
+            for soil in SOILS:
+                for eff in EFFS:
+                    rng = np.random.default_rng(
+                        int(content_hash([crop.value, year, soil, eff])[:8], 16)
+                    )
+                    for family, schedule in design_schedules(crop, season.planting_date, rng):
+                        rows.append(
+                            DesignRow(
+                                crop,
+                                label,
+                                season.planting_date,
+                                soil,
+                                eff,
+                                family,
+                                schedule,
+                                weather.transformed_sha256,
+                                season.sim_start,
+                                season.sim_end,
+                                pilot_id,
+                                season.season_id,
+                            )
+                        )
     return rows
 
 
@@ -279,6 +320,7 @@ def execute_design(rows: list[DesignRow], workers: int | None = None) -> pd.Data
                 "experiment_hash": h,
                 "year": r.year_label,
                 "weather_source": r.source,
+                "calendar_season_id": r.calendar_season_id,
                 "soil": r.soil,
                 "app_eff": r.eff,
                 "family": r.family,
@@ -397,8 +439,8 @@ def train_and_evaluate(df: pd.DataFrame, crop: Crop) -> tuple[Any, dict[str, Any
             f for _, g in test_main.groupby("weather_source") for f in decision_regret(g, "pred")
         ],
         "residual_band_kg_ha": [float(np.quantile(resid, 0.05)), float(np.quantile(resid, 0.95))],
-        "pilot_note": "Weather is one ERA5 grid point (discovery series); pilot-level metrics equal the grid-cell "
-        "metrics while pilots share that cell.",
+        "pilot_note": "Discovery and published pilot weather are pooled. Mapped planning calendars "
+        "retain original weather-year split assignments; metrics measure simulated yield, not field calibration.",
         "gates": GATES,
     }
     reg = [f["regret"] for f in metrics["decision_regret"]]
@@ -441,6 +483,7 @@ def train_all(workers: int | None = None, crops=(Crop.wheat, Crop.cotton)) -> di
         rows = build_design(crop)
         for pid in pilots:
             rows += build_design(crop, pid)
+            rows += build_calendar_design(crop, pid)
         df = execute_design(rows, workers=workers)
         data_path = out_dir / f"training-{crop.value}.parquet"
         df.to_parquet(data_path, index=False)

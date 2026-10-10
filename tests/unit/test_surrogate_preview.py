@@ -1,6 +1,6 @@
 """Surrogate contract (T8.2-T8.4, AT11): no outcome features, domain refusal, typed preview, held-out gates.
 
-Reads the published artifacts in data/models/surrogate-v1 (scripts/science_train_surrogate.py).
+Reads the current versioned artifacts (scripts/science_train_surrogate.py).
 """
 
 import json
@@ -11,10 +11,12 @@ import pytest
 
 from aabflow.config import DATA_DIR
 from aabflow.domain.schemas import Crop
+from aabflow.surrogate.domain import latest_version
 from aabflow.surrogate.features import feature_names
 from aabflow.surrogate.prediction import OUT_OF_DOMAIN_MESSAGE, preview
 
-MODEL = DATA_DIR / "models" / "surrogate-v1"
+MODEL_VERSION = latest_version()
+MODEL = DATA_DIR / "models" / MODEL_VERSION
 LEAKY = ("yield", "biomass", "harvest", "canopy", "stress", "transp", "hi_", "dry", "fresh")
 
 
@@ -66,7 +68,7 @@ def test_preview_typed_in_domain_and_fast():
     assert (time.perf_counter() - t) < 0.3  # PRD §11.1: <= 300 ms backend after model load
     assert pv.estimate_kind == "surrogate_preview" and pv.domain_status == "in_domain"
     assert pv.estimated_yield_kg_ha and pv.estimated_yield_kg_ha > 0 and pv.message is None
-    assert pv.model_version == "surrogate-v1" and pv.evaluation_reference.endswith(
+    assert pv.model_version == MODEL_VERSION and pv.evaluation_reference.endswith(
         "evaluation-wheat.json"
     )
 

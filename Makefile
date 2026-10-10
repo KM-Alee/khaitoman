@@ -94,5 +94,8 @@ candidates:       ## exact experiments + candidate libraries, e.g. make candidat
 train-surrogate:  ## fixed-split surrogate training, evaluation artifacts and gate
 	$(API) python scripts/science_train_surrogate.py
 
-domain-tests core-acceptance copilot-evals release-check:
+domain-tests:     ## AT02–AT04 crop/ledger gates, water properties, both pilots' published libraries (run candidates first)
+	$(API) pytest -v tests/scientific/test_crop_gates.py tests/scientific/test_published_libraries.py tests/unit/test_candidate_publication.py tests/unit/test_water_*.py tests/property
+
+core-acceptance copilot-evals release-check:
 	@echo "make $@: not implemented yet" >&2; exit 1

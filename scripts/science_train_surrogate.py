@@ -1,4 +1,4 @@
-"""Train and evaluate the crop-specific LightGBM surrogates (T8); writes data/models/surrogate-v1/.
+"""Train and evaluate the crop-specific LightGBM surrogates (T8); writes a versioned data/models/ directory.
 
 Exit code 0 only when every crop passes its T8.3 gates; failures are reported, never hidden.
 """

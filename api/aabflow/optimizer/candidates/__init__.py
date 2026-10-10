@@ -1059,15 +1059,39 @@ def build_from_context(
 
 
 def publish_library(res: BuildResult) -> CandidateLibrary:
+    """Publish once per content hash; a rebuild may restore ignored policy dumps.
+
+    Runtime build statistics belong to the current build result, while the
+    original publication metadata remains frozen on disk (PRD §8.6, T3.6).
+    """
     lib = res.library
     d = libraries_dir() / lib.pilot_id / lib.season_id / lib.candidate_library_hash
     d.mkdir(parents=True, exist_ok=True)
-    tmp = d / ".policies.jsonl.tmp"
-    with tmp.open("w") as fh:
-        for p in res.policies:
-            fh.write(p.model_dump_json(exclude_defaults=True) + "\n")
-    tmp.replace(d / "policies.jsonl")
-    atomic_write_text(d / "library.json", lib.model_dump_json(indent=1))
+    metadata_path = d / "library.json"
+    policies_path = d / "policies.jsonl"
+    if metadata_path.exists():
+        original = CandidateLibrary.model_validate_json(metadata_path.read_text())
+        runtime_fields = {"created_at", "build_stats"}
+        if original.model_dump(exclude=runtime_fields) != lib.model_dump(exclude=runtime_fields):
+            raise CandidateError(
+                "refusing to replace immutable library metadata under the same hash"
+            )
+        lib = lib.model_copy(update={"created_at": original.created_at})
+    if policies_path.exists():
+        with policies_path.open() as fh:
+            original_policies = [
+                CandidatePolicy.model_validate_json(line) for line in fh if line.strip()
+            ]
+        if original_policies != res.policies:
+            raise CandidateError("refusing to replace immutable policies under the same hash")
+    else:
+        tmp = d / ".policies.jsonl.tmp"
+        with tmp.open("w") as fh:
+            for p in res.policies:
+                fh.write(p.model_dump_json(exclude_defaults=True) + "\n")
+        tmp.replace(policies_path)
+    if not metadata_path.exists():
+        atomic_write_text(metadata_path, lib.model_dump_json(indent=1))
     atomic_write_text(
         libraries_dir() / lib.pilot_id / lib.season_id / "latest.json",
         json.dumps(

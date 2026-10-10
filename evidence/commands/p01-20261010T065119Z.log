@@ -1,0 +1,652 @@
+docker compose run --rm --no-deps api python scripts/science_build_libraries.py pilot-b
+ Container aabflow-api-run-62a51ea2afca Creating
+ Container aabflow-api-run-62a51ea2afca Created
+  experiments 200/1407 (8s)
+  experiments 400/1407 (14s)
+  experiments 600/1407 (19s)
+  experiments 800/1407 (25s)
+  experiments 1000/1407 (31s)
+  experiments 1200/1407 (37s)
+  experiments 1400/1407 (43s)
+  experiments 200/756 (7s)
+  experiments 400/756 (13s)
+  experiments 600/756 (19s)
+{
+ "wheat-rabi-2026-27": {
+  "library_hash": "7fe55c700d29fb9f2c270ad887ea25697f34d65a03ff8285cb41564d36bce1bd",
+  "wall_s": 82.69,
+  "fields": 30,
+  "configurations": 1,
+  "templates": 906,
+  "experiments_requested": 2193,
+  "experiments_executed": 1863,
+  "experiments_cached": 30,
+  "policies_retained": 854,
+  "options_per_field_min": 24,
+  "options_per_field_max": 39,
+  "pilot_label": "pilot package",
+  "decision_at": "2026-10-10T03:00:00+00:00"
+ }
+}
+  experiments 200/2688 (9s)
+  experiments 400/2688 (15s)
+  experiments 600/2688 (21s)
+  experiments 800/2688 (27s)
+  experiments 1000/2688 (34s)
+  experiments 1200/2688 (40s)
+  experiments 1400/2688 (46s)
+  experiments 1600/2688 (53s)
+  experiments 1800/2688 (60s)
+  experiments 2000/2688 (66s)
+  experiments 2200/2688 (72s)
+  experiments 2400/2688 (78s)
+  experiments 2600/2688 (84s)
+  experiments 200/1338 (8s)
+  experiments 400/1338 (13s)
+  experiments 600/1338 (19s)
+  experiments 800/1338 (25s)
+  experiments 1000/1338 (31s)
+  experiments 1200/1338 (37s)
+{
+ "wheat-rabi-2027-28": {
+  "library_hash": "79c28165a39ea52535bf80c88273a1f530ec2b59632ec5c1e5bd848171a92960",
+  "wall_s": 209.46,
+  "fields": 30,
+  "configurations": 4,
+  "templates": 4104,
+  "experiments_requested": 4074,
+  "experiments_executed": 3510,
+  "experiments_cached": 48,
+  "policies_retained": 3913,
+  "options_per_field_min": 24,
+  "options_per_field_max": 46,
+  "pilot_label": "pilot package",
+  "decision_at": "2026-10-10T03:00:00+00:00"
+ }
+}
+  experiments 200/2562 (12s)
+  experiments 400/2562 (25s)
+  experiments 600/2562 (37s)
+  experiments 800/2562 (50s)
+  experiments 1000/2562 (63s)
+  experiments 1200/2562 (75s)
+  experiments 1400/2562 (88s)
+  experiments 1600/2562 (101s)
+  experiments 1800/2562 (113s)
+  experiments 2000/2562 (126s)
+  experiments 2200/2562 (138s)
+  experiments 2400/2562 (151s)
+{
+ "cotton-kharif-2027": {
+  "library_hash": "95d5ef221aeb850c87dcfd89e0227c57e683c32913151626d975f2dbd44290a0",
+  "wall_s": 288.43,
+  "fields": 30,
+  "configurations": 4,
+  "templates": 4096,
+  "experiments_requested": 2562,
+  "experiments_executed": 2562,
+  "experiments_cached": 0,
+  "policies_retained": 4096,
+  "options_per_field_min": 28,
+  "options_per_field_max": 46,
+  "pilot_label": "pilot package",
+  "decision_at": "2026-10-10T03:00:00+00:00"
+ }
+}
+  experiments 200/1876 (13s)
+  experiments 400/1876 (20s)
+  experiments 600/1876 (26s)
+  experiments 800/1876 (33s)
+  experiments 1000/1876 (39s)
+  experiments 1200/1876 (45s)
+  experiments 1400/1876 (52s)
+  experiments 1600/1876 (58s)
+  experiments 1800/1876 (64s)
+  experiments 200/300 (8s)
+{
+ "wheat-rabi-2024-25": {
+  "library_hash": "f3595e1f91bc9ff210e6f058201512c611b7b05f28a76f12581fde466ccec974",
+  "wall_s": 102.31,
+  "fields": 30,
+  "configurations": 1,
+  "templates": 906,
+  "experiments_requested": 2256,
+  "experiments_executed": 2057,
+  "experiments_cached": 80,
+  "policies_retained": 873,
+  "options_per_field_min": 24,
+  "options_per_field_max": 40,
+  "pilot_label": "pilot package",
+  "decision_at": "2024-10-01T03:00:00+00:00"
+ }
+}
+{
+ "wheat-rabi-2026-27": {
+  "library_hash": "7fe55c700d29fb9f2c270ad887ea25697f34d65a03ff8285cb41564d36bce1bd",
+  "wall_s": 82.69,
+  "fields": 30,
+  "configurations": 1,
+  "templates": 906,
+  "experiments_requested": 2193,
+  "experiments_executed": 1863,
+  "experiments_cached": 30,
+  "policies_retained": 854,
+  "options_per_field_min": 24,
+  "options_per_field_max": 39,
+  "pilot_label": "pilot package",
+  "decision_at": "2026-10-10T03:00:00+00:00"
+ },
+ "wheat-rabi-2027-28": {
+  "library_hash": "79c28165a39ea52535bf80c88273a1f530ec2b59632ec5c1e5bd848171a92960",
+  "wall_s": 209.46,
+  "fields": 30,
+  "configurations": 4,
+  "templates": 4104,
+  "experiments_requested": 4074,
+  "experiments_executed": 3510,
+  "experiments_cached": 48,
+  "policies_retained": 3913,
+  "options_per_field_min": 24,
+  "options_per_field_max": 46,
+  "pilot_label": "pilot package",
+  "decision_at": "2026-10-10T03:00:00+00:00"
+ },
+ "cotton-kharif-2027": {
+  "library_hash": "95d5ef221aeb850c87dcfd89e0227c57e683c32913151626d975f2dbd44290a0",
+  "wall_s": 288.43,
+  "fields": 30,
+  "configurations": 4,
+  "templates": 4096,
+  "experiments_requested": 2562,
+  "experiments_executed": 2562,
+  "experiments_cached": 0,
+  "policies_retained": 4096,
+  "options_per_field_min": 28,
+  "options_per_field_max": 46,
+  "pilot_label": "pilot package",
+  "decision_at": "2026-10-10T03:00:00+00:00"
+ },
+ "wheat-rabi-2024-25": {
+  "library_hash": "f3595e1f91bc9ff210e6f058201512c611b7b05f28a76f12581fde466ccec974",
+  "wall_s": 102.31,
+  "fields": 30,
+  "configurations": 1,
+  "templates": 906,
+  "experiments_requested": 2256,
+  "experiments_executed": 2057,
+  "experiments_cached": 80,
+  "policies_retained": 873,
+  "options_per_field_min": 24,
+  "options_per_field_max": 40,
+  "pilot_label": "pilot package",
+  "decision_at": "2024-10-01T03:00:00+00:00"
+ }
+}
+benchmark: /app/evidence/benchmarks/science-library-pilot-b-20261010T065119Z.json
+docker compose run --rm --no-deps api pytest -q --ignore=tests/scientific
+time="2026-10-10T11:42:10+05:00" level=warning msg="Found orphan containers (aabflow-api-run-da18b2d09c71) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up."
+ Container aabflow-api-run-bf1dc4753bdf Creating
+ Container aabflow-api-run-bf1dc4753bdf Created
+........................................................................ [ 18%]
+........................................................................ [ 37%]
+........................................................................ [ 56%]
+........................................................................ [ 75%]
+.....F.........................F........................................ [ 94%]
+.....................                                                    [100%]
+=================================== FAILURES ===================================
+_ test_default_preview_in_domain[offsets0-pilot-b-wheat-rabi-2027-28-typical] __
+
+pilot_id = 'pilot-b', season_id = 'wheat-rabi-2027-28', scenario_id = 'typical'
+offsets = (0, 21, 42, 63)
+
+    @pytest.mark.parametrize("pilot_id,season_id,scenario_id", CASES)
+    @pytest.mark.parametrize("offsets", [(0, 21, 42, 63), (10, 31, 52, 73)])
+    def test_default_preview_in_domain(pilot_id, season_id, scenario_id, offsets):
+        pv = preview(default_request(pilot_id, season_id, scenario_id, offsets))
+>       assert pv.domain_status == "in_domain", pv.domain_reasons
+E       AssertionError: ['w4_et0_mm=582 outside trained range [437, 574]', 'w4_balance_mm=-577 outside trained range [-569, -326]']
+E       assert 'out_of_domain' == 'in_domain'
+E
+E         - in_domain
+E         + out_of_domain
+
+tests/unit/test_surrogate_domain_coverage.py:49: AssertionError
+_ test_default_preview_in_domain[offsets1-pilot-b-wheat-rabi-2027-28-typical] __
+
+pilot_id = 'pilot-b', season_id = 'wheat-rabi-2027-28', scenario_id = 'typical'
+offsets = (10, 31, 52, 73)
+
+    @pytest.mark.parametrize("pilot_id,season_id,scenario_id", CASES)
+    @pytest.mark.parametrize("offsets", [(0, 21, 42, 63), (10, 31, 52, 73)])
+    def test_default_preview_in_domain(pilot_id, season_id, scenario_id, offsets):
+        pv = preview(default_request(pilot_id, season_id, scenario_id, offsets))
+>       assert pv.domain_status == "in_domain", pv.domain_reasons
+E       AssertionError: ['w4_et0_mm=582 outside trained range [437, 574]', 'w4_balance_mm=-577 outside trained range [-569, -326]']
+E       assert 'out_of_domain' == 'in_domain'
+E
+E         - in_domain
+E         + out_of_domain
+
+tests/unit/test_surrogate_domain_coverage.py:49: AssertionError
+=============================== warnings summary ===============================
+tests/unit/test_ingestion_sources.py::test_write_and_read_local_window
+  /opt/venv/lib/python3.11/site-packages/rasterio/windows.py:360: PendingDeprecationWarning: Use `@` matmul instead of `*` mul operator for matrix multiplication
+    x, y = transform * (window.col_off or 0.0, window.row_off or 0.0)
+
+tests/unit/test_ingestion_sources.py::test_write_and_read_local_window
+  /opt/venv/lib/python3.11/site-packages/rasterio/windows.py:361: PendingDeprecationWarning: Use `@` matmul instead of `*` mul operator for matrix multiplication
+    return Affine.translation(
+
+tests/unit/test_ingestion_sources.py::test_display_stretch_corners_and_webp
+  /opt/venv/lib/python3.11/site-packages/rasterio/transform.py:189: PendingDeprecationWarning: Use `@` matmul instead of `*` mul operator for matrix multiplication
+    return Affine.translation(west, north) * Affine.scale(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_surrogate_domain_coverage.py::test_default_preview_in_domain[offsets0-pilot-b-wheat-rabi-2027-28-typical]
+FAILED tests/unit/test_surrogate_domain_coverage.py::test_default_preview_in_domain[offsets1-pilot-b-wheat-rabi-2027-28-typical]
+2 failed, 379 passed, 3 warnings in 45.70s
+
+make: *** [Makefile:51: test] Error 1
+docker compose run --rm --no-deps api python scripts/science_train_surrogate.py
+ Container aabflow-api-run-79d25b7b9e73 Creating
+ Container aabflow-api-run-79d25b7b9e73 Created
+  experiments 200/2882 (20s)
+  experiments 400/2882 (30s)
+  experiments 600/2882 (40s)
+  experiments 800/2882 (50s)
+  experiments 1000/2882 (60s)
+  experiments 1200/2882 (70s)
+  experiments 1400/2882 (80s)
+  experiments 1600/2882 (90s)
+  experiments 1800/2882 (99s)
+  experiments 2000/2882 (110s)
+  experiments 2200/2882 (120s)
+  experiments 2400/2882 (130s)
+  experiments 2600/2882 (141s)
+  experiments 2800/2882 (151s)
+  experiments 200/2161 (12s)
+  experiments 400/2161 (20s)
+  experiments 600/2161 (28s)
+  experiments 800/2161 (35s)
+  experiments 1000/2161 (43s)
+  experiments 1200/2161 (50s)
+  experiments 1400/2161 (58s)
+  experiments 1600/2161 (66s)
+  experiments 1800/2161 (73s)
+  experiments 2000/2161 (81s)
+{
+ "model_version": "surrogate-v2",
+ "created_at": "2026-10-10T06:45:03.978916+00:00",
+ "adapter_version": "aabflow-aquacrop-adapter-1.0.0",
+ "crops": {
+  "wheat": {
+   "test": {
+    "n": 66,
+    "mae_kg_ha": 239.97370095911634,
+    "rmse_kg_ha": 273.70337126073184,
+    "bias_kg_ha": -177.18422172244604,
+    "nmae": 0.03025618406271014,
+    "reference_yield_kg_ha": 7931.393478494761
+   },
+   "test_ranking": {
+    "contexts": 6,
+    "median_spearman": 0.9681818181818183,
+    "min_spearman": 0.9181818181818183
+   },
+   "decision_regret_summary": {
+    "n": 12,
+    "median": 0.0013976854445718152,
+    "max": 0.0262411000563522,
+    "median_kg": 126.56987601146102
+   },
+   "baseline_test": {
+    "n": 66,
+    "mae_kg_ha": 945.9416210001724,
+    "rmse_kg_ha": 1358.6141740928529,
+    "bias_kg_ha": 195.07807249016471,
+    "nmae": 0.11926550152441755,
+    "reference_yield_kg_ha": 7931.393478494761
+   },
+   "gate_results": {
+    "nmae": true,
+    "median_spearman": true,
+    "median_regret": true,
+    "max_regret": true,
+    "fixtures": true,
+    "beats_naive_baseline": true
+   },
+   "passed": true,
+   "loyo_cv": {
+    "nmae_mean": 0.054343249047272016,
+    "nmae_max": 0.12025503321009515,
+    "nmae_std": 0.02136227730769697
+   },
+   "samples": {
+    "total": 4886,
+    "fit_pool": 4412,
+    "test": 66,
+    "holdout_family_test": 6,
+    "years": 26
+   }
+  },
+  "cotton": {
+   "test": {
+    "n": 198,
+    "mae_kg_ha": 290.07003532715237,
+    "rmse_kg_ha": 363.8545174336139,
+    "bias_kg_ha": -266.04614505823326,
+    "nmae": 0.08910142994584262,
+    "reference_yield_kg_ha": 3255.503705198243
+   },
+   "test_ranking": {
+    "contexts": 18,
+    "median_spearman": 0.9818181818181818,
+    "min_spearman": 0.9545454545454546
+   },
+   "decision_regret_summary": {
+    "n": 36,
+    "median": 0.000556739245749563,
+    "max": 0.012646940347686335,
+    "median_kg": 27.764459488054854
+   },
+   "baseline_test": {
+    "n": 198,
+    "mae_kg_ha": 496.6353352540029,
+    "rmse_kg_ha": 702.3487537855481,
+    "bias_kg_ha": -237.20522606221905,
+    "nmae": 0.15255253264218308,
+    "reference_yield_kg_ha": 3255.503705198243
+   },
+   "gate_results": {
+    "nmae": true,
+    "median_spearman": true,
+    "median_regret": true,
+    "max_regret": true,
+    "fixtures": true,
+    "beats_naive_baseline": true
+   },
+   "passed": true,
+   "loyo_cv": {
+    "nmae_mean": 0.07432107439430176,
+    "nmae_max": 0.14550879982171155,
+    "nmae_std": 0.024399792202081338
+   },
+   "samples": {
+    "total": 4031,
+    "fit_pool": 3497,
+    "test": 198,
+    "holdout_family_test": 18,
+    "years": 26
+   }
+  }
+ },
+ "weather_sources": [
+  "science-discovery",
+  "pilot-a",
+  "pilot-b"
+ ],
+ "passed": true,
+ "wall_s": 360.9
+}
+docker compose run --rm --no-deps api python scripts/science_build_libraries.py pilot-b
+ Container aabflow-api-run-b47975ba5242 Creating
+ Container aabflow-api-run-b47975ba5242 Created
+  experiments 200/300 (11s)
+{
+ "wheat-rabi-2026-27": {
+  "library_hash": "7fe55c700d29fb9f2c270ad887ea25697f34d65a03ff8285cb41564d36bce1bd",
+  "wall_s": 40.69,
+  "fields": 30,
+  "configurations": 1,
+  "templates": 906,
+  "experiments_requested": 2193,
+  "experiments_executed": 0,
+  "experiments_cached": 1893,
+  "policies_retained": 854,
+  "options_per_field_min": 24,
+  "options_per_field_max": 39,
+  "pilot_label": "pilot package",
+  "decision_at": "2026-10-10T03:00:00+00:00"
+ }
+}
+  experiments 200/516 (9s)
+  experiments 400/516 (14s)
+{
+ "wheat-rabi-2027-28": {
+  "library_hash": "79c28165a39ea52535bf80c88273a1f530ec2b59632ec5c1e5bd848171a92960",
+  "wall_s": 109.8,
+  "fields": 30,
+  "configurations": 4,
+  "templates": 4104,
+  "experiments_requested": 4074,
+  "experiments_executed": 0,
+  "experiments_cached": 3558,
+  "policies_retained": 3913,
+  "options_per_field_min": 24,
+  "options_per_field_max": 46,
+  "pilot_label": "pilot package",
+  "decision_at": "2026-10-10T03:00:00+00:00"
+ }
+}
+{
+ "cotton-kharif-2027": {
+  "library_hash": "95d5ef221aeb850c87dcfd89e0227c57e683c32913151626d975f2dbd44290a0",
+  "wall_s": 99.31,
+  "fields": 30,
+  "configurations": 4,
+  "templates": 4096,
+  "experiments_requested": 2562,
+  "experiments_executed": 0,
+  "experiments_cached": 2562,
+  "policies_retained": 4096,
+  "options_per_field_min": 28,
+  "options_per_field_max": 46,
+  "pilot_label": "pilot package",
+  "decision_at": "2026-10-10T03:00:00+00:00"
+ }
+}
+{
+ "wheat-rabi-2024-25": {
+  "library_hash": "f3595e1f91bc9ff210e6f058201512c611b7b05f28a76f12581fde466ccec974",
+  "wall_s": 25.01,
+  "fields": 30,
+  "configurations": 1,
+  "templates": 906,
+  "experiments_requested": 2256,
+  "experiments_executed": 0,
+  "experiments_cached": 2137,
+  "policies_retained": 873,
+  "options_per_field_min": 24,
+  "options_per_field_max": 40,
+  "pilot_label": "pilot package",
+  "decision_at": "2024-10-01T03:00:00+00:00"
+ }
+}
+{
+ "wheat-rabi-2026-27": {
+  "library_hash": "7fe55c700d29fb9f2c270ad887ea25697f34d65a03ff8285cb41564d36bce1bd",
+  "wall_s": 40.69,
+  "fields": 30,
+  "configurations": 1,
+  "templates": 906,
+  "experiments_requested": 2193,
+  "experiments_executed": 0,
+  "experiments_cached": 1893,
+  "policies_retained": 854,
+  "options_per_field_min": 24,
+  "options_per_field_max": 39,
+  "pilot_label": "pilot package",
+  "decision_at": "2026-10-10T03:00:00+00:00"
+ },
+ "wheat-rabi-2027-28": {
+  "library_hash": "79c28165a39ea52535bf80c88273a1f530ec2b59632ec5c1e5bd848171a92960",
+  "wall_s": 109.8,
+  "fields": 30,
+  "configurations": 4,
+  "templates": 4104,
+  "experiments_requested": 4074,
+  "experiments_executed": 0,
+  "experiments_cached": 3558,
+  "policies_retained": 3913,
+  "options_per_field_min": 24,
+  "options_per_field_max": 46,
+  "pilot_label": "pilot package",
+  "decision_at": "2026-10-10T03:00:00+00:00"
+ },
+ "cotton-kharif-2027": {
+  "library_hash": "95d5ef221aeb850c87dcfd89e0227c57e683c32913151626d975f2dbd44290a0",
+  "wall_s": 99.31,
+  "fields": 30,
+  "configurations": 4,
+  "templates": 4096,
+  "experiments_requested": 2562,
+  "experiments_executed": 0,
+  "experiments_cached": 2562,
+  "policies_retained": 4096,
+  "options_per_field_min": 28,
+  "options_per_field_max": 46,
+  "pilot_label": "pilot package",
+  "decision_at": "2026-10-10T03:00:00+00:00"
+ },
+ "wheat-rabi-2024-25": {
+  "library_hash": "f3595e1f91bc9ff210e6f058201512c611b7b05f28a76f12581fde466ccec974",
+  "wall_s": 25.01,
+  "fields": 30,
+  "configurations": 1,
+  "templates": 906,
+  "experiments_requested": 2256,
+  "experiments_executed": 0,
+  "experiments_cached": 2137,
+  "policies_retained": 873,
+  "options_per_field_min": 24,
+  "options_per_field_max": 40,
+  "pilot_label": "pilot package",
+  "decision_at": "2024-10-01T03:00:00+00:00"
+ }
+}
+benchmark: /app/evidence/benchmarks/science-library-pilot-b-20261010T065626Z.json
+docker compose run --rm --no-deps api pytest -q --ignore=tests/scientific
+ Container aabflow-api-run-69c45e91cbb0 Creating
+ Container aabflow-api-run-69c45e91cbb0 Created
+........................................................................ [ 18%]
+........................................................................ [ 37%]
+........................................................................ [ 55%]
+........................................................................ [ 74%]
+........................................................................ [ 93%]
+..........................                                               [100%]
+=============================== warnings summary ===============================
+tests/unit/test_ingestion_sources.py::test_write_and_read_local_window
+  /opt/venv/lib/python3.11/site-packages/rasterio/windows.py:360: PendingDeprecationWarning: Use `@` matmul instead of `*` mul operator for matrix multiplication
+    x, y = transform * (window.col_off or 0.0, window.row_off or 0.0)
+
+tests/unit/test_ingestion_sources.py::test_write_and_read_local_window
+  /opt/venv/lib/python3.11/site-packages/rasterio/windows.py:361: PendingDeprecationWarning: Use `@` matmul instead of `*` mul operator for matrix multiplication
+    return Affine.translation(
+
+tests/unit/test_ingestion_sources.py::test_display_stretch_corners_and_webp
+  /opt/venv/lib/python3.11/site-packages/rasterio/transform.py:189: PendingDeprecationWarning: Use `@` matmul instead of `*` mul operator for matrix multiplication
+    return Affine.translation(west, north) * Affine.scale(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+386 passed, 3 warnings in 37.00s
+docker compose run --rm --no-deps api pytest -v tests/scientific/test_crop_gates.py tests/scientific/test_published_libraries.py tests/unit/test_candidate_publication.py tests/unit/test_water_*.py tests/property
+ Container aabflow-api-run-bf5eb0bc5360 Creating
+ Container aabflow-api-run-bf5eb0bc5360 Created
+============================= test session starts ==============================
+platform linux -- Python 3.11.17, pytest-9.1.1, pluggy-1.6.0 -- /opt/venv/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /app
+configfile: pyproject.toml
+plugins: anyio-4.15.1, asyncio-1.4.0, hypothesis-6.168.1
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 75 items
+
+tests/scientific/test_crop_gates.py::test_at02_gate2_wheat_three_treatments PASSED [  1%]
+tests/scientific/test_crop_gates.py::test_at02_gate3_cotton_three_treatments PASSED [  2%]
+tests/scientific/test_crop_gates.py::test_gate4_above_default_cap_and_clipping_detection PASSED [  4%]
+tests/scientific/test_crop_gates.py::test_gate5_application_efficiency_applied_once PASSED [  5%]
+tests/scientific/test_crop_gates.py::test_gate6_out_of_season_events_fail PASSED [  6%]
+tests/scientific/test_crop_gates.py::test_gate6b_empty_schedule_equals_rainfed_method PASSED [  8%]
+tests/scientific/test_crop_gates.py::test_gate7_raw_columns_and_yield_basis PASSED [  9%]
+tests/scientific/test_crop_gates.py::test_cache_reuses_hash PASSED       [ 10%]
+tests/scientific/test_crop_gates.py::test_batch_runner_with_warmup PASSED [ 12%]
+tests/scientific/test_published_libraries.py::test_published_field_configuration_and_state_coverage[pilot-a/wheat-rabi-2026-27] PASSED [ 13%]
+tests/scientific/test_published_libraries.py::test_published_exact_outcomes_and_raw_artifacts[pilot-a/wheat-rabi-2026-27] PASSED [ 14%]
+tests/scientific/test_published_libraries.py::test_published_portfolios_reconstruct_at_original_precision[pilot-a/wheat-rabi-2026-27] PASSED [ 16%]
+tests/scientific/test_published_libraries.py::test_published_field_configuration_and_state_coverage[pilot-a/wheat-rabi-2027-28] PASSED [ 17%]
+tests/scientific/test_published_libraries.py::test_published_exact_outcomes_and_raw_artifacts[pilot-a/wheat-rabi-2027-28] PASSED [ 18%]
+tests/scientific/test_published_libraries.py::test_published_portfolios_reconstruct_at_original_precision[pilot-a/wheat-rabi-2027-28] PASSED [ 20%]
+tests/scientific/test_published_libraries.py::test_published_field_configuration_and_state_coverage[pilot-a/cotton-kharif-2027] PASSED [ 21%]
+tests/scientific/test_published_libraries.py::test_published_exact_outcomes_and_raw_artifacts[pilot-a/cotton-kharif-2027] PASSED [ 22%]
+tests/scientific/test_published_libraries.py::test_published_portfolios_reconstruct_at_original_precision[pilot-a/cotton-kharif-2027] PASSED [ 24%]
+tests/scientific/test_published_libraries.py::test_published_field_configuration_and_state_coverage[pilot-a/wheat-rabi-2024-25] PASSED [ 25%]
+tests/scientific/test_published_libraries.py::test_published_exact_outcomes_and_raw_artifacts[pilot-a/wheat-rabi-2024-25] PASSED [ 26%]
+tests/scientific/test_published_libraries.py::test_published_portfolios_reconstruct_at_original_precision[pilot-a/wheat-rabi-2024-25] PASSED [ 28%]
+tests/scientific/test_published_libraries.py::test_published_field_configuration_and_state_coverage[pilot-b/wheat-rabi-2026-27] PASSED [ 29%]
+tests/scientific/test_published_libraries.py::test_published_exact_outcomes_and_raw_artifacts[pilot-b/wheat-rabi-2026-27] PASSED [ 30%]
+tests/scientific/test_published_libraries.py::test_published_portfolios_reconstruct_at_original_precision[pilot-b/wheat-rabi-2026-27] PASSED [ 32%]
+tests/scientific/test_published_libraries.py::test_published_field_configuration_and_state_coverage[pilot-b/wheat-rabi-2027-28] PASSED [ 33%]
+tests/scientific/test_published_libraries.py::test_published_exact_outcomes_and_raw_artifacts[pilot-b/wheat-rabi-2027-28] PASSED [ 34%]
+tests/scientific/test_published_libraries.py::test_published_portfolios_reconstruct_at_original_precision[pilot-b/wheat-rabi-2027-28] PASSED [ 36%]
+tests/scientific/test_published_libraries.py::test_published_field_configuration_and_state_coverage[pilot-b/cotton-kharif-2027] PASSED [ 37%]
+tests/scientific/test_published_libraries.py::test_published_exact_outcomes_and_raw_artifacts[pilot-b/cotton-kharif-2027] PASSED [ 38%]
+tests/scientific/test_published_libraries.py::test_published_portfolios_reconstruct_at_original_precision[pilot-b/cotton-kharif-2027] PASSED [ 40%]
+tests/scientific/test_published_libraries.py::test_published_field_configuration_and_state_coverage[pilot-b/wheat-rabi-2024-25] PASSED [ 41%]
+tests/scientific/test_published_libraries.py::test_published_exact_outcomes_and_raw_artifacts[pilot-b/wheat-rabi-2024-25] PASSED [ 42%]
+tests/scientific/test_published_libraries.py::test_published_portfolios_reconstruct_at_original_precision[pilot-b/wheat-rabi-2024-25] PASSED [ 44%]
+tests/unit/test_candidate_publication.py::test_rebuild_preserves_original_metadata_and_creation_time PASSED [ 45%]
+tests/unit/test_candidate_publication.py::test_clean_checkout_restores_policy_dump_without_rewriting_metadata PASSED [ 46%]
+tests/unit/test_candidate_publication.py::test_same_hash_with_changed_content_is_refused[metadata] PASSED [ 48%]
+tests/unit/test_candidate_publication.py::test_same_hash_with_changed_content_is_refused[policy] PASSED [ 49%]
+tests/unit/test_water_ledger.py::test_context_states_configs_and_shared_cost_once PASSED [ 50%]
+tests/unit/test_water_ledger.py::test_zero_receipt_policy_deliverable_in_every_state PASSED [ 52%]
+tests/unit/test_water_ledger.py::test_b0_exists_per_supply_and_respects_curtailment PASSED [ 53%]
+tests/unit/test_water_ledger.py::test_at04_closed_route_receipt_rejected PASSED [ 54%]
+tests/unit/test_water_ledger.py::test_receipt_above_window_cap_rejected PASSED [ 56%]
+tests/unit/test_water_ledger.py::test_receipt_outside_own_windows_and_wrong_time_rejected PASSED [ 57%]
+tests/unit/test_water_ledger.py::test_field_balance_mismatch_rejected PASSED [ 58%]
+tests/unit/test_water_ledger.py::test_at04_shared_pump_excess_rejected_jointly PASSED [ 60%]
+tests/unit/test_water_ledger.py::test_pump_access_restricted PASSED      [ 61%]
+tests/unit/test_water_ledger.py::test_at04_missing_costs_rejected PASSED [ 62%]
+tests/unit/test_water_ledger.py::test_at04_premature_commissioning_rejected PASSED [ 64%]
+tests/unit/test_water_ledger.py::test_at12_pond_land_removed_once PASSED [ 65%]
+tests/unit/test_water_ledger.py::test_pumping_charged_to_operating_budget PASSED [ 66%]
+tests/unit/test_water_ledger.py::test_reconstruct_valid_plan_balances PASSED [ 68%]
+tests/unit/test_water_ledger.py::test_edge_capacity_checked_jointly PASSED [ 69%]
+tests/unit/test_water_ledger.py::test_interruption_state_blocks_closed_windows PASSED [ 70%]
+tests/unit/test_water_network.py::test_recursive_intake_no_double_factor PASSED [ 72%]
+tests/unit/test_water_network.py::test_shared_edge_sums_demands PASSED   [ 73%]
+tests/unit/test_water_network.py::test_invalid_topologies_rejected PASSED [ 74%]
+tests/unit/test_water_network.py::test_time_right_cap_at_mogha_and_field PASSED [ 76%]
+tests/unit/test_water_network.py::test_curtailment_applied_once_and_transformations PASSED [ 77%]
+tests/unit/test_water_network.py::test_closures_remove_time_and_close_route PASSED [ 78%]
+tests/unit/test_water_network.py::test_volume_basis_and_field_inlet_boundary PASSED [ 80%]
+tests/unit/test_water_network.py::test_repair_override_changes_tail_cap PASSED [ 81%]
+tests/unit/test_water_network.py::test_split_attributes_volume_to_pieces PASSED [ 82%]
+tests/unit/test_water_pond.py::test_two_period_trace_fixture PASSED      [ 84%]
+tests/unit/test_water_pond.py::test_at03_monday_before_friday_rejected PASSED [ 85%]
+tests/unit/test_water_pond.py::test_at03_intra_period_over_capacity_rejected PASSED [ 86%]
+tests/unit/test_water_pond.py::test_simultaneous_events_use_explicit_order PASSED [ 88%]
+tests/unit/test_water_pond.py::test_losses_bounded_by_inventory PASSED   [ 89%]
+tests/unit/test_water_pond.py::test_exogenous_losses_capped_and_spill_explicit PASSED [ 90%]
+tests/unit/test_water_pond.py::test_pond_size_in_irrigations PASSED      [ 92%]
+tests/unit/test_water_pond.py::test_inconsistent_geometry_rejected PASSED [ 93%]
+tests/property/test_water_properties.py::test_routing_conserves_mass_against_walkup_oracle PASSED [ 94%]
+tests/property/test_water_properties.py::test_valid_traces_pass_and_balance PASSED [ 96%]
+tests/property/test_water_properties.py::test_single_perturbation_is_rejected PASSED [ 97%]
+tests/property/test_water_properties.py::test_event_order_mutation_matches_independent_oracle PASSED [ 98%]
+tests/property/test_water_properties.py::test_window_cap_monotone_and_bounded PASSED [100%]
+
+============================= 75 passed in 39.19s ==============================
+docker compose run --rm --no-deps api pytest -q tests/scientific
+ Container aabflow-api-run-5daa17a0cd23 Creating
+ Container aabflow-api-run-5daa17a0cd23 Created
+.........................................                                [100%]
+41 passed in 99.21s (0:01:39)
+docker compose run --rm --no-deps api sh -c "ruff check api tests scripts && ruff format --check api tests scripts"
+ Container aabflow-api-run-b2ffd23c6dcb Creating
+ Container aabflow-api-run-b2ffd23c6dcb Created
+All checks passed!
+201 files already formatted
