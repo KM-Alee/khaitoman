@@ -54,7 +54,15 @@ export function watchJob(jobId: string, onUpdate: (u: JobUpdate) => void): () =>
         try {
           const e = JSON.parse(ev.data) as Partial<JobEvent> & { state?: Job["state"] };
           const p = (e.payload ?? {}) as Record<string, unknown>;
-          if (e.type === "stage") onUpdate({ stage: String(p.stage ?? p.label ?? ""), state: (p.state as Job["state"]) ?? "running" });
+          if (e.type === "stage") {
+            const label = String(p.stage ?? p.label ?? "");
+            onUpdate({
+              stage: typeof p.detail === "string" && p.detail ? `${label} · ${p.detail}` : label,
+              state: (p.state as Job["state"]) ?? "running",
+              // Stage events may carry the worker's measured fraction; never invent one.
+              ...(typeof p.progress === "number" ? { progress: p.progress } : {}),
+            });
+          }
           else if (e.type === "progress") onUpdate({ progress: typeof p.progress === "number" ? p.progress : null, stage: (p.stage as string) ?? undefined, state: "running" });
           else if (e.type === "result") void poll(); // authoritative terminal state via GET
           else if (e.type === "error" || e.type === "cancelled") void poll();

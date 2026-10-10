@@ -74,6 +74,25 @@ def _bundle_ref(bundle_root: Path, repo_root: Path, data_dir: Path) -> str:
         return resolved.relative_to(Path(data_dir).resolve()).as_posix()
 
 
+def _bundle_aoi(bundle_root: Path) -> dict | None:
+    """The bundle's AOI geometry. A raw-package intake must use exactly this AOI."""
+    path = bundle_root / "aoi.geojson"
+    if not path.is_file() or path.is_symlink():
+        return None
+    try:
+        document = read_json(path)
+    except ValueError:
+        return None
+    if isinstance(document, dict) and document.get("type") == "FeatureCollection":
+        features = document.get("features") or []
+        document = features[0].get("geometry") if len(features) == 1 else None
+    elif isinstance(document, dict) and document.get("type") == "Feature":
+        document = document.get("geometry")
+    if not isinstance(document, dict) or document.get("type") != "Polygon":
+        return None
+    return document
+
+
 def iter_bundles(data_dir: Path, repo_root: Path) -> list[dict]:
     """List immutable raw bundles. Published pilot versions are not included."""
     rows: list[dict] = []
@@ -95,6 +114,7 @@ def iter_bundles(data_dir: Path, repo_root: Path) -> list[dict]:
                     "created_at": meta.get("created_at"),
                     "manifest_sha256": file_sha256(manifest),
                     "intake_kind": "raw_source_bundle",
+                    "aoi": _bundle_aoi(bundle_root),
                 }
             )
     rows.sort(key=lambda row: (str(row["pilot_id"]), str(row["bundle_id"])))

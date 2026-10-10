@@ -9,11 +9,17 @@ import { defineConfig } from "@playwright/test";
  * Viewports from T10.6: 1920×1200, 1366×768 and a mobile viewport.
  */
 const design = process.env.AAB_DESIGN === "1";
+// AAB_LIVE_SPECS=1 adds the live-API specs that write records (impact, onboarding intake/review).
+const live = process.env.AAB_LIVE_SPECS === "1";
 const gl = ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"];
 
 export default defineConfig({
   testDir: "../tests/e2e",
-  testMatch: design ? /design-.*\.spec\.ts/ : /journey.*\.spec\.ts|offline.*\.spec\.ts|a11y.*\.spec\.ts/,
+  testMatch: design
+    ? /design-.*\.spec\.ts/
+    : live
+      ? /impact.*\.spec\.ts|onboarding.*\.spec\.ts/
+      : /journey.*\.spec\.ts|offline.*\.spec\.ts|a11y.*\.spec\.ts/,
   outputDir: "../evidence/playwright-output",
   timeout: 120_000,
   expect: { timeout: 20_000 },
