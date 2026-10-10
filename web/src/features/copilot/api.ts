@@ -6,7 +6,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { API_BASE, ApiError, api } from "@/lib/api/client";
 import type { PlanKind, SolverStatus } from "@/lib/api/types";
-import type { CopilotEventEnvelope, PinnedContextView, SessionSummary, TurnViewRow, UIContext } from "./types";
+import type { CopilotEventEnvelope, PinnedContextView, SessionSummary, TurnMode, TurnViewRow, UIContext } from "./types";
 
 const enc = encodeURIComponent;
 
@@ -87,8 +87,12 @@ export const copilotApi = {
   createSession: (context: UIContext, role: "planner" | "viewer" = "planner") =>
     api.post<SessionOut>("/copilot/sessions", { contract_version: "2.0.0", context, role }),
   getSession: (sessionId: string, signal?: AbortSignal) => api.get<SessionDetail>(`/copilot/sessions/${enc(sessionId)}`, signal),
-  postMessage: (sessionId: string, message: string, context: UIContext) =>
-    api.post<TurnAccepted>(`/copilot/sessions/${enc(sessionId)}/messages`, { contract_version: "2.0.0", message, context }),
+  /** `mode: "plan"` runs a full "Plan my season" investigation (docs/COPILOT.md §12); chat is the default. */
+  postMessage: (sessionId: string, message: string, context: UIContext, mode: TurnMode = "chat") =>
+    api.post<TurnAccepted>(
+      `/copilot/sessions/${enc(sessionId)}/messages`,
+      mode === "chat" ? { contract_version: "2.0.0", message, context } : { contract_version: "2.0.0", message, context, mode },
+    ),
   retryTurn: (turnId: string) => api.post<TurnAccepted>(`/copilot/turns/${enc(turnId)}/retry`, {}),
   cancelTurn: (turnId: string) =>
     api.post<{ turn_id: string; cancel_requested: boolean; status: string }>(`/copilot/turns/${enc(turnId)}/cancel`, {}),

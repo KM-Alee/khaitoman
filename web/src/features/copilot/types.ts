@@ -26,6 +26,11 @@ export type CopilotLanguage = CopilotAnswer["language"];
 export type CreatedRef = S["CreatedRef"];
 export type SessionSummary = S["SessionSummary"];
 export type TurnViewRow = S["TurnView"];
+/** "chat" answers a question; "plan" runs a full "Plan my season" investigation (docs/COPILOT.md §12). */
+export type TurnMode = S["TurnView"]["mode"];
+/** Payload of a plan-mode `plan_step` event. */
+export type PlanStepPayload = S["PlanStep"];
+export type PlanPhase = PlanStepPayload["phase"];
 
 export const TERMINAL_TURN: readonly TerminalTurnStatus[] = [
   "completed",
@@ -176,7 +181,8 @@ export type CopilotEvent =
     }
   | { type: "job_update"; payload: JobUpdatePayload }
   | { type: "jobs_settled"; payload: { pending_job_ids: string[] } }
-  | { type: "jobs_cancelled"; payload: { job_ids: string[] } };
+  | { type: "jobs_cancelled"; payload: { job_ids: string[] } }
+  | { type: "plan_step"; payload: PlanStepPayload };
 
 export type CopilotEventType = CopilotEvent["type"];
 export type CopilotEventEnvelope = CopilotEvent & { event_id: number; turn_id: string; created_at: string };
@@ -195,6 +201,7 @@ export const COPILOT_EVENT_TYPES: readonly CopilotEventType[] = [
   "job_update",
   "jobs_settled",
   "jobs_cancelled",
+  "plan_step",
 ];
 
 /** The stream is over once the turn finished with no pending jobs, or its jobs settled/cancelled. */
