@@ -553,6 +553,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v2/reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Report */
+        post: operations["create_report_api_v2_reports_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/reports/{report_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Report */
+        get: operations["get_report_api_v2_reports__report_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/reports/{report_id}/files/{rel}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Report File */
+        get: operations["report_file_api_v2_reports__report_id__files__rel__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v2/runs": {
         parameters: {
             query?: never;
@@ -2280,6 +2331,69 @@ export interface components {
             ready: boolean;
             /** Warnings */
             warnings: components["schemas"]["Issue"][];
+        };
+        /** ReportAccepted */
+        ReportAccepted: {
+            job: components["schemas"]["Job"];
+            /** Job Id */
+            job_id: string;
+            /** Report Id */
+            report_id: string;
+        };
+        /**
+         * ReportCreate
+         * @description Body reserved by copilot ``create_report``: run ids, analysis ids, report type.
+         */
+        ReportCreate: {
+            /** Analysis Ids */
+            analysis_ids?: string[];
+            /**
+             * Contract Version
+             * @default 2.0.0
+             * @constant
+             */
+            contract_version: "2.0.0";
+            /**
+             * Report Type
+             * @default one_page_plan
+             * @enum {string}
+             */
+            report_type: "one_page_plan" | "full_report";
+            /** Run Ids */
+            run_ids: string[];
+        };
+        /** ReportView */
+        ReportView: {
+            /** Analysis Ids */
+            analysis_ids: string[];
+            /** Artifact Kind */
+            artifact_kind: string | null;
+            /** Created At */
+            created_at: string;
+            /** Download Url */
+            download_url: string | null;
+            /** Final Self Contained Report */
+            final_self_contained_report: boolean;
+            /** Job Error */
+            job_error: {
+                [key: string]: unknown;
+            } | null;
+            /** Job Id */
+            job_id: string | null;
+            /** Job State */
+            job_state: string | null;
+            /** Report Hash */
+            report_hash: string | null;
+            /** Report Hash Scope */
+            report_hash_scope: string | null;
+            /** Report Id */
+            report_id: string;
+            /** Report Type */
+            report_type: string;
+            /** Run Ids */
+            run_ids: string[];
+            /** Status */
+            status: string;
         };
         /**
          * ReviewFlags
@@ -4226,6 +4340,104 @@ export interface operations {
         responses: {
             /** @description Successful Response */
             201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_report_api_v2_reports_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "Idempotency-Key"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReportCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportAccepted"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_report_api_v2_reports__report_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                report_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportView"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    report_file_api_v2_reports__report_id__files__rel__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                report_id: string;
+                rel: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
