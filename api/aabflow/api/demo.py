@@ -97,6 +97,15 @@ class DemoManifest(StrictModel):
     notes: list[str] = Field(
         default_factory=list, description="Seed-time events, e.g. jobs resubmitted after a restart"
     )
+    plan_turn_id: str | None = Field(
+        None,
+        description="Saved 'Plan my season' copilot turn (plan mode) run by the seed with --plan-goal; "
+        "replayed from GET /copilot/turns/{id}/event-log",
+    )
+    plan_goal: str | None = Field(None, description="The goal sentence of the saved plan turn")
+    plan_computed_at: str | None = Field(
+        None, description="When the server finished the saved plan turn (its finished_at)"
+    )
 
     def referenced_ids(self) -> dict[str, str]:
         """Every record ID the manifest points at -> its kind, in a stable order."""

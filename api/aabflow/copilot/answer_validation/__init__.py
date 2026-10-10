@@ -576,3 +576,93 @@ def order_blocks(
     if follow_ups:
         out.append({"type": "follow_ups", "questions": follow_ups})
     return public_blocks(out)
+
+
+# ------------------------------------------------------------------ plan-mode brief layout (P2 "Plan my season")
+
+# Required parts of a plan-mode decision brief, in reading order.
+_PLAN_PARTS: tuple[tuple[str, str], ...] = (
+    ("kpi", "The headline numbers (production, tail service, capital, groundwater)"),
+    ("frontier", "The spending/service trade-off (frontier)"),
+    ("stress", "The stress test (weather x supply heatmap)"),
+    ("equity", "The fairness check (equity table of fields)"),
+    ("steps", "The dated action steps"),
+    ("caveats", "The standard caveats"),
+    ("actions", "Links to open the recommended run, report or comparison"),
+    ("follow_ups", "Follow-up suggestions"),
+)
+
+# True of every plan this application produces; added verbatim when a plan brief has no caveat at all.
+PLAN_STANDARD_CAVEATS = (
+    "Water rights and costs are assumptions, not measured values.",
+    "Yields come from the AquaCrop crop model, which is not calibrated for this pilot.",
+    "The plan is chosen from a finite set of candidate interventions and schedules.",
+    "The worst case covers only the tested weather and supply states.",
+)
+
+
+def _plan_present(blocks: list[dict[str, Any]]) -> set[str]:
+    have: set[str] = set()
+    for b in blocks:
+        t = b.get("type")
+        if t == "metric":
+            have.add("kpi")
+        elif t == "uncertainty":
+            have.add("caveats")
+        elif t == "action":
+            have.add("actions")
+        elif t == "follow_ups" and b.get("questions"):
+            have.add("follow_ups")
+        elif t == "visual":
+            chart, kind = b.get("chart"), str(b.get("dataset_kind") or "")
+            if chart == "kpi":
+                have.add("kpi")
+            if chart == "frontier" or kind == "frontier":
+                have.add("frontier")
+            if chart == "heatmap" or kind == "stress_matrix":
+                have.add("stress")
+            if kind.startswith("equity"):
+                have.add("equity")
+            if chart == "steps" or kind == "action_steps":
+                have.add("steps")
+    return have
+
+
+def plan_layout_gaps(blocks: list[dict[str, Any]]) -> list[str]:
+    """Keys of the required plan-brief parts that the (ordered, public) answer blocks lack."""
+    have = _plan_present(blocks)
+    return [k for k, _ in _PLAN_PARTS if k not in have]
+
+
+def plan_layout_caveats(gaps: list[str], status: str) -> list[dict[str, Any]]:
+    """One honest uncertainty block per missing part (never invented content). The standard caveats are
+    facts about the method, so they are added verbatim when the brief has no caveat at all."""
+    if status == "budget_exhausted":
+        why = "was not completed within the time budget"
+    elif status in ("failed", "provider_unavailable"):
+        why = "could not be completed in this investigation"
+    else:
+        why = "is not part of this brief"
+    out: list[dict[str, Any]] = []
+    for key, what in _PLAN_PARTS:
+        if key not in gaps:
+            continue
+        if key == "caveats":
+            out += [
+                {"type": "uncertainty", "text": t, "citations": []} for t in PLAN_STANDARD_CAVEATS
+            ]
+        else:
+            out.append({"type": "uncertainty", "text": f"{what} {why}.", "citations": []})
+    return out
+
+
+def apply_plan_layout(blocks: list[dict[str, Any]], status: str) -> list[dict[str, Any]]:
+    """Plan-mode layout guard: insert the gap caveats after the existing caveats (before the actions and
+    follow-ups), keeping every block the answer already has, in its order."""
+    extra = plan_layout_caveats(plan_layout_gaps(blocks), status)
+    if not extra:
+        return blocks
+    at = next(
+        (i for i, b in enumerate(blocks) if b.get("type") in ("action", "follow_ups")), len(blocks)
+    )
+    return blocks[:at] + extra + blocks[at:]

@@ -10,7 +10,11 @@ an ordinary scenario, revision, run or analysis in that server's database:
    (budgets are tried in order; the one used and why is recorded), solved for B0, B1 and P;
 5. a six-setting frontier on the base revision and a stress test of R against P;
 6. a focus field picked from the server's B0 -> P comparison (largest positive field production
-   delta in the tail group) and, when the server's P timeline gives a basis, a decisive date.
+   delta in the tail group) and, when the server's P timeline gives a basis, a decisive date;
+7. with ``--plan-goal "<sentence>"``: one "Plan my season" copilot turn (mode=plan, the hosted model
+   and the real tools) on the base revision and its P run, waited to completion; its turn ID, goal and
+   finish time are stored as ``plan_turn_id``/``plan_goal``/``plan_computed_at`` so the UI can replay
+   the saved investigation. ``--plan-only`` adds that turn to an existing manifest without re-solving.
 
 Any failed job, rejected request or non-plan outcome exits non-zero before a manifest is written.
 The manifest goes to ``data/demo/session.json`` (gitignored: it names records that live only in
@@ -66,6 +70,8 @@ DONE = ("succeeded", "failed", "cancelled", "interrupted")
 MAX_ATTEMPTS = 4
 RESUBMIT = ("cancelled", "interrupted")
 NOTES: list[str] = []
+# A plan-mode turn has a 240 s wall budget; allow for queueing and the post-turn job follow-up.
+PLAN_TURN_TIMEOUT_S = 420.0
 
 
 class SeedError(SystemExit):
@@ -268,6 +274,61 @@ def pick_decisive_date(c: httpx.Client, b0: str, p: str, field: str) -> tuple[st
     )
 
 
+def plan_turn(
+    c: httpx.Client, doc: dict, goal: str, timeout: float = PLAN_TURN_TIMEOUT_S
+) -> dict[str, str]:
+    """Run one plan-mode copilot turn on the manifest's base revision / P run and wait for it.
+
+    Only a ``completed`` turn is recorded: a partial (budget_exhausted), failed or provider-unavailable
+    turn exits non-zero with its real status and error, so the tour never replays an unfinished brief."""
+    ctx = {
+        "pilot_id": doc["pilot_id"],
+        "pilot_version": doc["pilot_version"],
+        "season_id": doc["season_id"],
+        "scenario_revision_id": doc["base"]["revision_id"],
+        "selected_run_id": doc["base"]["runs"]["P"],
+        "view": "plan-season",
+        "language": "en",
+    }
+    sess = call(
+        c, "POST", "/api/v2/copilot/sessions", ok=(201,), json={"context": ctx, "role": "planner"}
+    )
+    acc = call(
+        c,
+        "POST",
+        f"/api/v2/copilot/sessions/{sess['session_id']}/messages",
+        ok=(202,),
+        json={"message": goal, "context": ctx, "mode": "plan"},
+    )
+    tid = acc["turn_id"]
+    print(f"plan turn {tid}: {goal!r}")
+    t0 = time.monotonic()
+    t: dict = {}
+    while time.monotonic() - t0 < timeout:
+        t = call(c, "GET", f"/api/v2/copilot/turns/{tid}")
+        if t["status"] != "running":
+            break
+        time.sleep(2.0)
+    else:
+        raise SeedError(f"plan turn {tid} did not finish in {timeout:.0f} s")
+    if t["status"] != "completed":
+        raise SeedError(f"plan turn {tid} ended {t['status']}: {t.get('error')}")
+    print(f"  completed in {t.get('latency_ms')} ms, {t.get('rounds')} rounds")
+    return {"plan_turn_id": tid, "plan_goal": goal, "plan_computed_at": t["finished_at"]}
+
+
+def add_plan(c: httpx.Client, out: Path, goal: str) -> dict:
+    """--plan-only: add a plan turn to the existing manifest (nothing is re-solved) and rewrite it."""
+    if not out.is_file():
+        raise SeedError(f"no manifest at {out}; run the full seed first")
+    doc = json.loads(out.read_text())
+    DemoManifest.model_validate(doc)
+    doc.update(plan_turn(c, doc, goal))
+    DemoManifest.model_validate(doc)
+    write_atomic(out, doc)
+    return doc
+
+
 def write_atomic(path: Path, doc: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     fd, tmp = tempfile.mkstemp(dir=path.parent, prefix=".session-", suffix=".json")
@@ -285,7 +346,23 @@ def main() -> int:
     ap.add_argument("--base-url", default="http://127.0.0.1:8000")
     ap.add_argument("--out", type=Path, default=ROOT / "data" / "demo" / "session.json")
     ap.add_argument("--time-limit-s", type=float, default=30.0, help="per-solve CP-SAT limit")
+    ap.add_argument(
+        "--plan-goal",
+        help='also run one "Plan my season" copilot turn with this goal and store it in the manifest',
+    )
+    ap.add_argument(
+        "--plan-only",
+        action="store_true",
+        help="with --plan-goal: add the plan turn to the existing manifest without re-solving",
+    )
     args = ap.parse_args()
+    if args.plan_only:
+        if not args.plan_goal:
+            ap.error("--plan-only needs --plan-goal")
+        with httpx.Client(base_url=args.base_url, timeout=120) as c:
+            doc = add_plan(c, args.out, args.plan_goal)
+        print(f"plan turn {doc['plan_turn_id']} added to {args.out}")
+        return 0
 
     timings: dict[str, float] = {}
     t_all = time.monotonic()
@@ -378,39 +455,41 @@ def main() -> int:
         )
         ddate, ddate_reason = pick_decisive_date(c, base_runs["B0"], base_runs["P"], focus)
 
+        doc = {
+            "manifest_version": 1,
+            "created_at": datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z"),
+            "api": {
+                "base_url": args.base_url,
+                "contract_version": health["contract_version"],
+                "versions": health["versions"],
+            },
+            "pilot_id": REQ["pilot_id"],
+            "pilot_version": REQ["pilot_version"],
+            "season_id": REQ["season_id"],
+            "scenario_request": REQ,
+            "scenario_id": sid,
+            "base": {"revision_id": rid, "runs": base_runs},
+            "budget_change": {
+                "revision_id": crid,
+                "parent_revision_id": rid,
+                "changes": {"capital_budget_pkr": budget},
+                "runs": {k: child_runs[k] for k in ("B0", "B1", "P")},
+                "selection_reason": reason,
+                "tried_capital_budgets_pkr": tried,
+            },
+            "analyses": {"frontier": fr["analysis_id"], "stress": st["analysis_id"]},
+            "comparison_id": cmp_id,
+            "focus_field_id": focus,
+            "focus_field_reason": focus_reason,
+            "decisive_date": ddate,
+            "decisive_date_reason": ddate_reason,
+            "run_details": {k: detail(v) for k, v in views.items()},
+            "timings_s": timings,
+            "notes": NOTES,
+        }
+        if args.plan_goal:
+            doc.update(timed("plan_turn", plan_turn, c, doc, args.plan_goal))
     timings["total"] = round(time.monotonic() - t_all, 2)
-    doc = {
-        "manifest_version": 1,
-        "created_at": datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z"),
-        "api": {
-            "base_url": args.base_url,
-            "contract_version": health["contract_version"],
-            "versions": health["versions"],
-        },
-        "pilot_id": REQ["pilot_id"],
-        "pilot_version": REQ["pilot_version"],
-        "season_id": REQ["season_id"],
-        "scenario_request": REQ,
-        "scenario_id": sid,
-        "base": {"revision_id": rid, "runs": base_runs},
-        "budget_change": {
-            "revision_id": crid,
-            "parent_revision_id": rid,
-            "changes": {"capital_budget_pkr": budget},
-            "runs": {k: child_runs[k] for k in ("B0", "B1", "P")},
-            "selection_reason": reason,
-            "tried_capital_budgets_pkr": tried,
-        },
-        "analyses": {"frontier": fr["analysis_id"], "stress": st["analysis_id"]},
-        "comparison_id": cmp_id,
-        "focus_field_id": focus,
-        "focus_field_reason": focus_reason,
-        "decisive_date": ddate,
-        "decisive_date_reason": ddate_reason,
-        "run_details": {k: detail(v) for k, v in views.items()},
-        "timings_s": timings,
-        "notes": NOTES,
-    }
     DemoManifest.model_validate(doc)  # the route must be able to serve what we write
     write_atomic(args.out, doc)
 
