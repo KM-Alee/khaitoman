@@ -9,7 +9,7 @@ import type { JobState, ScenarioRequest } from "@/lib/api/types";
 
 export type ThemePref = "system" | "light" | "dark";
 export type MapMetric = "yield" | "service" | "change" | "group" | "none";
-export type InspectorTab = "field" | "actions" | "evidence" | "copilot";
+export type InspectorTab = "result" | "field" | "evidence" | "actions" | "copilot";
 
 export interface TrackedJob {
   jobId: string;
@@ -74,6 +74,16 @@ interface UIState {
   inspectorOpen: boolean;
   inspectorTab: InspectorTab;
   commandOpen: boolean;
+  /** "Ask AabFlow" assistant slot (docs/UI_SYSTEM.md › Assistant slot). */
+  assistantOpen: boolean;
+  /** Fields an assistant answer (or the tour) asked the map to highlight; null = none. */
+  assistantHighlight: string[] | null;
+  /** The visitor has opened or dismissed the guided tour at least once. */
+  tourSeen: boolean;
+  /** Set by "Re-run live": solve the current draft as soon as the Plan screen is ready. */
+  pendingRun: boolean;
+  /** Incremented to ask the shell to open Plan settings (panel or sheet). */
+  settingsRequest: number;
   hoveredFieldId: string | null;
   hoveredEdgeId: string | null;
   selectedEdgeId: string | null;
@@ -86,7 +96,7 @@ interface UIState {
   runsByRevision: Record<string, Partial<Record<"B0" | "B1" | "P" | "R", string>>>;
   recordRun: (revisionId: string, planKind: string, runId: string) => void;
   set: (p: Partial<UIState>) => void;
-  toggle: (k: "presentation" | "scenarioOpen" | "inspectorOpen" | "showImagery" | "showHdImagery" | "showRawFields" | "showParcels" | "showTerrain" | "orbiting" | "commandOpen") => void;
+  toggle: (k: "presentation" | "scenarioOpen" | "inspectorOpen" | "showImagery" | "showHdImagery" | "showRawFields" | "showParcels" | "showTerrain" | "orbiting" | "commandOpen" | "assistantOpen") => void;
   setDraft: (pilotKey: string, d: ScenarioDraft) => void;
   patchDraft: (pilotKey: string, d: Partial<ScenarioDraft>) => void;
   setActive: (pilotKey: string, a: ActiveScenario | null) => void;
@@ -111,8 +121,13 @@ export const useUI = create<UIState>()(
       areaUnit: "ha",
       scenarioOpen: true,
       inspectorOpen: true,
-      inspectorTab: "field",
+      inspectorTab: "result",
       commandOpen: false,
+      assistantOpen: false,
+      assistantHighlight: null,
+      tourSeen: false,
+      pendingRun: false,
+      settingsRequest: 0,
       hoveredFieldId: null,
       hoveredEdgeId: null,
       selectedEdgeId: null,
@@ -162,6 +177,7 @@ export const useUI = create<UIState>()(
         showParcels: s.showParcels,
         areaUnit: s.areaUnit,
         scenarioOpen: s.scenarioOpen,
+        tourSeen: s.tourSeen,
         drafts: s.drafts,
         active: s.active,
         runsByRevision: s.runsByRevision,

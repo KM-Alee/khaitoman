@@ -15,8 +15,9 @@ export default defineConfig({
   resolve: { alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) } },
   server: {
     port: 5173,
-    // Compose service names used by the Playwright container (e2e → web).
-    allowedHosts: ["localhost", "127.0.0.1", "web"],
+    // Compose service names used by the Playwright container (e2e → web), plus the
+    // `aabui-web` name used to run a worktree's dev server beside the main stack.
+    allowedHosts: ["localhost", "127.0.0.1", "web", "aabui-web"],
     proxy: {
       "/api/v2": apiTarget,
       "/assets": apiTarget,

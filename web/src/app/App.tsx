@@ -9,6 +9,7 @@ import { useDocumentFlags } from "./environment";
 import { HomeRedirect } from "./HomeRedirect";
 import { WorkspaceScreen } from "@/features/workspace/WorkspaceScreen";
 import { SCREENS, type Screen } from "./selection";
+import { TourHost } from "@/features/tour/TourHost";
 
 const CompareScreen = lazy(() => import("@/features/compare/CompareScreen").then((m) => ({ default: m.CompareScreen })));
 const ReplayScreen = lazy(() => import("@/features/compare/ReplayScreen").then((m) => ({ default: m.ReplayScreen })));
@@ -84,6 +85,7 @@ export function App({ client }: { client?: QueryClient }) {
         <BrowserRouter>
           <Flags />
           <AppRoutes />
+          <TourHost />
         </BrowserRouter>
         <ToastRegion />
       </TooltipProvider>

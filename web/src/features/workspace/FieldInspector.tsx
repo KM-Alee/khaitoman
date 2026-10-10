@@ -11,14 +11,15 @@ import { DL, Eyebrow } from "@/components/ui/primitives";
 import { IconButton } from "@/components/ui/Button";
 import { EvidenceById } from "@/features/evidence/EvidenceCard";
 import { cn } from "@/lib/cn";
+import { GROUP_LABEL } from "@/lib/glossary";
 
 const FIELD_METRICS: { ids: string[]; label: string }[] = [
-  { ids: ["yield_kg_ha", "field_yield_kg_ha"], label: "Yield" },
-  { ids: ["production_kg", "field_production_kg"], label: "Production" },
-  { ids: ["field_service_ratio", "service_ratio"], label: "Service ratio" },
-  { ids: ["canal_receipt_m3", "field_canal_receipt_m3"], label: "Canal receipts" },
+  { ids: ["yield_kg_ha", "field_yield_kg_ha"], label: "Harvest per ha" },
+  { ids: ["production_kg", "field_production_kg"], label: "Harvest" },
+  { ids: ["field_service_ratio", "service_ratio"], label: "Fair share received" },
+  { ids: ["canal_receipt_m3", "field_canal_receipt_m3"], label: "Canal water received" },
   { ids: ["groundwater_m3", "field_groundwater_m3"], label: "Groundwater" },
-  { ids: ["gross_application_m3", "field_application_m3"], label: "Field application" },
+  { ids: ["gross_application_m3", "field_application_m3"], label: "Water applied" },
 ];
 
 export function FieldInspector() {
@@ -50,8 +51,8 @@ function FieldList({ fields }: { fields: ReturnType<typeof usePilotData>["sorted
   return (
     <div className="flex h-full flex-col">
       <div className="px-4 pb-2 pt-4">
-        <Eyebrow>Reviewed fields</Eyebrow>
-        <p className="mt-1 text-[12px] text-ink-secondary">Select on the map, use <kbd className="font-sans">[</kbd> <kbd className="font-sans">]</kbd>, or pick from the list.</p>
+        <Eyebrow>{fields.length ? `${fields.length} reviewed fields` : "Reviewed fields"}</Eyebrow>
+        <p className="mt-1 text-[12.5px] text-ink-secondary">Click a field on the map, step with <kbd className="font-sans">[</kbd> <kbd className="font-sans">]</kbd>, or pick one here.</p>
         <label className="relative mt-3 block">
           <span className="sr-only">Search fields</span>
           <Search size={14} className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-ink-tertiary" aria-hidden />
@@ -60,7 +61,7 @@ function FieldList({ fields }: { fields: ReturnType<typeof usePilotData>["sorted
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Search fields"
-            className="h-9 w-full rounded-[10px] border border-border-strong/60 bg-surface pl-8 pr-3 text-[13px] text-ink placeholder:text-ink-tertiary"
+            className="h-10 w-full rounded-[12px] border border-border-strong/55 bg-surface-raised pl-8 pr-3 text-[13px] text-ink shadow-1 placeholder:text-ink-tertiary"
           />
         </label>
       </div>
@@ -83,7 +84,7 @@ function FieldList({ fields }: { fields: ReturnType<typeof usePilotData>["sorted
                 <span className={cn("h-2.5 w-2.5 shrink-0 rounded-full", f.group === "head" ? "bg-water" : f.group === "middle" ? "bg-vegetation" : "bg-warning")} aria-hidden />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-[13px] font-medium text-ink">{f.label}</span>
-                  <span className="block text-[11px] capitalize text-ink-tertiary">{f.group ?? "group unknown"}</span>
+                  <span className="block text-[11.5px] text-ink-tertiary">{f.group ? GROUP_LABEL[f.group] ?? f.group : "group unknown"}</span>
                 </span>
                 {f.areaM2 ? <span className="num text-[12px] text-ink-secondary">{formatArea(f.areaM2, areaUnit)}</span> : null}
               </button>
@@ -119,10 +120,10 @@ function FieldDetail({ fieldId }: { fieldId: string }) {
         </IconButton>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <h2 className="truncate text-[18px] font-semibold tracking-[-0.01em] text-ink present-lg" data-testid="field-title">
+            <h2 className="display truncate text-[22px] leading-tight text-ink present-lg" data-testid="field-title">
               {entry?.label ?? f?.label ?? fieldId}
             </h2>
-            {entry?.group ? <Chip size="sm" tone={entry.group === "tail" ? "warning" : entry.group === "head" ? "water" : "vegetation"}>{titleCase(entry.group)}</Chip> : null}
+            {entry?.group ? <Chip size="sm" tone={entry.group === "tail" ? "wheat" : entry.group === "head" ? "water" : "vegetation"}>{GROUP_LABEL[entry.group] ?? titleCase(entry.group)}</Chip> : null}
           </div>
           <div className="num font-mono text-[11px] text-ink-tertiary">{fieldId}</div>
         </div>
@@ -151,7 +152,7 @@ function FieldDetail({ fieldId }: { fieldId: string }) {
 
       <section aria-label="Water route">
         <Eyebrow className="mb-2 flex items-center gap-1.5">
-          <Route size={12} aria-hidden /> Declared route
+          <Route size={12} aria-hidden /> How water reaches it (declared route)
         </Eyebrow>
         {route.length ? (
           <ol className="relative flex flex-col gap-1.5 pl-4 text-[12px]">
@@ -176,7 +177,7 @@ function FieldDetail({ fieldId }: { fieldId: string }) {
       </section>
 
       <section aria-label="Roster windows">
-        <Eyebrow className="mb-2">Receipt windows</Eyebrow>
+        <Eyebrow className="mb-2">Canal turns (receipt windows)</Eyebrow>
         {roster.length ? (
           <ul className="flex flex-col gap-1">
             {roster.slice(0, 6).map((w) => (
@@ -201,7 +202,7 @@ function FieldDetail({ fieldId }: { fieldId: string }) {
 
       {assets.length ? (
         <section aria-label="Accessible assets">
-          <Eyebrow className="mb-2">Assets</Eyebrow>
+          <Eyebrow className="mb-2">Ponds and pumps it can use</Eyebrow>
           <ul className="flex flex-col gap-1.5">
             {assets.map((a) => (
               <li key={a.asset_id} className="flex items-center gap-2 rounded-[10px] border border-border px-2.5 py-2 text-[12px]">
@@ -225,7 +226,7 @@ function FieldDetail({ fieldId }: { fieldId: string }) {
       {evidence.length ? (
         <section aria-label="Field evidence">
           <Eyebrow className="mb-2 flex items-center gap-1.5">
-            <MapPin size={12} aria-hidden /> Evidence
+            <MapPin size={12} aria-hidden /> Sources
           </Eyebrow>
           <div className="flex flex-col gap-2">
             {evidence.slice(0, 3).map((id) => (
@@ -262,7 +263,7 @@ function FieldResults({ fieldId, runIds }: { fieldId: string; runIds: string[] }
     return <p className="rounded-[12px] bg-surface-muted p-3 text-[12px] text-ink-secondary">The selected run reports no per-field metrics for this field.</p>;
   return (
     <section aria-label="Field results">
-      <Eyebrow className="mb-2">Modeled results</Eyebrow>
+      <Eyebrow className="mb-2">Modeled results by plan</Eyebrow>
       <table className="w-full text-[12px]">
         <thead>
           <tr className="text-left text-ink-tertiary">

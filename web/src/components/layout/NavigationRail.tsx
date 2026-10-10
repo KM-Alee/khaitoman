@@ -1,109 +1,63 @@
+/**
+ * Primary navigation: the five journey steps (app/journey.tsx). Desktop shows them as a
+ * numbered path in the top bar; mobile uses a bottom bar. Labels are plain; the PRD names
+ * stay in tooltips and the command menu.
+ */
 import { NavLink } from "react-router";
-import {
-  BookOpenCheck,
-  GitCompareArrows,
-  Leaf,
-  Map as MapIcon,
-  MessageSquareText,
-  PlusCircle,
-  Telescope,
-} from "lucide-react";
-import type { ReactNode } from "react";
 import { useSelection, type Screen } from "@/app/selection";
-import { useUI } from "@/app/store";
+import { JOURNEY } from "@/app/journey";
 import { cn } from "@/lib/cn";
 import { Tooltip } from "@/components/ui/primitives";
+
+export { BrandMark } from "@/components/ui/Art";
 
 export interface NavItem {
   screen: Screen;
   also?: Screen[];
   label: string;
-  icon: ReactNode;
+  icon: React.ReactNode;
   shortcut: string;
 }
 
-export const NAV: NavItem[] = [
-  { screen: "workspace", label: "Workspace", icon: <MapIcon size={20} />, shortcut: "1" },
-  { screen: "compare", also: ["replay"], label: "Compare", icon: <GitCompareArrows size={20} />, shortcut: "2" },
-  { screen: "explore", label: "Explore", icon: <Telescope size={20} />, shortcut: "3" },
-  { screen: "impact", also: ["report"], label: "Impact", icon: <Leaf size={20} />, shortcut: "4" },
-  { screen: "evidence", label: "Evidence", icon: <BookOpenCheck size={20} />, shortcut: "5" },
-];
+export const NAV: NavItem[] = JOURNEY.map((j) => ({ screen: j.screen, also: j.also, label: j.label, icon: j.icon, shortcut: j.shortcut }));
 
-export function BrandMark({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 32 32" className={className} aria-hidden>
-      <defs>
-        <linearGradient id="aab-g" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#0fa3b1" />
-          <stop offset="1" stopColor="#075e68" />
-        </linearGradient>
-      </defs>
-      <rect width="32" height="32" rx="9" fill="url(#aab-g)" />
-      <path d="M6 20.5c3.2 0 3.2-2.4 6.4-2.4s3.2 2.4 6.4 2.4 3.2-2.4 6.4-2.4" fill="none" stroke="#e8fbfc" strokeWidth="2.2" strokeLinecap="round" />
-      <path d="M6 25c3.2 0 3.2-2.4 6.4-2.4s3.2 2.4 6.4 2.4 3.2-2.4 6.4-2.4" fill="none" stroke="#e8fbfc" strokeOpacity=".55" strokeWidth="2.2" strokeLinecap="round" />
-      <path d="M16 6.5c2.6 3.4 4 5.8 4 7.5a4 4 0 0 1-8 0c0-1.7 1.4-4.1 4-7.5Z" fill="#e8fbfc" />
-    </svg>
-  );
-}
-
-export function NavigationRail() {
+export function JourneyNav({ compact, className }: { compact?: boolean; className?: string }) {
   const sel = useSelection();
-  const inspectorTab = useUI((s) => s.inspectorTab);
-  const set = useUI((s) => s.set);
+  const cur = JOURNEY.findIndex((j) => j.screen === sel.screen || j.also?.includes(sel.screen));
   return (
-    <nav aria-label="Primary" className="no-print flex h-full w-[var(--rail-w)] shrink-0 flex-col items-center border-r border-border bg-surface py-3">
-      <NavLink to="/" aria-label="AabFlow home" className="mb-4 rounded-[10px]">
-        <BrandMark className="h-9 w-9" />
-      </NavLink>
-      <ul className="flex flex-col items-center gap-1">
-        {NAV.map((n) => {
-          const active = sel.screen === n.screen || n.also?.includes(sel.screen);
+    <nav aria-label="Primary" className={cn("no-print", className)} data-tour="journey-nav">
+      <ol className="flex items-center gap-0.5 rounded-[14px] border border-border/80 bg-surface-muted/70 p-1">
+        {JOURNEY.map((j, i) => {
+          const active = i === cur;
           return (
-            <li key={n.screen}>
-              <Tooltip content={`${n.label} · ${n.shortcut}`} side="right">
+            <li key={j.screen} className="flex items-center">
+              <Tooltip content={`${j.question} · ${j.precise} · ${j.shortcut}`} side="bottom">
                 <NavLink
-                  to={sel.hrefFor(n.screen)}
+                  to={sel.hrefFor(j.screen)}
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "group relative flex h-11 w-11 flex-col items-center justify-center gap-0.5 rounded-[12px] text-ink-secondary transition-colors hover:bg-surface-muted hover:text-ink",
-                    active && "bg-water-soft text-water-deep hover:bg-water-soft hover:text-water-deep",
+                    "group relative flex h-9 items-center gap-2 rounded-[10px] text-[13.5px] font-medium text-ink-secondary transition-[background-color,color,box-shadow] duration-150 hover:bg-surface hover:text-ink",
+                    compact ? "px-2.5" : "px-3",
+                    active && "bg-surface text-ink shadow-2 hover:bg-surface",
                   )}
+                  data-testid={`nav-${j.screen}`}
                 >
-                  {active ? <span className="absolute -left-2 top-2.5 h-7 w-[3px] rounded-r-full bg-water" aria-hidden /> : null}
-                  {n.icon}
-                  <span className="sr-only">{n.label}</span>
+                  <span
+                    className={cn(
+                      "num grid h-5 w-5 shrink-0 place-items-center rounded-full text-[11px] font-bold transition-colors",
+                      active ? "bg-water text-on-water" : i < cur ? "bg-water-soft text-water-deep" : "bg-surface-sunken text-ink-tertiary",
+                    )}
+                    aria-hidden
+                  >
+                    {j.step}
+                  </span>
+                  <span className={cn(active && "font-semibold")}>{j.label}</span>
                 </NavLink>
               </Tooltip>
             </li>
           );
         })}
-      </ul>
-      <div className="mt-auto flex flex-col items-center gap-1">
-        <Tooltip content="Add region (onboarding)" side="right">
-          <NavLink
-            to="/onboarding"
-            className="flex h-12 w-12 flex-col items-center justify-center gap-0.5 rounded-[12px] text-ink-secondary hover:bg-surface-muted hover:text-ink"
-          >
-            <PlusCircle size={20} />
-            <span className="sr-only">Add region</span>
-          </NavLink>
-        </Tooltip>
-        <Tooltip content="Copilot" side="right">
-          <button
-            type="button"
-            aria-pressed={inspectorTab === "copilot"}
-            onClick={() => set({ inspectorTab: inspectorTab === "copilot" ? "field" : "copilot", inspectorOpen: true })}
-            className={cn(
-              "flex h-12 w-12 flex-col items-center justify-center gap-0.5 rounded-[12px] text-ink-secondary hover:bg-surface-muted hover:text-ink",
-              inspectorTab === "copilot" && "bg-water-soft text-water-deep",
-            )}
-          >
-            <MessageSquareText size={20} />
-            <span className="sr-only">Copilot</span>
-          </button>
-        </Tooltip>
-      </div>
+      </ol>
     </nav>
   );
 }
@@ -112,18 +66,19 @@ export function NavigationRail() {
 export function BottomNav() {
   const sel = useSelection();
   return (
-    <nav aria-label="Primary" className="no-print grid h-16 shrink-0 grid-cols-5 border-t border-border bg-surface pb-[env(safe-area-inset-bottom)]">
-      {NAV.map((n) => {
-        const active = sel.screen === n.screen || n.also?.includes(sel.screen);
+    <nav aria-label="Primary" className="no-print grid h-16 shrink-0 grid-cols-5 border-t border-border bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur">
+      {JOURNEY.map((j) => {
+        const active = sel.screen === j.screen || j.also?.includes(sel.screen);
         return (
           <NavLink
-            key={n.screen}
-            to={sel.hrefFor(n.screen)}
+            key={j.screen}
+            to={sel.hrefFor(j.screen)}
             aria-current={active ? "page" : undefined}
-            className={cn("flex flex-col items-center justify-center gap-1 text-ink-secondary", active && "text-water-deep")}
+            className={cn("relative flex flex-col items-center justify-center gap-1 text-ink-secondary transition-colors", active && "text-water-deep")}
           >
-            {n.icon}
-            <span className="text-[12px] font-medium leading-none">{n.label}</span>
+            {active ? <span className="absolute top-0 h-[3px] w-8 rounded-b-full bg-water" aria-hidden /> : null}
+            {j.icon}
+            <span className={cn("text-[11.5px] leading-none", active ? "font-semibold" : "font-medium")}>{j.label}</span>
           </NavLink>
         );
       })}

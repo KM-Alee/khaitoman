@@ -78,6 +78,9 @@ export interface PilotSummary {
   state?: PackageState;
   review_flags?: ReviewFlags;
   aoi_bbox?: [number, number, number, number];
+  aoi_area_m2?: number;
+  field_count?: number;
+  imagery?: ImageryRef[];
   versions?: string[];
 }
 
