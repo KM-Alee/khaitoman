@@ -3,7 +3,7 @@
 .NOTPARALLEL:
 .PHONY: help setup build deps up down logs shell lock doctor provider-check test lint science-smoke \
         contracts web-test web-build ui-checks demo vision-weights vision-shell \
-        water-tests pilot-a pilot-b candidates analyses-evidence train-surrogate library-adequacy domain-tests core-acceptance copilot-evals release-check
+        water-tests pilot-a pilot-b candidates analyses-evidence train-surrogate library-adequacy domain-tests core-acceptance evidence-pack copilot-evals release-check
 
 DC   := docker compose
 ifeq ($(GPU),1)
@@ -108,6 +108,9 @@ analyses-evidence: ## AT09/AT10: one six-setting frontier and nine-cell stress t
 
 core-acceptance: ## v1: run each existing AT test once; fail on failures; list AT ids with no test. Not G-CORE.
 	$(API) python scripts/core_acceptance.py
+
+evidence-pack:    ## PRD §13.3 proof package -> evidence/pack/<UTC ts>/ (manifest, capability report); reads only existing artifacts
+	$(API) python scripts/build_evidence_pack.py
 
 copilot-evals release-check:
 	@echo "make $@: not implemented yet" >&2; exit 1
