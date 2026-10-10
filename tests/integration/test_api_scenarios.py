@@ -136,12 +136,39 @@ def test_semantic_hash_ignores_set_order_and_revisions_are_immutable(client):
     assert len(sc["revisions"]) == 2
 
 
+def _request_of(client, run):
+    rid = run["run"]["scenario_revision_id"]
+    body = client.get(f"/api/v2/scenario-revisions/{rid}")
+    assert body.status_code == 200, body.text
+    return body.json()["revision"]["request"]
+
+
 def test_at05_zero_capital_no_new_assets(client):
+    """AT05: zero capital produces no new assets, and a competent no-capital plan is available."""
     rid = create(client, capital_budget_pkr=0)["revision"]["revision"]["scenario_revision_id"]
     p = solve(client, rid, "P")
+    b0 = solve(client, rid, "B0")
+    b1 = solve(client, rid, "B1")
     assert p["run"]["selected_intervention_instance_ids"] == []
     assert metric(p, "capital_commitment_pkr")["value"] == 0
     assert metric(p, "new_instances_count")["value"] == 0
+    assert b1["run"]["outcome"] == "plan"
+    assert b1["run"]["physical_validation"]["status"] == "passed"
+    assert b1["run"]["solver_status"] in {"OPTIMAL", "FEASIBLE"}
+    assert b1["run"]["selected_intervention_instance_ids"] == []
+    assert metric(b1, "capital_commitment_pkr")["value"] == 0
+    assert metric(b1, "production_kg")["value"] > metric(b0, "production_kg")["value"]
+    compared = client.post(
+        "/api/v2/comparisons",
+        json={"run_ids": [b1["run"]["run_id"], p["run"]["run_id"]]},
+    )
+    assert compared.status_code == 201, compared.text
+    body = compared.json()
+    assert body["compatible"] is True
+    assert {row["run_id"] for row in body["plans"]} == {
+        b1["run"]["run_id"],
+        p["run"]["run_id"],
+    }
 
 
 def test_at06_binding_change_changes_plan_and_nonbinding_does_not(client):
@@ -153,6 +180,9 @@ def test_at06_binding_change_changes_plan_and_nonbinding_does_not(client):
         json={"parent_revision_id": rid, "changes": {"capital_budget_pkr": 100000}},
     ).json()
     low_run = solve(client, low["revision"]["scenario_revision_id"], "P")
+    assert low_run["run"]["run_id"] != base["run"]["run_id"]
+    assert low_run["run"]["outcome"] == "plan"
+    assert low_run["run"]["solver_status"] in {"OPTIMAL", "FEASIBLE"}
     assert (
         low_run["run"]["selected_candidate_policy_ids"]
         != base["run"]["selected_candidate_policy_ids"]
@@ -175,7 +205,9 @@ def test_at06_binding_change_changes_plan_and_nonbinding_does_not(client):
         json={"parent_revision_id": rid, "changes": {"uniform_reduction_fraction": 0.3}},
     ).json()
     d_run = solve(client, deficit["revision"]["scenario_revision_id"], "P")
+    assert d_run["run"]["run_id"] != base["run"]["run_id"]
     assert d_run["run"]["outcome"] == "plan"
+    assert d_run["run"]["solver_status"] in {"OPTIMAL", "FEASIBLE"}
     assert metric(d_run, "production_kg")["value"] < metric(base, "production_kg")["value"]
     for f in d_run["selection"]["fields"].values():
         assert f["receipt_volume_m3"] <= 3 * sx.WINDOW_M3 * 0.7 + 1e-6
@@ -196,6 +228,13 @@ def test_at07_coverage_and_finite_infeasibility(client):
     cov = client.get(f"/api/v2/runs/{r['run_id']}/coverage").json()
     assert cov["proof_scope"] == "finite_candidate_library" and len(cov["fields"]) == 4
     assert all(c["library_candidates"] > 0 for c in cov["fields"])
+    assert "not evidence" in cov["note"] and "physical impossibility" in cov["note"]
+    explained = client.get(f"/api/v2/runs/{r['run_id']}/explanations").json()
+    statement = explained["why_no_solution"]["statement"]
+    assert explained["proof_scope"] == "finite_candidate_library"
+    assert "finite candidate library" in statement
+    assert "not" in statement and "proof of physical impossibility" in statement
+    assert r["infeasibility_kind"] != "bound_contradiction"
     ok = solve(
         client,
         create(client, minimum_service_ratio=0.8, service_group="tail")["revision"]["revision"][
@@ -204,13 +243,63 @@ def test_at07_coverage_and_finite_infeasibility(client):
         "P",
     )
     assert ok["run"]["solver_status"] == "OPTIMAL"
+    assert ok["run"]["proof_scope"] == "finite_candidate_library"
+    ok_cov = client.get(f"/api/v2/runs/{ok['run']['run_id']}/coverage").json()
+    assert ok_cov["proof_scope"] == "finite_candidate_library"
     assert metric(ok, "tail_min_service_ratio")["value"] >= 0.8 - 1e-9
     assert (
         ok["run"]["shared_configuration_id"] == sx.CFG_REP
     )  # only the repair reaches the tail floor
 
 
+def test_at08_matched_share_conditions_nonmatched_labelled(client):
+    """AT08: matched comparisons share weather, crop/input state, and budget semantics."""
+    created = create(client)
+    rid = created["revision"]["revision"]["scenario_revision_id"]
+    b1 = solve(client, rid, "B1")
+    integrated = solve(client, rid, "P")
+    matched = client.post(
+        "/api/v2/comparisons",
+        json={"run_ids": [b1["run"]["run_id"], integrated["run"]["run_id"]]},
+    )
+    assert matched.status_code == 201, matched.text
+    body = matched.json()
+    assert body["compatible"] is True
+    assert body["labels"]["comparison"] == "matched comparison"
+    shared = {row["condition"]: row["value"] for row in body["certificate"]["shared"]}
+    assert shared["season_id"] == REQ["season_id"]
+    assert shared["initial_state"] == "library-declared initial soil and pond state"
+    assert any("typical" in state for state in shared["states"])
+    assert not any(row["kind"] == "non_causal" for row in body["certificate"]["differences"])
+    left, right = _request_of(client, b1), _request_of(client, integrated)
+    for key in (
+        "weather_scenario_ids",
+        "season_id",
+        "supply_profile_id",
+        "capital_budget_pkr",
+        "operating_budget_pkr",
+    ):
+        assert left[key] == right[key]
+    dry = create(client, weather_scenario_ids=["dry"])
+    dry_run = solve(client, dry["revision"]["revision"]["scenario_revision_id"], "P")
+    labelled = client.post(
+        "/api/v2/comparisons",
+        json={"run_ids": [integrated["run"]["run_id"], dry_run["run"]["run_id"]]},
+    )
+    assert labelled.status_code == 201, labelled.text
+    other = labelled.json()
+    assert other["compatible"] is False
+    assert other["labels"]["comparison"] == "non-matched comparison: differences are not causal"
+    assert any(
+        row["condition"] == "states" and row["kind"] == "non_causal"
+        for row in other["certificate"]["differences"]
+    )
+    assert other["deltas"]
+    assert all(row["causal"] is False for row in other["deltas"])
+
+
 def test_at12_shared_cost_once_pond_land_pumping_budget(client):
+    """AT12: shared cost is charged once, pond land is removed once, pumping is on the operating budget."""
     p = solve(client, create(client)["revision"]["revision"]["scenario_revision_id"], "P")
     insts = p["run"]["selected_intervention_instance_ids"]
     assert fx.REPAIR in insts
@@ -224,7 +313,12 @@ def test_at12_shared_cost_once_pond_land_pumping_budget(client):
         "P",
     )
     assert fx.POND_S in forced["run"]["selected_intervention_instance_ids"]
-    assert metric(forced, "field_cropped_area_ha", "fixture-a:f3")["value"] == pytest.approx(0.85)
+    footprint_ha = 500 / 10000
+    gross_ha = fx.AREAS_HA["fixture-a:f3"]
+    cropped = metric(forced, "field_cropped_area_ha", "fixture-a:f3")["value"]
+    assert cropped == pytest.approx(gross_ha - footprint_ha)
+    assert cropped == pytest.approx(0.85)
+    assert abs(cropped - (gross_ha - 2 * footprint_ha)) > 1e-4
     nopump = solve(
         client,
         create(client, operating_budget_pkr=0)["revision"]["revision"]["scenario_revision_id"],
@@ -233,11 +327,10 @@ def test_at12_shared_cost_once_pond_land_pumping_budget(client):
     assert all(f["pump_volume_m3"] == 0 for f in nopump["selection"]["fields"].values())
     assert metric(nopump, "operating_cost_pkr")["value"] == 0
     pumped = solve(client, create(client)["revision"]["revision"]["scenario_revision_id"], "B1")
-    assert (
-        metric(pumped, "operating_cost_pkr")["value"]
-        == metric(pumped, "pumping_cost_pkr")["value"]
-        > 0
-    )
+    pumping = metric(pumped, "pumping_cost_pkr")["value"]
+    operating = metric(pumped, "operating_cost_pkr")["value"]
+    assert operating == pumping > 0
+    assert operating <= REQ["operating_budget_pkr"]
 
 
 def test_groundwater_permission_and_blocked_edge(client):
