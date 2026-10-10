@@ -1,0 +1,67 @@
+{
+  "pilot_id": "pilot-b",
+  "pilot_version": "reviewed-v2",
+  "reused_as_current": false,
+  "libraries": [
+    {
+      "season_id": "cotton-kharif-2027",
+      "candidate_library_hash": "c9d3a31f99732fcc2fdc917aed7cea085d3452dbbed04f43ca95253705a8791e",
+      "library_pilot_version": "reviewed-v1",
+      "published_pilot_version": "reviewed-v2",
+      "status": "flagged_incompatible",
+      "current": false,
+      "has_baseline": true,
+      "has_candidates": true
+    },
+    {
+      "season_id": "wheat-rabi-2024-25",
+      "candidate_library_hash": "f3595e1f91bc9ff210e6f058201512c611b7b05f28a76f12581fde466ccec974",
+      "library_pilot_version": "reviewed-v1",
+      "published_pilot_version": "reviewed-v2",
+      "status": "flagged_incompatible",
+      "current": false,
+      "has_baseline": true,
+      "has_candidates": true
+    },
+    {
+      "season_id": "wheat-rabi-2026-27",
+      "candidate_library_hash": "7fe55c700d29fb9f2c270ad887ea25697f34d65a03ff8285cb41564d36bce1bd",
+      "library_pilot_version": "reviewed-v1",
+      "published_pilot_version": "reviewed-v2",
+      "status": "flagged_incompatible",
+      "current": false,
+      "has_baseline": true,
+      "has_candidates": true
+    },
+    {
+      "season_id": "wheat-rabi-2027-28",
+      "candidate_library_hash": "f68eedb1f814f8ce0b75d1e641c2a8b3af3d4b00f76ea29cfb81e27a126e5997",
+      "library_pilot_version": "reviewed-v1",
+      "published_pilot_version": "reviewed-v2",
+      "status": "flagged_incompatible",
+      "current": false,
+      "has_baseline": true,
+      "has_candidates": true
+    }
+  ],
+  "baseline": {
+    "ready": false,
+    "reason": "older libraries are flagged and are not the current baseline"
+  },
+  "candidates": {
+    "ready": false,
+    "reason": "older libraries are flagged and are not the current candidate library"
+  },
+  "jobs": [
+    {
+      "operation": "onboarding.baseline",
+      "ready": false,
+      "reason": "older libraries are flagged and are not the current baseline"
+    },
+    {
+      "operation": "onboarding.candidates",
+      "ready": false,
+      "reason": "older libraries are flagged and are not the current candidate library"
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+[
+  {
+    "asset_id": "pilot-b:asset-pond-existing",
+    "kind": "pond",
+    "existing": true,
+    "field_ids": [
+      "pilot-b:field-002"
+    ],
+    "node_id": "pilot-b:node-wc1-middle",
+    "commissioned_at": "2019-06-01",
+    "usable_capacity_m3": 3045.0,
+    "surface_area_m2": 1522.5,
+    "footprint_m2": 2055.38,
+    "initial_inventory_m3": 913.5,
+    "max_fill_m3_day": 3045.0,
+    "max_release_m3_day": 1296.0,
+    "seepage_m3_day": 6.09,
+    "k_evap": 1.0,
+    "rain_capture_fraction": 1.0,
+    "max_rate_m3_h": null,
+    "seasonal_cap_m3": null,
+    "cost_per_m3_pkr": null,
+    "head_m": null,
+    "efficiency": null,
+    "quality_status": "unknown",
+    "annual_upkeep_pkr": 15000,
+    "evidence_ids": [
+      "asm:existing-assets",
+      "asm:pond-seepage",
+      "asm:pond-kevap",
+      "asm:pond-upkeep"
+    ]
+  },
+  {
+    "asset_id": "pilot-b:asset-pump-existing",
+    "kind": "pump",
+    "existing": true,
+    "field_ids": [
+      "pilot-b:field-002",
+      "pilot-b:field-005",
+      "pilot-b:field-006",
+      "pilot-b:field-009",
+      "pilot-b:field-010",
+      "pilot-b:field-011",
+      "pilot-b:field-012",
+      "pilot-b:field-014",
+      "pilot-b:field-015",
+      "pilot-b:field-032"
+    ],
+    "node_id": "pilot-b:node-wc1-tail",
+    "commissioned_at": "2015-03-01",
+    "usable_capacity_m3": null,
+    "surface_area_m2": null,
+    "footprint_m2": null,
+    "initial_inventory_m3": 0.0,
+    "max_fill_m3_day": null,
+    "max_release_m3_day": null,
+    "seepage_m3_day": 0.0,
+    "k_evap": 1.0,
+    "rain_capture_fraction": 1.0,
+    "max_rate_m3_h": 100.0,
+    "seasonal_cap_m3": 40000.0,
+    "cost_per_m3_pkr": "8.50",
+    "head_m": 20.0,
+    "efficiency": 0.45,
+    "quality_status": "unknown",
+    "annual_upkeep_pkr": 25000,
+    "evidence_ids": [
+      "asm:existing-assets",
+      "asm:pump-rate",
+      "asm:pump-cost",
+      "asm:pump-cap",
+      "asm:pump-head",
+      "asm:pump-eff"
+    ]
+  }
+]

@@ -1,0 +1,273 @@
+{
+  "generated_at": "2026-10-10T11:40:36Z",
+  "gates": [
+    "docs_checked",
+    "asset_identified",
+    "downloaded",
+    "checksum_verified",
+    "parsed",
+    "geographically_reviewed",
+    "runtime_validated"
+  ],
+  "resources": {
+    "sentinel2": {
+      "docs_checked": {
+        "result": "passed",
+        "at": "2026-10-10T00:39:30Z",
+        "detail": "Earth Search STAC v1 collection sentinel-2-l2a"
+      },
+      "asset_identified": {
+        "result": "passed",
+        "at": "2026-10-10T00:39:30Z",
+        "detail": "asset keys resolved from item metadata: blue, green, nir, red, scl"
+      },
+      "downloaded": {
+        "result": "passed",
+        "at": "2026-10-10T00:39:30Z",
+        "detail": "bounded COG windows (red, green, blue, nir, scl)"
+      },
+      "checksum_verified": {
+        "result": "passed",
+        "at": "2026-10-10T11:40:36Z",
+        "detail": "bundle sha256 verified on import"
+      },
+      "parsed": {
+        "result": "passed",
+        "at": "2026-10-10T11:40:36Z",
+        "detail": "rasterio windows on native 10 m grid"
+      },
+      "geographically_reviewed": {
+        "result": "passed",
+        "at": "2026-10-10T11:40:36Z",
+        "detail": "AOI valid fraction S2C_43RBQ_20250223_0_L2A=1.000, S2B_43RBP_20241210_0_L2A=1.000; OSM canals overlaid on the display image (review_overlay.png); positional accuracy of the OSM lines not independently confirmed"
+      },
+      "runtime_validated": {
+        "result": "passed",
+        "at": "2026-10-10T11:40:36Z",
+        "detail": "display image, NDVI and Delineate input generated"
+      }
+    },
+    "osm_overpass": {
+      "docs_checked": {
+        "result": "passed",
+        "at": "2026-10-10T00:39:37Z",
+        "detail": "Overpass API, waterway=canal|ditch|drain"
+      },
+      "asset_identified": {
+        "result": "passed",
+        "at": "2026-10-10T00:39:37Z",
+        "detail": "bounded bbox query text stored"
+      },
+      "downloaded": {
+        "result": "passed",
+        "at": "2026-10-10T00:39:37Z",
+        "detail": "9 ways"
+      },
+      "checksum_verified": {
+        "result": "passed",
+        "at": "2026-10-10T11:40:36Z",
+        "detail": "sha256 3df11e7c763149585ad5c324033b1ea39fdfa185ee2b5704aaf41852ecbd73d0"
+      },
+      "parsed": {
+        "result": "passed",
+        "at": "2026-10-10T11:40:36Z",
+        "detail": "ids osm:way/<id>, tags preserved"
+      },
+      "geographically_reviewed": {
+        "result": "passed",
+        "at": "2026-10-10T11:40:36Z",
+        "detail": "overlaid on the Sentinel-2 display image"
+      },
+      "runtime_validated": {
+        "result": "passed",
+        "at": "2026-10-10T11:40:36Z",
+        "detail": "parent canal anchors the declared graph"
+      }
+    },
+    "grain": {
+      "docs_checked": {
+        "result": "passed",
+        "at": "2026-10-10T00:37:25Z",
+        "detail": "Zenodo record 16786488 listing read"
+      },
+      "asset_identified": {
+        "result": "passed",
+        "at": "2026-10-10T00:37:25Z",
+        "detail": "GRAIN_v.1.0/GeoParquet/pakistan_GRAIN_v.1.0.parquet"
+      },
+      "downloaded": {
+        "result": "passed",
+        "at": "2026-10-10T00:37:25Z",
+        "detail": "Pakistan GeoParquet member via HTTP range"
+      },
+      "checksum_verified": {
+        "result": "passed",
+        "at": "2026-10-10T00:37:25Z",
+        "detail": "member CRC-32 e969780d; archive MD5 not verifiable from a partial read"
+      },
+      "parsed": {
+        "result": "passed",
+        "at": "2026-10-10T11:40:36Z",
+        "detail": "13 features in AOI window"
+      },
+      "geographically_reviewed": {
+        "result": "passed",
+        "at": "2026-10-10T11:40:36Z",
+        "detail": "GRAIN features in the AOI window"
+      },
+      "runtime_validated": {
+        "result": "not_applicable",
+        "at": "2026-10-10T11:40:36Z",
+        "detail": "OSM features anchor the graph"
+      }
+    },
+    "open_meteo": {
+      "docs_checked": {
+        "result": "passed",
+        "at": "2026-10-10T00:39:39Z",
+        "detail": "historical archive API, timezone Asia/Karachi"
+      },
+      "asset_identified": {
+        "result": "passed",
+        "at": "2026-10-10T00:39:39Z",
+        "detail": "model era5_seamless"
+      },
+      "downloaded": {
+        "result": "passed",
+        "at": "2026-10-10T00:39:39Z",
+        "detail": "2014-01-01..2025-12-31"
+      },
+      "checksum_verified": {
+        "result": "passed",
+        "at": "2026-10-10T11:40:36Z",
+        "detail": "sha256 c49501f2132cc2ae4389e5af2646352d3771d7e5abf3d572f1defc5cb4d98b37"
+      },
+      "parsed": {
+        "result": "passed",
+        "at": "2026-10-10T11:40:36Z",
+        "detail": "4383 days, 12 complete years"
+      },
+      "geographically_reviewed": {
+        "result": "passed",
+        "at": "2026-10-10T11:40:36Z",
+        "detail": "returned grid point [30.700005, 72.2]"
+      },
+      "runtime_validated": {
+        "result": "passed",
+        "at": "2026-10-10T11:40:36Z",
+        "detail": "T2.5 asserts passed; no missing days"
+      }
+    },
+    "copernicus_dem": {
+      "docs_checked": {
+        "result": "passed",
+        "at": "2026-10-10T00:39:41Z",
+        "detail": "AWS open data GLO-30 COG"
+      },
+      "asset_identified": {
+        "result": "passed",
+        "at": "2026-10-10T00:39:41Z",
+        "detail": "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N30_00_E072_00_DEM/Copernicus_DSM_COG_10_N30_00_E072_00_DEM.tif"
+      },
+      "downloaded": {
+        "result": "passed",
+        "at": "2026-10-10T00:39:41Z",
+        "detail": "AOI window"
+      },
+      "checksum_verified": {
+        "result": "passed",
+        "at": "2026-10-10T11:40:36Z",
+        "detail": "sha256 ef822fdcc1c133b27e9a1d502ed1abdc1e693267e27e3512ce16d5802418759b"
+      },
+      "parsed": {
+        "result": "passed",
+        "at": "2026-10-10T11:40:36Z",
+        "detail": "137.2-149.9 m"
+      },
+      "geographically_reviewed": {
+        "result": "not_applicable",
+        "at": "2026-10-10T11:40:36Z",
+        "detail": "display context only"
+      },
+      "runtime_validated": {
+        "result": "passed",
+        "at": "2026-10-10T11:40:36Z",
+        "detail": "Terrarium PNG encoded and round-trip tested"
+      }
+    },
+    "delineate_anything": {
+      "docs_checked": {
+        "result": "passed",
+        "at": "2026-10-10T11:40:36Z",
+        "detail": "upstream  README/config guide"
+      },
+      "asset_identified": {
+        "result": "passed",
+        "at": "2026-10-10T11:40:36Z",
+        "detail": "MykolaL/DelineateAnything:DelineateAnythingv2.pt"
+      },
+      "downloaded": {
+        "result": "passed",
+        "at": "2026-10-10T11:40:36Z",
+        "detail": "weights in data/models/delineate-anything (SHA256SUMS)"
+      },
+      "checksum_verified": {
+        "result": "passed",
+        "at": "2026-10-10T11:40:36Z",
+        "detail": "checkpoint sha256 46700b8a279b07922953a11adaeb5e658d9a2384b6334c8e0a3090886218915a"
+      },
+      "parsed": {
+        "result": "passed",
+        "at": "2026-10-10T00:52:22.608146+00:00",
+        "detail": "303 raw polygons"
+      },
+      "geographically_reviewed": {
+        "result": "passed",
+        "at": "2026-10-10T11:40:36Z",
+        "detail": "30 reviewed fields; overlay review_overlay.png"
+      },
+      "runtime_validated": {
+        "result": "passed",
+        "at": "2026-10-10T00:52:22.608146+00:00",
+        "detail": "cpu 100.125 s; upstream sample run first (evidence/benchmarks)"
+      }
+    },
+    "soil_prior": {
+      "docs_checked": {
+        "result": "passed",
+        "at": "2026-10-10T11:40:36Z",
+        "detail": "AquaCrop predefined soil classes"
+      },
+      "asset_identified": {
+        "result": "passed",
+        "at": "2026-10-10T11:40:36Z",
+        "detail": "SiltLoam, Loam"
+      },
+      "downloaded": {
+        "result": "not_applicable",
+        "at": "2026-10-10T11:40:36Z",
+        "detail": "built into AquaCrop"
+      },
+      "checksum_verified": {
+        "result": "not_applicable",
+        "at": "2026-10-10T11:40:36Z",
+        "detail": "n/a"
+      },
+      "parsed": {
+        "result": "not_applicable",
+        "at": "2026-10-10T11:40:36Z",
+        "detail": "validated by the science stream"
+      },
+      "geographically_reviewed": {
+        "result": "failed",
+        "at": "2026-10-10T11:40:36Z",
+        "detail": "no local soil survey or SoilGrids check"
+      },
+      "runtime_validated": {
+        "result": "not_applicable",
+        "at": "2026-10-10T11:40:36Z",
+        "detail": "science stream"
+      }
+    }
+  }
+}

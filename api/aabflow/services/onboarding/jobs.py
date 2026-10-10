@@ -5,8 +5,11 @@ from __future__ import annotations
 from typing import Any
 
 from aabflow import config
+from aabflow.domain.hashes import content_hash
 from aabflow.ingestion.onboarding import pipeline
 from aabflow.ingestion.onboarding.acquire import Cancelled
+from aabflow.ingestion.onboarding.libraries import assess
+from aabflow.jobs import queue
 from aabflow.jobs.cancellation import JobCancelled
 
 from . import store
@@ -134,3 +137,68 @@ def process_job(ctx, payload: dict) -> dict:
         status=status,
     )
     return {"onboarding_id": onboarding_id, "state": st.get("state"), **lineage}
+
+
+def _assessment(data_dir, payload: dict) -> dict[str, Any]:
+    report = assess(data_dir, str(payload["pilot_id"]), str(payload["pilot_version"]))
+    kind = "baseline" if payload.get("kind") == "baseline" else "candidates"
+    section = report[kind]
+    return {
+        "ready": bool(section["ready"]),
+        "built": False,
+        "kind": kind,
+        "pilot_id": payload["pilot_id"],
+        "pilot_version": payload["pilot_version"],
+        "reason": section["reason"],
+        "reused_as_current": False,
+        "libraries": report["libraries"],
+    }
+
+
+def enqueue_readiness(
+    conn,
+    onboarding_id: str,
+    pilot_id: str,
+    pilot_version: str,
+    readiness: dict[str, Any],
+) -> list[dict[str, Any]]:
+    """Queue baseline and candidate readiness. Handlers do not rebuild libraries."""
+    queued = []
+    for kind, section in (
+        ("baseline", readiness.get("baseline") or {}),
+        ("candidates", readiness.get("candidates") or {}),
+    ):
+        payload = {
+            "onboarding_id": onboarding_id,
+            "pilot_id": pilot_id,
+            "pilot_version": pilot_version,
+            "kind": kind,
+        }
+        operation = f"onboarding.{kind}"
+        job_id = queue.enqueue(
+            conn,
+            operation,
+            payload,
+            content_hash(payload),
+            subject_id=onboarding_id,
+        )
+        queued.append(
+            {
+                "job_id": job_id,
+                "operation": operation,
+                "state": "queued",
+                "ready": bool(section.get("ready")),
+                "reason": section.get("reason"),
+            }
+        )
+    return queued
+
+
+def baseline_job(ctx, payload: dict) -> dict[str, Any]:
+    """Record baseline readiness. Does not treat an older library as current."""
+    return _assessment(ctx.settings.data_dir, {**payload, "kind": "baseline"})
+
+
+def candidate_job(ctx, payload: dict) -> dict[str, Any]:
+    """Record candidate readiness. Does not treat an older library as current."""
+    return _assessment(ctx.settings.data_dir, {**payload, "kind": "candidates"})

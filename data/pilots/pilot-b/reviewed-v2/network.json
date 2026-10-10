@@ -1,0 +1,260 @@
+{
+  "nodes": [
+    {
+      "node_id": "pilot-b:node-source",
+      "kind": "source",
+      "lon": 72.2455164,
+      "lat": 30.6785101,
+      "label": "Parent canal intake point (assumed)"
+    },
+    {
+      "node_id": "pilot-b:node-bifurcation",
+      "kind": "junction",
+      "lon": 72.2441934,
+      "lat": 30.6746215,
+      "label": "Parent canal junction above moghas (assumed)"
+    },
+    {
+      "node_id": "pilot-b:node-wc1-mogha",
+      "kind": "outlet",
+      "lon": 72.2434012,
+      "lat": 30.6734817,
+      "label": "Watercourse 1 head (mogha), assumed"
+    },
+    {
+      "node_id": "pilot-b:node-wc1-head",
+      "kind": "outlet",
+      "lon": 72.2407609,
+      "lat": 30.6724196,
+      "label": "WC1 head outlet (assumed)"
+    },
+    {
+      "node_id": "pilot-b:node-wc1-middle",
+      "kind": "outlet",
+      "lon": 72.2497267,
+      "lat": 30.6702605,
+      "label": "WC1 middle outlet (assumed)"
+    },
+    {
+      "node_id": "pilot-b:node-wc1-tail",
+      "kind": "outlet",
+      "lon": 72.2530031,
+      "lat": 30.6678708,
+      "label": "WC1 tail outlet (assumed)"
+    },
+    {
+      "node_id": "pilot-b:node-wc2-mogha",
+      "kind": "outlet",
+      "lon": 72.2383681,
+      "lat": 30.663153,
+      "label": "Watercourse 2 head (mogha), assumed"
+    },
+    {
+      "node_id": "pilot-b:node-wc2-head",
+      "kind": "outlet",
+      "lon": 72.242335,
+      "lat": 30.6615869,
+      "label": "WC2 head outlet (assumed)"
+    },
+    {
+      "node_id": "pilot-b:node-wc2-middle",
+      "kind": "outlet",
+      "lon": 72.2467468,
+      "lat": 30.6625064,
+      "label": "WC2 middle outlet (assumed)"
+    },
+    {
+      "node_id": "pilot-b:node-wc2-tail",
+      "kind": "outlet",
+      "lon": 72.2504346,
+      "lat": 30.6592841,
+      "label": "WC2 tail outlet (assumed)"
+    }
+  ],
+  "edges": [
+    {
+      "edge_id": "pilot-b:edge-parent-canal",
+      "upstream_node_id": "pilot-b:node-source",
+      "downstream_node_id": "pilot-b:node-bifurcation",
+      "geometry_ref": "osm:way/488499235",
+      "source_feature_ids": [
+        "osm:way/488499235"
+      ],
+      "delivery_factor": 0.97,
+      "capacities": [
+        {
+          "start": "2024-11-15T01:00:00Z",
+          "end": "2025-04-16T01:00:00Z",
+          "max_rate_m3_s": 0.1
+        },
+        {
+          "start": "2026-11-15T01:00:00Z",
+          "end": "2027-04-16T01:00:00Z",
+          "max_rate_m3_s": 0.1
+        },
+        {
+          "start": "2027-11-15T01:00:00Z",
+          "end": "2028-04-16T01:00:00Z",
+          "max_rate_m3_s": 0.1
+        },
+        {
+          "start": "2027-05-01T01:00:00Z",
+          "end": "2027-11-01T01:00:00Z",
+          "max_rate_m3_s": 0.1
+        }
+      ],
+      "closures": [
+        [
+          "2024-12-26T01:00:00Z",
+          "2025-01-25T01:00:00Z"
+        ],
+        [
+          "2026-12-26T01:00:00Z",
+          "2027-01-25T01:00:00Z"
+        ],
+        [
+          "2027-12-26T01:00:00Z",
+          "2028-01-25T01:00:00Z"
+        ]
+      ],
+      "reach_label": "Parent canal reach (observed geometry)",
+      "evidence_ids": [
+        "ev:osm-canals",
+        "asm:parent-delivery",
+        "asm:canal-closure",
+        "asm:source-capacity",
+        "ev:network"
+      ]
+    },
+    {
+      "edge_id": "pilot-b:edge-wc1-offtake",
+      "upstream_node_id": "pilot-b:node-bifurcation",
+      "downstream_node_id": "pilot-b:node-wc1-mogha",
+      "geometry_ref": "osm:way/488499235",
+      "source_feature_ids": [
+        "osm:way/488499235"
+      ],
+      "delivery_factor": 0.98,
+      "capacities": [],
+      "closures": [],
+      "reach_label": "Parent canal to WC1 mogha (observed canal, assumed offtake)",
+      "evidence_ids": [
+        "ev:osm-canals",
+        "asm:parent-delivery",
+        "asm:canal-closure",
+        "asm:source-capacity",
+        "ev:network"
+      ]
+    },
+    {
+      "edge_id": "pilot-b:edge-wc1-reach1",
+      "upstream_node_id": "pilot-b:node-wc1-mogha",
+      "downstream_node_id": "pilot-b:node-wc1-head",
+      "geometry_ref": null,
+      "source_feature_ids": [],
+      "delivery_factor": 0.93,
+      "capacities": [],
+      "closures": [],
+      "reach_label": "WC1 reach 1 (head), assumed earthen watercourse",
+      "evidence_ids": [
+        "asm:reach-delivery",
+        "ev:network"
+      ]
+    },
+    {
+      "edge_id": "pilot-b:edge-wc1-reach2",
+      "upstream_node_id": "pilot-b:node-wc1-head",
+      "downstream_node_id": "pilot-b:node-wc1-middle",
+      "geometry_ref": null,
+      "source_feature_ids": [],
+      "delivery_factor": 0.86,
+      "capacities": [],
+      "closures": [],
+      "reach_label": "WC1 reach 2 (middle), assumed earthen watercourse",
+      "evidence_ids": [
+        "asm:reach-delivery",
+        "ev:network"
+      ]
+    },
+    {
+      "edge_id": "pilot-b:edge-wc1-reach3",
+      "upstream_node_id": "pilot-b:node-wc1-middle",
+      "downstream_node_id": "pilot-b:node-wc1-tail",
+      "geometry_ref": null,
+      "source_feature_ids": [],
+      "delivery_factor": 0.79,
+      "capacities": [],
+      "closures": [],
+      "reach_label": "WC1 reach 3 (tail), assumed earthen watercourse",
+      "evidence_ids": [
+        "asm:reach-delivery",
+        "ev:network"
+      ]
+    },
+    {
+      "edge_id": "pilot-b:edge-wc2-offtake",
+      "upstream_node_id": "pilot-b:node-bifurcation",
+      "downstream_node_id": "pilot-b:node-wc2-mogha",
+      "geometry_ref": "osm:way/488499235",
+      "source_feature_ids": [
+        "osm:way/488499235"
+      ],
+      "delivery_factor": 0.98,
+      "capacities": [],
+      "closures": [],
+      "reach_label": "Parent canal to WC2 mogha (observed canal, assumed offtake)",
+      "evidence_ids": [
+        "ev:osm-canals",
+        "asm:parent-delivery",
+        "asm:canal-closure",
+        "asm:source-capacity",
+        "ev:network"
+      ]
+    },
+    {
+      "edge_id": "pilot-b:edge-wc2-reach1",
+      "upstream_node_id": "pilot-b:node-wc2-mogha",
+      "downstream_node_id": "pilot-b:node-wc2-head",
+      "geometry_ref": null,
+      "source_feature_ids": [],
+      "delivery_factor": 0.95,
+      "capacities": [],
+      "closures": [],
+      "reach_label": "WC2 reach 1 (head), assumed earthen watercourse",
+      "evidence_ids": [
+        "asm:reach-delivery",
+        "ev:network"
+      ]
+    },
+    {
+      "edge_id": "pilot-b:edge-wc2-reach2",
+      "upstream_node_id": "pilot-b:node-wc2-head",
+      "downstream_node_id": "pilot-b:node-wc2-middle",
+      "geometry_ref": null,
+      "source_feature_ids": [],
+      "delivery_factor": 0.9,
+      "capacities": [],
+      "closures": [],
+      "reach_label": "WC2 reach 2 (middle), assumed earthen watercourse",
+      "evidence_ids": [
+        "asm:reach-delivery",
+        "ev:network"
+      ]
+    },
+    {
+      "edge_id": "pilot-b:edge-wc2-reach3",
+      "upstream_node_id": "pilot-b:node-wc2-middle",
+      "downstream_node_id": "pilot-b:node-wc2-tail",
+      "geometry_ref": null,
+      "source_feature_ids": [],
+      "delivery_factor": 0.84,
+      "capacities": [],
+      "closures": [],
+      "reach_label": "WC2 reach 3 (tail), assumed earthen watercourse",
+      "evidence_ids": [
+        "asm:reach-delivery",
+        "ev:network"
+      ]
+    }
+  ]
+}

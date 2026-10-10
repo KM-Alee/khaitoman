@@ -1,0 +1,1562 @@
+[
+  {
+    "field_id": "pilot-b:field-002",
+    "season_id": "wheat-rabi-2024-25",
+    "reference_receipt_m3": 7423.394,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-003",
+    "season_id": "wheat-rabi-2024-25",
+    "reference_receipt_m3": 3435.108,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-004",
+    "season_id": "wheat-rabi-2024-25",
+    "reference_receipt_m3": 1527.113,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-005",
+    "season_id": "wheat-rabi-2024-25",
+    "reference_receipt_m3": 2170.205,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-006",
+    "season_id": "wheat-rabi-2024-25",
+    "reference_receipt_m3": 4608.012,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-007",
+    "season_id": "wheat-rabi-2024-25",
+    "reference_receipt_m3": 7471.022,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-008",
+    "season_id": "wheat-rabi-2024-25",
+    "reference_receipt_m3": 5532.958,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-009",
+    "season_id": "wheat-rabi-2024-25",
+    "reference_receipt_m3": 1319.827,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-010",
+    "season_id": "wheat-rabi-2024-25",
+    "reference_receipt_m3": 1048.098,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-011",
+    "season_id": "wheat-rabi-2024-25",
+    "reference_receipt_m3": 1975.701,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-012",
+    "season_id": "wheat-rabi-2024-25",
+    "reference_receipt_m3": 4361.469,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-014",
+    "season_id": "wheat-rabi-2024-25",
+    "reference_receipt_m3": 708.643,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-015",
+    "season_id": "wheat-rabi-2024-25",
+    "reference_receipt_m3": 2785.859,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-016",
+    "season_id": "wheat-rabi-2024-25",
+    "reference_receipt_m3": 4822.857,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-017",
+    "season_id": "wheat-rabi-2024-25",
+    "reference_receipt_m3": 1005.638,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-018",
+    "season_id": "wheat-rabi-2024-25",
+    "reference_receipt_m3": 1300.775,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-019",
+    "season_id": "wheat-rabi-2024-25",
+    "reference_receipt_m3": 1578.46,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-021",
+    "season_id": "wheat-rabi-2024-25",
+    "reference_receipt_m3": 1715.014,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-022",
+    "season_id": "wheat-rabi-2024-25",
+    "reference_receipt_m3": 1063.621,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-023",
+    "season_id": "wheat-rabi-2024-25",
+    "reference_receipt_m3": 4418.524,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-024",
+    "season_id": "wheat-rabi-2024-25",
+    "reference_receipt_m3": 8210.821,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-025",
+    "season_id": "wheat-rabi-2024-25",
+    "reference_receipt_m3": 4155.965,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-026",
+    "season_id": "wheat-rabi-2024-25",
+    "reference_receipt_m3": 4310.861,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-027",
+    "season_id": "wheat-rabi-2024-25",
+    "reference_receipt_m3": 1599.051,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-028",
+    "season_id": "wheat-rabi-2024-25",
+    "reference_receipt_m3": 841.804,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-029",
+    "season_id": "wheat-rabi-2024-25",
+    "reference_receipt_m3": 1173.081,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-030",
+    "season_id": "wheat-rabi-2024-25",
+    "reference_receipt_m3": 5331.773,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-031",
+    "season_id": "wheat-rabi-2024-25",
+    "reference_receipt_m3": 1546.495,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-032",
+    "season_id": "wheat-rabi-2024-25",
+    "reference_receipt_m3": 755.471,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-033",
+    "season_id": "wheat-rabi-2024-25",
+    "reference_receipt_m3": 1666.497,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-002",
+    "season_id": "wheat-rabi-2026-27",
+    "reference_receipt_m3": 7423.394,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-003",
+    "season_id": "wheat-rabi-2026-27",
+    "reference_receipt_m3": 3435.108,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-004",
+    "season_id": "wheat-rabi-2026-27",
+    "reference_receipt_m3": 1527.113,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-005",
+    "season_id": "wheat-rabi-2026-27",
+    "reference_receipt_m3": 2170.205,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-006",
+    "season_id": "wheat-rabi-2026-27",
+    "reference_receipt_m3": 4608.012,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-007",
+    "season_id": "wheat-rabi-2026-27",
+    "reference_receipt_m3": 7471.022,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-008",
+    "season_id": "wheat-rabi-2026-27",
+    "reference_receipt_m3": 5532.958,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-009",
+    "season_id": "wheat-rabi-2026-27",
+    "reference_receipt_m3": 1319.827,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-010",
+    "season_id": "wheat-rabi-2026-27",
+    "reference_receipt_m3": 1048.098,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-011",
+    "season_id": "wheat-rabi-2026-27",
+    "reference_receipt_m3": 1975.701,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-012",
+    "season_id": "wheat-rabi-2026-27",
+    "reference_receipt_m3": 4361.469,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-014",
+    "season_id": "wheat-rabi-2026-27",
+    "reference_receipt_m3": 708.643,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-015",
+    "season_id": "wheat-rabi-2026-27",
+    "reference_receipt_m3": 2785.859,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-016",
+    "season_id": "wheat-rabi-2026-27",
+    "reference_receipt_m3": 4822.857,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-017",
+    "season_id": "wheat-rabi-2026-27",
+    "reference_receipt_m3": 1005.638,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-018",
+    "season_id": "wheat-rabi-2026-27",
+    "reference_receipt_m3": 1300.775,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-019",
+    "season_id": "wheat-rabi-2026-27",
+    "reference_receipt_m3": 1578.46,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-021",
+    "season_id": "wheat-rabi-2026-27",
+    "reference_receipt_m3": 1715.014,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-022",
+    "season_id": "wheat-rabi-2026-27",
+    "reference_receipt_m3": 1063.621,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-023",
+    "season_id": "wheat-rabi-2026-27",
+    "reference_receipt_m3": 4418.524,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-024",
+    "season_id": "wheat-rabi-2026-27",
+    "reference_receipt_m3": 8210.821,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-025",
+    "season_id": "wheat-rabi-2026-27",
+    "reference_receipt_m3": 4155.965,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-026",
+    "season_id": "wheat-rabi-2026-27",
+    "reference_receipt_m3": 4310.861,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-027",
+    "season_id": "wheat-rabi-2026-27",
+    "reference_receipt_m3": 1599.051,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-028",
+    "season_id": "wheat-rabi-2026-27",
+    "reference_receipt_m3": 841.804,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-029",
+    "season_id": "wheat-rabi-2026-27",
+    "reference_receipt_m3": 1173.081,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-030",
+    "season_id": "wheat-rabi-2026-27",
+    "reference_receipt_m3": 5331.773,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-031",
+    "season_id": "wheat-rabi-2026-27",
+    "reference_receipt_m3": 1546.495,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-032",
+    "season_id": "wheat-rabi-2026-27",
+    "reference_receipt_m3": 755.471,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-033",
+    "season_id": "wheat-rabi-2026-27",
+    "reference_receipt_m3": 1666.497,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-002",
+    "season_id": "wheat-rabi-2027-28",
+    "reference_receipt_m3": 7423.394,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-003",
+    "season_id": "wheat-rabi-2027-28",
+    "reference_receipt_m3": 3435.108,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-004",
+    "season_id": "wheat-rabi-2027-28",
+    "reference_receipt_m3": 1527.113,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-005",
+    "season_id": "wheat-rabi-2027-28",
+    "reference_receipt_m3": 2170.205,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-006",
+    "season_id": "wheat-rabi-2027-28",
+    "reference_receipt_m3": 4608.012,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-007",
+    "season_id": "wheat-rabi-2027-28",
+    "reference_receipt_m3": 7471.022,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-008",
+    "season_id": "wheat-rabi-2027-28",
+    "reference_receipt_m3": 5532.958,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-009",
+    "season_id": "wheat-rabi-2027-28",
+    "reference_receipt_m3": 1319.827,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-010",
+    "season_id": "wheat-rabi-2027-28",
+    "reference_receipt_m3": 1048.098,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-011",
+    "season_id": "wheat-rabi-2027-28",
+    "reference_receipt_m3": 2091.919,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-012",
+    "season_id": "wheat-rabi-2027-28",
+    "reference_receipt_m3": 4361.469,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-014",
+    "season_id": "wheat-rabi-2027-28",
+    "reference_receipt_m3": 750.328,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-015",
+    "season_id": "wheat-rabi-2027-28",
+    "reference_receipt_m3": 2785.859,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-016",
+    "season_id": "wheat-rabi-2027-28",
+    "reference_receipt_m3": 4822.857,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-017",
+    "season_id": "wheat-rabi-2027-28",
+    "reference_receipt_m3": 1005.638,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-018",
+    "season_id": "wheat-rabi-2027-28",
+    "reference_receipt_m3": 1300.775,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-019",
+    "season_id": "wheat-rabi-2027-28",
+    "reference_receipt_m3": 1578.46,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-021",
+    "season_id": "wheat-rabi-2027-28",
+    "reference_receipt_m3": 1715.014,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-022",
+    "season_id": "wheat-rabi-2027-28",
+    "reference_receipt_m3": 1063.621,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-023",
+    "season_id": "wheat-rabi-2027-28",
+    "reference_receipt_m3": 4418.524,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-024",
+    "season_id": "wheat-rabi-2027-28",
+    "reference_receipt_m3": 8210.821,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-025",
+    "season_id": "wheat-rabi-2027-28",
+    "reference_receipt_m3": 4155.965,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-026",
+    "season_id": "wheat-rabi-2027-28",
+    "reference_receipt_m3": 4564.441,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-027",
+    "season_id": "wheat-rabi-2027-28",
+    "reference_receipt_m3": 1599.051,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-028",
+    "season_id": "wheat-rabi-2027-28",
+    "reference_receipt_m3": 841.804,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-029",
+    "season_id": "wheat-rabi-2027-28",
+    "reference_receipt_m3": 1173.081,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-030",
+    "season_id": "wheat-rabi-2027-28",
+    "reference_receipt_m3": 5331.773,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-031",
+    "season_id": "wheat-rabi-2027-28",
+    "reference_receipt_m3": 1546.495,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-032",
+    "season_id": "wheat-rabi-2027-28",
+    "reference_receipt_m3": 799.91,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-033",
+    "season_id": "wheat-rabi-2027-28",
+    "reference_receipt_m3": 1666.497,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-002",
+    "season_id": "cotton-kharif-2027",
+    "reference_receipt_m3": 10722.681,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-003",
+    "season_id": "cotton-kharif-2027",
+    "reference_receipt_m3": 5152.662,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-004",
+    "season_id": "cotton-kharif-2027",
+    "reference_receipt_m3": 2425.415,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-005",
+    "season_id": "cotton-kharif-2027",
+    "reference_receipt_m3": 3134.741,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-006",
+    "season_id": "cotton-kharif-2027",
+    "reference_receipt_m3": 6656.017,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-007",
+    "season_id": "cotton-kharif-2027",
+    "reference_receipt_m3": 11865.741,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-008",
+    "season_id": "cotton-kharif-2027",
+    "reference_receipt_m3": 8299.438,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-009",
+    "season_id": "cotton-kharif-2027",
+    "reference_receipt_m3": 1906.417,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-010",
+    "season_id": "cotton-kharif-2027",
+    "reference_receipt_m3": 1513.92,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-011",
+    "season_id": "cotton-kharif-2027",
+    "reference_receipt_m3": 3021.661,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-012",
+    "season_id": "cotton-kharif-2027",
+    "reference_receipt_m3": 7087.387,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-014",
+    "season_id": "cotton-kharif-2027",
+    "reference_receipt_m3": 1083.807,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-015",
+    "season_id": "cotton-kharif-2027",
+    "reference_receipt_m3": 4024.018,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-016",
+    "season_id": "cotton-kharif-2027",
+    "reference_receipt_m3": 7234.285,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-017",
+    "season_id": "cotton-kharif-2027",
+    "reference_receipt_m3": 1452.588,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-018",
+    "season_id": "cotton-kharif-2027",
+    "reference_receipt_m3": 1878.897,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-019",
+    "season_id": "cotton-kharif-2027",
+    "reference_receipt_m3": 2279.998,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-021",
+    "season_id": "cotton-kharif-2027",
+    "reference_receipt_m3": 2723.845,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-022",
+    "season_id": "cotton-kharif-2027",
+    "reference_receipt_m3": 1728.384,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-023",
+    "season_id": "cotton-kharif-2027",
+    "reference_receipt_m3": 6382.313,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-024",
+    "season_id": "cotton-kharif-2027",
+    "reference_receipt_m3": 13040.716,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-025",
+    "season_id": "cotton-kharif-2027",
+    "reference_receipt_m3": 6003.06,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-026",
+    "season_id": "cotton-kharif-2027",
+    "reference_receipt_m3": 6593.081,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-027",
+    "season_id": "cotton-kharif-2027",
+    "reference_receipt_m3": 2598.458,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-028",
+    "season_id": "cotton-kharif-2027",
+    "reference_receipt_m3": 1367.931,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-029",
+    "season_id": "cotton-kharif-2027",
+    "reference_receipt_m3": 1906.257,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-030",
+    "season_id": "cotton-kharif-2027",
+    "reference_receipt_m3": 7701.45,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-031",
+    "season_id": "cotton-kharif-2027",
+    "reference_receipt_m3": 2319.742,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-032",
+    "season_id": "cotton-kharif-2027",
+    "reference_receipt_m3": 1155.426,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  },
+  {
+    "field_id": "pilot-b:field-033",
+    "season_id": "cotton-kharif-2027",
+    "reference_receipt_m3": 2407.162,
+    "basis": "time",
+    "evidence_ids": [
+      "asm:watercourse-cca",
+      "asm:water-allowance",
+      "asm:warabandi-cycle",
+      "asm:canal-closure",
+      "asm:reach-delivery"
+    ]
+  }
+]

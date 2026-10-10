@@ -37,6 +37,8 @@ from ..review.fields import ManualEdit, ReviewConfig, review, selected_wgs84
 from . import process as proc_mod
 from .acquire import AcquisitionConfig, Cancelled, acquire_bundle
 from .catalog import resolve_stored_bundle
+from .libraries import write_readiness
+from .review_input import ReviewRejected, field_edits, network_review, structural_blockers
 
 Progress = Callable[[str, float | None, str], None]
 SourceMode = Literal["online", "raw_package"]
@@ -49,6 +51,14 @@ class VersionConflict(ValueError):
 
 class StageError(IngestionError):
     pass
+
+
+class StructuralBlock(StageError):
+    """Publish refused because review or package structure is not valid."""
+
+    def __init__(self, blockers: list[str]):
+        super().__init__("structural errors block publish: " + "; ".join(blockers))
+        self.blockers = blockers
 
 
 class ReproductionError(StageError):
@@ -372,8 +382,32 @@ def process(
     return out
 
 
+def _known_model_ids(workdir: Path) -> set[str]:
+    raw_path = Path(workdir) / "processed" / "fields_raw.geojson"
+    if not raw_path.is_file():
+        raise ReviewRejected("processed fields are not available")
+    raw = read_json(raw_path)
+    return {
+        str(feature.get("id") or feature["properties"]["model_id"]) for feature in raw["features"]
+    }
+
+
+def _canal_ids(workdir: Path) -> set[str]:
+    path = Path(workdir) / "processed" / "canals.geojson"
+    if not path.is_file():
+        raise ReviewRejected("processed canals are not available")
+    canals = read_json(path)
+    return {str(feature["id"]) for feature in canals.get("features", []) if feature.get("id")}
+
+
 def apply_review(workdir: Path, edits: dict, expected_version: int) -> dict:
-    """Apply reviewer edits (version-checked) and mark the intake reviewed."""
+    """Apply reviewer edits (version-checked) and mark the intake reviewed.
+
+    A stale ``expected_version`` raises ``VersionConflict`` and does not write.
+    Rejected field or network input raises ``ReviewRejected`` and also leaves
+    the version unchanged. A selection that cannot yield 30 fields stays in
+    ``needs_review`` with structural blockers.
+    """
     workdir = Path(workdir)
     st = _load(workdir)
     if st["state"] not in ("needs_review", "reviewed"):
@@ -382,28 +416,55 @@ def apply_review(workdir: Path, edits: dict, expected_version: int) -> dict:
         raise VersionConflict(
             f"review version {st['review_version']} != expected {expected_version}"
         )
-    me = [ManualEdit(**e) for e in edits.get("field_edits", [])]
+    raw_edits = list(edits.get("field_edits") or [])
+    me = field_edits(raw_edits, _known_model_ids(workdir) if raw_edits else set())
+    cfg = dict(edits.get("review_config") or {})
+    raw_network = edits.get("network", cfg.get("network"))
+    cfg.pop("network", None)
+    if raw_network is not None:
+        st["network_review"] = network_review(raw_network, _canal_ids(workdir))
+        st["parent_canal_feature_id"] = st["network_review"]["source_feature_id"]
     if "parent_canal_feature_id" in edits:
-        st["parent_canal_feature_id"] = edits["parent_canal_feature_id"]
+        parent = edits["parent_canal_feature_id"]
+        if parent not in _canal_ids(workdir):
+            raise ReviewRejected(f"parent canal {parent} is not an observed canal in this intake")
+        st["parent_canal_feature_id"] = parent
     if "review_config" in edits:
-        st["review_config"] = edits["review_config"]
+        st["review_config"] = cfg
     reviewer = edits.get("reviewer")
     blockers: list[str] = []
+    warnings: list[str] = []
+    summary = None
     try:
         r = _run_review(workdir, st, me, reviewer)
-        warnings = [] if r["review"].summary["selected"] == 30 else ["selection is not 30 fields"]
+        summary = r["review"].summary
+        if summary["selected"] != 30:
+            warnings.append("selection is not 30 fields")
+    except ReviewRejected:
+        raise
     except ValueError as exc:
         blockers.append(str(exc))
-        warnings = []
+    st["review_blockers"] = blockers
+    if summary is not None:
+        st["review_summary"] = summary
     st["review_version"] += 1
+    (workdir / "review").mkdir(exist_ok=True)
     write_json(
         workdir / "review" / f"edits_v{st['review_version']}.json",
         {**edits, "applied_at": iso(utc_now())},
     )
-    if not blockers:
+    if blockers:
+        _transition(st, "needs_review", f"v{st['review_version']} blocked")
+    else:
         _transition(st, "reviewed", f"v{st['review_version']} by {reviewer}")
     _save(workdir, st)
-    return {"version": st["review_version"], "blockers": blockers, "warnings": warnings}
+    return {
+        "version": st["review_version"],
+        "blockers": blockers,
+        "warnings": warnings,
+        "network_reviewed": bool((st.get("network_review") or {}).get("acknowledged")),
+        "review_summary": summary,
+    }
 
 
 def update_index(data_dir: Path, pilot_id: str, pilot_version: str, name: str) -> Path:
@@ -433,6 +494,7 @@ def _build_validated_stage(
     repo_root: Path,
     created_at: datetime | None,
     warabandi: str = "declared_cca",
+    source_capacity_m3_s: float | None = None,
 ) -> None:
     """Write one validated package into an empty staging directory."""
     rs = read_json(workdir / "review" / "state.json")
@@ -453,6 +515,7 @@ def _build_validated_stage(
         parent_canal_id=st["parent_canal_feature_id"],
         created_at=created_at,
         warabandi=warabandi,
+        source_capacity_m3_s=source_capacity_m3_s,
     )
     errors = validate_package(stage)
     if errors:
@@ -481,17 +544,29 @@ def publish(
     st = _load(workdir)
     if st["state"] not in ("reviewed", "validated"):
         raise StageError(f"cannot publish from state {st['state']} (review first)")
+    blockers = structural_blockers(st)
+    if blockers:
+        raise StructuralBlock(blockers)
     if st.get("pilot_id") and st["pilot_id"] != pilot_id:
         raise StageError(f"intake belongs to {st['pilot_id']}, not {pilot_id}")
     final = data_dir / "pilots" / pilot_id / pilot_version
     if final.exists():
         raise FileExistsError(f"{final} already published (immutable)")
+    network = st.get("network_review") or {}
     stage = final.with_name(pilot_version + ".partial")
     if stage.exists():
         shutil.rmtree(stage)
     try:
         _build_validated_stage(
-            workdir, stage, st, pilot_id, pilot_version, repo_root, created_at=None
+            workdir,
+            stage,
+            st,
+            pilot_id,
+            pilot_version,
+            repo_root,
+            created_at=None,
+            warabandi=network.get("roster_basis") or "declared_cca",
+            source_capacity_m3_s=network.get("capacity_m3_s"),
         )
     except Exception:
         shutil.rmtree(stage, ignore_errors=True)
@@ -500,8 +575,10 @@ def publish(
     _save(workdir, st)
     stage.rename(final)
     update_index(data_dir, pilot_id, pilot_version, st.get("name") or pilot_id)
+    readiness = write_readiness(data_dir, pilot_id, pilot_version)
     _transition(st, "published", str(final.relative_to(data_dir.parent)))
     st["published_ref"] = str(final.relative_to(data_dir.parent))
+    st["library_readiness"] = readiness
     _save(workdir, st)
     return PilotManifest.model_validate(json.loads((final / "manifest.json").read_text()))
 
