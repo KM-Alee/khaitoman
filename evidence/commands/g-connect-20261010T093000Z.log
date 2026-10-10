@@ -1,0 +1,58 @@
+=== make provider-check 2026-10-10T09:30:52Z HEAD 62add4c22575863b5d963e9bc7e40e08ee6cc017 ===
+docker compose run --rm --no-deps api python scripts/doctor.py --provider-smoke
+ Container aabflow-api-run-93a08f1aecff Creating 
+ Container aabflow-api-run-93a08f1aecff Created 
+{
+  "generated_at": "2026-10-10T09:30:53.167066+00:00",
+  "machine": "Linux-7.2.9-1-cachyos-x86_64-with-glibc2.41",
+  "python": "3.11.17",
+  "packages": {
+    "aquacrop": "3.1.0",
+    "ortools": "9.15.6755",
+    "numpy": "2.4.6",
+    "pandas": "3.0.6",
+    "geopandas": "1.1.4",
+    "shapely": "2.1.2",
+    "pyproj": "3.7.2",
+    "pyarrow": "25.0.1",
+    "rasterio": "1.4.4",
+    "pystac-client": "0.9.0",
+    "httpx": "0.28.1",
+    "lightgbm": "4.7.0",
+    "scikit-learn": "1.9.1",
+    "fastapi": "0.141.1",
+    "pydantic": "2.13.5",
+    "uvicorn": "0.54.0",
+    "openai": "3.19.2",
+    "pytest": "9.1.1",
+    "hypothesis": "6.168.1"
+  },
+  "delineate_weights": [
+    "DelineateAnything-S.pt",
+    "DelineateAnything.pt",
+    "DelineateAnythingv2.pt"
+  ],
+  "in_container": true,
+  "cpu_count": 20,
+  "gpu": "unavailable",
+  "disk_free_gb": 136.9,
+  "network": {
+    "pypi": "ok 200",
+    "earth_search": "ok 200",
+    "open_meteo_archive": "ok 200",
+    "overpass": "ok 200",
+    "zenodo_grain": "ok 200",
+    "huggingface": "ok 200",
+    "openai": "reachable 401"
+  },
+  "provider": {
+    "key_configured": true,
+    "model": "gpt-6-luna",
+    "smoke": "ok: model available"
+  },
+  "missing": []
+}
+
+Saved evidence/environment/doctor-20261010T093124Z.json
+doctor: all required items present
+EXIT:0
