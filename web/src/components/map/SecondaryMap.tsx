@@ -35,6 +35,7 @@ export function SecondaryMap({
   const { sel, map, fieldsFC, canalsFC, aoiFC, rawFC, fieldIndex } = usePilotData();
   const mode = useUI((s) => s.mapMode);
   const showImagery = useUI((s) => s.showImagery);
+  const showHdImagery = useUI((s) => s.showHdImagery);
   const reduced = useReducedMotion();
   const theme = useResolvedTheme();
   const visuals = useFieldVisuals({ runId, baselineRunId, metric, fields: fieldIndex, sharedDomain });
@@ -108,6 +109,9 @@ export function SecondaryMap({
   useEffect(() => {
     if (engine && ready) engine.setImageryVisible(showImagery);
   }, [engine, ready, showImagery]);
+  useEffect(() => {
+    if (engine && ready) engine.setHdImageryVisible(showHdImagery);
+  }, [engine, ready, showHdImagery]);
 
   // MapLibre sets `position: relative` on its container, so the engine gets an inner
   // full-size element and the absolute positioning stays on the wrapper.

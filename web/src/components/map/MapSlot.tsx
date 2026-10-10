@@ -20,6 +20,7 @@ import { Popover, PopoverContent, PopoverTrigger, Segmented, Switch } from "@/co
 import { attachMap, detachMap, getEngine, useMapRuntime } from "./runtime";
 import { METRIC_DEFS, useFieldVisuals, type FieldVisualResult } from "./useFieldVisuals";
 import type { FieldVisual } from "./engine";
+import { HD_IMAGERY_KEY } from "./hdImagery";
 import { MapLegend } from "./MapLegend";
 
 export interface MapSlotProps {
@@ -217,10 +218,13 @@ function MapControls({ compact, metric, metricControlled }: { compact?: boolean;
   const orbiting = useUI((s) => s.orbiting);
   const showImagery = useUI((s) => s.showImagery);
   const showRaw = useUI((s) => s.showRawFields);
+  const showParcels = useUI((s) => s.showParcels);
+  const showHd = useUI((s) => s.showHdImagery);
   const showTerrain = useUI((s) => s.showTerrain);
   const reduced = useReducedMotion();
   const terrain = getEngine()?.terrainInfo();
-  const { map } = usePilotData();
+  const { map, rawFC } = usePilotData();
+  const rawCount = rawFC?.features.length ?? 0;
   return (
     <>
       {!compact && !metricControlled ? (
@@ -281,6 +285,24 @@ function MapControls({ compact, metric, metricControlled }: { compact?: boolean;
                   checked={showImagery}
                   onChange={(v) => set({ showImagery: v })}
                   disabled={!map.data?.imagery.length}
+                />
+                <Switch
+                  label="High-res imagery (Esri)"
+                  description={
+                    HD_IMAGERY_KEY
+                      ? "Sub-metre display basemap, online only; analysis stays on Sentinel-2"
+                      : "Add VITE_ARCGIS_KEY to .env to enable"
+                  }
+                  checked={!!HD_IMAGERY_KEY && showHd}
+                  onChange={(v) => set({ showHdImagery: v })}
+                  disabled={!HD_IMAGERY_KEY || !showImagery}
+                />
+                <Switch
+                  label="All delineated parcels"
+                  description={`Every AI-delineated parcel as quiet outlines${rawCount ? ` (${rawCount})` : ""}; modeled fields stand up in 3D`}
+                  checked={showParcels}
+                  onChange={(v) => set({ showParcels: v })}
+                  disabled={!map.data?.fieldsRaw}
                 />
                 <Switch
                   label="Raw AI boundaries"

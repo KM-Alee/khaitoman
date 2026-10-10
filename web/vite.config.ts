@@ -9,6 +9,8 @@ import { fileURLToPath, URL } from "node:url";
 const apiTarget = process.env.VITE_API_TARGET ?? "http://127.0.0.1:8000";
 
 export default defineConfig({
+  // Read VITE_* from the repo-root .env (e.g. VITE_ARCGIS_KEY); only VITE_-prefixed vars reach the client.
+  envDir: fileURLToPath(new URL("..", import.meta.url)),
   plugins: [react(), tailwindcss()],
   resolve: { alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) } },
   server: {

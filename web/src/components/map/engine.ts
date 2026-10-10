@@ -10,6 +10,7 @@
  * on the client from the package PNG, GeoJSON from /assets. No glyphs/sprites are used —
  * labels are DOM markers — so nothing is fetched from a remote host (AT15).
  */
+import { HD_IMAGERY_ATTRIBUTION, HD_IMAGERY_KEY, hdImageryTiles } from "./hdImagery";
 import maplibregl, {
   type GeoJSONSource,
   type LngLatBoundsLike,
@@ -20,7 +21,7 @@ import maplibregl, {
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { MapBundle } from "@/lib/api/adapters";
 import type { Asset, Edge, NetNode } from "@/lib/api/types";
-import { demTileTemplate, demStats } from "./demTiles";
+import { canvasReadbackIsTrustworthy, demEncoding, demTileTemplate, demStats } from "./demTiles";
 import {
   bboxOf,
   bboxOfCollection,
@@ -78,6 +79,7 @@ const MAX_EXTRUDE_M = 30;
 const MIN_EXTRUDE_M = 3;
 const SRC = {
   imagery: "imagery",
+  imageryHd: "imagery-hd",
   dem: "dem",
   demHs: "dem-hs",
   aoi: "aoi",
@@ -97,6 +99,12 @@ interface EdgeGeom {
   assumed: boolean;
 }
 
+function bboxOfCorners(c: LngLat[], pad = 0.01): [number, number, number, number] {
+  const xs = c.map((p) => p[0]);
+  const ys = c.map((p) => p[1]);
+  return [Math.min(...xs) - pad, Math.min(...ys) - pad, Math.max(...xs) + pad, Math.max(...ys) + pad];
+}
+
 const imageryCache = new Map<string, Promise<ImageBitmap>>();
 function decodeImagery(url: string): Promise<ImageBitmap> {
   let p = imageryCache.get(url);
@@ -111,6 +119,60 @@ function decodeImagery(url: string): Promise<ImageBitmap> {
     imageryCache.set(url, p);
   }
   return p;
+}
+
+/**
+ * Display-only enhancement of the 10 m scene: 4× upsampling with high-quality smoothing and
+ * a mild unsharp mask, so field edges read as edges instead of a bilinear smear when the
+ * camera is close. Pixels are never used analytically; the source scene is untouched.
+ */
+const displayCache = new Map<string, HTMLCanvasElement>();
+function displayCanvas(url: string, bitmap: ImageBitmap): HTMLCanvasElement {
+  const hit = displayCache.get(url);
+  if (hit) {
+    const c = document.createElement("canvas");
+    c.width = hit.width;
+    c.height = hit.height;
+    c.getContext("2d")!.drawImage(hit, 0, 0);
+    return c;
+  }
+  const scale = Math.max(1, Math.min(4, Math.floor(2048 / Math.max(bitmap.width, bitmap.height))));
+  const w = bitmap.width * scale;
+  const h = bitmap.height * scale;
+  const out = document.createElement("canvas");
+  out.width = w;
+  out.height = h;
+  const ctx = out.getContext("2d", { willReadFrequently: true })!;
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(bitmap, 0, 0, w, h);
+  try {
+    const blur = document.createElement("canvas");
+    blur.width = w;
+    blur.height = h;
+    const bctx = blur.getContext("2d", { willReadFrequently: true })!;
+    bctx.filter = `blur(${(scale * 0.7).toFixed(1)}px)`;
+    bctx.drawImage(out, 0, 0);
+    const a = ctx.getImageData(0, 0, w, h);
+    const b = bctx.getImageData(0, 0, w, h).data;
+    const d = a.data;
+    const amount = 0.85;
+    for (let i = 0; i < d.length; i += 4) {
+      if (d[i + 3] === 0) continue;
+      d[i] = d[i] + amount * (d[i] - b[i]);
+      d[i + 1] = d[i + 1] + amount * (d[i + 1] - b[i + 1]);
+      d[i + 2] = d[i + 2] + amount * (d[i + 2] - b[i + 2]);
+    }
+    ctx.putImageData(a, 0, 0);
+  } catch {
+    // Canvas filters or readback unavailable: the smooth upsample alone is still an improvement.
+  }
+  displayCache.set(url, out);
+  const c = document.createElement("canvas");
+  c.width = w;
+  c.height = h;
+  c.getContext("2d")!.drawImage(out, 0, 0);
+  return c;
 }
 
 export class MapEngine {
@@ -145,7 +207,9 @@ export class MapEngine {
   private syncing = false;
   private flowEnabled = true;
   private imageryVisible = true;
+  private hdVisible = true;
   private rawVisible = false;
+  private parcelsVisible = true;
   private dataKey = "";
   private dimAmount = 0.42;
   private dataQueue: Promise<void> = Promise.resolve();
@@ -307,11 +371,7 @@ export class MapEngine {
       const bitmap = await decodeImagery(im.url).catch(() => null);
       if (this.destroyed || this.dataKey !== key) return;
       if (bitmap) {
-        const canvas = document.createElement("canvas");
-        canvas.width = bitmap.width;
-        canvas.height = bitmap.height;
-        canvas.getContext("2d")?.drawImage(bitmap, 0, 0);
-        m.addSource(SRC.imagery, { type: "canvas", canvas, coordinates: coords, animate: false });
+        m.addSource(SRC.imagery, { type: "canvas", canvas: displayCanvas(im.url, bitmap), coordinates: coords, animate: false });
       } else {
         m.addSource(SRC.imagery, { type: "image", url: im.url, coordinates: coords });
       }
@@ -325,17 +385,37 @@ export class MapEngine {
       });
     }
 
+    // --- high-res display basemap (optional, online)
+    if (HD_IMAGERY_KEY) {
+      m.addSource(SRC.imageryHd, {
+        type: "raster",
+        tiles: [hdImageryTiles(HD_IMAGERY_KEY)],
+        tileSize: 256,
+        maxzoom: 19,
+        attribution: HD_IMAGERY_ATTRIBUTION,
+        ...(im && im.corners.length === 4 ? { bounds: bboxOfCorners(im.corners as LngLat[]) } : {}),
+      });
+      m.addLayer({
+        id: "imagery-hd",
+        type: "raster",
+        source: SRC.imageryHd,
+        layout: { visibility: this.imageryVisible && this.hdVisible ? "visible" : "none" },
+        paint: { "raster-opacity": 1, "raster-saturation": -0.3, "raster-contrast": 0.04, "raster-brightness-max": 0.9, "raster-fade-duration": 180, "raster-resampling": "linear" },
+      });
+    }
+
     // --- terrain (optional)
     const t = args.bundle.terrain;
-    if (t) {
+    if (t && canvasReadbackIsTrustworthy()) {
       try {
         const tiles = demTileTemplate(t.url, t.bounds, t.encoding);
         const stats = await demStats(t.url, t.bounds, t.encoding);
+        const enc = await demEncoding(t.url, t.bounds, t.encoding);
         if (this.destroyed) return;
         const relief = Math.max(1, stats.max - stats.min);
         // Flat Punjab plains: exaggerate modestly so canal-scale relief is legible; labelled in the legend.
         this.terrainExaggeration = Math.round(Math.max(1, Math.min(6, 24 / relief)) * 10) / 10;
-        const demSrc = { type: "raster-dem" as const, tiles: [tiles], tileSize: 256, encoding: "terrarium" as const, bounds: t.bounds, minzoom: 8, maxzoom: 12 }; // ~30 m DEM: z12 already oversamples it
+        const demSrc = { type: "raster-dem" as const, tiles: [tiles], tileSize: 256, ...enc, bounds: t.bounds, minzoom: 8, maxzoom: 12 }; // ~30 m DEM: z12 already oversamples it
         m.addSource(SRC.dem, demSrc);
         m.addSource(SRC.demHs, demSrc);
         m.addLayer({
@@ -377,9 +457,28 @@ export class MapEngine {
       });
     }
 
-    // --- raw AI output (review overlay)
+    // --- raw AI output: every delineated parcel as quiet context, plus the review overlay
     if (args.raw) {
       m.addSource(SRC.raw, { type: "geojson", data: args.raw });
+      const dark = document.documentElement.dataset.theme === "dark";
+      m.addLayer({
+        id: "parcels-fill",
+        type: "fill",
+        source: SRC.raw,
+        layout: { visibility: this.parcelsVisible ? "visible" : "none" },
+        paint: { "fill-color": "#ffffff", "fill-opacity": ["interpolate", ["linear"], ["zoom"], 13, 0, 15, dark ? 0.035 : 0.06] },
+      });
+      m.addLayer({
+        id: "parcels-line",
+        type: "line",
+        source: SRC.raw,
+        layout: { visibility: this.parcelsVisible ? "visible" : "none", "line-join": "round" },
+        paint: {
+          "line-color": dark ? "#e8f1ee" : "#fffdf5",
+          "line-opacity": ["interpolate", ["linear"], ["zoom"], 12.5, 0.12, 14.5, 0.42, 16, 0.55],
+          "line-width": ["interpolate", ["linear"], ["zoom"], 13, 0.4, 16, 1.1],
+        },
+      });
       m.addLayer({
         id: "fields-raw",
         type: "line",
@@ -589,6 +688,8 @@ export class MapEngine {
 
   private clearLayers() {
     const m = this.map;
+    cancelAnimationFrame(this.fieldRaf);
+    this.fieldNow.clear();
     for (const l of [...(m.getStyle()?.layers ?? [])]) if (l.id !== "bg") m.removeLayer(l.id);
     if (m.getTerrain()) m.setTerrain(null);
     this.terrainOn = false;
@@ -667,7 +768,20 @@ export class MapEngine {
   setImageryVisible(on: boolean) {
     this.imageryVisible = on;
     if (this.map.getLayer("imagery")) this.map.setLayoutProperty("imagery", "visibility", on ? "visible" : "none");
+    this.syncHd();
   }
+  setHdImageryVisible(on: boolean) {
+    this.hdVisible = on;
+    this.syncHd();
+  }
+  private syncHd() {
+    if (this.map.getLayer("imagery-hd")) this.map.setLayoutProperty("imagery-hd", "visibility", this.imageryVisible && this.hdVisible ? "visible" : "none");
+  }
+  setParcelsVisible(on: boolean) {
+    this.parcelsVisible = on;
+    for (const id of ["parcels-fill", "parcels-line"]) if (this.map.getLayer(id)) this.map.setLayoutProperty(id, "visibility", on ? "visible" : "none");
+  }
+
   setRawVisible(on: boolean) {
     this.rawVisible = on;
     if (this.map.getLayer("fields-raw")) this.map.setLayoutProperty("fields-raw", "visibility", on ? "visible" : "none");
@@ -694,9 +808,12 @@ export class MapEngine {
   private applyVisuals() {
     const m = this.map;
     if (!m.getSource(SRC.fields)) return;
-    const neutral = cssVar("--surface-sunken", "#e4e8e1");
+    const dark = document.documentElement.dataset.theme === "dark";
+    // Fields without a result read as pale, low plots in both themes (never black slabs).
+    const neutral = dark ? "#8f8a7c" : "#e7e1d1";
     const canvas = cssVar("--canvas", "#f4f2eb");
     const anyFocus = !!this.selected || !!this.highlightIds;
+    const targets = new Map<string, { color: string; h: number; dim: boolean; base: string }>();
     for (const id of this.fieldOrder) {
       const v = this.visuals.get(id);
       const base = v?.color ?? neutral;
@@ -704,8 +821,36 @@ export class MapEngine {
       const dim = anyFocus && !focus;
       const color = dim ? mix(base, canvas, this.dimAmount) : base;
       const h = v ? MIN_EXTRUDE_M + v.norm * (MAX_EXTRUDE_M - MIN_EXTRUDE_M) : MIN_EXTRUDE_M * 0.6;
-      m.setFeatureState({ source: SRC.fields, id }, { color, hcolor: mix(base, "#ffffff", 0.28), h, dim });
+      targets.set(id, { color, h, dim, base });
     }
+    this.tweenFields(targets);
+  }
+
+  /** Eases every field block from its current height/colour to the new one (blocks grow, not jump). */
+  private fieldNow = new Map<string, { color: string; h: number }>();
+  private fieldRaf = 0;
+  private tweenFields(targets: Map<string, { color: string; h: number; dim: boolean; base: string }>) {
+    const m = this.map;
+    cancelAnimationFrame(this.fieldRaf);
+    const from = new Map(this.fieldNow);
+    const instant = this.opts.reducedMotion || this.opts.mode === "2d";
+    const dur = 520;
+    const t0 = performance.now();
+    const step = (now: number) => {
+      if (this.destroyed || !m.getSource(SRC.fields)) return;
+      const k = instant ? 1 : easeOutCubic(Math.min(1, (now - t0) / dur));
+      for (const [id, t] of targets) {
+        // New blocks rise from the ground in their final colour.
+        const f = from.get(id) ?? { h: 0, color: t.color };
+        const h = f.h + (t.h - f.h) * k;
+        const color = k < 1 ? mix(f.color, t.color, k) : t.color;
+        this.fieldNow.set(id, { color, h });
+        m.setFeatureState({ source: SRC.fields, id }, { color, hcolor: mix(t.base, "#ffffff", 0.28), h, dim: t.dim });
+      }
+      if (k < 1) this.fieldRaf = requestAnimationFrame(step);
+    };
+    if (instant) step(t0);
+    else this.fieldRaf = requestAnimationFrame(step);
   }
 
   /* ------------------------------------------------------------ selection */

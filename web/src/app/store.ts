@@ -65,7 +65,9 @@ interface UIState {
   mapMode: "3d" | "2d";
   mapMetric: MapMetric;
   showImagery: boolean;
+  showHdImagery: boolean;
   showRawFields: boolean;
+  showParcels: boolean;
   showTerrain: boolean;
   areaUnit: "ha" | "acre";
   scenarioOpen: boolean;
@@ -84,7 +86,7 @@ interface UIState {
   runsByRevision: Record<string, Partial<Record<"B0" | "B1" | "P" | "R", string>>>;
   recordRun: (revisionId: string, planKind: string, runId: string) => void;
   set: (p: Partial<UIState>) => void;
-  toggle: (k: "presentation" | "scenarioOpen" | "inspectorOpen" | "showImagery" | "showRawFields" | "showTerrain" | "orbiting" | "commandOpen") => void;
+  toggle: (k: "presentation" | "scenarioOpen" | "inspectorOpen" | "showImagery" | "showHdImagery" | "showRawFields" | "showParcels" | "showTerrain" | "orbiting" | "commandOpen") => void;
   setDraft: (pilotKey: string, d: ScenarioDraft) => void;
   patchDraft: (pilotKey: string, d: Partial<ScenarioDraft>) => void;
   setActive: (pilotKey: string, a: ActiveScenario | null) => void;
@@ -102,7 +104,9 @@ export const useUI = create<UIState>()(
       mapMode: "3d",
       mapMetric: "yield",
       showImagery: true,
+      showHdImagery: true,
       showRawFields: false,
+      showParcels: true,
       showTerrain: true,
       areaUnit: "ha",
       scenarioOpen: true,
@@ -153,7 +157,9 @@ export const useUI = create<UIState>()(
         mapMode: s.mapMode,
         mapMetric: s.mapMetric,
         showImagery: s.showImagery,
+        showHdImagery: s.showHdImagery,
         showTerrain: s.showTerrain,
+        showParcels: s.showParcels,
         areaUnit: s.areaUnit,
         scenarioOpen: s.scenarioOpen,
         drafts: s.drafts,

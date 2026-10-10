@@ -15,7 +15,9 @@ export function MapBinder() {
   const reduced = useReducedMotion();
   const theme = useResolvedTheme();
   const showImagery = useUI((s) => s.showImagery);
+  const showHdImagery = useUI((s) => s.showHdImagery);
   const showRaw = useUI((s) => s.showRawFields);
+  const showParcels = useUI((s) => s.showParcels);
   const showTerrain = useUI((s) => s.showTerrain);
   const orbiting = useUI((s) => s.orbiting);
   const ready = useMapRuntime((s) => s.ready);
@@ -67,7 +69,9 @@ export function MapBinder() {
     if (ready) engine.refreshTheme();
   }, [engine, ready, theme]);
   useEffect(() => engine.setImageryVisible(showImagery), [engine, showImagery, ready]);
+  useEffect(() => engine.setHdImageryVisible(showHdImagery), [engine, showHdImagery, ready]);
   useEffect(() => engine.setRawVisible(showRaw), [engine, showRaw, ready]);
+  useEffect(() => engine.setParcelsVisible(showParcels), [engine, showParcels, ready]);
   useEffect(() => engine.setTerrainEnabled(showTerrain), [engine, showTerrain, ready]);
   useEffect(() => {
     if (!ready) return;

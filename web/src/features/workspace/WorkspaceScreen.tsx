@@ -8,6 +8,7 @@ import { ResultBar, ResultStrip, type ResultState } from "./ResultStrip";
 import { useScenario } from "./useScenario";
 import { useShell } from "@/components/layout/AppShell";
 import { formatDate } from "@/lib/formatting";
+import { HD_IMAGERY_ATTRIBUTION, HD_IMAGERY_KEY } from "@/components/map/hdImagery";
 
 export function WorkspaceScreen() {
   const { sel, pilot, map } = usePilotData();
@@ -27,6 +28,9 @@ export function WorkspaceScreen() {
   }, [sel.runId, s.phase, run.data, s.active]);
 
   const im = map.data?.imagery[0];
+  const showImagery = useUI((s) => s.showImagery);
+  const showHd = useUI((s) => s.showHdImagery);
+  const hdOn = !!HD_IMAGERY_KEY && showImagery && showHd;
   return (
     <div className="relative flex min-h-0 flex-1 flex-col" data-testid="workspace">
       <MapSlot
@@ -46,7 +50,8 @@ export function WorkspaceScreen() {
           <div className="pointer-events-auto rounded-[10px] bg-surface/90 px-2.5 py-1.5 text-[11px] text-ink-secondary shadow-1 backdrop-blur">
             {im ? (
               <>
-                Sentinel-2 L2A · {formatDate(im.acquiredAt)} · {im.resolutionM ?? 10} m
+                {hdOn ? <>{HD_IMAGERY_ATTRIBUTION} · analysis: </> : null}
+                Sentinel-2 L2A · {formatDate(im.acquiredAt)} · {im.resolutionM ?? 10} m{hdOn ? "" : " · display-sharpened"}
               </>
             ) : (
               "No imagery"
