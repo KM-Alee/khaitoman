@@ -1,0 +1,26 @@
+{
+  "base_revision_id": "rev_example",
+  "settings": [
+    {
+      "capital_budget_pkr": 0
+    },
+    {
+      "capital_budget_pkr": 500000
+    },
+    {
+      "capital_budget_pkr": 1500000
+    },
+    {
+      "capital_budget_pkr": 3000000
+    },
+    {
+      "capital_budget_pkr": 8000000
+    },
+    {
+      "capital_budget_pkr": 3000000,
+      "minimum_service_ratio": 0.6,
+      "service_group": "tail"
+    }
+  ],
+  "time_limit_per_point_s": 10
+}

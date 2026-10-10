@@ -1,0 +1,17 @@
+{
+  "application_efficiency": 0.75,
+  "crop_profile_id": "wheat-punjab-gdd-v1",
+  "schedule": [
+    {
+      "date": "2026-11-22",
+      "gross_depth_mm": 45.0
+    },
+    {
+      "date": "2026-12-12",
+      "gross_depth_mm": 45.0
+    }
+  ],
+  "season_id": "wheat-rabi-2026-27",
+  "soil_profile_id": "aquacrop-loam-pct50",
+  "weather_scenario_id": "dry"
+}

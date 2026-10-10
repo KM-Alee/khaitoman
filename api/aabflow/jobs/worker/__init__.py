@@ -265,7 +265,11 @@ class Dispatcher:
                     jid = await asyncio.to_thread(self._claim)
                     if jid is None:
                         break
-                    fut = loop.run_in_executor(self._pool, run_job, self.settings, jid, self.owner)
+                    try:
+                        fut = loop.run_in_executor(self._pool, run_job, self.settings, jid, self.owner)
+                    except Exception as exc:  # noqa: BLE001 - submission failure must not strand the job
+                        await asyncio.to_thread(self._submit_failed, jid, exc)
+                        continue
                     self._active[jid] = fut
                     fut.add_done_callback(lambda f, j=jid: self._done(j, f))
                 if time.monotonic() - last_lease_check > self.settings.lease_s:
@@ -285,6 +289,14 @@ class Dispatcher:
         conn = connect(self.settings.db_path)
         try:
             return queue.claim_next(conn, self.owner, self.settings.lease_s)
+        finally:
+            conn.close()
+
+    def _submit_failed(self, job_id: str, exc: Exception) -> None:
+        conn = connect(self.settings.db_path)
+        try:
+            queue.finish(conn, job_id, JobState.interrupted,
+                         error={"code": "INTERRUPTED", "detail": f"could not start worker: {exc!r}"})
         finally:
             conn.close()
 

@@ -87,22 +87,44 @@ class ComparisonRequest(StrictModel):
 
 @router.get("/metrics/definitions", response_model=MetricDefinitions)
 def metric_definitions() -> MetricDefinitions:
-    return MetricDefinitions(metrics_version=METRICS_VERSION, definitions=[d.as_dict() for d in REGISTRY.values()])
+    return MetricDefinitions(
+        metrics_version=METRICS_VERSION, definitions=[d.as_dict() for d in REGISTRY.values()]
+    )
 
 
 @router.get("/runs", response_model=RunList)
-def runs(conn: Conn, pilot_id: str | None = None, pilot_version: str | None = None,
-         scenario_revision_id: str | None = None, limit: Annotated[int, Query(ge=1, le=500)] = 100) -> RunList:
-    return RunList(runs=list_runs(conn, pilot_id=pilot_id, pilot_version=pilot_version,
-                                  scenario_revision_id=scenario_revision_id, limit=limit))
+def runs(
+    conn: Conn,
+    pilot_id: str | None = None,
+    pilot_version: str | None = None,
+    scenario_revision_id: str | None = None,
+    limit: Annotated[int, Query(ge=1, le=500)] = 100,
+) -> RunList:
+    return RunList(
+        runs=list_runs(
+            conn,
+            pilot_id=pilot_id,
+            pilot_version=pilot_version,
+            scenario_revision_id=scenario_revision_id,
+            limit=limit,
+        )
+    )
 
 
 @router.get("/runs/{run_id}", response_model=RunView)
 def get_run(run_id: str, conn: Conn) -> RunView:
     r = load_run(conn, run_id)
-    return RunView(run=r.result, metrics=r.metrics(), selection=r.json("selection.json"), meta=r.meta,
-                   label=r.doc.get("label"), analysis_id=r.doc.get("analysis_id"), job_id=r.doc.get("job_id"),
-                   software=r.doc.get("software", {}), bundle_verified=True)
+    return RunView(
+        run=r.result,
+        metrics=r.metrics(),
+        selection=r.json("selection.json"),
+        meta=r.meta,
+        label=r.doc.get("label"),
+        analysis_id=r.doc.get("analysis_id"),
+        job_id=r.doc.get("job_id"),
+        software=r.doc.get("software", {}),
+        bundle_verified=True,
+    )
 
 
 @router.get("/runs/{run_id}/solver")
@@ -125,8 +147,13 @@ def _pivot(df: pd.DataFrame, dates: list[str], weekly: bool) -> list[float | Non
     return [float(s[d]) if d in s.index else None for d in dates]
 
 
-STATE_SERIES = {"canopy_fraction", "biomass_kg_ha", "soil_profile_water_mm", "root_zone_water_mm",
-                "pond_inventory_m3"}
+STATE_SERIES = {
+    "canopy_fraction",
+    "biomass_kg_ha",
+    "soil_profile_water_mm",
+    "root_zone_water_mm",
+    "pond_inventory_m3",
+}
 
 
 def _series_out(df: pd.DataFrame, sid: str, ent: str, dates: list[str], weekly: bool) -> SeriesOut:
@@ -144,12 +171,19 @@ def _series_out(df: pd.DataFrame, sid: str, ent: str, dates: list[str], weekly: 
             last = v if v is not None else last
             filled.append(last)
         vals = filled
-    return SeriesOut(series_id=sid, entity_id=ent, label=label, unit=unit, kind=kind, source=src, values=vals)
+    return SeriesOut(
+        series_id=sid, entity_id=ent, label=label, unit=unit, kind=kind, source=src, values=vals
+    )
 
 
 @router.get("/runs/{run_id}/timeline", response_model=Timeline)
-def timeline(run_id: str, conn: Conn, state: State, field_id: str | None = None,
-             resolution: Literal["daily", "weekly"] = "daily") -> Timeline:
+def timeline(
+    run_id: str,
+    conn: Conn,
+    state: State,
+    field_id: str | None = None,
+    resolution: Literal["daily", "weekly"] = "daily",
+) -> Timeline:
     r = load_run(conn, run_id)
     tl = r.timeline()
     meta = r.meta
@@ -164,10 +198,21 @@ def timeline(run_id: str, conn: Conn, state: State, field_id: str | None = None,
         tl = tl.copy()
         wk = pd.to_datetime(tl["date"]).dt.to_period("W-SUN").dt.start_time.dt.date.astype(str)
         state_rows = tl["series_id"].isin(STATE_SERIES)
-        flows = tl[~state_rows].assign(date=wk[~state_rows]).groupby(
-            ["date", "field_id", "entity_id", "series_id"], dropna=False)["value"].sum().reset_index()
-        st = tl[state_rows].assign(date=wk[state_rows]).sort_values("date").groupby(
-            ["date", "field_id", "entity_id", "series_id"], dropna=False)["value"].last().reset_index()
+        flows = (
+            tl[~state_rows]
+            .assign(date=wk[~state_rows])
+            .groupby(["date", "field_id", "entity_id", "series_id"], dropna=False)["value"]
+            .sum()
+            .reset_index()
+        )
+        st = (
+            tl[state_rows]
+            .assign(date=wk[state_rows])
+            .sort_values("date")
+            .groupby(["date", "field_id", "entity_id", "series_id"], dropna=False)["value"]
+            .last()
+            .reset_index()
+        )
         tl = pd.concat([flows, st], ignore_index=True)
         dates = sorted(tl["date"].unique())
     series, edges, ponds = [], [], []
@@ -182,16 +227,33 @@ def timeline(run_id: str, conn: Conn, state: State, field_id: str | None = None,
             (edges if sid == "edge_delivered_m3" else ponds).append(out)
     season = meta["season_id"]
     wins = [
-        {"window_id": w.window_id, "field_id": w.field_id, "start": w.start.isoformat(), "end": w.end.isoformat(),
-         "basis": w.basis.value, "rate_m3_s": w.rate_m3_s, "volume_cap_m3": w.volume_cap_m3,
-         "verification": w.verification}
-        for w in pkg.roster.get(season, []) if field_id is None or w.field_id == field_id
+        {
+            "window_id": w.window_id,
+            "field_id": w.field_id,
+            "start": w.start.isoformat(),
+            "end": w.end.isoformat(),
+            "basis": w.basis.value,
+            "rate_m3_s": w.rate_m3_s,
+            "volume_cap_m3": w.volume_cap_m3,
+            "verification": w.verification,
+        }
+        for w in pkg.roster.get(season, [])
+        if field_id is None or w.field_id == field_id
     ]
-    return Timeline(run_id=run_id, field_id=field_id, state_id=meta["typical_state"], resolution=resolution,
-                    dates=list(dates), series=series, edges=edges, ponds=ponds, windows=wins,
-                    note="Crop series are exact AquaCrop outputs for the selected policy; water series are the "
-                    "original-precision ledger aggregated by local day. Missing values are gaps, not zeros. "
-                    "Weekly values are display aggregations.")
+    return Timeline(
+        run_id=run_id,
+        field_id=field_id,
+        state_id=meta["typical_state"],
+        resolution=resolution,
+        dates=list(dates),
+        series=series,
+        edges=edges,
+        ponds=ponds,
+        windows=wins,
+        note="Crop series are exact AquaCrop outputs for the selected policy; water series are the "
+        "original-precision ledger aggregated by local day. Missing values are gaps, not zeros. "
+        "Weekly values are display aggregations.",
+    )
 
 
 @router.post("/comparisons", status_code=201)
@@ -233,9 +295,22 @@ def run_action_plan(run_id: str, conn: Conn, state: State) -> dict:
     return insights.action_plan(load_run(conn, run_id), state.pilots)
 
 
+@router.get("/runs/{run_id}/explanations")
+def run_explanations(run_id: str, conn: Conn, state: State) -> dict:
+    from aabflow.services.explanations import explain
+    from aabflow.services.runs import RunContext
+
+    rc = RunContext(state.settings, state.pilots, state.catalog)
+    return explain(rc, load_run(conn, run_id))
+
+
 @router.get("/runs/{run_id}/impact")
-def run_impact(run_id: str, conn: Conn, baseline_run_id: str | None = None,
-               stress_analysis_id: str | None = None) -> dict:
+def run_impact(
+    run_id: str,
+    conn: Conn,
+    baseline_run_id: str | None = None,
+    stress_analysis_id: str | None = None,
+) -> dict:
     base = load_run(conn, baseline_run_id) if baseline_run_id else None
     stress = None
     if stress_analysis_id:

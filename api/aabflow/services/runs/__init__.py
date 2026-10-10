@@ -12,6 +12,7 @@ diagnostic artifact and no recommendation.
 from __future__ import annotations
 
 import json
+import math
 import os
 import shutil
 import sqlite3
@@ -57,8 +58,17 @@ from aabflow.services.science import get_bindings
 RUN_ADAPTER = TypeAdapter(RunResult)
 ABS_TOL = 1e-6
 REL_TOL = 1e-9
-ARTIFACTS = ("run.json", "scenario.json", "selection.json", "solver.json", "ledger.parquet", "timeline.parquet",
-             "metrics.json", "validation.json", "coverage.json")
+ARTIFACTS = (
+    "run.json",
+    "scenario.json",
+    "selection.json",
+    "solver.json",
+    "ledger.parquet",
+    "timeline.parquet",
+    "metrics.json",
+    "validation.json",
+    "coverage.json",
+)
 
 
 def _tol(mag: float) -> float:
@@ -95,31 +105,68 @@ class SolveOptions:
 # ------------------------------------------------------------------------ execution
 
 
-def execute(rc: RunContext, conn: sqlite3.Connection, revision_id: str, opts: SolveOptions,
-            token: CancelToken = NEVER, progress=None) -> str:
-    """Prepare, solve, reconstruct, validate and persist one run; returns run_id."""
+def execute(
+    rc: RunContext,
+    conn: sqlite3.Connection,
+    revision_id: str,
+    opts: SolveOptions,
+    token: CancelToken = NEVER,
+    progress=None,
+    on_prepared=None,
+) -> str:
+    """Prepare, solve, reconstruct, validate and persist one run; returns run_id.
+
+    ``on_prepared(prep)`` lets analysis services read the prepared candidate outcomes (for example the
+    violations that make a fixed plan undeliverable in a stress state) without preparing twice.
+    """
     rev, deps = get_revision(conn, revision_id)
     req = rev.request
     pkg = rc.pilots.package(req.pilot_id, req.pilot_version)
     if deps.get("pilot_package_sha256") != pkg.package_hash:
-        raise DomainError(ErrorCode.VERSION_CONFLICT, "pilot package changed since this revision was created",
-                          extra={"dependency_diff": {"revision": deps.get("pilot_package_sha256"),
-                                                     "current": pkg.package_hash}})
+        raise DomainError(
+            ErrorCode.VERSION_CONFLICT,
+            "pilot package changed since this revision was created",
+            extra={
+                "dependency_diff": {
+                    "revision": deps.get("pilot_package_sha256"),
+                    "current": pkg.package_hash,
+                }
+            },
+        )
     lib_hash = rev.candidate_library_hash
     if lib_hash is None:
         lib_hash = rc.catalog.latest_library_hash(req.pilot_id, req.season_id)
         if lib_hash is None:
-            raise DomainError(ErrorCode.ASSET_UNAVAILABLE, "no published candidate library for this pilot/season")
+            raise DomainError(
+                ErrorCode.ASSET_UNAVAILABLE, "no published candidate library for this pilot/season"
+            )
     bindings = get_bindings(rc.settings)
     hint = _b1_hint(conn, revision_id) if opts.plan_kind is PlanKind.P else None
     _p(progress, "preparing candidates")
-    prep = prepare(bindings, pkg, rc.catalog, req, opts.plan_kind, library_hash=lib_hash,
-                   states_override=opts.states_override, fixed_selection=opts.fixed_selection,
-                   fixed_instances=opts.fixed_instances, fixed_config_id=opts.fixed_config_id, hint=hint)
+    prep = prepare(
+        bindings,
+        pkg,
+        rc.catalog,
+        req,
+        opts.plan_kind,
+        library_hash=lib_hash,
+        states_override=opts.states_override,
+        fixed_selection=opts.fixed_selection,
+        fixed_instances=opts.fixed_instances,
+        fixed_config_id=opts.fixed_config_id,
+        hint=hint,
+    )
+    if on_prepared is not None:
+        on_prepared(prep)
     token.check()
     _p(progress, "solving")
-    outcome = solve_problem(prep.problem, time_limit_s=opts.time_limit_s, workers=opts.workers, seed=opts.seed,
-                            token=token)
+    outcome = solve_problem(
+        prep.problem,
+        time_limit_s=opts.time_limit_s,
+        workers=opts.workers,
+        seed=opts.seed,
+        token=token,
+    )
     token.check()
     _p(progress, "reconstructing")
     run_id = new_id("run")
@@ -170,7 +217,9 @@ def _infeasibility_kind(prep: Prepared, outcome: SolveOutcome) -> InfeasibilityK
     if "service floor" in reasons:
         return InfeasibilityKind.finite_candidate_incompatibility
     if any(c.empty_fields for c in prep.problem.configs) and all(
-        r.reason and "no admissible candidate" in r.reason for r in outcome.configs if r.status is SolverStatus.INFEASIBLE
+        r.reason and "no admissible candidate" in r.reason
+        for r in outcome.configs
+        if r.status is SolverStatus.INFEASIBLE
     ):
         return InfeasibilityKind.empty_option_set
     return InfeasibilityKind.finite_candidate_incompatibility
@@ -184,34 +233,52 @@ def _objective_kg(prep: Prepared, value_int: int | None) -> float | None:
     return value_int * prep.problem.production_quantum_kg
 
 
-def complete(rc: RunContext, run_id: str, rev, deps: dict, prep: Prepared, outcome: SolveOutcome,
-             opts: SolveOptions, bindings, pkg: PilotPackage) -> tuple[Any, dict[str, Any]]:
+def complete(
+    rc: RunContext,
+    run_id: str,
+    rev,
+    deps: dict,
+    prep: Prepared,
+    outcome: SolveOutcome,
+    opts: SolveOptions,
+    bindings,
+    pkg: PilotPackage,
+) -> tuple[Any, dict[str, Any]]:
     req = prep.request
     now = datetime.now(UTC)
     warnings = list(prep.warnings) + list(outcome.notes) + list(opts.extra_warnings)
     if opts.plan_kind is PlanKind.B0:
         warnings.append("B0 fixed-roster policy: executed operating habit, not an optimized plan")
-    base = dict(
-        run_id=run_id,
-        scenario_revision_id=rev.scenario_revision_id,
-        scenario_hash=rev.semantic_hash,
-        candidate_library_hash=prep.library.candidate_library_hash,
-        plan_kind=opts.plan_kind,
-        primary_objective="worst_case_" + req.objective.value if len(prep.problem.objective_states) > 1
+    base = {
+        "run_id": run_id,
+        "scenario_revision_id": rev.scenario_revision_id,
+        "scenario_hash": rev.semantic_hash,
+        "candidate_library_hash": prep.library.candidate_library_hash,
+        "plan_kind": opts.plan_kind,
+        "primary_objective": "worst_case_" + req.objective.value
+        if len(prep.problem.objective_states) > 1
         else req.objective.value,
-        solve_wall_ms=outcome.wall_ms,
-        configurations=_config_statuses(outcome),
-        candidate_coverage_ref="coverage.json",
-        warnings=warnings,
-        created_at=now,
-    )
+        "solve_wall_ms": outcome.wall_ms,
+        "configurations": _config_statuses(outcome),
+        "candidate_coverage_ref": "coverage.json",
+        "warnings": warnings,
+        "created_at": now,
+    }
     common = {
-        "scenario": {"request": req.model_dump(mode="json"), "dependencies": deps, "revision": rev.model_dump(mode="json")},
+        "scenario": {
+            "request": req.model_dump(mode="json"),
+            "dependencies": deps,
+            "revision": rev.model_dump(mode="json"),
+        },
         "solver": {
             **describe(outcome),
-            "settings": {"time_limit_s": opts.time_limit_s, "workers": opts.workers, "seed": opts.seed,
-                         "water_quantum_m3": prep.problem.water_quantum_m3,
-                         "production_quantum_kg": prep.problem.production_quantum_kg},
+            "settings": {
+                "time_limit_s": opts.time_limit_s,
+                "workers": opts.workers,
+                "seed": opts.seed,
+                "water_quantum_m3": prep.problem.water_quantum_m3,
+                "production_quantum_kg": prep.problem.production_quantum_kg,
+            },
             "states": [s.state_id for s in prep.states],
             "objective_states": prep.problem.objective_states,
             "typical_state": prep.typical_state.state_id,
@@ -221,9 +288,17 @@ def complete(rc: RunContext, run_id: str, rev, deps: dict, prep: Prepared, outco
     }
     if outcome.best is None:
         diags = {
-            "configurations": [{"shared_configuration_id": r.config_id, "status": r.status.value, "reason": r.reason}
-                               for r in outcome.configs],
-            "empty_fields": {c.config_id: c.empty_fields for c in prep.problem.configs if c.empty_fields},
+            "configurations": [
+                {
+                    "shared_configuration_id": r.config_id,
+                    "status": r.status.value,
+                    "reason": r.reason,
+                }
+                for r in outcome.configs
+            ],
+            "empty_fields": {
+                c.config_id: c.empty_fields for c in prep.problem.configs if c.empty_fields
+            },
             "max_attainable_service": prep.max_attainable_service,
             "constraint_groups": _constraint_groups(prep),
             "candidate_coverage_note": prep.coverage["note"],
@@ -235,14 +310,32 @@ def complete(rc: RunContext, run_id: str, rev, deps: dict, prep: Prepared, outco
         result = NoPlanRun(
             **base,
             solver_status=status,
-            infeasibility_kind=_infeasibility_kind(prep, outcome) if status is SolverStatus.INFEASIBLE else None,
+            infeasibility_kind=_infeasibility_kind(prep, outcome)
+            if status is SolverStatus.INFEASIBLE
+            else None,
             diagnostics=diags,
         )
-        return result, {**common, "selection": None, "ledger": [], "metrics": [], "timeline": [],
-                        "validation": {"status": "not_run", "reason": "no incumbent plan"}, "meta": _meta(prep)}
+        return result, {
+            **common,
+            "selection": None,
+            "ledger": [],
+            "metrics": [],
+            "timeline": [],
+            "validation": {"status": "not_run", "reason": "no incumbent plan"},
+            "meta": _meta(prep),
+        }
 
     best = outcome.best
     cfg_id = best.config_id
+    if opts.plan_kind is PlanKind.B1:
+        from aabflow.services.runs.prepare import _baseline_selection
+
+        b0 = _baseline_selection(prep.problem.configs)
+        if b0 and all(best.selection.get(f) == b0.get(f) for f in prep.problem.fields):
+            base["warnings"].append(
+                "B1 selects the same policy as B0 for every field: re-operating existing assets adds nothing "
+                "under these conditions, so the value-of-investment comparison collapses (T6.5)"
+            )
     sel_ids = [best.selection[f] for f in sorted(best.selection)]
     # ---- original-precision reconstruction per evaluated state
     ledgers: dict[str, list[LedgerEvent]] = {}
@@ -251,33 +344,66 @@ def complete(rc: RunContext, run_id: str, rev, deps: dict, prep: Prepared, outco
     for st in prep.states:
         try:
             events, report = bindings.reconstruct(
-                sel_ids, prep.library, st.base_state, cfg_id,
-                resolved_supply=st.resolved_supply, extra_closures=st.extra_closures, policies=prep.policies,
+                sel_ids,
+                prep.library,
+                st.base_state,
+                cfg_id,
+                resolved_supply=st.resolved_supply,
+                extra_closures=st.extra_closures,
+                policies=prep.policies,
             )
         except DomainError:
             raise
         except Exception as exc:  # noqa: BLE001 - a reconstruction crash invalidates the plan
-            events, report = [], PhysicalValidationReport(status="failed", residuals=[RuleResidual(
-                rule="reconstruction", passed=False, detail=f"{type(exc).__name__}: {exc}")])
+            events, report = (
+                [],
+                PhysicalValidationReport(
+                    status="failed",
+                    residuals=[
+                        RuleResidual(
+                            rule="reconstruction",
+                            passed=False,
+                            detail=f"{type(exc).__name__}: {exc}",
+                        )
+                    ],
+                ),
+            )
         ledgers[st.state_id] = events
         for r in report.residuals:
-            residuals.append(r.model_copy(update={"detail": f"[{st.state_id}] {r.detail or ''}".strip()}))
+            residuals.append(
+                r.model_copy(update={"detail": f"[{st.state_id}] {r.detail or ''}".strip()})
+            )
         status_ok &= report.status == "passed"
     own = verify_selection(prep, best, cfg_id)
     residuals.extend(own)
     status_ok &= all(r.passed for r in own)
-    validation = PhysicalValidationReport(status="passed" if status_ok else "failed", residuals=residuals)
+    validation = PhysicalValidationReport(
+        status="passed" if status_ok else "failed", residuals=residuals
+    )
     selection = _selection_doc(prep, best, cfg_id)
     if not status_ok:
-        result = InvalidPlanRun(**base, solver_status=outcome.status, physical_validation=validation,
-                                diagnostic_ref="validation.json")
-        return result, {**common, "selection": selection, "ledger": _ledger_rows(ledgers), "metrics": [],
-                        "timeline": [], "validation": validation.model_dump(mode="json"), "meta": _meta(prep)}
+        result = InvalidPlanRun(
+            **base,
+            solver_status=outcome.status,
+            physical_validation=validation,
+            diagnostic_ref="validation.json",
+        )
+        return result, {
+            **common,
+            "selection": selection,
+            "ledger": _ledger_rows(ledgers),
+            "metrics": [],
+            "timeline": [],
+            "validation": validation.model_dump(mode="json"),
+            "meta": _meta(prep),
+        }
     metrics = plan_metrics(run_id, prep, best, cfg_id, ledgers, pkg, rc.catalog)
     obj = _objective_value(prep, best, metrics)
     ub = _objective_kg(prep, outcome.upper_bound)
     if ub is not None and prep.problem.objective == "production_kg":
-        ub += len(prep.problem.fields) * prep.problem.production_quantum_kg  # floor-quantization margin
+        ub += (
+            len(prep.problem.fields) * prep.problem.production_quantum_kg
+        )  # floor-quantization margin
     gap = None
     if outcome.upper_bound is not None and best.primary is not None:
         gap = max(0.0, (outcome.upper_bound - best.primary) / max(1, abs(outcome.upper_bound)))
@@ -292,17 +418,27 @@ def complete(rc: RunContext, run_id: str, rev, deps: dict, prep: Prepared, outco
         objective_upper_bound=None if opts.plan_kind is PlanKind.B0 else ub,
         relative_gap=None if opts.plan_kind is PlanKind.B0 else gap,
         selected_candidate_policy_ids=sel_ids,
-        selected_intervention_instance_ids=sorted(set(best.instances) | set(prep.library_config(cfg_id))),
+        selected_intervention_instance_ids=sorted(
+            set(best.instances) | set(prep.library_config(cfg_id))
+        ),
         shared_configuration_id=cfg_id,
         metric_refs=[f"{m.metric_id}{'@' + m.field_id if m.field_id else ''}" for m in metrics],
         physical_validation=validation,
         trajectory_bundle_ref="timeline.parquet",
         comparison_compatibility_key=compat,
     )
-    timeline = build_timeline(prep, best, ledgers.get(prep.typical_state.state_id, []), bindings, pkg)
-    return result, {**common, "selection": selection, "ledger": _ledger_rows(ledgers),
-                    "metrics": [m.model_dump(mode="json") for m in metrics], "timeline": timeline,
-                    "validation": validation.model_dump(mode="json"), "meta": _meta(prep)}
+    timeline = build_timeline(
+        prep, best, ledgers.get(prep.typical_state.state_id, []), bindings, pkg
+    )
+    return result, {
+        **common,
+        "selection": selection,
+        "ledger": _ledger_rows(ledgers),
+        "metrics": [m.model_dump(mode="json") for m in metrics],
+        "timeline": timeline,
+        "validation": validation.model_dump(mode="json"),
+        "meta": _meta(prep),
+    }
 
 
 def _meta(prep: Prepared) -> dict[str, Any]:
@@ -340,11 +476,19 @@ def compatibility_key(prep: Prepared) -> str:
 
 def _constraint_groups(prep: Prepared) -> list[dict[str, Any]]:
     req = prep.request
-    out = [{"group": "capital_budget", "value": req.capital_budget_pkr, "unit": "PKR"},
-           {"group": "operating_budget", "value": req.operating_budget_pkr, "unit": "PKR"}]
+    out = [
+        {"group": "capital_budget", "value": req.capital_budget_pkr, "unit": "PKR"},
+        {"group": "operating_budget", "value": req.operating_budget_pkr, "unit": "PKR"},
+    ]
     if req.minimum_service_ratio is not None:
-        out.append({"group": "service_floor", "value": req.minimum_service_ratio, "service_group": req.service_group,
-                    "max_attainable": prep.max_attainable_service.get(req.service_group)})
+        out.append(
+            {
+                "group": "service_floor",
+                "value": req.minimum_service_ratio,
+                "service_group": req.service_group,
+                "max_attainable": prep.max_attainable_service.get(req.service_group),
+            }
+        )
     out.append({"group": "shared_resources", "states": [s.state_id for s in prep.states]})
     return out
 
@@ -369,11 +513,16 @@ def _selection_doc(prep: Prepared, best, cfg_id: str) -> dict[str, Any]:
             "application_schedule": [e.model_dump(mode="json") for e in p.application_schedule],
             "outcomes": {
                 s.state_id: prep.outcomes[(pid, s.state_id)].model_dump(mode="json")
-                for s in prep.states if (pid, s.state_id) in prep.outcomes
+                for s in prep.states
+                if (pid, s.state_id) in prep.outcomes
             },
         }
-    return {"shared_configuration_id": cfg_id, "instances": best.instances,
-            "repair_instance_ids": prep.library_config(cfg_id), "fields": fields}
+    return {
+        "shared_configuration_id": cfg_id,
+        "instances": best.instances,
+        "repair_instance_ids": prep.library_config(cfg_id),
+        "fields": fields,
+    }
 
 
 def verify_selection(prep: Prepared, best, cfg_id: str) -> list[RuleResidual]:
@@ -383,30 +532,62 @@ def verify_selection(prep: Prepared, best, cfg_id: str) -> list[RuleResidual]:
     cfg = next(c for c in p.configs if c.config_id == cfg_id)
     opts = {o.policy_id: o for os_ in cfg.options.values() for o in os_}
     missing = [f for f in p.fields if f not in best.selection]
-    out.append(RuleResidual(rule="one_policy_per_field", passed=not missing, entity_ids=missing,
-                            detail="every field has exactly one selected policy" if not missing else "fields without a policy"))
+    out.append(
+        RuleResidual(
+            rule="one_policy_per_field",
+            passed=not missing,
+            entity_ids=missing,
+            detail="every field has exactly one selected policy"
+            if not missing
+            else "fields without a policy",
+        )
+    )
     chosen = [opts[pid] for pid in best.selection.values() if pid in opts]
     insts = sorted({j for o in chosen for j in o.required_instance_ids})
     unused = sorted(set(best.instances) - set(insts))
-    out.append(RuleResidual(rule="instances_required_and_used", passed=not unused and set(insts) <= set(best.instances),
-                            entity_ids=unused, detail="purchased instances match policy prerequisites"))
+    out.append(
+        RuleResidual(
+            rule="instances_required_and_used",
+            passed=not unused and set(insts) <= set(best.instances),
+            entity_ids=unused,
+            detail="purchased instances match policy prerequisites",
+        )
+    )
     groups: dict[str, list[str]] = defaultdict(list)
     for j in insts:
         g = p.instances[j].exclusive_group if j in p.instances else None
         if g:
             groups[g].append(j)
     clash = [g for g, js in groups.items() if len(js) > 1]
-    out.append(RuleResidual(rule="mutually_exclusive_instances", passed=not clash, entity_ids=clash))
+    out.append(
+        RuleResidual(rule="mutually_exclusive_instances", passed=not clash, entity_ids=clash)
+    )
     capex = cfg.capex_pkr + sum(p.instances[j].capex_pkr for j in insts if j in p.instances)
-    opex = cfg.opex_pkr + sum(o.opex_pkr for o in chosen) + sum(p.instances[j].opex_pkr for j in insts if j in p.instances)
+    opex = (
+        cfg.opex_pkr
+        + sum(o.opex_pkr for o in chosen)
+        + sum(p.instances[j].opex_pkr for j in insts if j in p.instances)
+    )
     if p.apply_budgets and p.capital_budget_pkr is not None:
-        out.append(RuleResidual(rule="capital_budget", passed=capex <= p.capital_budget_pkr, unit="PKR",
-                                max_violation=float(max(0, capex - p.capital_budget_pkr)),
-                                detail=f"gross capital {capex} PKR (shared repairs charged once) <= {p.capital_budget_pkr}"))
+        out.append(
+            RuleResidual(
+                rule="capital_budget",
+                passed=capex <= p.capital_budget_pkr,
+                unit="PKR",
+                max_violation=float(max(0, capex - p.capital_budget_pkr)),
+                detail=f"gross capital {capex} PKR (shared repairs charged once) <= {p.capital_budget_pkr}",
+            )
+        )
     if p.apply_budgets and p.operating_budget_pkr is not None:
-        out.append(RuleResidual(rule="operating_budget", passed=opex <= p.operating_budget_pkr, unit="PKR",
-                                max_violation=float(max(0, opex - p.operating_budget_pkr)),
-                                detail=f"seasonal operating {opex} PKR (incl. pumping) <= {p.operating_budget_pkr}"))
+        out.append(
+            RuleResidual(
+                rule="operating_budget",
+                passed=opex <= p.operating_budget_pkr,
+                unit="PKR",
+                max_violation=float(max(0, opex - p.operating_budget_pkr)),
+                detail=f"seasonal operating {opex} PKR (incl. pumping) <= {p.operating_budget_pkr}",
+            )
+        )
     for s in p.states:
         caps = cfg.capacities.get(s, {})
         used: dict = defaultdict(float)
@@ -419,12 +600,25 @@ def verify_selection(prep: Prepared, best, cfg_id: str) -> list[RuleResidual]:
             if k in caps and v > caps[k] + _tol(caps[k]):
                 worst = max(worst, v - caps[k])
                 bad.append(f"{k[0]}@{k[1]}")
-        out.append(RuleResidual(rule="shared_capacity", passed=not bad, max_violation=worst, entity_ids=bad[:20],
-                                detail=f"[{s}] summed selected use within shared capacities at original precision"))
+        out.append(
+            RuleResidual(
+                rule="shared_capacity",
+                passed=not bad,
+                max_violation=worst,
+                entity_ids=bad[:20],
+                detail=f"[{s}] summed selected use within shared capacities at original precision",
+            )
+        )
         for o in chosen:
             if o.production_kg.get(s) is None:
-                out.append(RuleResidual(rule="exact_crop_outcome", passed=False, entity_ids=[o.policy_id],
-                                        detail=f"[{s}] no exact outcome"))
+                out.append(
+                    RuleResidual(
+                        rule="exact_crop_outcome",
+                        passed=False,
+                        entity_ids=[o.policy_id],
+                        detail=f"[{s}] no exact outcome",
+                    )
+                )
     req = prep.request
     if req.minimum_service_ratio is not None and p.fixed_selection is None:
         bad = []
@@ -435,20 +629,44 @@ def verify_selection(prep: Prepared, best, cfg_id: str) -> list[RuleResidual]:
             if not ref or pid not in opts:
                 continue
             for s in p.states:
-                if opts[pid].service_credit_m3.get(s, 0.0) + _tol(ref) < req.minimum_service_ratio * ref:
+                if (
+                    opts[pid].service_credit_m3.get(s, 0.0) + _tol(ref)
+                    < req.minimum_service_ratio * ref
+                ):
                     bad.append(f)
-        out.append(RuleResidual(rule="service_floor", passed=not bad, entity_ids=sorted(set(bad)), unit="ratio",
-                                detail=f"receipt / reference >= {req.minimum_service_ratio} for {req.service_group}"))
+        out.append(
+            RuleResidual(
+                rule="service_floor",
+                passed=not bad,
+                entity_ids=sorted(set(bad)),
+                unit="ratio",
+                detail=f"receipt / reference >= {req.minimum_service_ratio} for {req.service_group}",
+            )
+        )
     for f, pid in best.selection.items():
         pol = prep.policies.get(pid)
         if pol is not None and pol.application_schedule and pol.cropped_area_ha <= 0:
-            out.append(RuleResidual(rule="cropped_area", passed=False, entity_ids=[f], unit="ha",
-                                    detail="crop policy requires positive cropped area"))
+            out.append(
+                RuleResidual(
+                    rule="cropped_area",
+                    passed=False,
+                    entity_ids=[f],
+                    unit="ha",
+                    detail="crop policy requires positive cropped area",
+                )
+            )
     return out
 
 
-def plan_metrics(run_id: str, prep: Prepared, best, cfg_id: str, ledgers: dict[str, list[LedgerEvent]],
-                 pkg: PilotPackage, catalog: Catalog) -> list[MetricValue]:
+def plan_metrics(
+    run_id: str,
+    prep: Prepared,
+    best,
+    cfg_id: str,
+    ledgers: dict[str, list[LedgerEvent]],
+    pkg: PilotPackage,
+    catalog: Catalog,
+) -> list[MetricValue]:
     typ = prep.typical_state.state_id
     p = prep.problem
     cfg = next(c for c in p.configs if c.config_id == cfg_id)
@@ -461,36 +679,48 @@ def plan_metrics(run_id: str, prep: Prepared, best, cfg_id: str, ledgers: dict[s
         pol = prep.policies[pid]
         o = prep.outcomes.get((pid, typ))
         ev = [o.validation_ref] if o and o.validation_ref else []
-        facts.append(FieldFacts(
-            field_id=f,
-            group=pkg.fields[f].group,
-            policy_id=pid,
-            family=pol.family,
-            cropped_area_ha=pol.cropped_area_ha,
-            yield_kg_ha=o.yield_kg_ha if o else None,
-            production_kg=opts[pid].production_kg.get(typ),
-            canal_receipt_m3=o.canal_receipt_m3 if o else 0.0,
-            service_credit_m3=o.service_credit_m3 if o else 0.0,
-            reference_m3=prep.reference_m3.get(f),
-            groundwater_m3=o.groundwater_m3 if o else 0.0,
-            pumping_cost_pkr=pol.seasonal_opex_pkr,
-            terminal_pond_m3=o.terminal_pond_m3 if o else 0.0,
-            evidence_ids=[x for x in ev if x],
-        ))
+        facts.append(
+            FieldFacts(
+                field_id=f,
+                group=pkg.fields[f].group,
+                policy_id=pid,
+                family=pol.family,
+                cropped_area_ha=pol.cropped_area_ha,
+                yield_kg_ha=o.yield_kg_ha if o else None,
+                production_kg=opts[pid].production_kg.get(typ),
+                canal_receipt_m3=o.canal_receipt_m3 if o else 0.0,
+                service_credit_m3=o.service_credit_m3 if o else 0.0,
+                reference_m3=prep.reference_m3.get(f),
+                groundwater_m3=o.groundwater_m3 if o else 0.0,
+                pumping_cost_pkr=pol.seasonal_opex_pkr,
+                terminal_pond_m3=o.terminal_pond_m3 if o else 0.0,
+                evidence_ids=[x for x in ev if x],
+            )
+        )
     insts = sorted(set(best.instances))
     capex = cfg.capex_pkr + sum(p.instances[j].capex_pkr for j in insts if j in p.instances)
     pumping = sum(prep.policies[best.selection[f]].seasonal_opex_pkr for f in p.fields)
     opex = cfg.opex_pkr + pumping + sum(p.instances[j].opex_pkr for j in insts if j in p.instances)
-    per_state = {s: sum(opts[best.selection[f]].production_kg.get(s, 0.0) for f in p.fields) for s in p.states}
+    per_state = {
+        s: sum(opts[best.selection[f]].production_kg.get(s, 0.0) for f in p.fields)
+        for s in p.states
+    }
     price = catalog.price(crop, prep.request.season_id)
     pf = PlanFacts(
-        run_id=run_id, crop=crop or "", state_id=typ, fields=facts, ledger=ledgers.get(typ),
-        capital_pkr=capex, operating_pkr=opex, pumping_pkr=pumping,
+        run_id=run_id,
+        crop=crop or "",
+        state_id=typ,
+        fields=facts,
+        ledger=ledgers.get(typ),
+        capital_pkr=capex,
+        operating_pkr=opex,
+        pumping_pkr=pumping,
         new_instance_ids=insts + list(prep.library_config(cfg_id)),
         price_pkr_per_kg=price["price_pkr_per_kg"] if price else None,
         price_evidence_id=price.get("evidence_id") if price else None,
         per_state_production=per_state if len(p.states) > 1 else {},
-        typical_state_id=typ, production_quantum_kg=p.production_quantum_kg,
+        typical_state_id=typ,
+        production_quantum_kg=p.production_quantum_kg,
     )
     return compute_plan_metrics(pf)
 
@@ -551,11 +781,19 @@ LEDGER_SERIES = {
     "pond_rain": "pond_rain_m3",
     "pond_spill": "pond_spill_m3",
 }
-POND_DELTA = {"pond_fill": 1, "pond_rain": 1, "pond_release": -1, "pond_evaporation": -1, "pond_seepage": -1,
-              "pond_spill": -1}
+POND_DELTA = {
+    "pond_fill": 1,
+    "pond_rain": 1,
+    "pond_release": -1,
+    "pond_evaporation": -1,
+    "pond_seepage": -1,
+    "pond_spill": -1,
+}
 
 
-def build_timeline(prep: Prepared, best, events: list[LedgerEvent], bindings, pkg: PilotPackage) -> list[dict]:
+def build_timeline(
+    prep: Prepared, best, events: list[LedgerEvent], bindings, pkg: PilotPackage
+) -> list[dict]:
     """Long-format daily series: crop trajectories (exact outcomes) + ledger aggregates."""
     rows: list[dict] = []
     typ = prep.typical_state.state_id
@@ -572,10 +810,17 @@ def build_timeline(prep: Prepared, best, events: list[LedgerEvent], bindings, pk
         df = traj if isinstance(traj, pd.DataFrame) else pd.DataFrame(traj)
         for col in [c for c in df.columns if c in SERIES]:
             for d, v in zip(df["date"], df[col], strict=True):
-                if v is None or (isinstance(v, float) and v != v):
+                if v is None or (isinstance(v, float) and math.isnan(v)):
                     continue
-                rows.append({"date": pd.Timestamp(d).date().isoformat(), "field_id": f, "entity_id": f,
-                             "series_id": col, "value": float(v)})
+                rows.append(
+                    {
+                        "date": pd.Timestamp(d).date().isoformat(),
+                        "field_id": f,
+                        "entity_id": f,
+                        "series_id": col,
+                        "value": float(v),
+                    }
+                )
     daily: dict[tuple, float] = defaultdict(float)
     inv_delta: dict[tuple[str, str], float] = defaultdict(float)
     for e in events:
@@ -597,16 +842,29 @@ def build_timeline(prep: Prepared, best, events: list[LedgerEvent], bindings, pk
         inv = pkg.assets[a].initial_inventory_m3 if a in pkg.assets else 0.0
         for d, v in sorted(lst):
             inv += v
-            rows.append({"date": d, "field_id": None, "entity_id": a, "series_id": "pond_inventory_m3",
-                         "value": max(0.0, inv)})
+            rows.append(
+                {
+                    "date": d,
+                    "field_id": None,
+                    "entity_id": a,
+                    "series_id": "pond_inventory_m3",
+                    "value": max(0.0, inv),
+                }
+            )
     return rows
 
 
 # ------------------------------------------------------------------------ persistence
 
 
-def persist(settings: Settings, conn: sqlite3.Connection, run_id: str, result, artifacts: dict[str, Any],
-            opts: SolveOptions) -> Path:
+def persist(
+    settings: Settings,
+    conn: sqlite3.Connection,
+    run_id: str,
+    result,
+    artifacts: dict[str, Any],
+    opts: SolveOptions,
+) -> Path:
     root = settings.runs_dir
     root.mkdir(parents=True, exist_ok=True)
     tmp = root / f".tmp-{run_id}"
@@ -614,9 +872,14 @@ def persist(settings: Settings, conn: sqlite3.Connection, run_id: str, result, a
     if tmp.exists():
         shutil.rmtree(tmp)
     tmp.mkdir()
-    run_doc = {"result": json.loads(RUN_ADAPTER.dump_json(result)), "meta": artifacts["meta"],
-               "label": opts.label, "analysis_id": opts.analysis_id, "job_id": opts.job_id,
-               "software": _software()}
+    run_doc = {
+        "result": json.loads(RUN_ADAPTER.dump_json(result)),
+        "meta": artifacts["meta"],
+        "label": opts.label,
+        "analysis_id": opts.analysis_id,
+        "job_id": opts.job_id,
+        "software": _software(),
+    }
     _wj(tmp / "run.json", run_doc)
     _wj(tmp / "scenario.json", artifacts["scenario"])
     _wj(tmp / "selection.json", artifacts["selection"])
@@ -624,11 +887,26 @@ def persist(settings: Settings, conn: sqlite3.Connection, run_id: str, result, a
     _wj(tmp / "metrics.json", artifacts["metrics"])
     _wj(tmp / "validation.json", artifacts["validation"])
     _wj(tmp / "coverage.json", artifacts["coverage"])
-    ledger = pd.DataFrame(artifacts["ledger"], columns=["event_id", "timestamp", "explicit_order", "kind", "volume_m3",
-                                                        "field_id", "asset_id", "edge_id", "window_id", "note",
-                                                        "state_id"])
+    ledger = pd.DataFrame(
+        artifacts["ledger"],
+        columns=[
+            "event_id",
+            "timestamp",
+            "explicit_order",
+            "kind",
+            "volume_m3",
+            "field_id",
+            "asset_id",
+            "edge_id",
+            "window_id",
+            "note",
+            "state_id",
+        ],
+    )
     ledger.to_parquet(tmp / "ledger.parquet", index=False)
-    tl = pd.DataFrame(artifacts["timeline"], columns=["date", "field_id", "entity_id", "series_id", "value"])
+    tl = pd.DataFrame(
+        artifacts["timeline"], columns=["date", "field_id", "entity_id", "series_id", "value"]
+    )
     tl.to_parquet(tmp / "timeline.parquet", index=False)
     files = []
     for name in ARTIFACTS:
@@ -645,9 +923,20 @@ def persist(settings: Settings, conn: sqlite3.Connection, run_id: str, result, a
             "INSERT INTO runs (run_id, scenario_revision_id, plan_kind, outcome, solver_status, scenario_hash, "
             "candidate_library_hash, run_dir, manifest_sha256, job_id, analysis_id, created_at) "
             "VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
-            (run_id, result.scenario_revision_id, result.plan_kind.value, result.outcome, result.solver_status.value,
-             result.scenario_hash, result.candidate_library_hash, str(final), manifest_sha, opts.job_id,
-             opts.analysis_id, utcnow()),
+            (
+                run_id,
+                result.scenario_revision_id,
+                result.plan_kind.value,
+                result.outcome,
+                result.solver_status.value,
+                result.scenario_hash,
+                result.candidate_library_hash,
+                str(final),
+                manifest_sha,
+                opts.job_id,
+                opts.analysis_id,
+                utcnow(),
+            ),
         )
     return final
 
@@ -693,18 +982,24 @@ def verify_bundle(run_dir: Path, manifest_sha: str) -> None:
     """Recompute artifact hashes against the manifest (AT18); cached by manifest mtime."""
     mpath = run_dir / "manifest.json"
     if not mpath.exists():
-        raise RunIntegrityError(ErrorCode.ASSET_UNAVAILABLE, f"run bundle {run_dir.name} is missing its manifest")
+        raise RunIntegrityError(
+            ErrorCode.ASSET_UNAVAILABLE, f"run bundle {run_dir.name} is missing its manifest"
+        )
     stamp = mpath.stat().st_mtime
     if _VERIFIED.get(str(run_dir)) == stamp:
         return
     if file_sha256(mpath) != manifest_sha:
-        raise RunIntegrityError(ErrorCode.ASSET_UNAVAILABLE, f"run {run_dir.name}: manifest hash mismatch")
+        raise RunIntegrityError(
+            ErrorCode.ASSET_UNAVAILABLE, f"run {run_dir.name}: manifest hash mismatch"
+        )
     man = json.loads(mpath.read_text())
     for f in man["files"]:
         p = run_dir / f["path"]
         if not p.exists() or file_sha256(p) != f["sha256"]:
-            raise RunIntegrityError(ErrorCode.ASSET_UNAVAILABLE, f"run {run_dir.name}: artifact {f['path']} "
-                                    "does not match its recorded hash")
+            raise RunIntegrityError(
+                ErrorCode.ASSET_UNAVAILABLE,
+                f"run {run_dir.name}: artifact {f['path']} does not match its recorded hash",
+            )
     _VERIFIED[str(run_dir)] = stamp
 
 
@@ -743,10 +1038,18 @@ def load_run(conn: sqlite3.Connection, run_id: str) -> LoadedRun:
     return LoadedRun(run_id, row, d, json.loads((d / "run.json").read_text()))
 
 
-def list_runs(conn: sqlite3.Connection, *, pilot_id: str | None = None, pilot_version: str | None = None,
-              scenario_revision_id: str | None = None, limit: int = 200) -> list[dict[str, Any]]:
-    sql = ("SELECT r.*, sr.request FROM runs r JOIN scenario_revisions sr "
-           "ON sr.scenario_revision_id = r.scenario_revision_id")
+def list_runs(
+    conn: sqlite3.Connection,
+    *,
+    pilot_id: str | None = None,
+    pilot_version: str | None = None,
+    scenario_revision_id: str | None = None,
+    limit: int = 200,
+) -> list[dict[str, Any]]:
+    sql = (
+        "SELECT r.*, sr.request FROM runs r JOIN scenario_revisions sr "
+        "ON sr.scenario_revision_id = r.scenario_revision_id"
+    )
     args: list[Any] = []
     where = []
     if scenario_revision_id:
@@ -763,12 +1066,21 @@ def list_runs(conn: sqlite3.Connection, *, pilot_id: str | None = None, pilot_ve
             continue
         if pilot_version and req["pilot_version"] != pilot_version:
             continue
-        out.append({
-            "run_id": row["run_id"], "plan_kind": row["plan_kind"], "outcome": row["outcome"],
-            "solver_status": row["solver_status"], "scenario_revision_id": row["scenario_revision_id"],
-            "created_at": row["created_at"], "pilot_id": req["pilot_id"], "pilot_version": req["pilot_version"],
-            "season_id": req["season_id"], "analysis_id": row["analysis_id"], "job_id": row["job_id"],
-        })
+        out.append(
+            {
+                "run_id": row["run_id"],
+                "plan_kind": row["plan_kind"],
+                "outcome": row["outcome"],
+                "solver_status": row["solver_status"],
+                "scenario_revision_id": row["scenario_revision_id"],
+                "created_at": row["created_at"],
+                "pilot_id": req["pilot_id"],
+                "pilot_version": req["pilot_version"],
+                "season_id": req["season_id"],
+                "analysis_id": row["analysis_id"],
+                "job_id": row["job_id"],
+            }
+        )
     return out
 
 
@@ -780,4 +1092,4 @@ def run_dir(settings: Settings, run_id: str) -> Path:
     return settings.runs_dir / run_id
 
 
-__all__ = ["RunContext", "SolveOptions", "execute", "load_run", "list_runs", "dumps"]
+__all__ = ["RunContext", "SolveOptions", "dumps", "execute", "list_runs", "load_run"]

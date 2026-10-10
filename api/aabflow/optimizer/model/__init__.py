@@ -4,13 +4,17 @@ The problem is expressed over pure in-memory structures so the same code path
 serves the T12.2 enumerable fixture, synthetic tests and real candidate
 libraries. Coefficients are conservative integers:
 
-* resource use ``ceil(use/q)`` against ``floor(capacity/q)``;
+* resource use ``ceil(use/q_r)`` against ``floor(capacity/q_r)``, where ``q_r = capacity/floor(capacity/q)``
+  is a per-resource quantum (>= q) that makes the capacity an exact multiple, so a policy using exactly the
+  capacity (a pond filled to its usable volume) is not rejected by rounding; ``sum ceil(use/q_r) * q_r >=
+  sum use`` keeps the test conservative at original precision (up to the 1e-6 m3 ledger tolerance);
 * service credit ``floor(credit/q)`` against ``ceil(required/q)``;
 * production ``floor(production/qp)`` (objective quantization bound = fields x qp).
 """
 
 from __future__ import annotations
 
+import math
 from collections import defaultdict
 from dataclasses import dataclass, field
 from decimal import ROUND_FLOOR, Decimal
@@ -99,6 +103,24 @@ def add_le(m: cp_model.CpModel, expr, bound: int) -> None:
             m.add_bool_or([])
         return
     m.add(expr <= bound)
+
+
+LEDGER_ABS_TOL_M3 = 1e-6
+LEDGER_REL_TOL = 1e-9
+
+
+def resource_scale(capacity_m3: float, q: float) -> tuple[float, int]:
+    """Per-resource quantum ``q_r >= q`` and integer capacity ``n`` with ``n * q_r == capacity``."""
+    n = capacity_quanta(capacity_m3, q)
+    if n <= 0:
+        return q, 0
+    return capacity_m3 / n, n
+
+
+def resource_use_quanta(volume_m3: float, q_r: float) -> int:
+    """Conservative use in units of ``q_r`` (rounded up after the original-precision ledger tolerance)."""
+    tol = LEDGER_ABS_TOL_M3 + LEDGER_REL_TOL * abs(volume_m3)
+    return max(0, math.ceil((volume_m3 - tol) / q_r))
 
 
 def objective_coef(p: Problem, o: Option, state: str) -> int:
@@ -200,16 +222,19 @@ def build(p: Problem, c: ConfigSpec) -> BuiltModel:
             continue
         use_terms: dict[ResKey, list[tuple[int, cp_model.IntVar]]] = defaultdict(list)
         per_field_max: dict[ResKey, dict[str, int]] = defaultdict(lambda: defaultdict(int))
+        scale = {rk: resource_scale(cap, q) for rk, cap in caps.items()}
         for k, o in opts.items():
             for rk, vol in o.resources.get(s, {}).items():
                 if rk not in caps or vol <= 0:
                     continue
-                cq = consumption_quanta(vol, q)
+                cq = resource_use_quanta(vol, scale[rk][0])
+                if cq <= 0:
+                    continue
                 use_terms[rk].append((cq, x[k]))
                 fm = per_field_max[rk]
                 fm[o.field_id] = max(fm[o.field_id], cq)
         for rk, terms in use_terms.items():
-            capq = capacity_quanta(caps[rk], q)
+            capq = scale[rk][1]
             if sum(per_field_max[rk].values()) <= capq:
                 continue  # cannot bind; omit (slack by construction)
             if sum(a for a, _ in terms) > INT_SAFE:

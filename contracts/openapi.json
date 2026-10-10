@@ -13,6 +13,181 @@
         "title": "ActionCategory",
         "type": "string"
       },
+      "AnalysisAccepted": {
+        "additionalProperties": false,
+        "properties": {
+          "analysis_id": {
+            "title": "Analysis Id",
+            "type": "string"
+          },
+          "job": {
+            "$ref": "#/components/schemas/Job"
+          },
+          "job_id": {
+            "title": "Job Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "analysis_id",
+          "job_id",
+          "job"
+        ],
+        "title": "AnalysisAccepted",
+        "type": "object"
+      },
+      "AnalysisList": {
+        "additionalProperties": false,
+        "properties": {
+          "analyses": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Analyses",
+            "type": "array"
+          }
+        },
+        "required": [
+          "analyses"
+        ],
+        "title": "AnalysisList",
+        "type": "object"
+      },
+      "AnalysisView": {
+        "additionalProperties": false,
+        "properties": {
+          "analysis_id": {
+            "title": "Analysis Id",
+            "type": "string"
+          },
+          "base_revision_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Base Revision Id"
+          },
+          "base_run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Base Run Id"
+          },
+          "child_run_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Child Run Ids",
+            "type": "array"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "job_error": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Job Error"
+          },
+          "job_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Job Id"
+          },
+          "job_state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Job State"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "pilot_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pilot Id"
+          },
+          "request": {
+            "additionalProperties": true,
+            "title": "Request",
+            "type": "object"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Result"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "updated_at": {
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "analysis_id",
+          "kind",
+          "pilot_id",
+          "base_revision_id",
+          "base_run_id",
+          "job_id",
+          "job_state",
+          "job_error",
+          "status",
+          "request",
+          "result",
+          "child_run_ids",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "AnalysisView",
+        "type": "object"
+      },
       "Asset": {
         "additionalProperties": false,
         "properties": {
@@ -338,6 +513,76 @@
           "max_rate_m3_s"
         ],
         "title": "CapacityInterval",
+        "type": "object"
+      },
+      "ComparisonRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "const": "2.0.0",
+            "default": "2.0.0",
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "run_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Run Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "run_ids"
+        ],
+        "title": "ComparisonRequest",
+        "type": "object"
+      },
+      "ConfigurationStatus": {
+        "additionalProperties": false,
+        "properties": {
+          "objective_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Objective Value"
+          },
+          "shared_configuration_id": {
+            "title": "Shared Configuration Id",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SolverStatus"
+          },
+          "upper_bound": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Upper Bound"
+          },
+          "wall_ms": {
+            "title": "Wall Ms",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "shared_configuration_id",
+          "status",
+          "objective_value",
+          "upper_bound",
+          "wall_ms"
+        ],
+        "title": "ConfigurationStatus",
         "type": "object"
       },
       "Crop": {
@@ -998,6 +1243,104 @@
         "title": "Field_",
         "type": "object"
       },
+      "FrontierRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "base_revision_id": {
+            "title": "Base Revision Id",
+            "type": "string"
+          },
+          "contract_version": {
+            "const": "2.0.0",
+            "default": "2.0.0",
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "plan_kind": {
+            "default": "P",
+            "enum": [
+              "P",
+              "R"
+            ],
+            "title": "Plan Kind",
+            "type": "string"
+          },
+          "settings": {
+            "items": {
+              "$ref": "#/components/schemas/FrontierSetting"
+            },
+            "maxItems": 24,
+            "minItems": 6,
+            "title": "Settings",
+            "type": "array"
+          },
+          "time_limit_per_point_s": {
+            "default": 10.0,
+            "exclusiveMinimum": 0.0,
+            "maximum": 60.0,
+            "title": "Time Limit Per Point S",
+            "type": "number"
+          },
+          "total_budget_s": {
+            "default": 180.0,
+            "exclusiveMinimum": 0.0,
+            "maximum": 900.0,
+            "title": "Total Budget S",
+            "type": "number"
+          }
+        },
+        "required": [
+          "base_revision_id",
+          "settings"
+        ],
+        "title": "FrontierRequest",
+        "type": "object"
+      },
+      "FrontierSetting": {
+        "additionalProperties": false,
+        "properties": {
+          "capital_budget_pkr": {
+            "minimum": 0.0,
+            "title": "Capital Budget Pkr",
+            "type": "integer"
+          },
+          "minimum_service_ratio": {
+            "anyOf": [
+              {
+                "maximum": 1.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minimum Service Ratio"
+          },
+          "service_group": {
+            "anyOf": [
+              {
+                "enum": [
+                  "all",
+                  "head",
+                  "middle",
+                  "tail"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Service Group"
+          }
+        },
+        "required": [
+          "capital_budget_pkr"
+        ],
+        "title": "FrontierSetting",
+        "type": "object"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -1158,6 +1501,16 @@
         ],
         "title": "ImageryRef",
         "type": "object"
+      },
+      "InfeasibilityKind": {
+        "enum": [
+          "missing_input",
+          "empty_option_set",
+          "finite_candidate_incompatibility",
+          "bound_contradiction"
+        ],
+        "title": "InfeasibilityKind",
+        "type": "string"
       },
       "InterventionEligibility": {
         "additionalProperties": false,
@@ -1383,6 +1736,259 @@
         ],
         "title": "InterventionList",
         "type": "object"
+      },
+      "InvalidPlanRun": {
+        "additionalProperties": false,
+        "description": "Solver found an incumbent but original-precision reconstruction failed (INVALID_PLAN).",
+        "properties": {
+          "candidate_coverage_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Candidate Coverage Ref"
+          },
+          "candidate_library_hash": {
+            "title": "Candidate Library Hash",
+            "type": "string"
+          },
+          "configurations": {
+            "items": {
+              "$ref": "#/components/schemas/ConfigurationStatus"
+            },
+            "title": "Configurations",
+            "type": "array"
+          },
+          "contract_version": {
+            "const": "2.0.0",
+            "default": "2.0.0",
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "diagnostic_ref": {
+            "title": "Diagnostic Ref",
+            "type": "string"
+          },
+          "outcome": {
+            "const": "invalid_plan",
+            "default": "invalid_plan",
+            "title": "Outcome",
+            "type": "string"
+          },
+          "physical_validation": {
+            "$ref": "#/components/schemas/PhysicalValidationReport"
+          },
+          "plan_kind": {
+            "$ref": "#/components/schemas/PlanKind"
+          },
+          "primary_objective": {
+            "title": "Primary Objective",
+            "type": "string"
+          },
+          "proof_scope": {
+            "const": "finite_candidate_library",
+            "default": "finite_candidate_library",
+            "title": "Proof Scope",
+            "type": "string"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "scenario_hash": {
+            "title": "Scenario Hash",
+            "type": "string"
+          },
+          "scenario_revision_id": {
+            "title": "Scenario Revision Id",
+            "type": "string"
+          },
+          "solve_wall_ms": {
+            "title": "Solve Wall Ms",
+            "type": "integer"
+          },
+          "solver_status": {
+            "$ref": "#/components/schemas/SolverStatus"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "run_id",
+          "scenario_revision_id",
+          "scenario_hash",
+          "candidate_library_hash",
+          "plan_kind",
+          "primary_objective",
+          "solve_wall_ms",
+          "created_at",
+          "solver_status",
+          "physical_validation",
+          "diagnostic_ref"
+        ],
+        "title": "InvalidPlanRun",
+        "type": "object"
+      },
+      "Issue": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "detail": {
+            "title": "Detail",
+            "type": "string"
+          },
+          "field": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Field"
+          }
+        },
+        "required": [
+          "code",
+          "detail"
+        ],
+        "title": "Issue",
+        "type": "object"
+      },
+      "Job": {
+        "additionalProperties": false,
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "job_id": {
+            "title": "Job Id",
+            "type": "string"
+          },
+          "operation": {
+            "title": "Operation",
+            "type": "string"
+          },
+          "progress": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Progress"
+          },
+          "request_hash": {
+            "title": "Request Hash",
+            "type": "string"
+          },
+          "result_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Result Ref"
+          },
+          "stage": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stage"
+          },
+          "state": {
+            "$ref": "#/components/schemas/JobState"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "job_id",
+          "operation",
+          "request_hash",
+          "state",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "Job",
+        "type": "object"
+      },
+      "JobAccepted": {
+        "additionalProperties": false,
+        "properties": {
+          "job": {
+            "$ref": "#/components/schemas/Job"
+          },
+          "job_id": {
+            "title": "Job Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "job_id",
+          "job"
+        ],
+        "title": "JobAccepted",
+        "type": "object"
+      },
+      "JobState": {
+        "enum": [
+          "queued",
+          "running",
+          "waiting_for_review",
+          "succeeded",
+          "failed",
+          "cancel_requested",
+          "cancelled",
+          "interrupted"
+        ],
+        "title": "JobState",
+        "type": "string"
       },
       "Legend": {
         "additionalProperties": false,
@@ -1630,6 +2236,243 @@
         "title": "MapTerrain",
         "type": "object"
       },
+      "MetricDefinitions": {
+        "additionalProperties": false,
+        "properties": {
+          "definitions": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Definitions",
+            "type": "array"
+          },
+          "metrics_version": {
+            "title": "Metrics Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "metrics_version",
+          "definitions"
+        ],
+        "title": "MetricDefinitions",
+        "type": "object"
+      },
+      "MetricStatus": {
+        "enum": [
+          "available",
+          "not_estimated",
+          "not_applicable",
+          "blocked"
+        ],
+        "title": "MetricStatus",
+        "type": "string"
+      },
+      "MetricValue": {
+        "additionalProperties": false,
+        "description": "Every displayed KPI is one of these, from the server metric registry (T7.5).",
+        "properties": {
+          "crop": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Crop"
+          },
+          "definition_id": {
+            "title": "Definition Id",
+            "type": "string"
+          },
+          "evidence_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Evidence Ids",
+            "type": "array"
+          },
+          "field_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Field Id"
+          },
+          "metric_id": {
+            "title": "Metric Id",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/MetricStatus"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "metric_id",
+          "definition_id",
+          "run_id",
+          "value",
+          "unit",
+          "status"
+        ],
+        "title": "MetricValue",
+        "type": "object"
+      },
+      "NoPlanRun": {
+        "additionalProperties": false,
+        "description": "INFEASIBLE / UNKNOWN / MODEL_INVALID: diagnostics only, never plan metrics.",
+        "properties": {
+          "candidate_coverage_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Candidate Coverage Ref"
+          },
+          "candidate_library_hash": {
+            "title": "Candidate Library Hash",
+            "type": "string"
+          },
+          "configurations": {
+            "items": {
+              "$ref": "#/components/schemas/ConfigurationStatus"
+            },
+            "title": "Configurations",
+            "type": "array"
+          },
+          "contract_version": {
+            "const": "2.0.0",
+            "default": "2.0.0",
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "diagnostics": {
+            "additionalProperties": true,
+            "title": "Diagnostics",
+            "type": "object"
+          },
+          "infeasibility_kind": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/InfeasibilityKind"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "outcome": {
+            "const": "no_plan",
+            "default": "no_plan",
+            "title": "Outcome",
+            "type": "string"
+          },
+          "plan_kind": {
+            "$ref": "#/components/schemas/PlanKind"
+          },
+          "primary_objective": {
+            "title": "Primary Objective",
+            "type": "string"
+          },
+          "proof_scope": {
+            "const": "finite_candidate_library",
+            "default": "finite_candidate_library",
+            "title": "Proof Scope",
+            "type": "string"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "scenario_hash": {
+            "title": "Scenario Hash",
+            "type": "string"
+          },
+          "scenario_revision_id": {
+            "title": "Scenario Revision Id",
+            "type": "string"
+          },
+          "solve_wall_ms": {
+            "title": "Solve Wall Ms",
+            "type": "integer"
+          },
+          "solver_status": {
+            "enum": [
+              "INFEASIBLE",
+              "UNKNOWN",
+              "MODEL_INVALID"
+            ],
+            "title": "Solver Status",
+            "type": "string"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "run_id",
+          "scenario_revision_id",
+          "scenario_hash",
+          "candidate_library_hash",
+          "plan_kind",
+          "primary_objective",
+          "solve_wall_ms",
+          "created_at",
+          "solver_status"
+        ],
+        "title": "NoPlanRun",
+        "type": "object"
+      },
       "Node": {
         "additionalProperties": false,
         "properties": {
@@ -1679,6 +2522,22 @@
         "title": "NodeKind",
         "type": "string"
       },
+      "Objective": {
+        "enum": [
+          "production_kg",
+          "irrigation_contribution_pkr"
+        ],
+        "title": "Objective",
+        "type": "string"
+      },
+      "OptimizationMode": {
+        "enum": [
+          "typical",
+          "worst_case"
+        ],
+        "title": "OptimizationMode",
+        "type": "string"
+      },
       "PackageState": {
         "enum": [
           "acquired_raw",
@@ -1690,6 +2549,44 @@
         ],
         "title": "PackageState",
         "type": "string"
+      },
+      "PhysicalValidationReport": {
+        "additionalProperties": false,
+        "properties": {
+          "abs_tolerance_m3": {
+            "default": 1e-06,
+            "minimum": 0.0,
+            "title": "Abs Tolerance M3",
+            "type": "number"
+          },
+          "rel_tolerance": {
+            "default": 1e-09,
+            "minimum": 0.0,
+            "title": "Rel Tolerance",
+            "type": "number"
+          },
+          "residuals": {
+            "items": {
+              "$ref": "#/components/schemas/RuleResidual"
+            },
+            "title": "Residuals",
+            "type": "array"
+          },
+          "status": {
+            "enum": [
+              "passed",
+              "failed",
+              "not_run"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "PhysicalValidationReport",
+        "type": "object"
       },
       "PilotList": {
         "additionalProperties": false,
@@ -2122,6 +3019,433 @@
         "title": "PilotVersionDetail",
         "type": "object"
       },
+      "PlanKind": {
+        "description": "Baseline ladder (PRD \u00a76.4).",
+        "enum": [
+          "B0",
+          "B1",
+          "P",
+          "R"
+        ],
+        "title": "PlanKind",
+        "type": "string"
+      },
+      "PlanRun": {
+        "additionalProperties": false,
+        "description": "A feasible, reconstructed and validated plan.",
+        "properties": {
+          "candidate_coverage_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Candidate Coverage Ref"
+          },
+          "candidate_library_hash": {
+            "title": "Candidate Library Hash",
+            "type": "string"
+          },
+          "comparison_compatibility_key": {
+            "title": "Comparison Compatibility Key",
+            "type": "string"
+          },
+          "configurations": {
+            "items": {
+              "$ref": "#/components/schemas/ConfigurationStatus"
+            },
+            "title": "Configurations",
+            "type": "array"
+          },
+          "contract_version": {
+            "const": "2.0.0",
+            "default": "2.0.0",
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "metric_refs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Metric Refs",
+            "type": "array"
+          },
+          "objective_upper_bound": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Objective Upper Bound"
+          },
+          "objective_value": {
+            "title": "Objective Value",
+            "type": "number"
+          },
+          "outcome": {
+            "const": "plan",
+            "default": "plan",
+            "title": "Outcome",
+            "type": "string"
+          },
+          "physical_validation": {
+            "$ref": "#/components/schemas/PhysicalValidationReport"
+          },
+          "plan_kind": {
+            "$ref": "#/components/schemas/PlanKind"
+          },
+          "primary_objective": {
+            "title": "Primary Objective",
+            "type": "string"
+          },
+          "proof_scope": {
+            "const": "finite_candidate_library",
+            "default": "finite_candidate_library",
+            "title": "Proof Scope",
+            "type": "string"
+          },
+          "relative_gap": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Relative Gap"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "scenario_hash": {
+            "title": "Scenario Hash",
+            "type": "string"
+          },
+          "scenario_revision_id": {
+            "title": "Scenario Revision Id",
+            "type": "string"
+          },
+          "selected_candidate_policy_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Selected Candidate Policy Ids",
+            "type": "array"
+          },
+          "selected_intervention_instance_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Selected Intervention Instance Ids",
+            "type": "array"
+          },
+          "shared_configuration_id": {
+            "title": "Shared Configuration Id",
+            "type": "string"
+          },
+          "solve_wall_ms": {
+            "title": "Solve Wall Ms",
+            "type": "integer"
+          },
+          "solver_status": {
+            "enum": [
+              "OPTIMAL",
+              "FEASIBLE"
+            ],
+            "title": "Solver Status",
+            "type": "string"
+          },
+          "trajectory_bundle_ref": {
+            "title": "Trajectory Bundle Ref",
+            "type": "string"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "run_id",
+          "scenario_revision_id",
+          "scenario_hash",
+          "candidate_library_hash",
+          "plan_kind",
+          "primary_objective",
+          "solve_wall_ms",
+          "created_at",
+          "solver_status",
+          "objective_value",
+          "objective_upper_bound",
+          "relative_gap",
+          "selected_candidate_policy_ids",
+          "selected_intervention_instance_ids",
+          "shared_configuration_id",
+          "metric_refs",
+          "physical_validation",
+          "trajectory_bundle_ref",
+          "comparison_compatibility_key"
+        ],
+        "title": "PlanRun",
+        "type": "object"
+      },
+      "PlanningMode": {
+        "enum": [
+          "historical_replay",
+          "season_response",
+          "capital_planning"
+        ],
+        "title": "PlanningMode",
+        "type": "string"
+      },
+      "PreviewView": {
+        "additionalProperties": false,
+        "description": "The stored preview, flat, plus its request and any exact confirmation.",
+        "properties": {
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "crop_profile_id": {
+            "title": "Crop Profile Id",
+            "type": "string"
+          },
+          "domain_reasons": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Domain Reasons",
+            "type": "array"
+          },
+          "domain_status": {
+            "enum": [
+              "in_domain",
+              "out_of_domain"
+            ],
+            "title": "Domain Status",
+            "type": "string"
+          },
+          "estimate_kind": {
+            "const": "surrogate_preview",
+            "default": "surrogate_preview",
+            "title": "Estimate Kind",
+            "type": "string"
+          },
+          "estimated_yield_kg_ha": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Estimated Yield Kg Ha"
+          },
+          "evaluation_reference": {
+            "title": "Evaluation Reference",
+            "type": "string"
+          },
+          "exact_confirmation_job_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exact Confirmation Job Id"
+          },
+          "feature_version": {
+            "title": "Feature Version",
+            "type": "string"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message"
+          },
+          "model_version": {
+            "title": "Model Version",
+            "type": "string"
+          },
+          "physical_precheck_reasons": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Physical Precheck Reasons",
+            "type": "array"
+          },
+          "physical_precheck_status": {
+            "default": "not_run",
+            "enum": [
+              "passed",
+              "failed",
+              "not_run"
+            ],
+            "title": "Physical Precheck Status",
+            "type": "string"
+          },
+          "preview_id": {
+            "title": "Preview Id",
+            "type": "string"
+          },
+          "proposed_policy_hash": {
+            "title": "Proposed Policy Hash",
+            "type": "string"
+          },
+          "request": {
+            "additionalProperties": true,
+            "title": "Request",
+            "type": "object"
+          },
+          "residual_band_kg_ha": {
+            "anyOf": [
+              {
+                "maxItems": 2,
+                "minItems": 2,
+                "prefixItems": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Residual Band Kg Ha"
+          },
+          "uncertainty_note": {
+            "title": "Uncertainty Note",
+            "type": "string"
+          },
+          "verification": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verification"
+          },
+          "verify_job_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verify Job Id"
+          }
+        },
+        "required": [
+          "preview_id",
+          "proposed_policy_hash",
+          "model_version",
+          "feature_version",
+          "crop_profile_id",
+          "estimated_yield_kg_ha",
+          "domain_status",
+          "evaluation_reference",
+          "uncertainty_note",
+          "request",
+          "verification",
+          "verify_job_id",
+          "created_at"
+        ],
+        "title": "PreviewView",
+        "type": "object"
+      },
+      "Readiness": {
+        "additionalProperties": false,
+        "properties": {
+          "blockers": {
+            "items": {
+              "$ref": "#/components/schemas/Issue"
+            },
+            "title": "Blockers",
+            "type": "array"
+          },
+          "coverage": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coverage"
+          },
+          "max_attainable_service": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "title": "Max Attainable Service",
+            "type": "object"
+          },
+          "ready": {
+            "title": "Ready",
+            "type": "boolean"
+          },
+          "warnings": {
+            "items": {
+              "$ref": "#/components/schemas/Issue"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "ready",
+          "blockers",
+          "warnings",
+          "max_attainable_service"
+        ],
+        "title": "Readiness",
+        "type": "object"
+      },
       "ReviewFlags": {
         "additionalProperties": false,
         "description": "Independent flags; never collapse into one 'verified' badge (PRD \u00a72.3).",
@@ -2168,6 +3492,317 @@
           }
         },
         "title": "ReviewFlags",
+        "type": "object"
+      },
+      "RevisionChange": {
+        "additionalProperties": false,
+        "description": "Typed changes for derived revisions (also the copilot's branch_scenario surface, T11.3).",
+        "properties": {
+          "allowed_intervention_instance_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Allowed Intervention Instance Ids"
+          },
+          "blocked_edge_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Blocked Edge Ids"
+          },
+          "capital_budget_pkr": {
+            "anyOf": [
+              {
+                "description": "Integer Pakistani rupees",
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capital Budget Pkr"
+          },
+          "excluded_instance_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Excluded Instance Ids"
+          },
+          "forced_instance_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Forced Instance Ids"
+          },
+          "minimum_service_ratio": {
+            "anyOf": [
+              {
+                "maximum": 1.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minimum Service Ratio"
+          },
+          "operating_budget_pkr": {
+            "anyOf": [
+              {
+                "description": "Integer Pakistani rupees",
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Operating Budget Pkr"
+          },
+          "optimization_mode": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OptimizationMode"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "permit_groundwater": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Permit Groundwater"
+          },
+          "service_group": {
+            "anyOf": [
+              {
+                "enum": [
+                  "all",
+                  "head",
+                  "middle",
+                  "tail"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Service Group"
+          },
+          "supply_profile_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Supply Profile Id"
+          },
+          "uncertainty_set_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uncertainty Set Id"
+          },
+          "uniform_reduction_fraction": {
+            "anyOf": [
+              {
+                "maximum": 1.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uniform Reduction Fraction"
+          },
+          "weather_scenario_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weather Scenario Ids"
+          }
+        },
+        "title": "RevisionChange",
+        "type": "object"
+      },
+      "RevisionCreate": {
+        "additionalProperties": false,
+        "properties": {
+          "changes": {
+            "$ref": "#/components/schemas/RevisionChange"
+          },
+          "contract_version": {
+            "const": "2.0.0",
+            "default": "2.0.0",
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "parent_revision_id": {
+            "title": "Parent Revision Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "parent_revision_id",
+          "changes"
+        ],
+        "title": "RevisionCreate",
+        "type": "object"
+      },
+      "RevisionRun": {
+        "additionalProperties": false,
+        "properties": {
+          "analysis_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Analysis Id"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "job_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Job Id"
+          },
+          "outcome": {
+            "title": "Outcome",
+            "type": "string"
+          },
+          "plan_kind": {
+            "title": "Plan Kind",
+            "type": "string"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "solver_status": {
+            "title": "Solver Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "run_id",
+          "plan_kind",
+          "outcome",
+          "solver_status",
+          "created_at"
+        ],
+        "title": "RevisionRun",
+        "type": "object"
+      },
+      "RevisionView": {
+        "additionalProperties": false,
+        "properties": {
+          "dependencies": {
+            "additionalProperties": true,
+            "title": "Dependencies",
+            "type": "object"
+          },
+          "is_head": {
+            "title": "Is Head",
+            "type": "boolean"
+          },
+          "origin": {
+            "title": "Origin",
+            "type": "string"
+          },
+          "readiness": {
+            "$ref": "#/components/schemas/Readiness"
+          },
+          "revision": {
+            "$ref": "#/components/schemas/ScenarioRevision"
+          },
+          "runs": {
+            "items": {
+              "$ref": "#/components/schemas/RevisionRun"
+            },
+            "title": "Runs",
+            "type": "array"
+          }
+        },
+        "required": [
+          "revision",
+          "dependencies",
+          "readiness",
+          "origin",
+          "is_head",
+          "runs"
+        ],
+        "title": "RevisionView",
         "type": "object"
       },
       "RightsBasis": {
@@ -2264,6 +3899,590 @@
           "source_rule"
         ],
         "title": "RosterWindow",
+        "type": "object"
+      },
+      "RuleResidual": {
+        "additionalProperties": false,
+        "properties": {
+          "at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "At"
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail"
+          },
+          "entity_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Entity Ids",
+            "type": "array"
+          },
+          "max_violation": {
+            "default": 0.0,
+            "title": "Max Violation",
+            "type": "number"
+          },
+          "passed": {
+            "title": "Passed",
+            "type": "boolean"
+          },
+          "rule": {
+            "title": "Rule",
+            "type": "string"
+          },
+          "unit": {
+            "default": "m3",
+            "title": "Unit",
+            "type": "string"
+          }
+        },
+        "required": [
+          "rule",
+          "passed"
+        ],
+        "title": "RuleResidual",
+        "type": "object"
+      },
+      "RunList": {
+        "additionalProperties": false,
+        "properties": {
+          "runs": {
+            "items": {
+              "$ref": "#/components/schemas/RunSummary"
+            },
+            "title": "Runs",
+            "type": "array"
+          }
+        },
+        "required": [
+          "runs"
+        ],
+        "title": "RunList",
+        "type": "object"
+      },
+      "RunSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "analysis_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Analysis Id"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "job_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Job Id"
+          },
+          "outcome": {
+            "title": "Outcome",
+            "type": "string"
+          },
+          "pilot_id": {
+            "title": "Pilot Id",
+            "type": "string"
+          },
+          "pilot_version": {
+            "title": "Pilot Version",
+            "type": "string"
+          },
+          "plan_kind": {
+            "title": "Plan Kind",
+            "type": "string"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "scenario_revision_id": {
+            "title": "Scenario Revision Id",
+            "type": "string"
+          },
+          "season_id": {
+            "title": "Season Id",
+            "type": "string"
+          },
+          "solver_status": {
+            "title": "Solver Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "run_id",
+          "plan_kind",
+          "outcome",
+          "solver_status",
+          "scenario_revision_id",
+          "created_at",
+          "pilot_id",
+          "pilot_version",
+          "season_id"
+        ],
+        "title": "RunSummary",
+        "type": "object"
+      },
+      "RunView": {
+        "additionalProperties": false,
+        "properties": {
+          "analysis_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Analysis Id"
+          },
+          "bundle_verified": {
+            "title": "Bundle Verified",
+            "type": "boolean"
+          },
+          "job_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Job Id"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "title": "Meta",
+            "type": "object"
+          },
+          "metrics": {
+            "items": {
+              "$ref": "#/components/schemas/MetricValue"
+            },
+            "title": "Metrics",
+            "type": "array"
+          },
+          "run": {
+            "discriminator": {
+              "mapping": {
+                "invalid_plan": "#/components/schemas/InvalidPlanRun",
+                "no_plan": "#/components/schemas/NoPlanRun",
+                "plan": "#/components/schemas/PlanRun"
+              },
+              "propertyName": "outcome"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/PlanRun"
+              },
+              {
+                "$ref": "#/components/schemas/NoPlanRun"
+              },
+              {
+                "$ref": "#/components/schemas/InvalidPlanRun"
+              }
+            ],
+            "title": "Run"
+          },
+          "selection": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Selection"
+          },
+          "software": {
+            "additionalProperties": true,
+            "title": "Software",
+            "type": "object"
+          }
+        },
+        "required": [
+          "run",
+          "metrics",
+          "selection",
+          "meta",
+          "software",
+          "bundle_verified"
+        ],
+        "title": "RunView",
+        "type": "object"
+      },
+      "ScenarioCreate": {
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "const": "2.0.0",
+            "default": "2.0.0",
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "request": {
+            "$ref": "#/components/schemas/ScenarioRequest"
+          }
+        },
+        "required": [
+          "request"
+        ],
+        "title": "ScenarioCreate",
+        "type": "object"
+      },
+      "ScenarioCreated": {
+        "additionalProperties": false,
+        "properties": {
+          "revision": {
+            "$ref": "#/components/schemas/RevisionView"
+          },
+          "scenario_id": {
+            "title": "Scenario Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "scenario_id",
+          "revision"
+        ],
+        "title": "ScenarioCreated",
+        "type": "object"
+      },
+      "ScenarioRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "allowed_intervention_instance_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Allowed Intervention Instance Ids"
+          },
+          "assumption_set_id": {
+            "default": "declared-assumptions-v1",
+            "title": "Assumption Set Id",
+            "type": "string"
+          },
+          "blocked_edge_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Blocked Edge Ids",
+            "type": "array"
+          },
+          "capital_budget_pkr": {
+            "description": "Integer Pakistani rupees",
+            "minimum": 0.0,
+            "title": "Capital Budget Pkr",
+            "type": "integer"
+          },
+          "contract_version": {
+            "const": "2.0.0",
+            "default": "2.0.0",
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "decision_at": {
+            "format": "date-time",
+            "title": "Decision At",
+            "type": "string"
+          },
+          "excluded_instance_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Excluded Instance Ids",
+            "type": "array"
+          },
+          "forced_instance_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Forced Instance Ids",
+            "type": "array"
+          },
+          "minimum_service_ratio": {
+            "anyOf": [
+              {
+                "maximum": 1.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minimum Service Ratio"
+          },
+          "objective": {
+            "$ref": "#/components/schemas/Objective",
+            "default": "production_kg"
+          },
+          "operating_budget_pkr": {
+            "description": "Integer Pakistani rupees",
+            "minimum": 0.0,
+            "title": "Operating Budget Pkr",
+            "type": "integer"
+          },
+          "optimization_mode": {
+            "$ref": "#/components/schemas/OptimizationMode",
+            "default": "typical"
+          },
+          "permit_groundwater": {
+            "default": true,
+            "title": "Permit Groundwater",
+            "type": "boolean"
+          },
+          "pilot_id": {
+            "title": "Pilot Id",
+            "type": "string"
+          },
+          "pilot_version": {
+            "title": "Pilot Version",
+            "type": "string"
+          },
+          "planning_mode": {
+            "$ref": "#/components/schemas/PlanningMode"
+          },
+          "season_id": {
+            "title": "Season Id",
+            "type": "string"
+          },
+          "service_group": {
+            "anyOf": [
+              {
+                "enum": [
+                  "all",
+                  "head",
+                  "middle",
+                  "tail"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Service Group"
+          },
+          "supply_profile_id": {
+            "title": "Supply Profile Id",
+            "type": "string"
+          },
+          "uncertainty_set_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uncertainty Set Id"
+          },
+          "uniform_reduction_fraction": {
+            "default": 0.0,
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Uniform Reduction Fraction",
+            "type": "number"
+          },
+          "weather_scenario_ids": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Weather Scenario Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "pilot_id",
+          "pilot_version",
+          "season_id",
+          "planning_mode",
+          "decision_at",
+          "weather_scenario_ids",
+          "supply_profile_id",
+          "capital_budget_pkr",
+          "operating_budget_pkr"
+        ],
+        "title": "ScenarioRequest",
+        "type": "object"
+      },
+      "ScenarioRevision": {
+        "additionalProperties": false,
+        "properties": {
+          "candidate_library_hash": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Candidate Library Hash"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "parent_revision_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Revision Id"
+          },
+          "request": {
+            "$ref": "#/components/schemas/ScenarioRequest"
+          },
+          "scenario_id": {
+            "title": "Scenario Id",
+            "type": "string"
+          },
+          "scenario_revision_id": {
+            "title": "Scenario Revision Id",
+            "type": "string"
+          },
+          "semantic_hash": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Semantic Hash",
+            "type": "string"
+          }
+        },
+        "required": [
+          "scenario_revision_id",
+          "scenario_id",
+          "parent_revision_id",
+          "request",
+          "semantic_hash",
+          "candidate_library_hash",
+          "created_at"
+        ],
+        "title": "ScenarioRevision",
+        "type": "object"
+      },
+      "ScenarioView": {
+        "additionalProperties": false,
+        "properties": {
+          "head_revision_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Head Revision Id"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "pilot_id": {
+            "title": "Pilot Id",
+            "type": "string"
+          },
+          "revisions": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Revisions",
+            "type": "array"
+          },
+          "scenario_id": {
+            "title": "Scenario Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "scenario_id",
+          "pilot_id",
+          "label",
+          "head_revision_id",
+          "revisions"
+        ],
+        "title": "ScenarioView",
         "type": "object"
       },
       "Season": {
@@ -2431,6 +4650,130 @@
         "title": "SeasonList",
         "type": "object"
       },
+      "SensitivityRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "base_revision_id": {
+            "title": "Base Revision Id",
+            "type": "string"
+          },
+          "contract_version": {
+            "const": "2.0.0",
+            "default": "2.0.0",
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "parameter": {
+            "enum": [
+              "capital_budget_pkr",
+              "operating_budget_pkr",
+              "uniform_reduction_fraction",
+              "minimum_service_ratio"
+            ],
+            "title": "Parameter",
+            "type": "string"
+          },
+          "service_group": {
+            "anyOf": [
+              {
+                "enum": [
+                  "all",
+                  "head",
+                  "middle",
+                  "tail"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Service Group"
+          },
+          "time_limit_per_point_s": {
+            "default": 10.0,
+            "exclusiveMinimum": 0.0,
+            "maximum": 60.0,
+            "title": "Time Limit Per Point S",
+            "type": "number"
+          },
+          "values": {
+            "items": {
+              "type": "number"
+            },
+            "maxItems": 12,
+            "minItems": 2,
+            "title": "Values",
+            "type": "array"
+          }
+        },
+        "required": [
+          "base_revision_id",
+          "parameter",
+          "values"
+        ],
+        "title": "SensitivityRequest",
+        "type": "object"
+      },
+      "SeriesOut": {
+        "additionalProperties": false,
+        "properties": {
+          "entity_id": {
+            "title": "Entity Id",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "series_id": {
+            "title": "Series Id",
+            "type": "string"
+          },
+          "source": {
+            "enum": [
+              "ledger",
+              "crop_model",
+              "weather"
+            ],
+            "title": "Source",
+            "type": "string"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string"
+          },
+          "values": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "title": "Values",
+            "type": "array"
+          }
+        },
+        "required": [
+          "series_id",
+          "entity_id",
+          "label",
+          "unit",
+          "kind",
+          "source",
+          "values"
+        ],
+        "title": "SeriesOut",
+        "type": "object"
+      },
       "ServiceReference": {
         "additionalProperties": false,
         "properties": {
@@ -2520,6 +4863,108 @@
           "archetype"
         ],
         "title": "SoilProfile",
+        "type": "object"
+      },
+      "SolveRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "plan_kind": {
+            "$ref": "#/components/schemas/PlanKind",
+            "default": "P"
+          },
+          "time_limit_s": {
+            "default": 10.0,
+            "exclusiveMinimum": 0.0,
+            "maximum": 120.0,
+            "title": "Time Limit S",
+            "type": "number"
+          }
+        },
+        "title": "SolveRequest",
+        "type": "object"
+      },
+      "SolverStatus": {
+        "enum": [
+          "OPTIMAL",
+          "FEASIBLE",
+          "INFEASIBLE",
+          "UNKNOWN",
+          "MODEL_INVALID"
+        ],
+        "title": "SolverStatus",
+        "type": "string"
+      },
+      "StressRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "const": "2.0.0",
+            "default": "2.0.0",
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "mode": {
+            "default": "fixed_plan",
+            "enum": [
+              "fixed_plan",
+              "recovery_plan"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "reference_run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference Run Id"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "state_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "maxItems": 9,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "State Ids"
+          },
+          "time_limit_per_cell_s": {
+            "default": 8.0,
+            "exclusiveMinimum": 0.0,
+            "maximum": 60.0,
+            "title": "Time Limit Per Cell S",
+            "type": "number"
+          },
+          "uncertainty_set_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uncertainty Set Id"
+          }
+        },
+        "required": [
+          "run_id"
+        ],
+        "title": "StressRequest",
         "type": "object"
       },
       "SupplyProfile": {
@@ -2631,6 +5076,149 @@
           "kind"
         ],
         "title": "SupplyTransformation",
+        "type": "object"
+      },
+      "SynergyRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "base_revision_id": {
+            "title": "Base Revision Id",
+            "type": "string"
+          },
+          "base_run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Base Run Id"
+          },
+          "contract_version": {
+            "const": "2.0.0",
+            "default": "2.0.0",
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "instance_a": {
+            "title": "Instance A",
+            "type": "string"
+          },
+          "instance_b": {
+            "title": "Instance B",
+            "type": "string"
+          },
+          "other_actions": {
+            "default": "reoptimize",
+            "enum": [
+              "fixed",
+              "reoptimize"
+            ],
+            "title": "Other Actions",
+            "type": "string"
+          },
+          "time_limit_per_arm_s": {
+            "default": 10.0,
+            "exclusiveMinimum": 0.0,
+            "maximum": 60.0,
+            "title": "Time Limit Per Arm S",
+            "type": "number"
+          }
+        },
+        "required": [
+          "base_revision_id",
+          "instance_a",
+          "instance_b"
+        ],
+        "title": "SynergyRequest",
+        "type": "object"
+      },
+      "Timeline": {
+        "additionalProperties": false,
+        "properties": {
+          "dates": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Dates",
+            "type": "array"
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/components/schemas/SeriesOut"
+            },
+            "title": "Edges",
+            "type": "array"
+          },
+          "field_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Field Id"
+          },
+          "note": {
+            "title": "Note",
+            "type": "string"
+          },
+          "ponds": {
+            "items": {
+              "$ref": "#/components/schemas/SeriesOut"
+            },
+            "title": "Ponds",
+            "type": "array"
+          },
+          "resolution": {
+            "enum": [
+              "daily",
+              "weekly"
+            ],
+            "title": "Resolution",
+            "type": "string"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "series": {
+            "items": {
+              "$ref": "#/components/schemas/SeriesOut"
+            },
+            "title": "Series",
+            "type": "array"
+          },
+          "state_id": {
+            "title": "State Id",
+            "type": "string"
+          },
+          "windows": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Windows",
+            "type": "array"
+          }
+        },
+        "required": [
+          "run_id",
+          "field_id",
+          "state_id",
+          "resolution",
+          "dates",
+          "series",
+          "edges",
+          "ponds",
+          "windows",
+          "note"
+        ],
+        "title": "Timeline",
         "type": "object"
       },
       "UncertaintySet": {
@@ -2769,6 +5357,29 @@
         ],
         "title": "VerificationState",
         "type": "string"
+      },
+      "VerifyAccepted": {
+        "additionalProperties": false,
+        "properties": {
+          "job": {
+            "$ref": "#/components/schemas/Job"
+          },
+          "job_id": {
+            "title": "Job Id",
+            "type": "string"
+          },
+          "preview_id": {
+            "title": "Preview Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "preview_id",
+          "job_id",
+          "job"
+        ],
+        "title": "VerifyAccepted",
+        "type": "object"
       },
       "WeatherScenario": {
         "additionalProperties": false,
@@ -2980,6 +5591,58 @@
         ],
         "title": "WeatherScenarioList",
         "type": "object"
+      },
+      "WhyNotRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "default": "force",
+            "enum": [
+              "force",
+              "exclude"
+            ],
+            "title": "Action",
+            "type": "string"
+          },
+          "base_revision_id": {
+            "title": "Base Revision Id",
+            "type": "string"
+          },
+          "base_run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Base Run Id"
+          },
+          "contract_version": {
+            "const": "2.0.0",
+            "default": "2.0.0",
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "instance_id": {
+            "title": "Instance Id",
+            "type": "string"
+          },
+          "time_limit_s": {
+            "default": 10.0,
+            "exclusiveMinimum": 0.0,
+            "maximum": 60.0,
+            "title": "Time Limit S",
+            "type": "number"
+          }
+        },
+        "required": [
+          "base_revision_id",
+          "instance_id"
+        ],
+        "title": "WhyNotRequest",
+        "type": "object"
       }
     }
   },
@@ -2989,6 +5652,415 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/api/v2/analyses": {
+      "get": {
+        "operationId": "list_analyses_api_v2_analyses_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "kind",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Kind"
+            }
+          },
+          {
+            "in": "query",
+            "name": "base_revision_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Base Revision Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "base_run_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Base Run Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 100,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Analyses"
+      }
+    },
+    "/api/v2/analyses/frontier": {
+      "post": {
+        "operationId": "frontier_api_v2_analyses_frontier_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FrontierRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisAccepted"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Frontier"
+      }
+    },
+    "/api/v2/analyses/sensitivity": {
+      "post": {
+        "operationId": "sensitivity_api_v2_analyses_sensitivity_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SensitivityRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisAccepted"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Sensitivity"
+      }
+    },
+    "/api/v2/analyses/stress": {
+      "post": {
+        "operationId": "stress_api_v2_analyses_stress_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StressRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisAccepted"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Stress"
+      }
+    },
+    "/api/v2/analyses/synergy": {
+      "post": {
+        "operationId": "synergy_api_v2_analyses_synergy_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SynergyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisAccepted"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Synergy"
+      }
+    },
+    "/api/v2/analyses/why-not": {
+      "post": {
+        "operationId": "why_not_api_v2_analyses_why_not_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WhyNotRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisAccepted"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Why Not"
+      }
+    },
+    "/api/v2/analyses/{analysis_id}": {
+      "get": {
+        "operationId": "get_analysis_api_v2_analyses__analysis_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "analysis_id",
+            "required": true,
+            "schema": {
+              "title": "Analysis Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Analysis"
+      }
+    },
     "/api/v2/capabilities": {
       "get": {
         "operationId": "capabilities_api_v2_capabilities_get",
@@ -3005,6 +6077,101 @@
           }
         },
         "summary": "Capabilities"
+      }
+    },
+    "/api/v2/comparisons": {
+      "post": {
+        "operationId": "create_comparison_api_v2_comparisons_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ComparisonRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Comparison"
+      }
+    },
+    "/api/v2/comparisons/{comparison_id}": {
+      "get": {
+        "operationId": "get_comparison_api_v2_comparisons__comparison_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "comparison_id",
+            "required": true,
+            "schema": {
+              "title": "Comparison Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Get Comparison Api V2 Comparisons  Comparison Id  Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Comparison"
       }
     },
     "/api/v2/evidence/search": {
@@ -3308,6 +6475,172 @@
         "summary": "Interventions"
       }
     },
+    "/api/v2/jobs/{job_id}": {
+      "get": {
+        "operationId": "get_job_api_v2_jobs__job_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Job"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Job"
+      }
+    },
+    "/api/v2/jobs/{job_id}/cancel": {
+      "post": {
+        "operationId": "cancel_job_api_v2_jobs__job_id__cancel_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Job"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Cancel Job"
+      }
+    },
+    "/api/v2/jobs/{job_id}/events": {
+      "get": {
+        "operationId": "job_events_api_v2_jobs__job_id__events_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "resume after this event id",
+            "in": "query",
+            "name": "after",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "resume after this event id",
+              "title": "After"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Last-Event-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Last-Event-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "text/event-stream": {}
+            },
+            "description": "SSE stream of JobEvent records"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Job Events"
+      }
+    },
+    "/api/v2/metrics/definitions": {
+      "get": {
+        "operationId": "metric_definitions_api_v2_metrics_definitions_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MetricDefinitions"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Metric Definitions"
+      }
+    },
     "/api/v2/pilots": {
       "get": {
         "operationId": "list_pilots_api_v2_pilots_get",
@@ -3422,6 +6755,892 @@
         "summary": "Pilot Map"
       }
     },
+    "/api/v2/runs": {
+      "get": {
+        "operationId": "runs_api_v2_runs_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "pilot_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Pilot Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pilot_version",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Pilot Version"
+            }
+          },
+          {
+            "in": "query",
+            "name": "scenario_revision_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Scenario Revision Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 100,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Runs"
+      }
+    },
+    "/api/v2/runs/{run_id}": {
+      "get": {
+        "operationId": "get_run_api_v2_runs__run_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "title": "Run Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Run"
+      }
+    },
+    "/api/v2/runs/{run_id}/accounting": {
+      "get": {
+        "operationId": "run_accounting_api_v2_runs__run_id__accounting_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "title": "Run Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Run Accounting Api V2 Runs  Run Id  Accounting Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Run Accounting"
+      }
+    },
+    "/api/v2/runs/{run_id}/action-plan": {
+      "get": {
+        "operationId": "run_action_plan_api_v2_runs__run_id__action_plan_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "title": "Run Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Run Action Plan Api V2 Runs  Run Id  Action Plan Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Run Action Plan"
+      }
+    },
+    "/api/v2/runs/{run_id}/coverage": {
+      "get": {
+        "operationId": "get_coverage_api_v2_runs__run_id__coverage_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "title": "Run Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Get Coverage Api V2 Runs  Run Id  Coverage Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Coverage"
+      }
+    },
+    "/api/v2/runs/{run_id}/economics": {
+      "get": {
+        "operationId": "run_economics_api_v2_runs__run_id__economics_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "title": "Run Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Run Economics Api V2 Runs  Run Id  Economics Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Run Economics"
+      }
+    },
+    "/api/v2/runs/{run_id}/equity": {
+      "get": {
+        "operationId": "run_equity_api_v2_runs__run_id__equity_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "title": "Run Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "baseline_run_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Baseline Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Run Equity Api V2 Runs  Run Id  Equity Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Run Equity"
+      }
+    },
+    "/api/v2/runs/{run_id}/explanations": {
+      "get": {
+        "operationId": "run_explanations_api_v2_runs__run_id__explanations_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "title": "Run Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Run Explanations Api V2 Runs  Run Id  Explanations Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Run Explanations"
+      }
+    },
+    "/api/v2/runs/{run_id}/impact": {
+      "get": {
+        "operationId": "run_impact_api_v2_runs__run_id__impact_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "title": "Run Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "baseline_run_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Baseline Run Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "stress_analysis_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Stress Analysis Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Run Impact Api V2 Runs  Run Id  Impact Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Run Impact"
+      }
+    },
+    "/api/v2/runs/{run_id}/solver": {
+      "get": {
+        "operationId": "get_solver_api_v2_runs__run_id__solver_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "title": "Run Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Get Solver Api V2 Runs  Run Id  Solver Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Solver"
+      }
+    },
+    "/api/v2/runs/{run_id}/timeline": {
+      "get": {
+        "operationId": "timeline_api_v2_runs__run_id__timeline_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "title": "Run Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "field_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Field Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "resolution",
+            "required": false,
+            "schema": {
+              "default": "daily",
+              "enum": [
+                "daily",
+                "weekly"
+              ],
+              "title": "Resolution",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Timeline"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Timeline"
+      }
+    },
+    "/api/v2/runs/{run_id}/validation": {
+      "get": {
+        "operationId": "get_validation_api_v2_runs__run_id__validation_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "title": "Run Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Get Validation Api V2 Runs  Run Id  Validation Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Validation"
+      }
+    },
+    "/api/v2/scenario-revisions/{revision_id}": {
+      "get": {
+        "operationId": "get_revision_api_v2_scenario_revisions__revision_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "revision_id",
+            "required": true,
+            "schema": {
+              "title": "Revision Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RevisionView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Revision"
+      }
+    },
+    "/api/v2/scenario-revisions/{revision_id}/solve": {
+      "post": {
+        "operationId": "solve_api_v2_scenario_revisions__revision_id__solve_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "revision_id",
+            "required": true,
+            "schema": {
+              "title": "Revision Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/SolveRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobAccepted"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Solve"
+      }
+    },
+    "/api/v2/scenarios": {
+      "post": {
+        "operationId": "create_scenario_api_v2_scenarios_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScenarioCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScenarioCreated"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Scenario"
+      }
+    },
+    "/api/v2/scenarios/{scenario_id}": {
+      "get": {
+        "operationId": "get_scenario_api_v2_scenarios__scenario_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "scenario_id",
+            "required": true,
+            "schema": {
+              "title": "Scenario Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScenarioView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Scenario"
+      }
+    },
+    "/api/v2/scenarios/{scenario_id}/revisions": {
+      "post": {
+        "operationId": "create_revision_api_v2_scenarios__scenario_id__revisions_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "scenario_id",
+            "required": true,
+            "schema": {
+              "title": "Scenario Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RevisionCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RevisionView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Revision"
+      }
+    },
     "/api/v2/seasons": {
       "get": {
         "operationId": "seasons_api_v2_seasons_get",
@@ -3482,6 +7701,140 @@
           }
         },
         "summary": "Seasons"
+      }
+    },
+    "/api/v2/surrogate/previews": {
+      "post": {
+        "operationId": "create_preview_api_v2_surrogate_previews_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "title": "Body",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Preview"
+      }
+    },
+    "/api/v2/surrogate/previews/{preview_id}": {
+      "get": {
+        "operationId": "get_preview_api_v2_surrogate_previews__preview_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "preview_id",
+            "required": true,
+            "schema": {
+              "title": "Preview Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Preview"
+      }
+    },
+    "/api/v2/surrogate/previews/{preview_id}/verify": {
+      "post": {
+        "operationId": "verify_api_v2_surrogate_previews__preview_id__verify_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "preview_id",
+            "required": true,
+            "schema": {
+              "title": "Preview Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerifyAccepted"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Verify"
       }
     },
     "/api/v2/uncertainty-sets": {

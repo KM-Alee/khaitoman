@@ -1,0 +1,9 @@
+{
+  "base_revision_id": "rev_example",
+  "parameter": "uniform_reduction_fraction",
+  "values": [
+    0.0,
+    0.1,
+    0.2
+  ]
+}

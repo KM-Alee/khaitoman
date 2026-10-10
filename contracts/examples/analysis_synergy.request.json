@@ -1,0 +1,6 @@
+{
+  "base_revision_id": "rev_example",
+  "instance_a": "pilot-a:edge-wc1-reach2:repair",
+  "instance_b": "pilot-a:field-022:pond-small",
+  "other_actions": "reoptimize"
+}

@@ -100,7 +100,9 @@ class Prepared:
     field_groups: dict[str, str] = field(default_factory=dict)
 
     def library_config(self, cid: str) -> list[str]:
-        cfg = next((c for c in self.library.configurations if c.shared_configuration_id == cid), None)
+        cfg = next(
+            (c for c in self.library.configurations if c.shared_configuration_id == cid), None
+        )
         return list(cfg.repair_instance_ids) if cfg else []
 
     def state(self, sid: str) -> EvalState:
@@ -121,7 +123,11 @@ def typical_weather(catalog: Catalog, req: ScenarioRequest) -> str:
 
 
 def evaluation_states(
-    bindings, catalog: Catalog, req: ScenarioRequest, plan_kind: PlanKind, library: CandidateLibrary,
+    bindings,
+    catalog: Catalog,
+    req: ScenarioRequest,
+    plan_kind: PlanKind,
+    library: CandidateLibrary,
     states_override: list[str] | None = None,
 ) -> tuple[list[EvalState], EvalState, list[str]]:
     warnings: list[str] = []
@@ -132,13 +138,21 @@ def evaluation_states(
         sids = list(states_override)
     elif robust:
         if not req.uncertainty_set_id:
-            raise invalid("robust plan (R / worst_case) requires uncertainty_set_id", {"uncertainty_set_id": "missing"})
+            raise invalid(
+                "robust plan (R / worst_case) requires uncertainty_set_id",
+                {"uncertainty_set_id": "missing"},
+            )
         us = catalog.uncertainty_set(req.uncertainty_set_id)
         if us is None or us.pilot_id != req.pilot_id or us.season_id != req.season_id:
-            raise invalid("unknown uncertainty set for this pilot/season", {"uncertainty_set_id": req.uncertainty_set_id})
+            raise invalid(
+                "unknown uncertainty set for this pilot/season",
+                {"uncertainty_set_id": req.uncertainty_set_id},
+            )
         sids = [s.state_id for s in us.states]
         if req.uniform_reduction_fraction > 0:
-            warnings.append("uniform_reduction_fraction is not applied on top of published uncertainty-set states")
+            warnings.append(
+                "uniform_reduction_fraction is not applied on top of published uncertainty-set states"
+            )
     else:
         sids = [state_id(typ_w, req.supply_profile_id)]
     missing = [s for s in sids if s not in lib_states]
@@ -148,7 +162,11 @@ def evaluation_states(
             f"candidate library {library.candidate_library_hash[:12]} has no outcomes for states {missing}",
         )
     out: list[EvalState] = []
-    adhoc = not robust and states_override is None and (req.uniform_reduction_fraction > 0 or req.blocked_edge_ids)
+    adhoc = (
+        not robust
+        and states_override is None
+        and (req.uniform_reduction_fraction > 0 or req.blocked_edge_ids)
+    )
     for sid in sids:
         w, s = split_state(sid)
         if adhoc:
@@ -166,8 +184,18 @@ def evaluation_states(
             tag = f"r{req.uniform_reduction_fraction:g}" + (
                 "+blocked:" + ",".join(sorted(req.blocked_edge_ids)) if req.blocked_edge_ids else ""
             )
-            out.append(EvalState(f"{sid}+{tag}", sid, w, s, req.uniform_reduction_fraction,
-                                 tuple(sorted(req.blocked_edge_ids)), resolved, closures))
+            out.append(
+                EvalState(
+                    f"{sid}+{tag}",
+                    sid,
+                    w,
+                    s,
+                    req.uniform_reduction_fraction,
+                    tuple(sorted(req.blocked_edge_ids)),
+                    resolved,
+                    closures,
+                )
+            )
         else:
             out.append(EvalState(sid, sid, w, s))
     typ_sid = state_id(typ_w, req.supply_profile_id)
@@ -180,8 +208,14 @@ def evaluation_states(
 class OutcomeResolver:
     """Effective per-state outcome of a policy, including ad-hoc derived states."""
 
-    def __init__(self, bindings, pkg: PilotPackage, library: CandidateLibrary, catalog: Catalog,
-                 req: ScenarioRequest):
+    def __init__(
+        self,
+        bindings,
+        pkg: PilotPackage,
+        library: CandidateLibrary,
+        catalog: Catalog,
+        req: ScenarioRequest,
+    ):
         self.bindings = bindings
         self.pkg = pkg
         self.library = library
@@ -191,8 +225,9 @@ class OutcomeResolver:
 
     def ctx(self):
         if self._ctx is None:
-            self._ctx = self.bindings.season_context(self.library.pilot_id, self.library.season_id,
-                                                     self.library.pilot_version)
+            self._ctx = self.bindings.season_context(
+                self.library.pilot_id, self.library.season_id, self.library.pilot_version
+            )
         return self._ctx
 
     def outcome(self, p: CandidatePolicy, st: EvalState) -> StateOutcome | None:
@@ -201,26 +236,50 @@ class OutcomeResolver:
             return base
         if base is None or not base.deliverable:
             return base
-        prof = self.catalog.supply_profile(self.req.pilot_id, self.req.season_id, st.supply_profile_id)
+        prof = self.catalog.supply_profile(
+            self.req.pilot_id, self.req.season_id, st.supply_profile_id
+        )
         has_closure = prof is not None and any(t.kind == "closure" for t in prof.transformations)
         frac = p.attributes.get("max_window_take_fraction")
-        if not st.blocked_edge_ids and not has_closure and frac is not None and st.resolved_supply is not None:
+        if (
+            not st.blocked_edge_ids
+            and not has_closure
+            and frac is not None
+            and st.resolved_supply is not None
+        ):
             ok = float(st.resolved_supply.multiplier) + 1e-12 >= float(frac)
             if ok:
                 return base.model_copy(update={"state_id": st.state_id})
-            return base.model_copy(update={
-                "state_id": st.state_id, "deliverable": False, "yield_kg_ha": None, "production_kg": None,
-                "crop_outcome_hash": None, "service_credit_m3": 0.0,
-                "violations": [f"policy takes {float(frac):.3f} of nominal window volume; supply multiplier is "
-                               f"{float(st.resolved_supply.multiplier):.3f}"],
-            })
+            return base.model_copy(
+                update={
+                    "state_id": st.state_id,
+                    "deliverable": False,
+                    "yield_kg_ha": None,
+                    "production_kg": None,
+                    "crop_outcome_hash": None,
+                    "service_credit_m3": 0.0,
+                    "violations": [
+                        (
+                            f"policy takes {float(frac):.3f} of nominal window volume; supply multiplier is "
+                            f"{float(st.resolved_supply.multiplier):.3f}"
+                        )
+                    ],
+                }
+            )
         return self.bindings.evaluate_policy(
-            p, self.ctx(), st.resolved_supply, st.weather_scenario_id, p.shared_configuration_id,
-            state_id=st.state_id, extra_closures=st.extra_closures,
+            p,
+            self.ctx(),
+            st.resolved_supply,
+            st.weather_scenario_id,
+            p.shared_configuration_id,
+            state_id=st.state_id,
+            extra_closures=st.extra_closures,
         )
 
 
-def _instance_admissible(pkg: PilotPackage, inst_id: str, req: ScenarioRequest, planting) -> str | None:
+def _instance_admissible(
+    pkg: PilotPackage, inst_id: str, req: ScenarioRequest, planting
+) -> str | None:
     inst = pkg.instances.get(inst_id)
     if inst is None:
         return f"{inst_id} is not in pilot version {pkg.pilot_version}"
@@ -229,7 +288,11 @@ def _instance_admissible(pkg: PilotPackage, inst_id: str, req: ScenarioRequest, 
 
 
 def references(pkg: PilotPackage, season_id: str) -> dict[str, float]:
-    return {r.field_id: r.reference_receipt_m3 for r in pkg.service_references if r.season_id == season_id}
+    return {
+        r.field_id: r.reference_receipt_m3
+        for r in pkg.service_references
+        if r.season_id == season_id
+    }
 
 
 def group_fields(pkg: PilotPackage, group: str | None) -> list[str]:
@@ -259,16 +322,29 @@ def prepare(
     if lib.pilot_version != req.pilot_version:
         raise conflict(
             "candidate library was built for a different pilot version",
-            {"library_pilot_version": lib.pilot_version, "request_pilot_version": req.pilot_version},
+            {
+                "library_pilot_version": lib.pilot_version,
+                "request_pilot_version": req.pilot_version,
+            },
         )
     season = catalog.season(req.season_id)
     planting = (season.planting_date or season.start) if season else None
-    states, typical, warnings = evaluation_states(bindings, catalog, req, plan_kind, lib, states_override)
+    states, typical, warnings = evaluation_states(
+        bindings, catalog, req, plan_kind, lib, states_override
+    )
     resolver = OutcomeResolver(bindings, pkg, lib, catalog, req)
     policies = {p.candidate_policy_id: p for p in pols}
     refs = references(pkg, req.season_id)
-    floor_fields = set(group_fields(pkg, req.service_group)) if req.minimum_service_ratio is not None else set()
-    allowed = set(req.allowed_intervention_instance_ids) if req.allowed_intervention_instance_ids is not None else None
+    floor_fields = (
+        set(group_fields(pkg, req.service_group))
+        if req.minimum_service_ratio is not None
+        else set()
+    )
+    allowed = (
+        set(req.allowed_intervention_instance_ids)
+        if req.allowed_intervention_instance_ids is not None
+        else None
+    )
     excluded = set(req.excluded_instance_ids)
     forced = set(req.forced_instance_ids)
     no_capital = plan_kind in (PlanKind.B0, PlanKind.B1)
@@ -294,7 +370,13 @@ def prepare(
     outcomes: dict[tuple[str, str], StateOutcome] = {}
     configs: list[ConfigSpec] = []
     coverage_fields: dict[str, dict[str, Any]] = {
-        f: {"field_id": f, "library_candidates": 0, "retained": 0, "rejections": defaultdict(int), "families": defaultdict(int)}
+        f: {
+            "field_id": f,
+            "library_candidates": 0,
+            "retained": 0,
+            "rejections": defaultdict(int),
+            "families": defaultdict(int),
+        }
         for f in sorted(pkg.fields)
     }
     best_service: dict[str, dict[str, float]] = defaultdict(dict)  # config -> field -> best ratio
@@ -303,7 +385,9 @@ def prepare(
         by_config[p.shared_configuration_id].append(p)
     lib_fields = {p.field_id for p in pols}
     missing_fields = sorted(set(pkg.fields) - lib_fields)
-    for cfg in sorted(lib.configurations, key=lambda c: (len(c.repair_instance_ids), c.shared_configuration_id)):
+    for cfg in sorted(
+        lib.configurations, key=lambda c: (len(c.repair_instance_ids), c.shared_configuration_id)
+    ):
         cid = cfg.shared_configuration_id
         spec = ConfigSpec(cid, tuple(cfg.repair_instance_ids), cfg.capex_pkr, cfg.seasonal_opex_pkr)
         bad = [inst_bad(j) for j in cfg.repair_instance_ids]
@@ -312,14 +396,24 @@ def prepare(
             spec.excluded_reason = f"configuration fixed to {fixed_config_id}"
         elif bad:
             spec.excluded_reason = "; ".join(bad)
-        missing_forced = [j for j in forced if j in _repairs(lib) and j not in cfg.repair_instance_ids]
+        missing_forced = [
+            j for j in forced if j in _repairs(lib) and j not in cfg.repair_instance_ids
+        ]
         if missing_forced and spec.excluded_reason is None:
             spec.excluded_reason = f"forced repair(s) {missing_forced} not in this configuration"
         for f in pkg.fields:
             spec.options[f] = []
         for p in sorted(by_config.get(cid, []), key=lambda p: p.candidate_policy_id):
-            cov = coverage_fields.setdefault(p.field_id, {"field_id": p.field_id, "library_candidates": 0, "retained": 0,
-                                                          "rejections": defaultdict(int), "families": defaultdict(int)})
+            cov = coverage_fields.setdefault(
+                p.field_id,
+                {
+                    "field_id": p.field_id,
+                    "library_candidates": 0,
+                    "retained": 0,
+                    "rejections": defaultdict(int),
+                    "families": defaultdict(int),
+                },
+            )
             cov["library_candidates"] += 1
             reason = None
             if spec.excluded_reason:
@@ -330,7 +424,11 @@ def prepare(
                     if why:
                         reason = "instance unavailable"
                         break
-            if reason is None and not req.permit_groundwater and (p.pump_volume_m3 > 0 or p.pump_events):
+            if (
+                reason is None
+                and not req.permit_groundwater
+                and (p.pump_volume_m3 > 0 or p.pump_events)
+            ):
                 reason = "groundwater not permitted"
             if reason is None and plan_kind is PlanKind.B0 and p.family != BASELINE_FAMILY:
                 reason = "not the fixed-roster baseline"
@@ -435,11 +533,26 @@ def prepare(
     }
     limited = [c["field_id"] for c in coverage["fields"] if 0 < c["retained"] < 3]
     if limited:
-        warnings.append(f"CANDIDATE_COVERAGE_LIMITED: fewer than 3 admissible candidates for {limited}")
+        warnings.append(
+            f"CANDIDATE_COVERAGE_LIMITED: fewer than 3 admissible candidates for {limited}"
+        )
     if missing_fields:
         warnings.append(f"fields without library candidates: {missing_fields}")
-    return Prepared(req, plan_kind, lib, policies, states, typical, problem, outcomes, coverage, groups, refs,
-                    warnings, field_groups={f: r.group for f, r in pkg.fields.items()})
+    return Prepared(
+        req,
+        plan_kind,
+        lib,
+        policies,
+        states,
+        typical,
+        problem,
+        outcomes,
+        coverage,
+        groups,
+        refs,
+        warnings,
+        field_groups={f: r.group for f, r in pkg.fields.items()},
+    )
 
 
 def _repairs(lib: CandidateLibrary) -> set[str]:
@@ -450,8 +563,16 @@ def _option(p: CandidatePolicy, st_out: dict[str, StateOutcome]) -> Option:
     prod, res, svc, wd, gw = {}, {}, {}, {}, {}
     base_res = {(r.resource_id, r.interval_id): r.volume_m3 for r in p.resources}
     for sid, o in st_out.items():
-        prod[sid] = o.production_kg if o.production_kg is not None else p.cropped_area_ha * (o.yield_kg_ha or 0.0)
-        use = {(r.resource_id, r.interval_id): r.volume_m3 for r in o.resources} if o.resources else base_res
+        prod[sid] = (
+            o.production_kg
+            if o.production_kg is not None
+            else p.cropped_area_ha * (o.yield_kg_ha or 0.0)
+        )
+        use = (
+            {(r.resource_id, r.interval_id): r.volume_m3 for r in o.resources}
+            if o.resources
+            else base_res
+        )
         res[sid] = use
         svc[sid] = o.service_credit_m3
         wd[sid] = sum(v for (rid, _), v in use.items() if rid.startswith("source:"))

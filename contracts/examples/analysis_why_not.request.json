@@ -1,0 +1,5 @@
+{
+  "action": "force",
+  "base_revision_id": "rev_example",
+  "instance_id": "pilot-a:edge-wc2-reach3:repair"
+}

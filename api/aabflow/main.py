@@ -24,9 +24,17 @@ from aabflow.services.pilots import PilotRepository
 
 
 def _routers() -> list[APIRouter]:
-    from aabflow.api import jobs, pilots, system
+    from aabflow.api import analyses, jobs, pilots, runs, scenarios, surrogate, system
 
-    return [system.router, pilots.router, jobs.router]
+    return [
+        system.router,
+        pilots.router,
+        jobs.router,
+        scenarios.router,
+        runs.router,
+        analyses.router,
+        surrogate.router,
+    ]
 
 
 def _dispatcher_cls():
@@ -83,6 +91,7 @@ def create_app(settings: config.Settings | None = None) -> FastAPI:
     app.include_router(api)
 
     from aabflow.api.pilots import assets_router
+
     app.include_router(assets_router)
 
     @app.api_route("/assets/{path:path}", methods=["GET"], include_in_schema=False)

@@ -1,0 +1,19 @@
+{
+  "label": "example (not a live output)",
+  "request": {
+    "capital_budget_pkr": 3000000,
+    "decision_at": "2026-10-10T08:00:00+05:00",
+    "operating_budget_pkr": 400000,
+    "pilot_id": "pilot-a",
+    "pilot_version": "reviewed-v1",
+    "planning_mode": "capital_planning",
+    "season_id": "wheat-rabi-2027-28",
+    "supply_profile_id": "nominal-roster-v1",
+    "uncertainty_set_id": "pilot-a:wheat-rabi-2027-28:release-9",
+    "weather_scenario_ids": [
+      "dry",
+      "typical",
+      "wet"
+    ]
+  }
+}

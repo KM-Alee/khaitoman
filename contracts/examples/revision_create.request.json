@@ -1,0 +1,7 @@
+{
+  "changes": {
+    "capital_budget_pkr": 400000,
+    "uniform_reduction_fraction": 0.1
+  },
+  "parent_revision_id": "rev_example"
+}

@@ -35,14 +35,38 @@ def _libraries_ready(state: AppState) -> list[tuple[str, str]]:
 
 
 def surrogate_gate(state: AppState) -> str:
-    """Gate status as published by the science stream's evaluation artifact, else not_run."""
+    """Gate status of the current surrogate (``surrogate-latest.json``) from its evaluation artifact.
+
+    The science stream records ``passed`` (bool) plus per-crop ``gate_results``; ``gate_status`` is also
+    accepted. No artifact -> ``not_run``; unreadable -> ``unreadable``.
+    """
     models = state.settings.data_dir / "models"
+    latest = models / "surrogate-latest.json"
+    paths: list = []
+    try:
+        if latest.exists():
+            paths = [models / json.loads(latest.read_text())["model_version"] / "evaluation.json"]
+    except (ValueError, OSError, KeyError):
+        return "unreadable"
+    if not paths:
+        paths = sorted(models.glob("surrogate*/evaluation.json"))
     statuses = []
-    for p in sorted(models.glob("surrogate*/**/evaluation.json")):
+    for p in paths:
         try:
-            statuses.append(str(json.loads(p.read_text()).get("gate_status", "unknown")))
+            doc = json.loads(p.read_text())
         except (ValueError, OSError):
             statuses.append("unreadable")
+            continue
+        if "gate_status" in doc:
+            statuses.append(str(doc["gate_status"]))
+        elif isinstance(doc.get("passed"), bool):
+            crops_ok = all(
+                all(v for v in (c.get("gate_results") or {}).values())
+                for c in (doc.get("crops") or {}).values()
+            )
+            statuses.append("passed" if doc["passed"] and crops_ok else "failed")
+        else:
+            statuses.append("unknown")
     if not statuses:
         return "not_run"
     if all(s == "passed" for s in statuses):
