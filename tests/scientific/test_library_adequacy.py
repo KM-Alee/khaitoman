@@ -31,6 +31,8 @@ def test_density_objective_actions_and_retained_larger_library(pilot, season):
     coarse = CandidateLibrary.model_validate_json(
         (directory / record["baseline_hash"] / "library.json").read_text()
     )
+    policies_path = directory / record["retained_hash"] / "policies.jsonl"
+    assert policies_path.is_file(), f"missing {policies_path}; run make candidates PILOT={pilot}"
     dense, policies = load_library(pilot, season)
     assert dense.candidate_library_hash == record["retained_hash"] == report["retained_hash"]
     assert coarse.candidate_library_hash == report["baseline_hash"]

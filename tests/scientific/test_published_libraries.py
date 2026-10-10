@@ -31,6 +31,8 @@ def published(request):
     latest_path = libraries_dir() / pilot / season / "latest.json"
     assert latest_path.is_file(), f"run make candidates PILOT={pilot}"
     latest = json.loads(latest_path.read_text())
+    policies_path = libraries_dir() / pilot / season / latest["candidate_library_hash"] / "policies.jsonl"
+    assert policies_path.is_file(), f"missing {policies_path}; run make candidates PILOT={pilot}"
     lib, policies = load_library(pilot, season)
     ctx = build_season_context(load_pilot(pilot, lib.pilot_version), season)
     groups = defaultdict(list)
