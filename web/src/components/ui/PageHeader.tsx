@@ -89,29 +89,32 @@ export function Stepper({
   onSelect,
   className,
   label = "Progress",
+  compact = false,
 }: {
   steps: { id: string; label: ReactNode; state?: "done" | "current" | "todo" | "blocked" }[];
   current: number;
   onSelect?: (i: number) => void;
   className?: string;
   label?: string;
+  /** Tighter dots for long sequences in narrow cards (the tour). */
+  compact?: boolean;
 }) {
   return (
-    <ol className={cn("flex items-center gap-1.5", className)} aria-label={label}>
+    <ol className={cn("flex min-w-0 items-center", compact ? "gap-0.5" : "gap-1.5", className)} aria-label={label}>
       {steps.map((s, i) => {
         const state = s.state ?? (i < current ? "done" : i === current ? "current" : "todo");
         const dot = (
           <span
             className={cn(
               "block h-1.5 rounded-full transition-all duration-300",
-              state === "current" ? "w-6 bg-water" : state === "done" ? "w-1.5 bg-water/55" : state === "blocked" ? "w-1.5 bg-warning" : "w-1.5 bg-border-strong/45",
+              state === "current" ? (compact ? "w-4 bg-water" : "w-6 bg-water") : state === "done" ? "w-1.5 bg-water/55" : state === "blocked" ? "w-1.5 bg-warning" : "w-1.5 bg-border-strong/45",
             )}
           />
         );
         return (
           <li key={s.id} aria-current={state === "current" ? "step" : undefined}>
             {onSelect ? (
-              <button type="button" className="grid h-5 place-items-center px-0.5" onClick={() => onSelect(i)} aria-label={`Go to step ${i + 1}: ${typeof s.label === "string" ? s.label : ""}`}>
+              <button type="button" className={cn("grid h-5 place-items-center", compact ? "px-[2px]" : "px-0.5")} onClick={() => onSelect(i)} aria-label={`Go to step ${i + 1}: ${typeof s.label === "string" ? s.label : ""}`}>
                 {dot}
               </button>
             ) : (

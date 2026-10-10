@@ -223,7 +223,7 @@ export function NumInput({
   return (
     <label className={cn("flex flex-col gap-1 text-[12px] font-medium text-ink-secondary", className)}>
       {label}
-      <span className="flex h-9 items-center rounded-[9px] border border-border-strong/55 bg-surface-raised pr-2 shadow-1">
+      <span className="flex h-9 items-center rounded-[9px] border border-border-strong/55 bg-surface-raised pr-2 shadow-1 focus-within:border-water focus-within:ring-2 focus-within:ring-focus/40">
         <input
           type="number"
           className="num h-full w-full min-w-0 bg-transparent px-2 text-right text-[13px] text-ink outline-none"

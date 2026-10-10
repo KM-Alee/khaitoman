@@ -151,18 +151,29 @@ The GPT-6 Luna agent turns that into an **investigation plan** and **executes it
 
 ---
 
-## 8. Five-minute demo script
+## 8. Five-minute demo script (rehearsal sheet, final click path)
 
-| Time | On screen | Say |
-|---|---|---|
-| 0:00 | Landing page: the tail-farmer twist | "A committee can fund only some improvements. Optimising without investment quietly cut this tail farmer's water from 62% to 46%. Let's fix that." |
-| 0:35 | Map: AI detections → 30 reviewed fields on real Sentinel-2 | "Our AI found 931 fields from satellite; we reviewed and kept the 30 best. Rights and costs are labelled as assumed, right there." |
-| 1:00 | Run B0 · B1 · P live | "Same conditions, three plans. +17% wheat, tail back to 56%, using a quarter of the budget." |
-| 1:50 | Change the budget → re-solve live | "Cut the budget: watch the plan change in seconds. Every result is a new, traceable run." |
-| 2:35 | Replay the decisive week | Narrate what the hero run's replay actually shows (pick the interval during rehearsal, e.g. a pond release or pump top-up that keeps a tail field going). Don't script an event the run doesn't contain. |
-| 3:15 | Frontier + stress matrix | "The first ₨5 lakh buys 12 tonnes; the next ₨75 lakh buys under 2. And the 'best' plan fails in 6 of 9 bad seasons. The robust one doesn't." |
-| 3:45 | **"Plan my season"** (or copilot) in Urdu/English | "Now the AI does the whole investigation from one sentence, and every number is traced to a real run." |
-| 4:25 | Printed action plan + evidence page | "This is what the committee takes home. Next step: a supervised pilot with a WUA program. Who wants to be first?" |
+Numbers below were read from the API for the seeded session (`GET /api/v2/demo/headline`,
+`/api/v2/ai-stack`, `/api/v2/demo/session`; pilot A, Rabi wheat 2027-28, capital planning,
+₨30 lakh budget). Re-read them if you re-seed. Seeded goal sentence:
+*"We have ₨10 lakh. Don't hurt the tail farmers, and make sure it survives a dry year."*
+(plan turn `turn_530ad45f…`, live in 93.7 s). Talking points and Q&A: `docs/TALKING_POINTS.md`.
+Deck: `docs/pitch/AabFlow-pitch.pptx`.
+
+| Time | Click | On screen | Say |
+|---|---|---|---|
+| 0:00 | Landing (`/`) | Headline card, AI-inside strip | "Optimising only what exists grew 8.3% more wheat but cut the worst-off tail field from 61% to 44% of its water. AabFlow's plan: +18.8% wheat, tail at 61%, using 65% of the budget." |
+| 0:30 | **Take the 3-minute tour** → step 2 | The AI reveal: 931 outlines recede to 30 | "Our AI found 931 possible fields from one satellite image; review rules and a person kept the 30 clearest. Rights and costs are labelled as assumed." |
+| 1:00 | Next ×2 (plans, gains) | Compare B0 · B1 · P | "Same conditions, three plans. 129.7 t → 154.1 t." |
+| 1:25 | Next (budget) → optional **Re-run live** | ₨5 lakh child plan | "Cut the budget to ₨5 lakh: three works drop out, capital falls to ₨3.6 lakh, production stays 152.9 t." |
+| 1:50 | Next (replay, instant crop) | Drag the water slider | "A model we trained answers in milliseconds; one click confirms with the exact crop model." |
+| 2:30 | Next (frontier, stress) | Frontier; 3×3 matrix | "The first ₨5 lakh buys 12.4 t, the next ₨75 lakh only 1.7 t. The robust plan holds in all 9 tested seasons." |
+| 3:10 | Next (**Plan my season**) | Saved investigation replay | "Now the AI does the whole investigation from one sentence." Then **Run it live** (≈1.5 min) or ask the Urdu chip on the landing page (≈55 s). |
+| 4:20 | Next (impact, report, trust) | Action plan; Trust | Hold up the printed brief (`make print-brief`). "Next step: a supervised pilot with a WUA programme. Who wants to be first?" |
+
+Fallback: `make record-tour` video (permanent **RECORDED** badge). Cold start `make cold-demo`:
+3.05 s to the first healthy response, 3.9 s to the first tour step
+(`evidence/benchmarks/cold-demo-20261010T170800Z.json`).
 
 ## 9. Honest limits (say them before a judge does)
 
