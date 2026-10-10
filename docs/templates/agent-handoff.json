@@ -1,0 +1,23 @@
+{
+  "node": "FILL_NODE",
+  "agent_id": "FILL_CURSOR_ID",
+  "model_requested": "grok-4.7[effort=high,context=500k,fast=false]",
+  "model_observed": "FILL_FROM_TASK_CARD",
+  "worktree": "FILL_ABSOLUTE_PATH",
+  "branch": "FILL_BRANCH",
+  "base_sha": "FILL_40_CHARACTER_SHA",
+  "artifact_hashes": {},
+  "files_changed": [],
+  "requirements": [
+    {"requirement": "FILL_FULL_REQUIREMENT", "spec": "FILL_SECTION", "tests": [], "artifacts": [], "status": "not_executed"}
+  ],
+  "commands": [
+    {"command": "FILL_EXACT_COMMAND", "exit_code": null, "log": "FILL_LOG_PATH", "result": "not_executed"}
+  ],
+  "device_observed": "not_executed",
+  "assumptions": [],
+  "actionable_findings_remaining": [],
+  "external_blockers": [],
+  "shared_changes_requested": [],
+  "processes_and_leases_remaining": []
+}

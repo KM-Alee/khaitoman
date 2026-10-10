@@ -32,6 +32,10 @@ Put `OPENAI_API_KEY` in `.env` for the copilot. `make help` lists every command.
 
 Containers run as your user (`HOST_UID`/`HOST_GID` in `.env`), so generated files stay yours. `data/` is mounted from the repo, and large data is git-ignored.
 
+## Building with Cursor agents
+
+Select Grok 4.7, High, 500k context and Fast off in a local Agent session, then run `/aabflow-build`. `/aabflow-resume` recovers interrupted work and `/aabflow-status` shows the current frontier. The [complete work DAG](docs/AGENT_DAG.md) and [workflow](docs/AGENT_WORKFLOW.md) cover every remaining chunk, isolated worktrees, up to three specialists, shared-contract ownership, executed validation and independent PR review. The non-chat core must pass before copilot work; no scope is held back to finish sooner.
+
 ## Building with Claude Code
 
 The repo ships a shared Claude Code setup in `.claude/`, so both contributors get the same workflow. Open Claude Code in this folder.

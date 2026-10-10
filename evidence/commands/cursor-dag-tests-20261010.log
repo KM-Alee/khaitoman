@@ -1,0 +1,25 @@
+docker compose run --rm --no-deps api pytest -q --ignore=tests/scientific
+ Container aabflow-api-run-5b6fbfe4b177 Creating 
+ Container aabflow-api-run-5b6fbfe4b177 Created 
+........................................................................ [ 15%]
+........................................................................ [ 31%]
+........................................................................ [ 46%]
+........................................................................ [ 62%]
+........................................................................ [ 77%]
+........................................................................ [ 93%]
+...............................                                          [100%]
+=============================== warnings summary ===============================
+tests/unit/test_ingestion_sources.py::test_write_and_read_local_window
+  /opt/venv/lib/python3.11/site-packages/rasterio/windows.py:360: PendingDeprecationWarning: Use `@` matmul instead of `*` mul operator for matrix multiplication
+    x, y = transform * (window.col_off or 0.0, window.row_off or 0.0)
+
+tests/unit/test_ingestion_sources.py::test_write_and_read_local_window
+  /opt/venv/lib/python3.11/site-packages/rasterio/windows.py:361: PendingDeprecationWarning: Use `@` matmul instead of `*` mul operator for matrix multiplication
+    return Affine.translation(
+
+tests/unit/test_ingestion_sources.py::test_display_stretch_corners_and_webp
+  /opt/venv/lib/python3.11/site-packages/rasterio/transform.py:189: PendingDeprecationWarning: Use `@` matmul instead of `*` mul operator for matrix multiplication
+    return Affine.translation(west, north) * Affine.scale(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+463 passed, 3 warnings in 29.72s

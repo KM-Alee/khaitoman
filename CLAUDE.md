@@ -23,6 +23,7 @@ AICON hackathon build: irrigation and canal water-allocation planner. Full scope
 
 ## Working rules
 
+- Queue-wide parallel development uses `docs/AGENT_WORKFLOW.md` and the complete DAG in `docs/agent-dag.json`; Cursor commands are `/aabflow-build`, `/aabflow-resume`, `/aabflow-status`. Use isolated local worker worktrees, at most three direct subagents, explicit file ownership and global resource leases. Parent owns shared contracts/integration. Full non-chat acceptance precedes copilot implementation/evaluation; partial UI gates do not pass AT13/AT14. Preserve every chunk and independent human review.
 - **"ai continue"**: when the user says it, follow `docs/CONTINUE.md`. It detects the role (builder or reviewer) and takes the next step from `docs/PROGRESS.md` (PR queue) and `docs/REVIEW_PLAN.md` (reviewer checklist and milestone gates).
 - PR workflow (`docs/WORKFLOW.md`): KM-Alee builds, Aounuman (`Sipra-Aoun`) reviews. Never commit or push to `main`. Work on a branch and finish with `/ship`, which opens a PR. Reviews use `/review-pr <n>`: fix gaps on the PR branch, file `gap` issues for the rest, merge with a merge commit. No rebase or force-push of pushed branches.
 - Real data and executed pipelines only; fixtures are for tests and must be labelled.

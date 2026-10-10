@@ -2,6 +2,8 @@
 
 The reviewer (Aounuman, `Sipra-Aoun`) half of [`docs/PROGRESS.md`](PROGRESS.md). Process and merge rules are in [`docs/WORKFLOW.md`](WORKFLOW.md); the mechanics of one review are `/review-pr <n>` (`.claude/commands/review-pr.md`). This file says **what to check** for each planned PR and **when a milestone counts as done**.
 
+Parallel work follows [`AGENT_WORKFLOW.md`](AGENT_WORKFLOW.md). P11-core is an explicitly partial integration checkpoint before offline/restart and full G-CORE; it cannot pass complete AT13/AT14 or finish P11. P10 implementation/evaluation follows complete non-chat acceptance (T13.2/T13.4), then P11-final completes report/UI/copilot consistency and all six screens. Review each stacked sub-PR against its declared scope; mark the PNN done only after all its substeps are reviewed and merged. Subagent audits/verifiers do not replace your independent checks.
+
 "ai continue" as reviewer does, in order:
 
 1. Review the oldest open, non-draft PR requesting your review (`gh pr list --search "review-requested:@me" --draft=false`). Review a stacked parent before its child.
