@@ -138,6 +138,13 @@ class Runner:
         )
 
 
+def _exact_production(value: Any) -> float | None:
+    """A numeric achievable yield. Booleans and missing values are not production."""
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return None
+    return float(value)
+
+
 def point(conn, run_id: str) -> dict[str, Any]:
     """Comparable summary of one child run, from its stored artifacts only."""
     r = load_run(conn, run_id)
@@ -175,6 +182,7 @@ def point(conn, run_id: str) -> dict[str, Any]:
                 "worst_tested_production_kg": val("worst_tested_production_kg"),
                 "quantization_bound": val("objective_quantization_bound_kg") or 0.0,
                 "selected_intervention_instance_ids": res.selected_intervention_instance_ids,
+                "selected_candidate_policy_ids": list(res.selected_candidate_policy_ids),
                 "shared_configuration_id": res.shared_configuration_id,
                 "physical_validation": res.physical_validation.status,
             }
@@ -184,6 +192,8 @@ def point(conn, run_id: str) -> dict[str, Any]:
             {
                 "objective_value": None,
                 "objective_upper_bound": None,
+                "production_kg": None,
+                "selected_candidate_policy_ids": None,
                 "infeasibility_kind": res.infeasibility_kind.value
                 if res.infeasibility_kind
                 else None,
@@ -195,6 +205,8 @@ def point(conn, run_id: str) -> dict[str, Any]:
             {
                 "objective_value": None,
                 "objective_upper_bound": None,
+                "production_kg": None,
+                "selected_candidate_policy_ids": None,
                 "physical_validation": res.physical_validation.status,
                 "diagnostic_ref": res.diagnostic_ref,
             }
@@ -424,16 +436,45 @@ def stress_job(ctx, payload: dict) -> dict:
             pt = point(R.conn, run_id)
             cell["run_id"] = run_id
             cell["solver_status"] = pt["solver_status"]
-            deliverable = pt["outcome"] == "plan" and pt.get("physical_validation") == "passed"
+            production = _exact_production(pt.get("production_kg"))
+            deliverable = (
+                pt["outcome"] == "plan"
+                and pt.get("physical_validation") == "passed"
+                and production is not None
+            )
+            if req.mode == "fixed_plan":
+                frozen = [fixed_sel[f] for f in sorted(fixed_sel)]
+                cell["frozen_candidate_policy_ids"] = frozen
+                selected = pt.get("selected_candidate_policy_ids")
+                same = selected is not None and sorted(selected) == sorted(frozen)
+                if deliverable and not same:
+                    deliverable = False
+                    production = None
+                cell["selected_candidate_policy_ids"] = list(selected) if deliverable else None
             cell["deliverable"] = deliverable
-            cell["production_kg"] = pt.get("production_kg") if deliverable else None
+            # An undeliverable or unproven cell keeps the violating rule and no achievable yield.
+            cell["production_kg"] = production if deliverable else None
             cell["objective_upper_bound"] = pt.get("objective_upper_bound") if deliverable else None
             if req.mode == "fixed_plan":
-                cell["violations"] = (
+                violations = (
                     []
                     if deliverable
                     else _fixed_violations(captured.get("p"), fixed_sel, cfg_id, sid)
                 )
+                if (
+                    not deliverable
+                    and pt["outcome"] == "plan"
+                    and pt.get("selected_candidate_policy_ids") is not None
+                    and sorted(pt["selected_candidate_policy_ids"]) != sorted(frozen)
+                ):
+                    violations = [
+                        {
+                            "rule": "shared_decision",
+                            "detail": "cell selection is not the frozen plan's dated policies",
+                        },
+                        *violations,
+                    ]
+                cell["violations"] = violations
             else:
                 cell["selected_intervention_instance_ids"] = pt.get(
                     "selected_intervention_instance_ids"
@@ -462,10 +503,14 @@ def stress_job(ctx, payload: dict) -> dict:
                 {
                     "deliverable": False,
                     "production_kg": None,
+                    "objective_upper_bound": None,
+                    "selected_candidate_policy_ids": None,
                     "solver_status": None,
                     "violations": [{"rule": exc.code.value, "detail": exc.detail}],
                 }
             )
+            if req.mode == "fixed_plan":
+                cell["frozen_candidate_policy_ids"] = [fixed_sel[f] for f in sorted(fixed_sel)]
         R.result["cells"].append(cell)
         _stress_summary(R.result, src)
         R.done(
