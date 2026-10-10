@@ -36,6 +36,7 @@ from ..packages.validate import PackageValidationError, validate_package
 from ..review.fields import ManualEdit, ReviewConfig, review, selected_wgs84
 from . import process as proc_mod
 from .acquire import AcquisitionConfig, Cancelled, acquire_bundle
+from .catalog import resolve_stored_bundle
 
 Progress = Callable[[str, float | None, str], None]
 SourceMode = Literal["online", "raw_package"]
@@ -111,6 +112,7 @@ def create_intake(
     geographic_name_basis: str | None = None,
     parent_canal_feature_id: str | None = None,
     repo_root: Path | None = None,
+    data_dir: Path | None = None,
 ) -> dict:
     workdir = Path(workdir)
     if _intake_path(workdir).exists():
@@ -123,7 +125,11 @@ def create_intake(
     if source_mode == "raw_package":
         if not raw_package_ref:
             raise ValueError("raw_package mode needs raw_package_ref")
-        root = (Path(repo_root or config.ROOT) / raw_package_ref).resolve()
+        root = resolve_stored_bundle(
+            raw_package_ref,
+            Path(repo_root or config.ROOT),
+            Path(data_dir) if data_dir is not None else None,
+        )
         b = validate_bundle(root)
         if (
             shape(b.read_json("aoi.geojson")["features"][0]["geometry"])
@@ -272,6 +278,7 @@ def process(
     data_dir: Path | None = None,
     repo_root: Path | None = None,
     acquisition: AcquisitionConfig | None = None,
+    inference_cache_only: bool = False,
 ) -> dict:
     """Acquire (online) or import (raw package), process, run/reuse inference, propose review."""
     workdir = Path(workdir)
@@ -298,12 +305,18 @@ def process(
             st["bundle_ref"] = str(root.resolve().relative_to(repo_root.resolve()))
             _transition(st, "acquired_raw", st["bundle_ref"])
             _save(workdir, st)
-        bundle = validate_bundle(repo_root / st["bundle_ref"])
+        bundle = validate_bundle(resolve_stored_bundle(st["bundle_ref"], repo_root, data_dir))
         if st["state"] == "created":
             _transition(st, "acquired_raw", f"imported {st['bundle_ref']}")
         if should_cancel():
             raise Cancelled("processing cancelled")
-        res = proc_mod.process_bundle(bundle, workdir / "processed", repo_root, progress)
+        res = proc_mod.process_bundle(
+            bundle,
+            workdir / "processed",
+            repo_root,
+            progress,
+            cache_only=inference_cache_only,
+        )
     except Cancelled:
         _transition(st, "cancelled")
         _save(workdir, st)

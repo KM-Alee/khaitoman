@@ -331,18 +331,40 @@ def process_terrain(bundle: Bundle, out: Path, res: ProcessResult) -> None:
     write_json(td / "dem.json", res.terrain)
 
 
-def run_inference(input_tif: Path, repo_root: Path, out: Path, res: ProcessResult) -> bool:
-    """Prepare, run-or-reuse and collect Delineate. Returns False if still pending."""
+def run_inference(
+    input_tif: Path,
+    repo_root: Path,
+    out: Path,
+    res: ProcessResult,
+    *,
+    cache_only: bool = False,
+) -> bool:
+    """Prepare, run-or-reuse and collect Delineate. Returns False if still pending.
+
+    ``cache_only`` reuses a completed run record and never starts the vision
+    container. A miss stays ``pending`` with ``cache_hit`` false and no device.
+    """
     job = delineate.prepare(input_tif, repo_root)
     res.inference = {
         "inference_key": job.key,
         "batch": str(job.batch_yaml.relative_to(repo_root)),
         "command": job.command_str(),
+        "cache_hit": False,
+        "device": None,
     }
+    if cache_only and not job.done():
+        res.inference["state"] = "pending"
+        res.blockers.append(
+            "inference_pending: no cached Delineate run for this input; "
+            f"a new vision run was not started. Command not executed: {job.command_str()}"
+        )
+        return False
     try:
         rec = delineate.run(job)
     except delineate.InferencePending as p:
         res.inference["state"] = "pending"
+        res.inference["cache_hit"] = False
+        res.inference["device"] = None
         res.blockers.append(f"inference_pending: {p.command}")
         return False
     if rec.get("cache_hit"):
@@ -371,7 +393,9 @@ def run_inference(input_tif: Path, repo_root: Path, out: Path, res: ProcessResul
     return True
 
 
-def process_bundle(bundle: Bundle, out: Path, repo_root: Path, progress=None) -> ProcessResult:
+def process_bundle(
+    bundle: Bundle, out: Path, repo_root: Path, progress=None, *, cache_only: bool = False
+) -> ProcessResult:
     progress = progress or (lambda *a: None)
     out.mkdir(parents=True, exist_ok=True)
     aoi = Aoi.from_geojson(bundle.read_json("aoi.geojson"))
@@ -384,8 +408,8 @@ def process_bundle(bundle: Bundle, out: Path, repo_root: Path, progress=None) ->
     process_weather(bundle, out, res)
     progress("process:terrain", 0.5, "Copernicus DEM")
     process_terrain(bundle, out, res)
-    progress("process:inference", 0.6, "Delineate Anything (vision container)")
-    run_inference(input_tif, repo_root, out, res)
+    progress("process:inference", 0.6, "Delineate Anything (cached run or pending)")
+    run_inference(input_tif, repo_root, out, res, cache_only=cache_only)
     write_json(out / "process_result.json", {**vars(res), "processed_at": iso(utc_now())})
     return res
 
