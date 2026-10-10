@@ -41,9 +41,12 @@ REVIEW_RULES_VERSION = "field-review-rules-1.0.0"
 @dataclass(frozen=True)
 class ReviewConfig:
     target_count: int = 30
-    min_area_m2: float = 8_000.0
+    # 0.5 ha: Punjab parcels are ~0.4 ha (one killa); ≥1 ha preferred via the ranking.
+    min_area_m2: float = 5_000.0
     max_area_m2: float = 150_000.0
-    min_compactness: float = 0.45
+    # Polsby-Popper of a pixel-staircase strip parcel is ~0.3-0.5; slivers are caught by
+    # width and rectangularity.
+    min_compactness: float = 0.30
     min_width_m: float = 45.0
     min_rectangularity: float = 0.70
     fill_hole_m2: float = 1_500.0
@@ -135,7 +138,9 @@ def check_geometry(c: Candidate, aoi_m, cfg: ReviewConfig) -> None:
             c.reject(f"no polygonal part ({g.geom_type})")
             return
         if minor > cfg.minor_part_fraction:
-            c.reject(f"multipart with {minor:.0%} of area outside the largest part (probable merge)")
+            c.reject(
+                f"multipart with {minor:.0%} of area outside the largest part (probable merge)"
+            )
             return
         if minor > 0:
             c.actions.append("dropped_minor_parts")
@@ -156,11 +161,17 @@ def check_geometry(c: Candidate, aoi_m, cfg: ReviewConfig) -> None:
     c.geom_m = g
     measure(c)
     if c.metrics["area_m2"] < cfg.min_area_m2:
-        c.reject(f"area {c.metrics['area_m2']:.0f} m² < {cfg.min_area_m2:.0f} m² (unreliable at 10 m)")
+        c.reject(
+            f"area {c.metrics['area_m2']:.0f} m² < {cfg.min_area_m2:.0f} m² (unreliable at 10 m)"
+        )
     elif c.metrics["area_m2"] > cfg.max_area_m2:
-        c.reject(f"area {c.metrics['area_m2']:.0f} m² > {cfg.max_area_m2:.0f} m² (probable merged fields)")
+        c.reject(
+            f"area {c.metrics['area_m2']:.0f} m² > {cfg.max_area_m2:.0f} m² (probable merged fields)"
+        )
     elif c.metrics["compactness"] < cfg.min_compactness:
-        c.reject(f"sliver/irregular: compactness {c.metrics['compactness']:.2f} < {cfg.min_compactness}")
+        c.reject(
+            f"sliver/irregular: compactness {c.metrics['compactness']:.2f} < {cfg.min_compactness}"
+        )
     elif c.metrics["min_width_m"] < cfg.min_width_m:
         c.reject(f"sliver: width {c.metrics['min_width_m']:.0f} m < {cfg.min_width_m:.0f} m")
     elif c.metrics["rectangularity"] < cfg.min_rectangularity:
@@ -265,7 +276,7 @@ def apply_manual_edits(cands: dict[str, Candidate], edits: list[ManualEdit], crs
 def review(
     raw_fc: dict,
     aoi: Aoi,
-    cfg: ReviewConfig = ReviewConfig(),
+    cfg: ReviewConfig | None = None,
     manual_edits: list[ManualEdit] | None = None,
     exclusion_wgs84: list | None = None,
 ) -> ReviewResult:
@@ -274,6 +285,7 @@ def review(
     ``exclusion_wgs84``: optional geometries (e.g. buffered canal lines) that
     reviewed fields must not intersect.
     """
+    cfg = cfg or ReviewConfig()
     crs = aoi.metric_crs
     aoi_m = aoi.metric_geometry
     excl = [to_metric(g, crs) for g in (exclusion_wgs84 or [])]
@@ -345,5 +357,5 @@ def review(
 def selected_wgs84(c: Candidate, crs: CRS) -> dict:
     g = to_wgs84(c.geom_m, crs)
     if isinstance(g, MultiPolygon):  # pragma: no cover - review guarantees Polygon
-        raise ValueError("reviewed field must be a single polygon")
+        raise TypeError("reviewed field must be a single polygon")
     return mapping(g)

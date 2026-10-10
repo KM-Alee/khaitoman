@@ -118,7 +118,9 @@ def _pilot_weather(pilot_id: str) -> WeatherSource | None:
                 continue
             df = pd.read_parquet(norm)
             df["Date"] = pd.to_datetime(df["Date"]).astype("datetime64[ns]")
-            df = df[["Date", "MinTemp", "MaxTemp", "Precipitation", "ReferenceET"]].sort_values("Date")
+            df = df[["Date", "MinTemp", "MaxTemp", "Precipitation", "ReferenceET"]].sort_values(
+                "Date"
+            )
             start, end = df["Date"].min().date(), df["Date"].max().date()
             validate_weather(df.reset_index(drop=True), start, end)
             ret = tuple(row.get("point_returned") or row.get("point_requested"))
@@ -189,10 +191,14 @@ def candidate_plantings(season: Season, src: WeatherSource) -> list[date]:
     return out
 
 
-def select_analogs(season: Season, src: WeatherSource) -> tuple[dict[str, date], list[dict[str, Any]]]:
+def select_analogs(
+    season: Season, src: WeatherSource
+) -> tuple[dict[str, date], list[dict[str, Any]]]:
     plantings = candidate_plantings(season, src)
     if len(plantings) < MIN_POOL:
-        raise ScenarioError(f"{season.season_id}: only {len(plantings)} complete historical seasons")
+        raise ScenarioError(
+            f"{season.season_id}: only {len(plantings)} complete historical seasons"
+        )
     rows = []
     for p in plantings:
         st = season_statistics(src.frame, season.crop, p)
@@ -211,10 +217,16 @@ def select_analogs(season: Season, src: WeatherSource) -> tuple[dict[str, date],
 
 
 def _label(crop: Crop, planting: date) -> str:
-    return f"{planting.year}-{str(planting.year + 1)[-2:]}" if crop is Crop.wheat else str(planting.year)
+    return (
+        f"{planting.year}-{str(planting.year + 1)[-2:]}"
+        if crop is Crop.wheat
+        else str(planting.year)
+    )
 
 
-def build_weather_scenarios(season: Season, src: WeatherSource) -> tuple[list[WeatherScenario], dict]:
+def build_weather_scenarios(
+    season: Season, src: WeatherSource
+) -> tuple[list[WeatherScenario], dict]:
     """Map selected analogs onto the season and store transformed weather + date tables."""
     cp = crop_profiles.profile(season.crop_profile_id)
     pick, ranked = select_analogs(season, src)
@@ -329,7 +341,11 @@ def supply_profiles(season: Season, base_profile_hash: str) -> list[SupplyProfil
         (
             SHORTAGE,
             "22% uniform supply shortage (absolute multiplier 0.78)",
-            [SupplyTransformation(transformation_id="shortage-22pct", kind="absolute_multiplier", multiplier=0.78)],
+            [
+                SupplyTransformation(
+                    transformation_id="shortage-22pct", kind="absolute_multiplier", multiplier=0.78
+                )
+            ],
         ),
         (
             INTERRUPTION,
@@ -358,7 +374,9 @@ def supply_profiles(season: Season, base_profile_hash: str) -> list[SupplyProfil
 
 
 def generic_base_hash(season: Season) -> str:
-    return content_hash({"base": NOMINAL, "season_id": season.season_id, "rule": "pilot roster at declared rates"})
+    return content_hash(
+        {"base": NOMINAL, "season_id": season.season_id, "rule": "pilot roster at declared rates"}
+    )
 
 
 def state_id(weather_id: str, supply_id: str) -> str:
@@ -417,7 +435,11 @@ def publish(pilot_ids: list[str] | None = None) -> dict[str, Any]:
             ws, insp = build_weather_scenarios(s, src)
             scen.extend(w.model_dump(mode="json") for w in ws)
             inspections.append(insp)
-        by_cell[cell] = {"weather_series_id": src.series_id, "origin": src.origin, "scenarios": scen}
+        by_cell[cell] = {
+            "weather_series_id": src.series_id,
+            "origin": src.origin,
+            "scenarios": scen,
+        }
     pilot_cells = {pid: weather_source(pid).grid_cell for pid in pilots}
     default_cell = next(iter(sources))
     doc = {
@@ -430,9 +452,12 @@ def publish(pilot_ids: list[str] | None = None) -> dict[str, Any]:
         # Flat list for the default cell (API convenience).
         "scenarios": by_cell[default_cell]["scenarios"],
     }
-    atomic_write_text(libraries_dir() / "weather_scenarios.json", json.dumps(doc, indent=2, default=str))
     atomic_write_text(
-        libraries_dir() / "weather" / "analog_inspection.json", json.dumps(inspections, indent=2, default=str)
+        libraries_dir() / "weather_scenarios.json", json.dumps(doc, indent=2, default=str)
+    )
+    atomic_write_text(
+        libraries_dir() / "weather" / "analog_inspection.json",
+        json.dumps(inspections, indent=2, default=str),
     )
     publish_supply(pilots)
     return doc
@@ -445,16 +470,25 @@ def publish_supply(pilots: list[str]) -> dict[str, Any]:
     usets: list[dict] = []
     for s in crop_profiles.SEASONS.values():
         seasons_doc[s.season_id] = {
-            "generic": [p.model_dump(mode="json") for p in supply_profiles(s, generic_base_hash(s))],
+            "generic": [
+                p.model_dump(mode="json") for p in supply_profiles(s, generic_base_hash(s))
+            ],
             "by_pilot": {},
         }
         for pid in pilots:
             try:
                 pdata = load_pilot(pid)
-            except Exception:  # noqa: BLE001 - unpublished pilot: generic profiles only
+            except Exception as exc:  # noqa: BLE001 - unpublished pilot: generic profiles only
+                seasons_doc[s.season_id].setdefault("unavailable_pilots", {})[pid] = str(exc)
                 continue
-            base = content_hash({"base": NOMINAL, "season_id": s.season_id, "roster": pdata.roster_hash(s.season_id),
-                                 "pilot_version": pdata.pilot_version})
+            base = content_hash(
+                {
+                    "base": NOMINAL,
+                    "season_id": s.season_id,
+                    "roster": pdata.roster_hash(s.season_id),
+                    "pilot_version": pdata.pilot_version,
+                }
+            )
             profs = supply_profiles(s, base)
             seasons_doc[s.season_id]["by_pilot"][pid] = [p.model_dump(mode="json") for p in profs]
             usets.append(uncertainty_set(pid, s, profs).model_dump(mode="json"))
@@ -464,8 +498,10 @@ def publish_supply(pilots: list[str]) -> dict[str, Any]:
         "seasons": seasons_doc,
         "uncertainty_sets": usets,
         "notes": [
-            "A scalar request reduction multiplies the named base schedule once; pre-reduced profiles "
-            "reject an additional reduction (aabflow.water.roster.resolve_supply).",
+            (
+                "A scalar request reduction multiplies the named base schedule once; pre-reduced "
+                "profiles reject an additional reduction (aabflow.water.roster.resolve_supply)."
+            ),
             "Worst case means worst within the nine tested states, not a probability.",
         ],
     }
@@ -499,7 +535,9 @@ def weather_daily(sha: str) -> dict[date, tuple[float, float]]:
     df = load_weather(sha)
     return {
         d.date(): (float(p), float(e))
-        for d, p, e in zip(pd.DatetimeIndex(df["Date"]), df["Precipitation"], df["ReferenceET"], strict=True)
+        for d, p, e in zip(
+            pd.DatetimeIndex(df["Date"]), df["Precipitation"], df["ReferenceET"], strict=True
+        )
     }
 
 

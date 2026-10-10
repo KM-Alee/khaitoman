@@ -40,18 +40,35 @@ class SeasonCalendar:
     crop: str
     start: date  # first roster day (planting-ready)
     end: date  # last roster day (harvest)
-    closure: tuple[date, date] | None  # annual canal closure (assumed), inclusive start, exclusive end
+    closure: (
+        tuple[date, date] | None
+    )  # annual canal closure (assumed), inclusive start, exclusive end
 
 
 SEASONS = (
-    SeasonCalendar("wheat-rabi-2024-25", "wheat", date(2024, 11, 15), date(2025, 4, 15),
-                   (date(2024, 12, 26), date(2025, 1, 25))),
-    SeasonCalendar("wheat-rabi-2026-27", "wheat", date(2026, 11, 15), date(2027, 4, 15),
-                   (date(2026, 12, 26), date(2027, 1, 25))),
-    SeasonCalendar("wheat-rabi-2027-28", "wheat", date(2027, 11, 15), date(2028, 4, 15),
-                   (date(2027, 12, 26), date(2028, 1, 25))),
+    SeasonCalendar(
+        "wheat-rabi-2024-25",
+        "wheat",
+        date(2024, 11, 15),
+        date(2025, 4, 15),
+        (date(2024, 12, 26), date(2025, 1, 25)),
+    ),
+    SeasonCalendar(
+        "wheat-rabi-2026-27",
+        "wheat",
+        date(2026, 11, 15),
+        date(2027, 4, 15),
+        (date(2026, 12, 26), date(2027, 1, 25)),
+    ),
+    SeasonCalendar(
+        "wheat-rabi-2027-28",
+        "wheat",
+        date(2027, 11, 15),
+        date(2028, 4, 15),
+        (date(2027, 12, 26), date(2028, 1, 25)),
+    ),
     SeasonCalendar("cotton-kharif-2027", "cotton", date(2027, 5, 1), date(2027, 10, 31), None),
-)  # fmt: skip
+)
 
 
 @dataclass(frozen=True)
@@ -73,63 +90,238 @@ def _a(eid, title, value, unit, low, high, basis):
 ASSUMPTIONS = {
     a.evidence_id: a
     for a in (
-        _a("asm:water-allowance", "Canal water allowance at the mogha", 0.21, "L/s per ha CCA",
-           0.15, 0.30, "≈3 cusec per 1000 acres, a typical Punjab perennial-canal allowance; "
-           "local design discharge not available"),
-        _a("asm:warabandi-cycle", "Warabandi rotation length", 168, "h", 168, 168,
-           "Fixed weekly rotation (warabandi) with turn time proportional to field area"),
-        _a("asm:canal-closure", "Annual Rabi canal closure", 30, "days", 15, 40,
-           "Late-December to late-January maintenance closure; exact dates vary by year"),
-        _a("asm:reach-delivery", "Watercourse reach delivery factor (earthen)", 0.86, "fraction",
-           0.70, 0.97, "Fractional conveyance loss per reach; uncalibrated, literature range "
-           "for unlined Punjab watercourses"),
-        _a("asm:parent-delivery", "Parent canal reach delivery factor", 0.97, "fraction", 0.93,
-           0.99, "Short reach of a lined/large canal"),
-        _a("asm:source-capacity", "Parent canal intake capacity available to the pilot",
-           0.10, "m3/s", 0.05, 0.20, "Share of the distributary flow serving both watercourses"),
-        _a("asm:app-eff-existing", "Existing field application efficiency", 0.60, "fraction",
-           0.45, 0.70, "Basin/border irrigation on unlevelled fields"),
-        _a("asm:app-eff-leveled", "Application efficiency after laser leveling", 0.75,
-           "fraction", 0.65, 0.85, "Laser land leveling evidence range"),
-        _a("asm:leveling-cost", "Laser leveling service cost", 14000, "PKR/ha", 9000, 22000,
-           "Hired laser leveler, about 5,600 PKR/acre; quote not obtained"),
-        _a("asm:leveling-lead", "Leveling lead time", 10, "days", 5, 21,
-           "Service booking plus work; must finish before planting"),
-        _a("asm:pond-cost", "Farm pond earthwork cost", 320, "PKR/m3 storage", 200, 600,
-           "Unlined excavated pond with embankment; plus fixed 40,000 PKR inlet/outlet works"),
-        _a("asm:pond-fixed-cost", "Farm pond fixed works", 40000, "PKR", 20000, 80000,
-           "Inlet, outlet and small structures"),
-        _a("asm:pond-lead", "Pond construction lead time", 90, "days", 60, 120,
-           "Procurement plus construction before commissioning"),
-        _a("asm:pond-seepage", "Pond seepage rate", 4.0, "mm/day", 2.0, 10.0,
-           "Unlined pond in silt loam"),
-        _a("asm:pond-kevap", "Open-water evaporation coefficient on ET0", 1.0, "ratio", 0.8, 1.2,
-           "k_evap applied to FAO ET0 (T4.4)"),
+        _a(
+            "asm:water-allowance",
+            "Canal water allowance at the mogha",
+            0.21,
+            "L/s per ha CCA",
+            0.15,
+            0.30,
+            "≈3 cusec per 1000 acres, a typical Punjab perennial-canal allowance; "
+            "local design discharge not available",
+        ),
+        _a(
+            "asm:warabandi-cycle",
+            "Warabandi rotation length",
+            168,
+            "h",
+            168,
+            168,
+            "Fixed weekly rotation (warabandi) with turn time proportional to field area",
+        ),
+        _a(
+            "asm:canal-closure",
+            "Annual Rabi canal closure",
+            30,
+            "days",
+            15,
+            40,
+            "Late-December to late-January maintenance closure; exact dates vary by year",
+        ),
+        _a(
+            "asm:reach-delivery",
+            "Watercourse reach delivery factor (earthen)",
+            0.86,
+            "fraction",
+            0.70,
+            0.97,
+            "Fractional conveyance loss per reach; uncalibrated, literature range "
+            "for unlined Punjab watercourses",
+        ),
+        _a(
+            "asm:parent-delivery",
+            "Parent canal reach delivery factor",
+            0.97,
+            "fraction",
+            0.93,
+            0.99,
+            "Short reach of a lined/large canal",
+        ),
+        _a(
+            "asm:source-capacity",
+            "Parent canal intake capacity available to the pilot",
+            0.10,
+            "m3/s",
+            0.05,
+            0.20,
+            "Share of the distributary flow serving both watercourses",
+        ),
+        _a(
+            "asm:app-eff-existing",
+            "Existing field application efficiency",
+            0.60,
+            "fraction",
+            0.45,
+            0.70,
+            "Basin/border irrigation on unlevelled fields",
+        ),
+        _a(
+            "asm:app-eff-leveled",
+            "Application efficiency after laser leveling",
+            0.75,
+            "fraction",
+            0.65,
+            0.85,
+            "Laser land leveling evidence range",
+        ),
+        _a(
+            "asm:leveling-cost",
+            "Laser leveling service cost",
+            14000,
+            "PKR/ha",
+            9000,
+            22000,
+            "Hired laser leveler, about 5,600 PKR/acre; quote not obtained",
+        ),
+        _a(
+            "asm:leveling-lead",
+            "Leveling lead time",
+            10,
+            "days",
+            5,
+            21,
+            "Service booking plus work; must finish before planting",
+        ),
+        _a(
+            "asm:pond-cost",
+            "Farm pond earthwork cost",
+            320,
+            "PKR/m3 storage",
+            200,
+            600,
+            "Unlined excavated pond with embankment; plus fixed 40,000 PKR inlet/outlet works",
+        ),
+        _a(
+            "asm:pond-fixed-cost",
+            "Farm pond fixed works",
+            40000,
+            "PKR",
+            20000,
+            80000,
+            "Inlet, outlet and small structures",
+        ),
+        _a(
+            "asm:pond-lead",
+            "Pond construction lead time",
+            90,
+            "days",
+            60,
+            120,
+            "Procurement plus construction before commissioning",
+        ),
+        _a(
+            "asm:pond-seepage",
+            "Pond seepage rate",
+            4.0,
+            "mm/day",
+            2.0,
+            10.0,
+            "Unlined pond in silt loam",
+        ),
+        _a(
+            "asm:pond-kevap",
+            "Open-water evaporation coefficient on ET0",
+            1.0,
+            "ratio",
+            0.8,
+            1.2,
+            "k_evap applied to FAO ET0 (T4.4)",
+        ),
         _a("asm:pond-upkeep", "Pond annual upkeep", 15000, "PKR/year", 5000, 30000, "Desilting"),
-        _a("asm:lining-cost", "Watercourse lining cost", 6500, "PKR/m", 4000, 10000,
-           "Brick/concrete lining per metre; partial-lining programme scale"),
-        _a("asm:lining-factor", "Reach delivery factor after lining", 0.95, "fraction", 0.92,
-           0.98, "Lined watercourse reach"),
-        _a("asm:lining-lead", "Repair lead time", 120, "days", 90, 180,
-           "Design, procurement and construction"),
-        _a("asm:lining-downtime", "Repair construction downtime", 14, "days", 7, 30,
-           "Reach closed while lining is built"),
-        _a("asm:pump-rate", "Existing shared tubewell maximum rate", 100.0, "m3/h", 60.0,
-           140.0, "≈1 cusec diesel tubewell"),
-        _a("asm:pump-cost", "Tubewell operating cost", 8.5, "PKR/m3", 4.0, 14.0,
-           "Diesel at ~270 PKR/L, ~3 L/h at 100 m3/h"),
-        _a("asm:pump-cap", "Seasonal groundwater cap for the shared tubewell", 40000.0, "m3",
-           20000.0, 80000.0, "Scenario aquifer-use cap; no permit record"),
+        _a(
+            "asm:lining-cost",
+            "Watercourse lining cost",
+            6500,
+            "PKR/m",
+            4000,
+            10000,
+            "Brick/concrete lining per metre; partial-lining programme scale",
+        ),
+        _a(
+            "asm:lining-factor",
+            "Reach delivery factor after lining",
+            0.95,
+            "fraction",
+            0.92,
+            0.98,
+            "Lined watercourse reach",
+        ),
+        _a(
+            "asm:lining-lead",
+            "Repair lead time",
+            120,
+            "days",
+            90,
+            180,
+            "Design, procurement and construction",
+        ),
+        _a(
+            "asm:lining-downtime",
+            "Repair construction downtime",
+            14,
+            "days",
+            7,
+            30,
+            "Reach closed while lining is built",
+        ),
+        _a(
+            "asm:pump-rate",
+            "Existing shared tubewell maximum rate",
+            100.0,
+            "m3/h",
+            60.0,
+            140.0,
+            "≈1 cusec diesel tubewell",
+        ),
+        _a(
+            "asm:pump-cost",
+            "Tubewell operating cost",
+            8.5,
+            "PKR/m3",
+            4.0,
+            14.0,
+            "Diesel at ~270 PKR/L, ~3 L/h at 100 m3/h",
+        ),
+        _a(
+            "asm:pump-cap",
+            "Seasonal groundwater cap for the shared tubewell",
+            40000.0,
+            "m3",
+            20000.0,
+            80000.0,
+            "Scenario aquifer-use cap; no permit record",
+        ),
         _a("asm:pump-head", "Tubewell total head", 20.0, "m", 12.0, 35.0, "Water table depth"),
-        _a("asm:pump-eff", "Tubewell pumping efficiency", 0.45, "fraction", 0.30, 0.60,
-           "Diesel set"),
-        _a("asm:soil-archetypes", "Soil archetypes by watercourse", 2, "classes", 2, 3,
-           "AquaCrop predefined SiltLoam/Loam priors for Rechna doab alluvium; no local "
-           "soil survey"),
-        _a("asm:initial-soil-water", "Initial soil water at simulation start", 50, "% TAW", 30,
-           80, "Post-kharif/pre-rabi depletion assumption"),
+        _a(
+            "asm:pump-eff",
+            "Tubewell pumping efficiency",
+            0.45,
+            "fraction",
+            0.30,
+            0.60,
+            "Diesel set",
+        ),
+        _a(
+            "asm:soil-archetypes",
+            "Soil archetypes by watercourse",
+            2,
+            "classes",
+            2,
+            3,
+            "AquaCrop predefined SiltLoam/Loam priors for Rechna doab alluvium; no local "
+            "soil survey",
+        ),
+        _a(
+            "asm:initial-soil-water",
+            "Initial soil water at simulation start",
+            50,
+            "% TAW",
+            30,
+            80,
+            "Post-kharif/pre-rabi depletion assumption",
+        ),
     )
-}  # fmt: skip
+}
 
 
 def _pkt(d: date, t: time = time(6, 0)) -> datetime:
@@ -228,8 +420,12 @@ def build_service_reference(
                     season_id=sid,
                     reference_receipt_m3=round(tot[fid], 3),
                     basis=RightsBasis.time,
-                    evidence_ids=["asm:water-allowance", "asm:warabandi-cycle", "asm:canal-closure",
-                                  "asm:reach-delivery"],  # fmt: skip
+                    evidence_ids=[
+                        "asm:water-allowance",
+                        "asm:warabandi-cycle",
+                        "asm:canal-closure",
+                        "asm:reach-delivery",
+                    ],
                 )
             )
     return refs
@@ -290,7 +486,12 @@ def build_assets(pilot_id: str, net: NetworkBuild, field_area_m2: dict[str, floa
         k_evap=ops["k_evap"],
         rain_capture_fraction=1.0,
         annual_upkeep_pkr=int(ASSUMPTIONS["asm:pond-upkeep"].value),
-        evidence_ids=["asm:existing-assets", "asm:pond-seepage", "asm:pond-kevap", "asm:pond-upkeep"],
+        evidence_ids=[
+            "asm:existing-assets",
+            "asm:pond-seepage",
+            "asm:pond-kevap",
+            "asm:pond-upkeep",
+        ],
     )
     pump_fields = [f for f in wc1 if net.field_group[f] in ("middle", "tail")]
     tail_node = net.field_outlet[next(f for f in wc1 if net.field_group[f] == "tail")]
@@ -309,39 +510,74 @@ def build_assets(pilot_id: str, net: NetworkBuild, field_area_m2: dict[str, floa
         efficiency=ASSUMPTIONS["asm:pump-eff"].value,
         quality_status="unknown",
         annual_upkeep_pkr=25000,
-        evidence_ids=["asm:existing-assets", "asm:pump-rate", "asm:pump-cost", "asm:pump-cap",
-                      "asm:pump-head", "asm:pump-eff"],  # fmt: skip
+        evidence_ids=[
+            "asm:existing-assets",
+            "asm:pump-rate",
+            "asm:pump-cost",
+            "asm:pump-cap",
+            "asm:pump-head",
+            "asm:pump-eff",
+        ],
     )
     return AssetBuild([pond, pump], pond_field, sorted(pump_fields), pond_id, pump_id)
 
 
 INTERVENTION_TYPES = [
-    InterventionType(type_id="timing-existing-assets", category=ActionCategory.timing,
-                     effect_model="ledger-timing", effect_model_version="1",
-                     applicability_schema={"targets": "existing pond/pump asset ids"},
-                     required_parameters=[]),
-    InterventionType(type_id="laser-leveling", category=ActionCategory.leveling,
-                     effect_model="application-efficiency-change", effect_model_version="1",
-                     applicability_schema={"targets": "one field", "before": "planting"},
-                     required_parameters=["application_efficiency_after"]),
-    InterventionType(type_id="farm-pond", category=ActionCategory.pond,
-                     effect_model="pond-storage", effect_model_version="1",
-                     applicability_schema={"targets": "one field", "before": "planting",
-                                           "sizing": "irrigations of 75 mm over the field"},
-                     required_parameters=["irrigations_held", "usable_capacity_m3",
-                                          "surface_area_m2", "footprint_m2"]),
-    InterventionType(type_id="watercourse-lining", category=ActionCategory.shared_repair,
-                     effect_model="edge-delivery-factor", effect_model_version="1",
-                     applicability_schema={"targets": "one assumed watercourse reach edge"},
-                     required_parameters=["delivery_factor_after", "downtime_days"]),
-    InterventionType(type_id="pump-supplement", category=ActionCategory.pump_supplement,
-                     effect_model="groundwater-injection", effect_model_version="1",
-                     applicability_schema={"targets": "one existing pump asset"},
-                     required_parameters=[]),
-]  # fmt: skip
+    InterventionType(
+        type_id="timing-existing-assets",
+        category=ActionCategory.timing,
+        effect_model="ledger-timing",
+        effect_model_version="1",
+        applicability_schema={"targets": "existing pond/pump asset ids"},
+        required_parameters=[],
+    ),
+    InterventionType(
+        type_id="laser-leveling",
+        category=ActionCategory.leveling,
+        effect_model="application-efficiency-change",
+        effect_model_version="1",
+        applicability_schema={"targets": "one field", "before": "planting"},
+        required_parameters=["application_efficiency_after"],
+    ),
+    InterventionType(
+        type_id="farm-pond",
+        category=ActionCategory.pond,
+        effect_model="pond-storage",
+        effect_model_version="1",
+        applicability_schema={
+            "targets": "one field",
+            "before": "planting",
+            "sizing": "irrigations of 75 mm over the field",
+        },
+        required_parameters=[
+            "irrigations_held",
+            "usable_capacity_m3",
+            "surface_area_m2",
+            "footprint_m2",
+        ],
+    ),
+    InterventionType(
+        type_id="watercourse-lining",
+        category=ActionCategory.shared_repair,
+        effect_model="edge-delivery-factor",
+        effect_model_version="1",
+        applicability_schema={"targets": "one assumed watercourse reach edge"},
+        required_parameters=["delivery_factor_after", "downtime_days"],
+    ),
+    InterventionType(
+        type_id="pump-supplement",
+        category=ActionCategory.pump_supplement,
+        effect_model="groundwater-injection",
+        effect_model_version="1",
+        applicability_schema={"targets": "one existing pump asset"},
+        required_parameters=[],
+    ),
+]
 
 
-def _pond_fields(net: NetworkBuild, field_area_m2: dict[str, float], exclude: str, n: int) -> list[str]:
+def _pond_fields(
+    net: NetworkBuild, field_area_m2: dict[str, float], exclude: str, n: int
+) -> list[str]:
     """Pond-eligible fields: largest fields per watercourse group, round-robin, excluding the existing pond's."""
     picks: list[str] = []
     by_group: dict[tuple[str, str], list[str]] = {}
@@ -390,7 +626,7 @@ def build_interventions(
                 category=ActionCategory.leveling,
                 target_ids=[fid],
                 parameters={"application_efficiency_after": A["asm:app-eff-leveled"].value},
-                capex_pkr=max(1, int(math.ceil(ha * A["asm:leveling-cost"].value))),
+                capex_pkr=max(1, math.ceil(ha * A["asm:leveling-cost"].value)),
                 procurement_delay_days=4,
                 lead_time_days=int(A["asm:leveling-lead"].value),
                 evidence_ids=["asm:leveling-cost", "asm:leveling-lead", "asm:app-eff-leveled"],
@@ -399,21 +635,32 @@ def build_interventions(
     for fid in _pond_fields(net, field_area_m2, assets.pond_field, n_pond_fields):
         for size, irr in POND_SIZES:
             g = pond_geometry(field_area_m2[fid], irr)
-            capex = int(math.ceil(A["asm:pond-fixed-cost"].value + A["asm:pond-cost"].value * g["usable_capacity_m3"]))
+            capex = math.ceil(
+                A["asm:pond-fixed-cost"].value + A["asm:pond-cost"].value * g["usable_capacity_m3"]
+            )
             inst.append(
                 InterventionInstance(
                     instance_id=f"{fid}:pond-{size}",
                     type_id="farm-pond",
                     category=ActionCategory.pond,
                     target_ids=[fid],
-                    parameters={"irrigations_held": irr, "irrigation_depth_mm": IRRIGATION_DEPTH_MM,
-                                **g, **_pond_ops(g)},  # fmt: skip
+                    parameters={
+                        "irrigations_held": irr,
+                        "irrigation_depth_mm": IRRIGATION_DEPTH_MM,
+                        **g,
+                        **_pond_ops(g),
+                    },
                     mutually_exclusive_group=f"{fid}:pond",
                     capex_pkr=capex,
                     procurement_delay_days=21,
                     lead_time_days=int(A["asm:pond-lead"].value),
-                    evidence_ids=["asm:pond-cost", "asm:pond-fixed-cost", "asm:pond-lead",
-                                  "asm:pond-seepage", "asm:pond-kevap"],  # fmt: skip
+                    evidence_ids=[
+                        "asm:pond-cost",
+                        "asm:pond-fixed-cost",
+                        "asm:pond-lead",
+                        "asm:pond-seepage",
+                        "asm:pond-kevap",
+                    ],
                 )
             )
     # ≤2 shared repairs: the downstream reaches that set tail receipts.
@@ -431,12 +678,16 @@ def build_interventions(
                     "downtime_days": int(A["asm:lining-downtime"].value),
                     "reach_length_m": round(length, 1),
                 },
-                capex_pkr=int(math.ceil(length * A["asm:lining-cost"].value)),
+                capex_pkr=math.ceil(length * A["asm:lining-cost"].value),
                 procurement_delay_days=30,
                 lead_time_days=int(A["asm:lining-lead"].value),
                 shared=True,
-                evidence_ids=["asm:lining-cost", "asm:lining-factor", "asm:lining-lead",
-                              "asm:lining-downtime"],  # fmt: skip
+                evidence_ids=[
+                    "asm:lining-cost",
+                    "asm:lining-factor",
+                    "asm:lining-lead",
+                    "asm:lining-downtime",
+                ],
             )
         )
     inst.append(

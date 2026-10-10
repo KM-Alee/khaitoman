@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import sqlite3
 from importlib.metadata import PackageNotFoundError, version
 from typing import Annotated
 
@@ -56,7 +57,7 @@ def health(state: State) -> Health:
         conn = state.connect()
         conn.execute("SELECT 1").fetchone()
         conn.close()
-    except Exception:
+    except (sqlite3.Error, OSError):
         db = "unavailable"
     disp = state.dispatcher
     running = bool(disp and disp.running)
@@ -69,7 +70,9 @@ def health(state: State) -> Health:
         libraries_ready=len(_libraries_ready(state)),
         workers=state.settings.workers,
         dispatcher="running" if running else "stopped",
-        versions={d: _version(d) for d in ("aquacrop", "ortools", "fastapi", "pydantic", "lightgbm")},
+        versions={
+            d: _version(d) for d in ("aquacrop", "ortools", "fastapi", "pydantic", "lightgbm")
+        },
     )
 
 
@@ -82,7 +85,11 @@ def _fs(ok: bool, reason_if_not: str, partial: bool = False) -> FeatureStatus:
 @router.get("/capabilities", response_model=Capabilities)
 def capabilities(state: State) -> Capabilities:
     pilots = [
-        {"pilot_id": r["pilot_id"], "pilot_version": r["pilot_version"], "name": str(r.get("name", r["pilot_id"]))}
+        {
+            "pilot_id": r["pilot_id"],
+            "pilot_version": r["pilot_version"],
+            "name": str(r.get("name", r["pilot_id"])),
+        }
         for r in state.pilots.index()
     ]
     libs = _libraries_ready(state)
@@ -115,6 +122,10 @@ def capabilities(state: State) -> Capabilities:
         pilots=pilots,
         exact_science=_version("aquacrop") is not None,
         surrogate_gate=gate,
-        chat={"key_configured": config.openai_key_configured(), "model": config.OPENAI_MODEL, "connected": False},
+        chat={
+            "key_configured": config.openai_key_configured(),
+            "model": config.OPENAI_MODEL,
+            "connected": False,
+        },
         features=features,
     )

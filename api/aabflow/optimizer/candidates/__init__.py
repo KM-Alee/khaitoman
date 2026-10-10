@@ -163,10 +163,22 @@ def field_view(ctx: SeasonContext, fid: str, config_id: str) -> FieldView:
     }
     ponds = [a for a, s in ctx.ponds.items() if s.existing and fid in ctx.pilot.assets[a].field_ids]
     new = [a for a, iid in ctx.pond_instance.items() if fid in ctx.pilot.instances[iid].target_ids]
-    pumps = [p for p, s in ctx.pumps.items() if fid in s.field_ids and s.cost_per_m3_pkr is not None]
+    pumps = [
+        p for p, s in ctx.pumps.items() if fid in s.field_ids and s.cost_per_m3_pkr is not None
+    ]
     return FieldView(
-        fid, f.soil_profile_id, f.gross_area_ha, f.existing_application_efficiency,
-        [w.window_id for w in ws], end_date, dap, cap, ponds, new, pumps, ctx.leveling.get(fid),
+        fid,
+        f.soil_profile_id,
+        f.gross_area_ha,
+        f.existing_application_efficiency,
+        [w.window_id for w in ws],
+        end_date,
+        dap,
+        cap,
+        ponds,
+        new,
+        pumps,
+        ctx.leveling.get(fid),
     )
 
 
@@ -184,8 +196,15 @@ def make_templates(ctx: SeasonContext, fv: FieldView, config_id: str) -> list[Te
     in_season = [w for w in fv.windows if 0 <= fv.dap[w] <= stop]
 
     def tpl(family, tags, area=None, eff=None, **kw) -> Template:
-        return Template(family, tags, fv.field_id, config_id, eff or fv.app_eff,
-                        area if area is not None else fv.gross_area_ha, **kw)
+        return Template(
+            family,
+            tags,
+            fv.field_id,
+            config_id,
+            eff or fv.app_eff,
+            area if area is not None else fv.gross_area_ha,
+            **kw,
+        )
 
     def take(sid: str, wids: Iterable[str], frac: float = 1.0, area=None) -> dict[str, float]:
         a = area if area is not None else fv.gross_area_ha
@@ -209,8 +228,11 @@ def make_templates(ctx: SeasonContext, fv: FieldView, config_id: str) -> list[Te
     b0_w = [w for w in fv.windows if 0 <= fv.dap[w] <= b0_stop]
     for sid in sids:
         t = tpl("baseline_B0", ["baseline", f"supply:{sid}"], receipts_direct_mm=take(sid, b0_w))
-        t.params = {"rule": "irrigate on receipt every turn to DAP %d; pond from pre-plant turns, "
-                    "released after %d dry days; no pumping" % (b0_stop, B0_POND_DRY_DAYS), "supply": sid}
+        t.params = {
+            "rule": f"irrigate on receipt every turn to DAP {b0_stop}; pond from pre-plant "
+            f"turns, released after {B0_POND_DRY_DAYS} dry days; no pumping",
+            "supply": sid,
+        }
         if fv.pond_assets:
             _b0_pond(ctx, fv, t, ctx.ponds[fv.pond_assets[0]], sid)
         out.append(t)
@@ -220,35 +242,145 @@ def make_templates(ctx: SeasonContext, fv: FieldView, config_id: str) -> list[Te
     for eff, inst, suffix in effs:
         tags = ["leveling"] if inst else []
         for sid in sids:
-            out.append(tpl("full_window" + suffix, ["full_window", f"supply:{sid}", *tags], eff=eff,
-                           receipts_direct_mm=take(sid, in_season), instances=list(inst)))
-        out.append(tpl("robust" + suffix, ["robust", *tags], eff=eff, receipts_direct_mm=take_robust(in_season),
-                       instances=list(inst)))
-        out.append(tpl("deficit" + suffix, ["deficit", "frac:0.75", *tags], eff=eff,
-                       receipts_direct_mm=take(nominal, in_season, 0.75), instances=list(inst)))
+            out.append(
+                tpl(
+                    "full_window" + suffix,
+                    ["full_window", f"supply:{sid}", *tags],
+                    eff=eff,
+                    receipts_direct_mm=take(sid, in_season),
+                    instances=list(inst),
+                )
+            )
+        out.append(
+            tpl(
+                "robust" + suffix,
+                ["robust", *tags],
+                eff=eff,
+                receipts_direct_mm=take_robust(in_season),
+                instances=list(inst),
+            )
+        )
+        out.append(
+            tpl(
+                "deficit" + suffix,
+                ["deficit", "frac:0.75", *tags],
+                eff=eff,
+                receipts_direct_mm=take(nominal, in_season, 0.75),
+                instances=list(inst),
+            )
+        )
         if not inst:
-            out.append(tpl("deficit", ["deficit", "frac:0.5"], receipts_direct_mm=take(nominal, in_season, 0.5)))
-            out.append(tpl("skip_early", ["timing", "skip:<30"],
-                           receipts_direct_mm=take(nominal, [w for w in in_season if fv.dap[w] >= 30])))
-            out.append(tpl("skip_mid", ["timing", "skip:30-70"],
-                           receipts_direct_mm=take(nominal, [w for w in in_season if not 30 <= fv.dap[w] < 70])))
-            out.append(tpl("skip_late", ["timing", "skip:>90"],
-                           receipts_direct_mm=take(nominal, [w for w in in_season if fv.dap[w] <= 90])))
-            out.append(tpl("alternate_even", ["timing", "alternate"],
-                           receipts_direct_mm=take(nominal, in_season[0::2])))
-            out.append(tpl("alternate_odd", ["timing", "alternate"],
-                           receipts_direct_mm=take(nominal, in_season[1::2])))
+            out.append(
+                tpl(
+                    "deficit",
+                    ["deficit", "frac:0.5"],
+                    receipts_direct_mm=take(nominal, in_season, 0.5),
+                )
+            )
+            out.append(
+                tpl(
+                    "skip_early",
+                    ["timing", "skip:<30"],
+                    receipts_direct_mm=take(nominal, [w for w in in_season if fv.dap[w] >= 30]),
+                )
+            )
+            out.append(
+                tpl(
+                    "skip_mid",
+                    ["timing", "skip:30-70"],
+                    receipts_direct_mm=take(
+                        nominal, [w for w in in_season if not 30 <= fv.dap[w] < 70]
+                    ),
+                )
+            )
+            out.append(
+                tpl(
+                    "skip_late",
+                    ["timing", "skip:>90"],
+                    receipts_direct_mm=take(nominal, [w for w in in_season if fv.dap[w] <= 90]),
+                )
+            )
+            out.append(
+                tpl(
+                    "alternate_even",
+                    ["timing", "alternate"],
+                    receipts_direct_mm=take(nominal, in_season[0::2]),
+                )
+            )
+            out.append(
+                tpl(
+                    "alternate_odd",
+                    ["timing", "alternate"],
+                    receipts_direct_mm=take(nominal, in_season[1::2]),
+                )
+            )
             crit = [w for w in in_season if any(a <= fv.dap[w] <= b for a, b in CRITICAL_DAP[crop])]
-            out.append(tpl("critical_only", ["timing", "critical"], receipts_direct_mm=take(nominal, crit)))
+            out.append(
+                tpl("critical_only", ["timing", "critical"], receipts_direct_mm=take(nominal, crit))
+            )
+            # depth variants and shortage-safe timing variants (deliverable under 22% curtailment)
+            for frac in (0.6, 0.9):
+                out.append(
+                    tpl(
+                        "deficit",
+                        ["deficit", f"frac:{frac}"],
+                        receipts_direct_mm=take(nominal, in_season, frac),
+                    )
+                )
+            sh = short if short in fv.cap else nominal
+            out.append(
+                tpl(
+                    "skip_early",
+                    ["timing", "skip:<30", f"supply:{sh}"],
+                    receipts_direct_mm=take(sh, [w for w in in_season if fv.dap[w] >= 30]),
+                )
+            )
+            out.append(
+                tpl(
+                    "skip_late",
+                    ["timing", "skip:>90", f"supply:{sh}"],
+                    receipts_direct_mm=take(sh, [w for w in in_season if fv.dap[w] <= 90]),
+                )
+            )
+            out.append(
+                tpl(
+                    "critical_only",
+                    ["timing", "critical", "robust"],
+                    receipts_direct_mm=take_robust(crit),
+                )
+            )
+            out.append(
+                tpl(
+                    "alternate_even",
+                    ["timing", "alternate", "robust"],
+                    receipts_direct_mm=take_robust(in_season[0::2]),
+                )
+            )
+            early_stop = [w for w in in_season if fv.dap[w] <= stop - 20]
+            out.append(
+                tpl(
+                    "early_stop",
+                    ["timing", f"stop:{stop - 20}"],
+                    receipts_direct_mm=take(nominal, early_stop),
+                )
+            )
         # pump top-ups
         for pid in fv.pump_ids:
             spec = ctx.pumps[pid]
-            for sid_base, days, fam in ((nominal, PUMP_DAP[crop][:2], "pump_topup"),
-                                        (short, PUMP_DAP[crop], "pump_topup"),
-                                        ("robust", PUMP_DAP[crop][1:], "pump_robust")):
+            for sid_base, days, fam in (
+                (nominal, PUMP_DAP[crop][:2], "pump_topup"),
+                (short, PUMP_DAP[crop], "pump_topup"),
+                ("robust", PUMP_DAP[crop][1:], "pump_robust"),
+            ):
                 rec = take_robust(in_season) if sid_base == "robust" else take(sid_base, in_season)
-                t = tpl(fam + suffix, ["pump", f"supply:{sid_base}", *tags], eff=eff, receipts_direct_mm=rec,
-                        instances=list(inst), pump_id=pid)
+                t = tpl(
+                    fam + suffix,
+                    ["pump", f"supply:{sid_base}", *tags],
+                    eff=eff,
+                    receipts_direct_mm=rec,
+                    instances=list(inst),
+                    pump_id=pid,
+                )
                 for dp in days:
                     d = ctx.planting + timedelta(days=dp)
                     mm = floor_grid(min(PUMP_DEPTH_MM, spec.daily_cap_m3 / (fv.gross_area_ha * 10)))
@@ -259,17 +391,43 @@ def make_templates(ctx: SeasonContext, fv: FieldView, config_id: str) -> list[Te
         for aid in fv.pond_assets + fv.new_ponds:
             spec = ctx.ponds[aid]
             new = aid in fv.new_ponds
-            area = units.cropped_area_ha(fv.gross_area_ha, spec.footprint_m2) if new else fv.gross_area_ha
+            area = (
+                units.cropped_area_ha(fv.gross_area_ha, spec.footprint_m2)
+                if new
+                else fv.gross_area_ha
+            )
             pinst = [ctx.pond_instance[aid]] if new else []
             pre = [w for w in fv.windows if fv.dap[w] < 0]
             early = [w for w in in_season if fv.dap[w] < 40]
             for fam, fill_from, rec_fn, rel in (
-                ("pond_full", pre, lambda a: take(nominal, in_season, area=a), RELEASE_DAP[crop][:2]),
-                ("pond_shift", pre + early, lambda a: take(nominal, in_season, area=a), RELEASE_DAP[crop][1:]),
-                ("pond_robust", pre + early, lambda a: take_robust(in_season, area=a), RELEASE_DAP[crop][1:3]),
+                (
+                    "pond_full",
+                    pre,
+                    lambda a: take(nominal, in_season, area=a),
+                    RELEASE_DAP[crop][:2],
+                ),
+                (
+                    "pond_shift",
+                    pre + early,
+                    lambda a: take(nominal, in_season, area=a),
+                    RELEASE_DAP[crop][1:],
+                ),
+                (
+                    "pond_robust",
+                    pre + early,
+                    lambda a: take_robust(in_season, area=a),
+                    RELEASE_DAP[crop][1:3],
+                ),
             ):
-                t = tpl(fam + suffix, ["pond", "new_pond" if new else "existing_pond", *tags], area=area, eff=eff,
-                        receipts_direct_mm=rec_fn(area), instances=list(inst) + pinst, pond=spec)
+                t = tpl(
+                    fam + suffix,
+                    ["pond", "new_pond" if new else "existing_pond", *tags],
+                    area=area,
+                    eff=eff,
+                    receipts_direct_mm=rec_fn(area),
+                    instances=list(inst) + pinst,
+                    pond=spec,
+                )
                 cap_src = min_cap if fam == "pond_robust" else fv.cap[nominal]
                 for w in fill_from:
                     t.fills_m3[w] = cap_src[w] - t.receipts_direct_mm.get(w, 0.0) * area * 10
@@ -306,8 +464,15 @@ def _b0_pond(ctx: SeasonContext, fv: FieldView, t: Template, spec: PondSpec, sid
 
 def _receipt_event(ctx: SeasonContext, fid: str, wid: str, vol: float) -> LedgerEvent:
     w = ctx.windows[wid]
-    return LedgerEvent(event_id=f"rcpt:{fid}:{wid}", timestamp=to_utc(w.end), explicit_order=0,
-                       kind=LedgerEventKind.outlet_receipt, volume_m3=vol, field_id=fid, window_id=wid)
+    return LedgerEvent(
+        event_id=f"rcpt:{fid}:{wid}",
+        timestamp=to_utc(w.end),
+        explicit_order=0,
+        kind=LedgerEventKind.outlet_receipt,
+        volume_m3=vol,
+        field_id=fid,
+        window_id=wid,
+    )
 
 
 def finalize_pond(ctx: SeasonContext, t: Template) -> None:
@@ -332,8 +497,13 @@ def finalize_pond(ctx: SeasonContext, t: Template) -> None:
             continue
         invs = []
         for wd in states:
-            _, trace = exogenous_events(spec, done, wd, [d for d in ctx.days if day_end(d) <= ts]
-                                        or [], active_from=spec.commissioned_on)
+            _, trace = exogenous_events(
+                spec,
+                done,
+                wd,
+                [d for d in ctx.days if day_end(d) <= ts] or [],
+                active_from=spec.commissioned_on,
+            )
             invs.append(trace.terminal_m3 if trace.events else spec.initial_inventory_m3)
         if kind == "fill":
             v = min(vol, spec.usable_capacity_m3 - max(invs) - 1e-6)
@@ -343,9 +513,18 @@ def finalize_pond(ctx: SeasonContext, t: Template) -> None:
             if v <= 0:
                 continue
             fills[ref] = v
-            done.append(LedgerEvent(event_id=f"fill:{spec.asset_id}:{ref}", timestamp=ts, explicit_order=1,
-                                    kind=LedgerEventKind.pond_fill, volume_m3=v, asset_id=spec.asset_id,
-                                    field_id=t.field_id, window_id=ref))
+            done.append(
+                LedgerEvent(
+                    event_id=f"fill:{spec.asset_id}:{ref}",
+                    timestamp=ts,
+                    explicit_order=1,
+                    kind=LedgerEventKind.pond_fill,
+                    volume_m3=v,
+                    asset_id=spec.asset_id,
+                    field_id=t.field_id,
+                    window_id=ref,
+                )
+            )
         else:
             v = min(vol, min(invs) - 1e-6)
             if spec.max_release_m3_day is not None:
@@ -354,9 +533,17 @@ def finalize_pond(ctx: SeasonContext, t: Template) -> None:
             if mm <= 0:
                 continue
             releases.append((date.fromisoformat(ref), mm))
-            done.append(LedgerEvent(event_id=f"rel:{spec.asset_id}:{ref}", timestamp=ts, explicit_order=0,
-                                    kind=LedgerEventKind.pond_release, volume_m3=mm * area10,
-                                    asset_id=spec.asset_id, field_id=t.field_id))
+            done.append(
+                LedgerEvent(
+                    event_id=f"rel:{spec.asset_id}:{ref}",
+                    timestamp=ts,
+                    explicit_order=0,
+                    kind=LedgerEventKind.pond_release,
+                    volume_m3=mm * area10,
+                    asset_id=spec.asset_id,
+                    field_id=t.field_id,
+                )
+            )
     t.fills_m3 = fills
     t.releases_mm = releases
 
@@ -408,11 +595,23 @@ def enforce_daily_limit(ctx: SeasonContext, t: Template) -> None:
 
 def truncate(ctx: SeasonContext, t: Template, last_day: date) -> Template:
     """Drop field water after ``last_day`` (crop terminated): those turns are not taken."""
-    t2 = Template(**{**t.__dict__, "receipts_direct_mm": dict(t.receipts_direct_mm), "fills_m3": dict(t.fills_m3),
-                     "releases_mm": list(t.releases_mm), "pumps_mm": list(t.pumps_mm), "tags": list(t.tags),
-                     "instances": list(t.instances), "params": dict(t.params)})
-    t2.receipts_direct_mm = {w: m for w, m in t2.receipts_direct_mm.items()
-                             if local_crop_date(ctx.windows[w].end) <= last_day}
+    t2 = Template(
+        **{
+            **t.__dict__,
+            "receipts_direct_mm": dict(t.receipts_direct_mm),
+            "fills_m3": dict(t.fills_m3),
+            "releases_mm": list(t.releases_mm),
+            "pumps_mm": list(t.pumps_mm),
+            "tags": list(t.tags),
+            "instances": list(t.instances),
+            "params": dict(t.params),
+        }
+    )
+    t2.receipts_direct_mm = {
+        w: m
+        for w, m in t2.receipts_direct_mm.items()
+        if local_crop_date(ctx.windows[w].end) <= last_day
+    }
     t2.releases_mm = [(d, m) for d, m in t2.releases_mm if d <= last_day]
     t2.pumps_mm = [(d, m) for d, m in t2.pumps_mm if d <= last_day]
     t2.truncated_after = last_day
@@ -425,35 +624,70 @@ def experiments_for(ctx: SeasonContext, t: Template, soil_id: str) -> dict[str, 
     sched = schedule_of(ctx, t)
     return {
         wid: make_experiment(
-            ctx.crop.crop_profile_id, soil_id, wid, ws.transformed_sha256, ctx.season.sim_start,
-            ctx.season.sim_end, t.app_eff, sorted(sched.items()),
+            ctx.crop.crop_profile_id,
+            soil_id,
+            wid,
+            ws.transformed_sha256,
+            ctx.season.sim_start,
+            ctx.season.sim_end,
+            t.app_eff,
+            sorted(sched.items()),
         )
         for wid, ws in ctx.weather.items()
     }
 
 
-def build_policy(ctx: SeasonContext, t: Template, outcomes_by_weather: dict[str, tuple[str, float]],
-                 pilot_hash: str) -> CandidatePolicy:
+def build_policy(
+    ctx: SeasonContext,
+    t: Template,
+    outcomes_by_weather: dict[str, tuple[str, float]],
+    pilot_hash: str,
+) -> CandidatePolicy:
     area10 = t.area_ha * 10.0
     receipts = []
-    for wid in sorted(set(t.receipts_direct_mm) | set(t.fills_m3), key=lambda w: to_utc(ctx.windows[w].end)):
+    for wid in sorted(
+        set(t.receipts_direct_mm) | set(t.fills_m3), key=lambda w: to_utc(ctx.windows[w].end)
+    ):
         vol = t.receipts_direct_mm.get(wid, 0.0) * area10 + t.fills_m3.get(wid, 0.0)
         if vol > 0:
             receipts.append(_receipt_event(ctx, t.field_id, wid, vol))
     pond_events = []
     if t.pond:
         for wid, v in t.fills_m3.items():
-            pond_events.append(LedgerEvent(event_id=f"fill:{t.pond.asset_id}:{wid}", timestamp=to_utc(ctx.windows[wid].end),
-                                           explicit_order=1, kind=LedgerEventKind.pond_fill, volume_m3=v,
-                                           asset_id=t.pond.asset_id, field_id=t.field_id, window_id=wid))
+            pond_events.append(
+                LedgerEvent(
+                    event_id=f"fill:{t.pond.asset_id}:{wid}",
+                    timestamp=to_utc(ctx.windows[wid].end),
+                    explicit_order=1,
+                    kind=LedgerEventKind.pond_fill,
+                    volume_m3=v,
+                    asset_id=t.pond.asset_id,
+                    field_id=t.field_id,
+                    window_id=wid,
+                )
+            )
         for d, mm in t.releases_mm:
-            pond_events.append(LedgerEvent(event_id=f"rel:{t.pond.asset_id}:{d.isoformat()}", timestamp=at_local(d, 6),
-                                           explicit_order=0, kind=LedgerEventKind.pond_release, volume_m3=mm * area10,
-                                           asset_id=t.pond.asset_id, field_id=t.field_id))
+            pond_events.append(
+                LedgerEvent(
+                    event_id=f"rel:{t.pond.asset_id}:{d.isoformat()}",
+                    timestamp=at_local(d, 6),
+                    explicit_order=0,
+                    kind=LedgerEventKind.pond_release,
+                    volume_m3=mm * area10,
+                    asset_id=t.pond.asset_id,
+                    field_id=t.field_id,
+                )
+            )
     pump_events = [
-        LedgerEvent(event_id=f"pump:{t.pump_id}:{t.field_id}:{d.isoformat()}", timestamp=at_local(d, 7),
-                    explicit_order=0, kind=LedgerEventKind.pump_abstraction, volume_m3=mm * area10,
-                    asset_id=t.pump_id, field_id=t.field_id)
+        LedgerEvent(
+            event_id=f"pump:{t.pump_id}:{t.field_id}:{d.isoformat()}",
+            timestamp=at_local(d, 7),
+            explicit_order=0,
+            kind=LedgerEventKind.pump_abstraction,
+            volume_m3=mm * area10,
+            asset_id=t.pump_id,
+            field_id=t.field_id,
+        )
         for d, mm in t.pumps_mm
     ]
     sched = schedule_of(ctx, t)
@@ -461,20 +695,41 @@ def build_policy(ctx: SeasonContext, t: Template, outcomes_by_weather: dict[str,
     opex = ctx.pumps[t.pump_id].cost_pkr(pump_vol) if t.pump_id and pump_vol > 0 else 0
     new_pond = bool(t.pond and t.pond.asset_id in ctx.pond_instance)
     uses = ([t.pond.asset_id] if t.pond and (pond_events or new_pond) else []) + (
-        [t.pump_id] if pump_events else [])
-    nominal_caps = {w.window_id: ctx.cap(w.window_id, ctx.resolved[scenarios.NOMINAL], t.config_id).field_cap_m3
-                    for w in ctx.windows_by_field.get(t.field_id, [])} if scenarios.NOMINAL in ctx.resolved else {}
-    take_frac = max((e.volume_m3 / nominal_caps[e.window_id] for e in receipts if nominal_caps.get(e.window_id)),
-                    default=0.0)
+        [t.pump_id] if pump_events else []
+    )
+    nominal_caps = (
+        {
+            w.window_id: ctx.cap(
+                w.window_id, ctx.resolved[scenarios.NOMINAL], t.config_id
+            ).field_cap_m3
+            for w in ctx.windows_by_field.get(t.field_id, [])
+        }
+        if scenarios.NOMINAL in ctx.resolved
+        else {}
+    )
+    take_frac = max(
+        (
+            e.volume_m3 / nominal_caps[e.window_id]
+            for e in receipts
+            if nominal_caps.get(e.window_id)
+        ),
+        default=0.0,
+    )
     body = {
-        "field": t.field_id, "config": t.config_id, "family": t.family, "eff": t.app_eff, "area": t.area_ha,
+        "field": t.field_id,
+        "config": t.config_id,
+        "family": t.family,
+        "eff": t.app_eff,
+        "area": t.area_ha,
         "receipts": [e.model_dump(mode="json") for e in receipts],
         "pond": [e.model_dump(mode="json") for e in pond_events],
         "pump": [e.model_dump(mode="json") for e in pump_events],
         "schedule": [[d.isoformat(), v] for d, v in sched.items()],
-        "instances": sorted(t.instances), "uses": sorted(uses),
+        "instances": sorted(t.instances),
+        "uses": sorted(uses),
         "experiments": sorted(h for h, _ in outcomes_by_weather.values()),
-        "pilot": pilot_hash, "roster": ctx.pilot.roster_hash(ctx.season.season_id),
+        "pilot": pilot_hash,
+        "roster": ctx.pilot.roster_hash(ctx.season.season_id),
         "generator": GENERATOR_VERSION,
     }
     h = content_hash(body)
@@ -502,9 +757,14 @@ def build_policy(ctx: SeasonContext, t: Template, outcomes_by_weather: dict[str,
         receipt_volume_m3=sum(e.volume_m3 for e in receipts),
         pump_volume_m3=pump_vol,
         gross_application_mm=sum(sched.values()),
-        attributes={"max_window_take_fraction": round(take_frac, 9), "params": t.params,
-                    "truncated_after": t.truncated_after.isoformat() if t.truncated_after else None,
-                    "energy_kwh": (ctx.pumps[t.pump_id].energy_kwh(pump_vol) if t.pump_id and pump_vol else None)},
+        attributes={
+            "max_window_take_fraction": round(take_frac, 9),
+            "params": t.params,
+            "truncated_after": t.truncated_after.isoformat() if t.truncated_after else None,
+            "energy_kwh": (
+                ctx.pumps[t.pump_id].energy_kwh(pump_vol) if t.pump_id and pump_vol else None
+            ),
+        },
     )
     # per-state outcomes
     outs: list[StateOutcome] = []
@@ -517,23 +777,35 @@ def build_policy(ctx: SeasonContext, t: Template, outcomes_by_weather: dict[str,
             routed_uses = resource_uses(ev.routed)
             if sid == scenarios.NOMINAL and base_routed is None:
                 base_routed = routed_uses
-            outs.append(StateOutcome(
-                state_id=scenarios.state_id(wid, sid), deliverable=ok,
-                crop_outcome_hash=exp_hash if ok else None, yield_kg_ha=yld if ok else None,
-                production_kg=units.production_kg(t.area_ha, yld) if ok else None,
-                resources=routed_uses if ok else [],
-                service_credit_m3=ev.canal_receipt_m3 if ok else 0.0,
-                groundwater_m3=ev.groundwater_m3 if ok else 0.0,
-                canal_receipt_m3=ev.canal_receipt_m3,
-                weather_scenario_id=wid, supply_profile_id=sid,
-                violations=[] if ok else (ev.residuals.reasons()[:8] or ["no exact crop outcome"]),
-                pond_loss_m3=ev.pond_loss_m3, pond_spill_m3=ev.pond_spill_m3, pond_rain_m3=ev.pond_rain_m3,
-                terminal_pond_m3=ev.terminal_pond_m3,
-            ))
+            outs.append(
+                StateOutcome(
+                    state_id=scenarios.state_id(wid, sid),
+                    deliverable=ok,
+                    crop_outcome_hash=exp_hash if ok else None,
+                    yield_kg_ha=yld if ok else None,
+                    production_kg=units.production_kg(t.area_ha, yld) if ok else None,
+                    resources=routed_uses if ok else [],
+                    service_credit_m3=ev.canal_receipt_m3 if ok else 0.0,
+                    groundwater_m3=ev.groundwater_m3 if ok else 0.0,
+                    canal_receipt_m3=ev.canal_receipt_m3,
+                    weather_scenario_id=wid,
+                    supply_profile_id=sid,
+                    violations=[]
+                    if ok
+                    else (ev.residuals.reasons()[:8] or ["no exact crop outcome"]),
+                    pond_loss_m3=ev.pond_loss_m3,
+                    pond_spill_m3=ev.pond_spill_m3,
+                    pond_rain_m3=ev.pond_rain_m3,
+                    terminal_pond_m3=ev.terminal_pond_m3,
+                )
+            )
     base_routed = base_routed or []
     base_key = [(u.resource_id, u.interval_id, u.volume_m3) for u in base_routed]
     for o in outs:  # store state resources only when they differ from the invariant use
-        if o.deliverable and [(u.resource_id, u.interval_id, u.volume_m3) for u in o.resources] == base_key:
+        if (
+            o.deliverable
+            and [(u.resource_id, u.interval_id, u.volume_m3) for u in o.resources] == base_key
+        ):
             o.resources = []
     pol.outcomes = outs
     pol.resources = base_routed
@@ -580,8 +852,9 @@ def dominates(a: CandidatePolicy, b: CandidatePolicy) -> bool:
     return True
 
 
-def prune(policies: list[CandidatePolicy], keep_families: Iterable[str] = ("rainfed", "baseline_B0")) -> tuple[
-        list[CandidatePolicy], int]:
+def prune(
+    policies: list[CandidatePolicy], keep_families: Iterable[str] = ("rainfed", "baseline_B0")
+) -> tuple[list[CandidatePolicy], int]:
     keep = set(keep_families)
     retained: list[CandidatePolicy] = []
     removed = 0
@@ -589,7 +862,12 @@ def prune(policies: list[CandidatePolicy], keep_families: Iterable[str] = ("rain
         if p.family in keep:
             retained.append(p)
             continue
-        if any(dominates(q, p) for q in policies if q is not p and not (dominates(p, q) and q.candidate_policy_hash > p.candidate_policy_hash)):
+        if any(
+            dominates(q, p)
+            for q in policies
+            if q is not p
+            and not (dominates(p, q) and q.candidate_policy_hash > p.candidate_policy_hash)
+        ):
             removed += 1
             continue
         retained.append(p)
@@ -606,8 +884,14 @@ class BuildResult:
     stats: dict[str, Any]
 
 
-def build_from_context(ctx: SeasonContext, *, workers: int | None = None, progress: bool = False,
-                       extra_templates=None, field_ids: list[str] | None = None) -> BuildResult:
+def build_from_context(
+    ctx: SeasonContext,
+    *,
+    workers: int | None = None,
+    progress: bool = False,
+    extra_templates=None,
+    field_ids: list[str] | None = None,
+) -> BuildResult:
     t0 = time.perf_counter()
     pilot_hash = ctx.pilot.fields_hash()
     fids = field_ids or sorted(ctx.pilot.fields)
@@ -625,7 +909,12 @@ def build_from_context(ctx: SeasonContext, *, workers: int | None = None, progre
                 enforce_daily_limit(ctx, t)
                 finalize_pond(ctx, t)
                 enforce_daily_limit(ctx, t)
-                if t.pond is not None and not t.fills_m3 and not t.releases_mm and t.family != "baseline_B0":
+                if (
+                    t.pond is not None
+                    and not t.fills_m3
+                    and not t.releases_mm
+                    and t.family != "baseline_B0"
+                ):
                     rejected[(fid, cid)]["pond_unused_after_sizing"] += 1
                     continue
                 if t.pond is not None and not t.fills_m3 and not t.releases_mm:
@@ -669,7 +958,9 @@ def build_from_context(ctx: SeasonContext, *, workers: int | None = None, progre
                 nxt.append(truncate(ctx, t, min(terms) - timedelta(days=1)))
             else:
                 reason = "crop_experiment_failed: " + (next(iter(errs.values())) or "")[:160]
-                rejected[(t.field_id, t.config_id)][reason.split(":")[0] + ":" + reason.split(":")[1][:40]] += 1
+                rejected[(t.field_id, t.config_id)][
+                    reason.split(":")[0] + ":" + reason.split(":")[1][:40]
+                ] += 1
         pending = nxt
         if not pending:
             break
@@ -698,28 +989,45 @@ def build_from_context(ctx: SeasonContext, *, workers: int | None = None, progre
         fam: dict[str, int] = defaultdict(int)
         for p in kept:
             fam[p.family] += 1
-        coverage.append(LibraryCoverage(
-            field_id=fid if len(ctx.configs) == 1 else f"{fid}@{cid}",
-            generated=gen_count[(fid, cid)], rejected=sum(rejected[(fid, cid)].values()),
-            retained=len(kept), rejection_reasons=dict(rejected[(fid, cid)]), families=dict(fam),
-        ))
-    policies.sort(key=lambda p: (p.field_id, p.shared_configuration_id, p.family, p.candidate_policy_id))
+        coverage.append(
+            LibraryCoverage(
+                field_id=fid if len(ctx.configs) == 1 else f"{fid}@{cid}",
+                generated=gen_count[(fid, cid)],
+                rejected=sum(rejected[(fid, cid)].values()),
+                retained=len(kept),
+                rejection_reasons=dict(rejected[(fid, cid)]),
+                families=dict(fam),
+            )
+        )
+    policies.sort(
+        key=lambda p: (p.field_id, p.shared_configuration_id, p.family, p.candidate_policy_id)
+    )
     state_ids = ctx.state_ids()
-    lib_hash = content_hash({
-        "policies": [p.candidate_policy_hash for p in policies],
-        "states": state_ids, "configs": sorted(ctx.configs), "pilot": pilot_hash,
-        "pilot_version": ctx.pilot.pilot_version, "season": ctx.season.season_id,
-        "weather": sorted(ws.transformed_sha256 for ws in ctx.weather.values()),
-        "supply": sorted(rs.resolved_hash for rs in ctx.resolved.values()),
-        "generator": GENERATOR_VERSION, "adapter": ADAPTER_VERSION,
-    })
+    lib_hash = content_hash(
+        {
+            "policies": [p.candidate_policy_hash for p in policies],
+            "states": state_ids,
+            "configs": sorted(ctx.configs),
+            "pilot": pilot_hash,
+            "pilot_version": ctx.pilot.pilot_version,
+            "season": ctx.season.season_id,
+            "weather": sorted(ws.transformed_sha256 for ws in ctx.weather.values()),
+            "supply": sorted(rs.resolved_hash for rs in ctx.resolved.values()),
+            "generator": GENERATOR_VERSION,
+            "adapter": ADAPTER_VERSION,
+        }
+    )
     rel = f"{ctx.pilot.pilot_id}/{ctx.season.season_id}/{lib_hash}"
     per_field = defaultdict(int)
     for p in policies:
         per_field[(p.field_id, p.shared_configuration_id)] += 1
     stats = {
-        "fields": len(fids), "configurations": len(ctx.configs), "templates": len(templates),
-        "experiments_requested": n_exp, "experiments_executed": exec_total, "experiments_cached": cached_total,
+        "fields": len(fids),
+        "configurations": len(ctx.configs),
+        "templates": len(templates),
+        "experiments_requested": n_exp,
+        "experiments_executed": exec_total,
+        "experiments_cached": cached_total,
         "policies_retained": len(policies),
         "options_per_field_min": min(per_field.values()) if per_field else 0,
         "options_per_field_max": max(per_field.values()) if per_field else 0,
@@ -757,25 +1065,43 @@ def publish_library(res: BuildResult) -> CandidateLibrary:
     tmp = d / ".policies.jsonl.tmp"
     with tmp.open("w") as fh:
         for p in res.policies:
-            fh.write(p.model_dump_json() + "\n")
+            fh.write(p.model_dump_json(exclude_defaults=True) + "\n")
     tmp.replace(d / "policies.jsonl")
     atomic_write_text(d / "library.json", lib.model_dump_json(indent=1))
-    atomic_write_text(libraries_dir() / lib.pilot_id / lib.season_id / "latest.json", json.dumps(
-        {"candidate_library_hash": lib.candidate_library_hash, "created_at": lib.created_at.isoformat(),
-         "pilot_version": lib.pilot_version, "policies": len(res.policies)}, indent=1))
+    atomic_write_text(
+        libraries_dir() / lib.pilot_id / lib.season_id / "latest.json",
+        json.dumps(
+            {
+                "candidate_library_hash": lib.candidate_library_hash,
+                "created_at": lib.created_at.isoformat(),
+                "pilot_version": lib.pilot_version,
+                "policies": len(res.policies),
+            },
+            indent=1,
+        ),
+    )
     return lib
 
 
-def build_library(pilot_id: str, season_id: str, *, extra_templates=None, workers: int | None = None,
-                  progress: bool = False, pilot_version: str | None = None) -> CandidateLibrary:
+def build_library(
+    pilot_id: str,
+    season_id: str,
+    *,
+    extra_templates=None,
+    workers: int | None = None,
+    progress: bool = False,
+    pilot_version: str | None = None,
+) -> CandidateLibrary:
     """Generate, validate and publish an immutable candidate library (STREAMS.md entry point)."""
     ctx = build_season_context(load_pilot(pilot_id, pilot_version), season_id)
-    return publish_library(build_from_context(ctx, workers=workers, progress=progress,
-                                              extra_templates=extra_templates))
+    return publish_library(
+        build_from_context(ctx, workers=workers, progress=progress, extra_templates=extra_templates)
+    )
 
 
-def load_library(pilot_id: str, season_id: str, library_hash: str | None = None
-                 ) -> tuple[CandidateLibrary, list[CandidatePolicy]]:
+def load_library(
+    pilot_id: str, season_id: str, library_hash: str | None = None
+) -> tuple[CandidateLibrary, list[CandidatePolicy]]:
     base = libraries_dir() / pilot_id / season_id
     if library_hash is None:
         latest = base / "latest.json"

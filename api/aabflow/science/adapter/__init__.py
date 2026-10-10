@@ -49,7 +49,17 @@ RESULT_COLUMNS = [
     "Yield potential (tonne/ha)",
     "Seasonal irrigation (mm)",
 ]
-FLUX_REQUIRED = ["time_step_counter", "dap", "Wr", "IrrDay", "Infl", "Runoff", "DeepPerc", "Es", "Tr"]
+FLUX_REQUIRED = [
+    "time_step_counter",
+    "dap",
+    "Wr",
+    "IrrDay",
+    "Infl",
+    "Runoff",
+    "DeepPerc",
+    "Es",
+    "Tr",
+]
 GROWTH_REQUIRED = ["time_step_counter", "dap", "gdd_cum", "z_root", "canopy_cover", "biomass"]
 
 
@@ -74,18 +84,27 @@ class PostTerminationError(IrrigationAuditError):
 
 
 def audit_daily_irrigation(
-    dates: pd.DatetimeIndex, applied_mm: np.ndarray, scheduled_mm: np.ndarray, unapplied_after_mm: float = 0.0
+    dates: pd.DatetimeIndex,
+    applied_mm: np.ndarray,
+    scheduled_mm: np.ndarray,
+    unapplied_after_mm: float = 0.0,
 ) -> None:
     """Every day, package-reported gross irrigation must equal the scheduled gross depth (T5.3)."""
     applied = np.asarray(applied_mm, dtype="float64")
     expected = np.asarray(scheduled_mm, dtype="float64")
     if applied.shape != expected.shape:
-        raise IrrigationAuditError(f"audit arrays differ in length {applied.shape} vs {expected.shape}")
+        raise IrrigationAuditError(
+            f"audit arrays differ in length {applied.shape} vs {expected.shape}"
+        )
     diff = np.abs(applied - expected)
     if (diff > AUDIT_TOLERANCE_MM).any():
         bad = np.nonzero(diff > AUDIT_TOLERANCE_MM)[0][:5]
-        detail = [f"{dates[i].date()} scheduled={expected[i]:.3f} applied={applied[i]:.3f}" for i in bad]
-        raise IrrigationAuditError(f"daily irrigation audit failed (clipped/out-of-season): {detail}")
+        detail = [
+            f"{dates[i].date()} scheduled={expected[i]:.3f} applied={applied[i]:.3f}" for i in bad
+        ]
+        raise IrrigationAuditError(
+            f"daily irrigation audit failed (clipped/out-of-season): {detail}"
+        )
     if unapplied_after_mm > AUDIT_TOLERANCE_MM:
         raise PostTerminationError(
             f"{unapplied_after_mm:.3f} mm scheduled after crop termination {dates[-1].date()} was not applied",
@@ -125,7 +144,9 @@ def schedule_frame(exp: CropExperiment) -> pd.DataFrame:
 
 
 class CropSimulatorAdapter:
-    def __init__(self, crop_profile: CropProfile | None = None, soil_profile: SoilProfile | None = None):
+    def __init__(
+        self, crop_profile: CropProfile | None = None, soil_profile: SoilProfile | None = None
+    ):
         self._crop = crop_profile
         self._soil = soil_profile
 
@@ -184,7 +205,9 @@ class CropSimulatorAdapter:
             MaxIrr=float(cp.max_daily_irrigation_mm),
             MaxIrrSeason=float(cp.max_season_irrigation_mm),
         )
-        if not (isinstance(management.Schedule, pd.DataFrame) and management.Schedule.equals(sched)):
+        if not (
+            isinstance(management.Schedule, pd.DataFrame) and management.Schedule.equals(sched)
+        ):
             raise CropAdapterError("installed IrrigationManagement did not take the Schedule key")
         if (
             management.AppEff != app_eff_pct
@@ -195,7 +218,9 @@ class CropSimulatorAdapter:
 
         w = weather.copy()
         w["Date"] = pd.to_datetime(w["Date"]).astype("datetime64[ns]")
-        win = w[(w["Date"] >= pd.Timestamp(exp.sim_start)) & (w["Date"] <= pd.Timestamp(exp.sim_end))]
+        win = w[
+            (w["Date"] >= pd.Timestamp(exp.sim_start)) & (w["Date"] <= pd.Timestamp(exp.sim_end))
+        ]
         n_days = (exp.sim_end - exp.sim_start).days + 1
         if len(win) != n_days:
             raise CropAdapterError(f"weather covers {len(win)} of {n_days} simulation days")
@@ -208,10 +233,13 @@ class CropSimulatorAdapter:
                 sim_start_time=exp.sim_start.strftime("%Y/%m/%d"),
                 sim_end_time=exp.sim_end.strftime("%Y/%m/%d"),
                 # Column order matters: the engine indexes weather[:, 4] as Date.
-                weather_df=win[["MinTemp", "MaxTemp", "Precipitation", "ReferenceET", "Date"]]
-                .reset_index(drop=True),
+                weather_df=win[
+                    ["MinTemp", "MaxTemp", "Precipitation", "ReferenceET", "Date"]
+                ].reset_index(drop=True),
                 soil=Soil(soil_type=sp.engine_soil_type),
-                crop=Crop(cp.engine_crop_name, planting_date=planting.strftime("%m/%d"), **crop_kwargs),
+                crop=Crop(
+                    cp.engine_crop_name, planting_date=planting.strftime("%m/%d"), **crop_kwargs
+                ),
                 initial_water_content=InitialWaterContent(wc_type=wc_type, value=list(wc_value)),
                 irrigation_management=management,
             )

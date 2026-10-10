@@ -19,8 +19,12 @@ def main() -> int:
         "default_grid_cell": doc["default_grid_cell"],
         "pilot_grid_cells": doc["pilot_grid_cells"],
         "scenarios": [
-            (s["season_id"], s["weather_scenario_id"], s["analog_season_label"],
-             s["statistics"].get("p_minus_et0_mm"))
+            (
+                s["season_id"],
+                s["weather_scenario_id"],
+                s["analog_season_label"],
+                s["statistics"].get("p_minus_et0_mm"),
+            )
             for s in doc["scenarios"]
         ],
     }

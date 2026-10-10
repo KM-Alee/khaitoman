@@ -134,7 +134,9 @@ def resolve_assets(item: dict) -> SceneAssets:
 
     scl_key = next((k for k in cogs if k.lower() == "scl"), None)
     if scl_key is None:
-        scl_key = next((k for k, a in cogs.items() if "scl" in (a.get("title") or "").lower()), None)
+        scl_key = next(
+            (k for k, a in cogs.items() if "scl" in (a.get("title") or "").lower()), None
+        )
     if scl_key is None:
         raise IngestionError(f"{item.get('id')}: no SCL classification asset")
     scl_meta = _raster_band_meta(cogs[scl_key])
@@ -165,7 +167,7 @@ def search_items(
     collection: str = COLLECTION,
 ) -> list[dict]:
     """STAC search; returns raw item dicts whose footprint fully contains the AOI."""
-    from pystac_client import Client  # noqa: PLC0415
+    from pystac_client import Client
 
     client = Client.open(url)
     search = client.search(
@@ -199,8 +201,8 @@ def grid_for(aoi: Aoi, scene_crs: str, buffer_m: float, res: float = 10.0) -> Wi
     miny = math.floor(miny / res) * res
     maxx = math.ceil(maxx / res) * res
     maxy = math.ceil(maxy / res) * res
-    w = int(round((maxx - minx) / res))
-    h = int(round((maxy - miny) / res))
+    w = round((maxx - minx) / res)
+    h = round((maxy - miny) / res)
     return Window10m(
         crs=scene_crs,
         transform=rasterio.Affine(res, 0, minx, 0, -res, maxy),
@@ -221,7 +223,8 @@ def read_window(href: str, grid: Window10m, categorical: bool) -> tuple[np.ndarr
             raise IngestionError(f"{href}: CRS {src.crs} != expected {grid.crs}")
         win: Window = from_bounds(*grid.bounds, transform=src.transform)
         native = abs(src.transform.a)
-        resampling = Resampling.nearest if categorical else Resampling.nearest
+        # Masks: nearest neighbour; 10 m bands are pixel-aligned so no resampling occurs.
+        resampling = Resampling.nearest
         if not categorical and abs(native - abs(grid.transform.a)) > 1e-6:
             raise IngestionError(f"{href}: expected 10 m band, got {native} m")
         data = src.read(
@@ -252,7 +255,9 @@ def read_window(href: str, grid: Window10m, categorical: bool) -> tuple[np.ndarr
 def aoi_mask(aoi: Aoi, grid: Window10m) -> np.ndarray:
     """True where the pixel centre is inside the AOI."""
     g = transform_geom("EPSG:4326", grid.crs, mapping(aoi.geometry))
-    return geometry_mask([g], out_shape=(grid.height, grid.width), transform=grid.transform, invert=True)
+    return geometry_mask(
+        [g], out_shape=(grid.height, grid.width), transform=grid.transform, invert=True
+    )
 
 
 def valid_mask_from_scl(scl: np.ndarray, invalid: frozenset[int] = SCL_INVALID) -> np.ndarray:
@@ -267,7 +272,10 @@ def aoi_valid_fraction(scl: np.ndarray, inside: np.ndarray) -> float:
 
 def scl_histogram(scl: np.ndarray, inside: np.ndarray) -> dict[str, int]:
     vals, counts = np.unique(scl[inside], return_counts=True)
-    return {SCL_CLASSES.get(int(v), f"class_{int(v)}"): int(c) for v, c in zip(vals, counts, strict=True)}
+    return {
+        SCL_CLASSES.get(int(v), f"class_{int(v)}"): int(c)
+        for v, c in zip(vals, counts, strict=True)
+    }
 
 
 def to_reflectance(dn: np.ndarray, ref: AssetRef) -> np.ndarray:
@@ -276,6 +284,44 @@ def to_reflectance(dn: np.ndarray, ref: AssetRef) -> np.ndarray:
     if ref.nodata is not None:
         out[dn == ref.nodata] = np.nan
     return out
+
+
+def offset_consistency(
+    bands_dn: dict[str, np.ndarray],
+    refs: dict[str, AssetRef],
+    valid: np.ndarray,
+    tolerance: float = 0.01,
+) -> dict:
+    """Check the published BOA offset against the pixel data before applying it.
+
+    For processing baseline ≥04.00 L2A DNs carry a +1000 offset that the STAC
+    ``raster:bands.offset`` (-0.1) removes. If applying the offset would make more
+    than ``tolerance`` of valid pixels clearly negative (< -0.01), the DNs are already
+    offset-free and the published offset contradicts the data; it is then not applied
+    and the decision is recorded.
+    """
+    neg = {}
+    for name, dn in bands_dn.items():
+        ref = refs[name]
+        v = dn[valid & (dn != (ref.nodata if ref.nodata is not None else -1))]
+        if v.size == 0:
+            continue
+        refl = v.astype("float64") * ref.scale + ref.offset
+        neg[name] = float((refl < -0.01).mean())
+    apply = all(f <= tolerance for f in neg.values())
+    return {
+        "published_offsets": {n: refs[n].offset for n in bands_dn},
+        "negative_fraction_if_applied": neg,
+        "offset_applied": apply,
+        "decision": "published offset applied"
+        if apply
+        else "published offset NOT applied: it would make valid pixels negative, so DNs "
+        "are treated as offset-free (scale only)",
+    }
+
+
+def with_offset(ref: AssetRef, apply_offset: bool) -> AssetRef:
+    return ref if apply_offset else AssetRef(**{**vars(ref), "offset": 0.0})
 
 
 def ndvi(red_refl: np.ndarray, nir_refl: np.ndarray, valid: np.ndarray) -> np.ndarray:
@@ -302,7 +348,7 @@ class SceneWindow:
 
     @property
     def acquired_at(self) -> datetime:
-        return datetime.fromisoformat(self.item["properties"]["datetime"].replace("Z", "+00:00"))
+        return datetime.fromisoformat(self.item["properties"]["datetime"])
 
 
 def scene_crs(item: dict) -> str:
@@ -331,13 +377,11 @@ def screen_scene(item: dict, aoi: Aoi, buffer_m: float = 0.0) -> dict[str, Any]:
 def read_scene(item: dict, aoi: Aoi, buffer_m: float) -> SceneWindow:
     assets = resolve_assets(item)
     grid = grid_for(aoi, scene_crs(item), buffer_m)
-    from concurrent.futures import ThreadPoolExecutor  # noqa: PLC0415
+    from concurrent.futures import ThreadPoolExecutor
 
     names = ("red", "green", "blue", "nir", "scl")
     with ThreadPoolExecutor(max_workers=5) as ex:
-        futs = {
-            n: ex.submit(read_window, getattr(assets, n).href, grid, n == "scl") for n in names
-        }
+        futs = {n: ex.submit(read_window, getattr(assets, n).href, grid, n == "scl") for n in names}
         results = {n: f.result() for n, f in futs.items()}
     bands = {n: results[n][0] for n in names[:4]}
     meta = {n: results[n][1] for n in names}

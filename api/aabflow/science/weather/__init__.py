@@ -112,7 +112,9 @@ def request_archive(
 def normalize_archive(payload: dict[str, Any]) -> pd.DataFrame:
     """Map archive variables to AquaCrop columns. Missing values stay NaN (validated later)."""
     if "daily" not in payload:
-        raise WeatherValidationError(f"archive payload has no 'daily' block: {payload.get('reason')}")
+        raise WeatherValidationError(
+            f"archive payload has no 'daily' block: {payload.get('reason')}"
+        )
     daily = payload["daily"]
     units = payload.get("daily_units", {})
     expected_units = {"temperature_2m_min": "°C", "temperature_2m_max": "°C"}
@@ -258,7 +260,10 @@ def map_analog(
             (d.month, d.day) == (2, 29) for d in pd.date_range(a, b, freq="D").to_pydatetime()
         )
 
-    src_leap, dst_leap = has_feb29(analog_start, analog_end), has_feb29(scenario_start, scenario_end)
+    src_leap, dst_leap = (
+        has_feb29(analog_start, analog_end),
+        has_feb29(scenario_start, scenario_end),
+    )
     note = None
     if src_leap != dst_leap:
         note = (

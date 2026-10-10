@@ -1,0 +1,23 @@
+{
+  "image_ref": "terrain/dem.png",
+  "bounds": [
+    72.29597222,
+    30.76625,
+    72.33986111,
+    30.80819444
+  ],
+  "width": 158,
+  "height": 151,
+  "min_m": 146.6935577392578,
+  "max_m": 160.2740478515625,
+  "encoding": "terrarium",
+  "decode": "height_m = (R*256 + G + B/256) - 32768",
+  "crs": "EPSG:4326",
+  "source_url": "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N30_00_E072_00_DEM/Copernicus_DSM_COG_10_N30_00_E072_00_DEM.tif",
+  "source_sha256": "e175905d8cce1e8c0ac10edb8b910e58c42dbc9a3c9ddbae68aef2f783c018ef",
+  "resolution_deg": [
+    0.0002777777777777778,
+    0.0002777777777777778
+  ],
+  "note": "Display context only; slope does not verify canal flow direction."
+}

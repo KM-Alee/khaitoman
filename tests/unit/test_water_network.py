@@ -16,14 +16,31 @@ def node(nid, kind="junction"):
 
 
 def edge(eid, a, b, f, **kw):
-    return Edge(edge_id=eid, upstream_node_id=a, downstream_node_id=b, geometry_ref=None, delivery_factor=f, **kw)
+    return Edge(
+        edge_id=eid,
+        upstream_node_id=a,
+        downstream_node_id=b,
+        geometry_ref=None,
+        delivery_factor=f,
+        **kw,
+    )
 
 
 def net(closures=()):
     return Network.from_records(
-        [node("S", "source"), node("M"), node("H", "outlet"), node("T", "outlet"), node("X", "outlet")],
-        [edge("e0", "S", "M", 0.95, closures=list(closures)), edge("e1", "M", "H", 0.9),
-         edge("e2", "H", "T", 0.8), edge("e3", "M", "X", 0.85)],
+        [
+            node("S", "source"),
+            node("M"),
+            node("H", "outlet"),
+            node("T", "outlet"),
+            node("X", "outlet"),
+        ],
+        [
+            edge("e0", "S", "M", 0.95, closures=list(closures)),
+            edge("e1", "M", "H", 0.9),
+            edge("e2", "H", "T", 0.8),
+            edge("e3", "M", "X", 0.85),
+        ],
     )
 
 
@@ -51,28 +68,49 @@ def test_shared_edge_sums_demands():
 
 def test_invalid_topologies_rejected():
     with pytest.raises(NetworkError, match="two incoming"):
-        Network.from_records([node("S", "source"), node("A"), node("B")],
-                             [edge("a", "S", "A", 0.9), edge("b", "S", "B", 0.9), edge("c", "B", "A", 0.9)])
+        Network.from_records(
+            [node("S", "source"), node("A"), node("B")],
+            [edge("a", "S", "A", 0.9), edge("b", "S", "B", 0.9), edge("c", "B", "A", 0.9)],
+        )
     with pytest.raises(NetworkError, match="unknown node"):
         Network.from_records([node("S", "source")], [edge("a", "S", "Z", 0.9)])
     with pytest.raises(NetworkError, match="cycle|no supply"):
-        Network.from_records([node("A"), node("B")], [edge("a", "A", "B", 0.9), edge("b", "B", "A", 0.9)])
-    with pytest.raises(Exception):
+        Network.from_records(
+            [node("A"), node("B")], [edge("a", "A", "B", 0.9), edge("b", "B", "A", 0.9)]
+        )
+    with pytest.raises(ValueError):
         edge("bad", "S", "A", 0.0)  # delivery factor must be in (0, 1]
 
 
 T0 = datetime(2027, 1, 4, 6, tzinfo=UTC)
 
 
-def window(rate=0.04, hours=5, boundary_node="M", basis="time", vol=None, accounting="outlet", node_="T"):
-    return RosterWindow(window_id="w1", field_id="f", outlet_node_id=boundary_node, start=T0,
-                        end=T0 + timedelta(hours=hours), basis=basis, rate_m3_s=rate if basis == "time" else None,
-                        volume_cap_m3=vol, accounting_boundary=accounting, source_rule="TEST FIXTURE")
+def window(
+    rate=0.04, hours=5, boundary_node="M", basis="time", vol=None, accounting="outlet", node_="T"
+):
+    return RosterWindow(
+        window_id="w1",
+        field_id="f",
+        outlet_node_id=boundary_node,
+        start=T0,
+        end=T0 + timedelta(hours=hours),
+        basis=basis,
+        rate_m3_s=rate if basis == "time" else None,
+        volume_cap_m3=vol,
+        accounting_boundary=accounting,
+        source_rule="TEST FIXTURE",
+    )
 
 
 def supply(*tr, pre=False):
-    return SupplyProfile(supply_profile_id="s", base_profile_hash=H, label="t", transformations=list(tr),
-                         resolved_hash=H, pre_reduced=pre)
+    return SupplyProfile(
+        supply_profile_id="s",
+        base_profile_hash=H,
+        label="t",
+        transformations=list(tr),
+        resolved_hash=H,
+        pre_reduced=pre,
+    )
 
 
 def test_time_right_cap_at_mogha_and_field():
@@ -84,7 +122,9 @@ def test_time_right_cap_at_mogha_and_field():
 
 def test_curtailment_applied_once_and_transformations():
     n = net()
-    absolute = SupplyTransformation(transformation_id="a", kind="absolute_multiplier", multiplier=0.78)
+    absolute = SupplyTransformation(
+        transformation_id="a", kind="absolute_multiplier", multiplier=0.78
+    )
     rel = SupplyTransformation(transformation_id="r", kind="relative_multiplier", multiplier=0.5)
     rs = resolve_supply(supply(absolute, rel))
     assert rs.multiplier == pytest.approx(0.39)
@@ -98,7 +138,9 @@ def test_curtailment_applied_once_and_transformations():
 
 
 def test_closures_remove_time_and_close_route():
-    half = SupplyTransformation(transformation_id="c", kind="closure", start=T0, end=T0 + timedelta(hours=2.5))
+    half = SupplyTransformation(
+        transformation_id="c", kind="closure", start=T0, end=T0 + timedelta(hours=2.5)
+    )
     n = net()
     full = window_cap(window(), "T", n, resolve_supply(supply()))
     part = window_cap(window(), "T", n, resolve_supply(supply(half)))
@@ -106,25 +148,38 @@ def test_closures_remove_time_and_close_route():
     closed_edge = net(closures=[(T0 - timedelta(hours=1), T0 + timedelta(hours=10))])
     assert window_cap(window(), "T", closed_edge, resolve_supply(supply())).field_cap_m3 == 0.0
     # closure on an edge not on this path does not affect it
-    other = SupplyTransformation(transformation_id="o", kind="closure", start=T0, end=T0 + timedelta(hours=5),
-                                 edge_ids=["e3"])
-    assert window_cap(window(), "T", n, resolve_supply(supply(other))).field_cap_m3 == pytest.approx(full.field_cap_m3)
+    other = SupplyTransformation(
+        transformation_id="o",
+        kind="closure",
+        start=T0,
+        end=T0 + timedelta(hours=5),
+        edge_ids=["e3"],
+    )
+    assert window_cap(
+        window(), "T", n, resolve_supply(supply(other))
+    ).field_cap_m3 == pytest.approx(full.field_cap_m3)
 
 
 def test_volume_basis_and_field_inlet_boundary():
     n = net()
     v = window_cap(window(basis="volume", vol=500.0), "T", n, resolve_supply(supply()))
     assert v.boundary_cap_m3 == pytest.approx(500.0) and v.field_cap_m3 == pytest.approx(500 * 0.72)
-    fi = window_cap(window(boundary_node="T", accounting="field_inlet"), "T", n, resolve_supply(supply()))
+    fi = window_cap(
+        window(boundary_node="T", accounting="field_inlet"), "T", n, resolve_supply(supply())
+    )
     assert fi.field_cap_m3 == pytest.approx(0.04 * 5 * 3600)
     with pytest.raises(SupplyError):
-        window_cap(window(boundary_node="M", accounting="field_inlet"), "T", n, resolve_supply(supply()))
+        window_cap(
+            window(boundary_node="M", accounting="field_inlet"), "T", n, resolve_supply(supply())
+        )
 
 
 def test_repair_override_changes_tail_cap():
     n = net()
     base = window_cap(window(), "T", n, resolve_supply(supply())).field_cap_m3
-    rep = window_cap(window(), "T", n, resolve_supply(supply()), factor_overrides={"e2": 0.95}).field_cap_m3
+    rep = window_cap(
+        window(), "T", n, resolve_supply(supply()), factor_overrides={"e2": 0.95}
+    ).field_cap_m3
     assert rep == pytest.approx(base / 0.8 * 0.95)
 
 

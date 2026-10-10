@@ -1,0 +1,41 @@
+{
+  "purpose": "Delineate Anything config selection on the pilot-a Sentinel-2 L2A window S2C_43RBQ_20250223_0_L2A (365x379 px, 10 m, RGB DN uint16), CPU only",
+  "generated_at": "2026-10-10T00:46:39.987596+00:00",
+  "runs": {
+    "upstream_default_conf (conf_cpu_v2.yaml)": {
+      "record": "vision/runs/8d8a8f5a2b9f7cf2/run.json",
+      "wall_seconds": 79.605,
+      "raw_polygons": 15,
+      "gpkg_sha256": "ae12621f596b5137d34e118226627f8466bbb190bee064561b079fcac1997c23",
+      "base_config": "/app/vision/configs/conf_cpu_v2.yaml",
+      "base_config_sha256": "1d8d8f66b22dabd76da88455557855e78ac26a0b02a42d533c5be40decec0f4e",
+      "input_sha256": "5622f1dd89b0c8d5e45c7eb19fa1d8ffa07a521be0f21b0f06a7b795be16ba1b",
+      "device": "cpu",
+      "torch_threads": 20
+    },
+    "sr2_pixel_area_64 (conf_cpu_v2_sr2_small.yaml)": {
+      "record": "vision/runs/tune-sr2_small/run.json",
+      "wall_seconds": 118.868,
+      "raw_polygons": 1145,
+      "gpkg_sha256": "952e2e794e4963088b6d308827513410dacc11ff96aee0cfe9c248c1b0e1ca56",
+      "base_config": "/app/vision/configs/conf_cpu_v2_sr2_small.yaml",
+      "base_config_sha256": "5d57156275c35bd209f2ed29ad7fe03f3a178f7fcea52d671c67b1b3f9c0330c",
+      "input_sha256": "5622f1dd89b0c8d5e45c7eb19fa1d8ffa07a521be0f21b0f06a7b795be16ba1b",
+      "device": "cpu",
+      "torch_threads": 20
+    },
+    "sr4_pixel_area_256 (adopted: conf_pilot_s2_sr4.yaml)": {
+      "record": "vision/runs/tune-sr4/run.json",
+      "wall_seconds": 138.638,
+      "raw_polygons": 931,
+      "gpkg_sha256": "3b1adee428366bba258e78bacc76f99bd6d957436b0dad8503d2648c5ebfd3cb",
+      "base_config": "/app/vision/configs/conf_cpu_v2_sr4.yaml",
+      "base_config_sha256": "b336fd642fcd68014acbaa5e9ef29a0eec7e9354c869870b0a2311c751bf68bd",
+      "input_sha256": "5622f1dd89b0c8d5e45c7eb19fa1d8ffa07a521be0f21b0f06a7b795be16ba1b",
+      "device": "cpu",
+      "torch_threads": 20
+    }
+  },
+  "decision": "sr4: outlines follow the rectilinear killa/strip parcels; sr2 polygons are rounded blobs; upstream default keeps only parcels >=1.28 ha (15 polygons). Visual comparison done on overlays of the same window.",
+  "note": "Pilot packages are produced by a fresh run of the adopted config (inference key changes with the config hash)."
+}

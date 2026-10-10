@@ -18,9 +18,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "api"))
 
-from aabflow.ingestion.aoi import Aoi  # noqa: E402
-from aabflow.ingestion.onboarding.acquire import AcquisitionConfig, acquire_bundle  # noqa: E402
-from aabflow.ingestion.pilot_aois import PILOTS  # noqa: E402
+from aabflow.ingestion.aoi import Aoi
+from aabflow.ingestion.onboarding.acquire import AcquisitionConfig, acquire_bundle
+from aabflow.ingestion.pilot_aois import PILOTS
 
 
 def main() -> int:
@@ -65,7 +65,11 @@ def main() -> int:
         name=cfgd.name if cfgd else None,
         geographic_name_basis=cfgd.geographic_name_basis if cfgd else None,
     )
-    print(root.relative_to(args.data_dir.parent) if root.is_relative_to(args.data_dir.parent) else root)
+    print(
+        root.relative_to(args.data_dir.parent)
+        if root.is_relative_to(args.data_dir.parent)
+        else root
+    )
     return 0
 
 

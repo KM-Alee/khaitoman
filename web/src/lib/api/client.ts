@@ -108,7 +108,7 @@ export async function request<T>(path: string, opts: RequestOptions = {}): Promi
     const b = (parsed && typeof parsed === "object" ? parsed : null) as Partial<ApiErrorBody> | null;
     // FastAPI validation errors arrive as {detail: [...]}
     if (b && Array.isArray((b as { detail?: unknown }).detail)) {
-      const list = (b as { detail: { loc?: unknown[]; msg?: string }[] }).detail;
+      const list = (b as unknown as { detail: { loc?: unknown[]; msg?: string }[] }).detail;
       const fields: Record<string, string> = {};
       for (const d of list) fields[(d.loc ?? []).slice(1).join(".") || "request"] = d.msg ?? "invalid";
       throw new ApiError(res.status, { code: "INVALID_INPUT", detail: "Validation failed", fields }, res.statusText);

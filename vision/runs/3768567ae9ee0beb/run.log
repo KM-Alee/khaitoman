@@ -1,0 +1,80 @@
+Creating new Ultralytics Settings v0.0.6 file ✅ 
+View Ultralytics Settings with 'yolo settings' or at '/tmp/ultralytics/settings.json'
+Update Settings with 'yolo settings key=value', i.e. 'yolo settings runs_dir=path/to/dir'. For help see https://docs.ultralytics.com/quickstart/#ultralytics-settings.
+
+--- stderr ---
+WARNING:__main__:Mask at /app/vision/runs/3768567ae9ee0beb/masks/scene.tif is not existent. Mask skipped.
+INFO:__main__:scene is queued for delineation.
+INFO:methods.main.inference:Device: cpu
+INFO:methods.main.inference:Creating output folder: /tmp/delineate-temp-3768567ae9ee0beb
+INFO:methods.main.inference:Creating output folder: /app/vision/runs/3768567ae9ee0beb/output
+INFO:methods.main.inference:['/app/vision/runs/3768567ae9ee0beb/input/scene/scene.tif']
+INFO:methods.main.inference:Estimating normalization bounds...
+
+  0%|          | 0/1 [00:00<?, ?it/s]
+100%|██████████| 1/1 [00:00<00:00, 169.34it/s]
+INFO:methods.main.inference:Selected area scale: 1.0
+INFO:methods.main.inference:Selected batch size: 4
+INFO:methods.main.inference:Selected region size: 1536x1536
+INFO:methods.main.inference:Selected num workers: [3, 3]
+INFO:methods.main.inference:Simplification resolution: [1536, 1536]
+INFO:methods.main.inference:Loading the model...
+INFO:methods.main.inference:Starting delineation...
+
+Delineating:   0%|          | 0.00/1 [00:00<?]
+Delineating:   0%|          | 0.00/1 [00:00<?]
+Delineating:   0%|          | 0.00/1 [00:10<4:20:21]
+Delineating:   7%|▋         | 0.07/1 [00:22<04:35]  
+Delineating:  15%|█▍        | 0.15/1 [00:31<03:03]
+Delineating:  22%|██▏       | 0.22/1 [00:42<02:27]
+Delineating:  25%|██▌       | 0.25/1 [00:56<02:49]
+Delineating:  34%|███▎      | 0.34/1 [01:08<02:15]
+Delineating:  42%|████▏     | 0.42/1 [01:19<01:47]
+Delineating:  57%|█████▋    | 0.57/1 [01:37<01:12]
+Delineating:  65%|██████▍   | 0.65/1 [01:52<01:00]
+Delineating:  72%|███████▏  | 0.72/1 [02:01<00:46]
+Delineating:  84%|████████▎ | 0.84/1 [02:13<00:26]
+Delineating:  92%|█████████▏| 0.92/1 [02:24<00:11]
+Delineating: 100%|██████████| 1.00/1 [02:27<00:00]
+Delineating: 100%|██████████| 1.00/1 [02:27<00:00]
+Delineating: 100%|██████████| 1.00/1 [02:27<00:00]
+INFO:methods.main.inference:All regions have been delineated in 147.59 seconds.
+
+Filtering:   0%|          | 0/1084 [00:00<?, ?poly/s]
+Filtering: 100%|██████████| 1084/1084 [00:00<00:00, 35145.17poly/s]
+
+Deleting:   0%|          | 0/274 [00:00<?, ?poly/s]
+Deleting: 100%|██████████| 274/274 [00:00<00:00, 65866.53poly/s]
+
+Merging:   0%|          | 0/143 [00:00<?, ?poly/s]
+Merging: 100%|██████████| 143/143 [00:00<00:00, 7337.90poly/s]
+INFO:methods.main.inference:Temporary files have been deleted.
+INFO:methods.main.inference:Delineation finished in 148.89 seconds.
+INFO:methods.main.inference:Simplification started
+
+Writing features:   0%|          | 0/931 [00:00<?, ?poly/s]
+Writing features:   0%|          | 1/931 [00:02<42:26,  2.74s/poly]
+Writing features:  24%|██▎       | 219/931 [00:02<00:06, 108.35poly/s]
+Writing features:  40%|████      | 377/931 [00:02<00:02, 205.44poly/s]
+Writing features:  56%|█████▌    | 517/931 [00:03<00:01, 307.40poly/s]
+Writing features:  80%|███████▉  | 743/931 [00:03<00:00, 518.76poly/s]
+Writing features:  99%|█████████▉| 921/931 [00:03<00:00, 254.17poly/s]
+
+Scanning:   0%|          | 0/961 [00:00<?, ?it/s]
+Scanning: 100%|██████████| 961/961 [00:00<00:00, 118882.94it/s]
+
+Merging:   0%|          | 0/961 [00:00<?, ?it/s]
+Merging: 100%|██████████| 961/961 [00:00<00:00, 110225.50it/s]
+
+Deleting:   0%|          | 0/79 [00:00<?, ?it/s]
+Deleting: 100%|██████████| 79/79 [00:00<00:00, 53391.88it/s]
+
+Inserting:   0%|          | 0/39 [00:00<?, ?it/s]
+Inserting: 100%|██████████| 39/39 [00:00<00:00, 39559.34it/s]
+
+Calc area:   0%|          | 0/921 [00:00<?, ?it/s]
+Calc area: 100%|██████████| 921/921 [00:00<00:00, 41727.83it/s]
+
+Resolving overlaps: 0it [00:00, ?it/s]
+Resolving overlaps: 0it [00:00, ?it/s]
+INFO:methods.main.inference:Simplification finished in 4.88 seconds

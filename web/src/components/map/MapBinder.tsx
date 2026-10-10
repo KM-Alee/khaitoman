@@ -38,7 +38,7 @@ export function MapBinder() {
   }, [engine, ready, sel.fieldId, fieldsFC]);
 
   // Route of the selected field (server-declared edge ids)
-  const field = useField(sel.version, sel.fieldId);
+  const field = useField(sel.version, sel.fieldId, sel.pilotId);
   useEffect(() => {
     const ids = (field.data?.raw?.route_edge_ids as string[] | undefined) ?? [];
     engine.setRoute(sel.fieldId ? ids : []);

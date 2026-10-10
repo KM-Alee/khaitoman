@@ -1,0 +1,86 @@
+{
+  "intake_id": "pilot-b-reviewed-v1",
+  "pilot_id": "pilot-b",
+  "name": "Lower Chenab representative pilot B",
+  "geographic_name_basis": "Inside the published Mungi study search extent (doi:10.3390/w14030405); no Mungi waterway identified. The AOI lies along the canal mapped in OSM as 'R-1' (way 488499235) about 12 km south-west of pilot A in the same broader Lower Chenab irrigated region, so it is named a Lower Chenab representative pilot.",
+  "aoi": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "id": "aoi",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                72.256,
+                30.657
+              ],
+              [
+                72.256,
+                30.677
+              ],
+              [
+                72.234,
+                30.677
+              ],
+              [
+                72.234,
+                30.657
+              ],
+              [
+                72.256,
+                30.657
+              ]
+            ]
+          ]
+        },
+        "properties": {
+          "pilot_id": "pilot-b",
+          "name": "Lower Chenab representative pilot B"
+        }
+      }
+    ]
+  },
+  "aoi_check": {
+    "area_m2": 4679111.62,
+    "bbox": [
+      72.234,
+      30.657,
+      72.256,
+      30.677
+    ],
+    "centroid": [
+      72.24499999999999,
+      30.667
+    ],
+    "metric_crs": "EPSG:32643",
+    "estimated_pixels": 116939,
+    "warnings": [],
+    "blockers": []
+  },
+  "source_mode": "raw_package",
+  "bundle_ref": "data/raw/bundles/pilot-b/20261010T003841Z-798d10d2",
+  "parent_canal_feature_id": "osm:way/488499235",
+  "review_version": 0,
+  "created_at": "2026-10-10T00:47:35Z",
+  "history": [
+    {
+      "state": "created",
+      "at": "2026-10-10T00:47:35Z",
+      "detail": "raw_package"
+    },
+    {
+      "state": "acquired_raw",
+      "at": "2026-10-10T00:47:35Z",
+      "detail": "imported data/raw/bundles/pilot-b/20261010T003841Z-798d10d2"
+    },
+    {
+      "state": "awaiting_inference",
+      "at": "2026-10-10T00:47:36Z",
+      "detail": "docker compose -f compose.yaml -f vision/compose.vision.yaml --profile vision run --rm --no-deps -T vision python /app/vision/run_batch.py /app/vision/batches/50ca220c256bbf74.yaml --record /app/vision/runs/50ca220c256bbf74/run.json --label 50ca220c256bbf74"
+    }
+  ],
+  "state": "awaiting_inference"
+}

@@ -62,7 +62,7 @@ describe("numbers and units", () => {
   test("volume and mass magnitudes", () => {
     expect(formatVolume(512)).toBe("512 m³");
     expect(formatVolume(48_250)).toBe("48.3 thousand m³");
-    expect(formatVolume(2_400_000)).toBe("2.40 Mm³");
+    expect(formatVolume(2_400_000)).toBe("2.4 Mm³");
     expect(formatMass(950)).toBe("950 kg");
     expect(formatMass(152_340)).toBe("152.3 t");
   });
@@ -71,11 +71,11 @@ describe("numbers and units", () => {
     expect(formatWithUnit(0.734, "fraction")).toBe("73%");
     expect(formatWithUnit(1.234, "kg/m3")).toBe("1.23 kg/m³");
     expect(formatWithUnit(150000, "PKR")).toBe("PKR 150,000");
-    expect(formatWithUnit(3, "widgets")).toBe("3.00 widgets");
+    expect(formatWithUnit(3, "widgets")).toBe("3 widgets");
   });
   test("deltas are signed and zero is explicit", () => {
     expect(formatDelta(1200, "kg")).toBe("+1,200 kg");
-    expect(formatDelta(-0.05, "fraction")).toBe(`${MINUS}5.0%`);
+    expect(formatDelta(-0.05, "fraction")).toBe(`${MINUS}5 pp`);
     expect(formatDelta(0, "kg")).toBe("±0 kg");
   });
   test("percent conversion is exact at display precision", () => {

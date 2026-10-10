@@ -1,0 +1,52 @@
+{
+  "label": "3768567ae9ee0beb",
+  "command": "python delineate.py -b /app/vision/batches/3768567ae9ee0beb.yaml",
+  "cwd": "/opt/delineate",
+  "upstream_commit": "",
+  "started_at": "2026-10-10T00:48:05.547131+00:00",
+  "finished_at": "2026-10-10T00:50:41.312641+00:00",
+  "wall_seconds": 155.765,
+  "returncode": 0,
+  "stderr_error_markers": [],
+  "ok": true,
+  "device": "cpu",
+  "torch": "2.14.1+cpu",
+  "torch_threads": 20,
+  "cpu_count": 20,
+  "platform": "Linux-7.2.9-1-cachyos-x86_64-with-glibc2.41",
+  "shm_bytes": 4294967296,
+  "batch_config": {
+    "base_config": "/app/vision/configs/conf_pilot_s2_sr4.yaml",
+    "data_root": "/app/vision/runs/3768567ae9ee0beb/input",
+    "output_root": "/app/vision/runs/3768567ae9ee0beb/output",
+    "temp_root": "/tmp/delineate-temp-3768567ae9ee0beb",
+    "keep_temp": false,
+    "mask_root": "/app/vision/runs/3768567ae9ee0beb/masks",
+    "include": [
+      "scene"
+    ],
+    "exclude": null,
+    "override": null
+  },
+  "base_config_path": "/app/vision/configs/conf_pilot_s2_sr4.yaml",
+  "base_config_sha256": "b0ce2227ca6fc5db731e28504d2689e8533463f8971e72c1ba48270947df54ef",
+  "checkpoints": {
+    "/app/data/models/delineate-anything/DelineateAnythingv2.pt": "46700b8a279b07922953a11adaeb5e658d9a2384b6334c8e0a3090886218915a"
+  },
+  "inputs": {
+    "scene/scene.tif": "5622f1dd89b0c8d5e45c7eb19fa1d8ffa07a521be0f21b0f06a7b795be16ba1b"
+  },
+  "outputs": {
+    "scene.gpkg": {
+      "sha256": "440baaeeb7714bcb59f04d0956a773865414436bf8d7facd27738814b0c18ba6",
+      "size_bytes": 2498560,
+      "feature_count": 931
+    },
+    "scene.simp.gpkg": {
+      "sha256": "c17c0d8a996e85045abfe49488326ba057c7134821c8b037ce0c60eb1f17791f",
+      "size_bytes": 360448,
+      "feature_count": 921
+    }
+  },
+  "log": "/app/vision/runs/3768567ae9ee0beb/run.log"
+}

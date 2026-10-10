@@ -29,16 +29,18 @@ import { toast } from "@/components/ui/Toast";
 export type ScenarioPhase = "loading" | "unavailable" | "draft" | "dirty" | "current" | "running";
 
 export function defaultDecisionAt(season: Season): string {
-  // Pre-season planning at local midnight on the season start date, explicit +05:00 offset.
+  // Season's published decision date when present; otherwise pre-season planning at local
+  // midnight on the season start date with an explicit +05:00 offset.
+  if (season.decision_at) return season.decision_at.length <= 10 ? `${season.decision_at}T00:00:00+05:00` : season.decision_at;
   return `${season.start.slice(0, 10)}T00:00:00+05:00`;
 }
 
-export function useScenarioCatalog(pilotId?: string, seasonId?: string) {
+export function useScenarioCatalog(pilotId?: string, seasonId?: string, decisionAt?: string | null) {
   const seasons = useSeasons(pilotId);
   const sid = seasonId ?? seasons.data?.[0]?.season_id;
   const weather = useWeatherScenarios(pilotId, sid);
   const uncertainty = useUncertaintySets(pilotId, sid);
-  const interventions = useInterventions(pilotId, sid);
+  const interventions = useInterventions(pilotId, sid, decisionAt);
   return { seasons, weather, uncertainty, interventions, seasonId: sid };
 }
 
@@ -53,7 +55,7 @@ export function useScenario() {
   const patchDraft = useUI((s) => s.patchDraft);
   const setActive = useUI((s) => s.setActive);
   const trackJob = useUI((s) => s.trackJob);
-  const catalog = useScenarioCatalog(sel.pilotId, draft?.season_id);
+  const catalog = useScenarioCatalog(sel.pilotId, draft?.season_id, draft?.decision_at);
 
   // Initialise a draft from the published catalog (only inputs the user can see and edit).
   useEffect(() => {

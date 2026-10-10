@@ -11,6 +11,7 @@ as such.
 from __future__ import annotations
 
 import io
+import time
 import zipfile
 from dataclasses import dataclass
 
@@ -44,17 +45,28 @@ class _HttpRangeFile(io.RawIOBase):
         return self.pos
 
     def seek(self, offset: int, whence: int = 0) -> int:
-        self.pos = offset if whence == 0 else self.pos + offset if whence == 1 else self.size + offset
+        self.pos = (
+            offset if whence == 0 else self.pos + offset if whence == 1 else self.size + offset
+        )
         return self.pos
 
     def readinto(self, b) -> int:
         if self.pos >= self.size:
             return 0
         end = min(self.size, self.pos + len(b)) - 1
-        r = self.client.get(self.url, headers={"Range": f"bytes={self.pos}-{end}"})
-        self.requests += 1
-        if r.status_code != 206:
-            raise IngestionError(f"range request not honoured (HTTP {r.status_code})")
+        r = None
+        for attempt in range(6):
+            try:
+                r = self.client.get(self.url, headers={"Range": f"bytes={self.pos}-{end}"})
+            except httpx.HTTPError:
+                r = None
+            self.requests += 1
+            if r is not None and r.status_code == 206:
+                break
+            time.sleep(min(60, 3 * 2**attempt))
+        if r is None or r.status_code != 206:
+            code = None if r is None else r.status_code
+            raise IngestionError(f"range request not honoured (HTTP {code})")
         data = r.content
         b[: len(data)] = data
         self.pos += len(data)
@@ -96,7 +108,7 @@ def fetch_member(url: str = ZIP_URL, member: str = PAKISTAN_MEMBER) -> MemberFet
 
 def read_subset(parquet_path, bbox: tuple[float, float, float, float]):
     """Read GRAIN GeoParquet, assert CRS, clip to bbox, return EPSG:4326 GeoDataFrame."""
-    import geopandas as gpd  # noqa: PLC0415
+    import geopandas as gpd
 
     gdf = gpd.read_parquet(parquet_path)
     if gdf.crs is None:
@@ -111,13 +123,15 @@ def schema_summary(gdf) -> dict:
     for col in gdf.columns:
         if col == gdf.geometry.name:
             continue
-        if gdf[col].dtype == object and gdf[col].nunique() <= 30:
+        dt = gdf[col].dtype
+        textual = dt == object or str(dt) in ("str", "string") or str(dt).startswith("string")
+        if textual and gdf[col].nunique() <= 30:
             cats[col] = sorted(str(v) for v in gdf[col].dropna().unique())
     return {
         "columns": [str(c) for c in gdf.columns],
         "dtypes": {str(c): str(t) for c, t in gdf.dtypes.items()},
         "crs": str(gdf.crs),
-        "rows": int(len(gdf)),
+        "rows": len(gdf),
         "categorical_values": cats,
     }
 

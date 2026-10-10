@@ -46,6 +46,10 @@ class Pilot(StrictModel):
     imagery: list[ImageryRef] = Field(default_factory=list)
     package_sha256: Sha256 | None = None
     created_at: datetime
+    # Additive (data stream): package-relative refs; None when absent.
+    terrain_ref: str | None = None  # terrain/dem.json (Terrarium DEM metadata)
+    weather_index_ref: str | None = None  # weather/index.json ([WeatherSeries])
+    bundle_ref: str | None = None  # raw bundle the package was processed from
 
 
 class ImageryRef(StrictModel):

@@ -98,13 +98,13 @@ function FieldList({ fields }: { fields: ReturnType<typeof usePilotData>["sorted
 
 function FieldDetail({ fieldId }: { fieldId: string }) {
   const { sel, fieldIndex, map } = usePilotData();
-  const q = useField(sel.version, fieldId);
-  const areaUnit = useUI((s) => s.areaUnit);
+  const q = useField(sel.version, fieldId, sel.pilotId);
   const entry = fieldIndex.get(fieldId);
   const raw = (q.data?.raw ?? {}) as Record<string, unknown>;
   const f = q.data?.field;
   const soil = raw.soil as SoilProfile | null | undefined;
-  const roster = (raw.roster_windows as RosterWindow[] | undefined) ?? [];
+  const rosterRaw = raw.roster_windows as RosterWindow[] | Record<string, RosterWindow[]> | undefined;
+  const roster: RosterWindow[] = Array.isArray(rosterRaw) ? rosterRaw : rosterRaw ? Object.values(rosterRaw).flat() : [];
   const refs = (raw.service_references as ServiceReference[] | undefined) ?? (raw.service_reference as ServiceReference[] | undefined) ?? [];
   const assets = (raw.assets as Asset[] | undefined) ?? [];
   const route = (raw.route_edge_ids as string[] | undefined) ?? [];

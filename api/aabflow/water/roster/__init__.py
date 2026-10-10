@@ -21,6 +21,7 @@ Semantics (shared with the data stream):
 
 from __future__ import annotations
 
+import itertools
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from datetime import datetime
@@ -132,7 +133,9 @@ class WindowCap:
         tot = sum(w)
         if tot <= 0:
             return []
-        return [(p, volume_at_field * wi / tot) for p, wi in zip(self.pieces, w, strict=True) if wi > 0]
+        return [
+            (p, volume_at_field * wi / tot) for p, wi in zip(self.pieces, w, strict=True) if wi > 0
+        ]
 
 
 def window_cap(
@@ -154,7 +157,9 @@ def window_cap(
     if w1 <= w0:
         raise SupplyError(f"window {window.window_id} ends before it starts")
     if window.outlet_node_id not in network.nodes:
-        raise NetworkError(f"window {window.window_id} boundary node {window.outlet_node_id} unknown")
+        raise NetworkError(
+            f"window {window.window_id} boundary node {window.outlet_node_id} unknown"
+        )
     path = network.path_edges(field_node_id)
     if window.accounting_boundary == "outlet":
         below = network.path_between(window.outlet_node_id, field_node_id)
@@ -173,7 +178,7 @@ def window_cap(
     pieces: list[SubInterval] = []
     total_s = (w1 - w0).total_seconds()
     open_total = 0.0
-    for a, b in zip(cuts[:-1], cuts[1:], strict=True):
+    for a, b in itertools.pairwise(cuts):
         dur = (b - a).total_seconds()
         closed = _closed_seconds(a, b, closures, set(path))
         open_s = max(0.0, dur - closed)
@@ -192,9 +197,12 @@ def window_cap(
         boundary = window.volume_cap_m3 * supply.multiplier * open_frac
         # distribute the volume uniformly over open time
         field_cap = sum(
-            (window.volume_cap_m3 * supply.multiplier * p.open_s / total_s) * p.path_factor for p in pieces
+            (window.volume_cap_m3 * supply.multiplier * p.open_s / total_s) * p.path_factor
+            for p in pieces
         )
-    return WindowCap(window.window_id, window.field_id, boundary, field_cap, tuple(pieces), 1 - open_frac)
+    return WindowCap(
+        window.window_id, window.field_id, boundary, field_cap, tuple(pieces), 1 - open_frac
+    )
 
 
 def _closed_seconds(a: datetime, b: datetime, closures: list[Closure], path: set[str]) -> float:
@@ -229,7 +237,7 @@ def check_exclusive(windows: Iterable[RosterWindow], group_of: Mapping[str, str]
     bad = []
     for g, ws in by_group.items():
         ws = sorted(ws, key=lambda w: to_utc(w.start))
-        for a, b in zip(ws, ws[1:], strict=False):
+        for a, b in itertools.pairwise(ws):
             if overlap_seconds(to_utc(a.start), to_utc(a.end), to_utc(b.start), to_utc(b.end)) > 0:
                 bad.append(f"{g}: {a.window_id} overlaps {b.window_id}")
     return bad

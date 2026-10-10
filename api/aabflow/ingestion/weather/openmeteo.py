@@ -30,8 +30,12 @@ VARIABLES = {
     "precipitation_sum": ("Precipitation", "mm"),
     "et0_fao_evapotranspiration": ("ReferenceET", "mm"),
 }
-EXPECTED_UNITS = {"temperature_2m_min": "°C", "temperature_2m_max": "°C", "precipitation_sum": "mm",
-                  "et0_fao_evapotranspiration": "mm"}  # fmt: skip
+EXPECTED_UNITS = {
+    "temperature_2m_min": "°C",
+    "temperature_2m_max": "°C",
+    "precipitation_sum": "mm",
+    "et0_fao_evapotranspiration": "mm",
+}
 COLUMNS = ["Date", "MinTemp", "MaxTemp", "Precipitation", "ReferenceET"]
 
 # Physical plausibility bounds for the Punjab plains (reject, never coerce).
@@ -47,7 +51,9 @@ class WeatherValidationError(IngestionError):
     pass
 
 
-def request_params(lat: float, lon: float, start: date, end: date, model: str | None = None) -> dict:
+def request_params(
+    lat: float, lon: float, start: date, end: date, model: str | None = None
+) -> dict:
     p = {
         "latitude": f"{lat:.5f}",
         "longitude": f"{lon:.5f}",
@@ -64,8 +70,12 @@ def request_params(lat: float, lon: float, start: date, end: date, model: str | 
     return p
 
 
-def request_archive(lat: float, lon: float, start: date, end: date, model: str | None = None) -> FetchResult:
-    return http_request("GET", ARCHIVE_URL, params=request_params(lat, lon, start, end, model), timeout=180)
+def request_archive(
+    lat: float, lon: float, start: date, end: date, model: str | None = None
+) -> FetchResult:
+    return http_request(
+        "GET", ARCHIVE_URL, params=request_params(lat, lon, start, end, model), timeout=180
+    )
 
 
 def normalize_archive(payload: dict) -> pd.DataFrame:
@@ -153,7 +163,7 @@ def series_id_for(point: ReturnedPoint, start: date, end: date) -> str:
 
 
 def to_parquet_bytes(w: pd.DataFrame) -> bytes:
-    import io  # noqa: PLC0415
+    import io
 
     buf = io.BytesIO()
     out = w.copy()

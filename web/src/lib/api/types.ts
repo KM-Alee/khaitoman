@@ -190,6 +190,7 @@ export interface InterventionInstance {
   eligibility_reasons?: string[];
   earliest_commissioning?: string | null;
   label?: string;
+  in_library?: boolean | null;
 }
 
 export interface SoilProfile {
@@ -209,7 +210,13 @@ export interface Season {
   end: string;
   planning_modes: string[];
   library_ready?: boolean;
-  label?: string;
+  label?: string | null;
+  decision_at?: string | null;
+  planting_date?: string | null;
+  notes?: string[];
+  weather_basis?: "analog" | "actual" | null;
+  library?: Record<string, unknown> | null;
+  roster_configured?: boolean | null;
 }
 
 export interface WeatherScenario {
@@ -222,6 +229,16 @@ export interface WeatherScenario {
   transformed_sha256: string;
   is_typical: boolean;
   selection_basis: string;
+  analog_season_label?: string | null;
+  kind?: "analog" | "actual";
+  statistics?: Record<string, number>;
+  original_start?: string | null;
+  original_end?: string | null;
+  scenario_start?: string | null;
+  scenario_end?: string | null;
+  offset_days?: number | null;
+  grid_cell?: string | null;
+  leap_rule?: string | null;
 }
 
 export interface SupplyProfile {
@@ -275,6 +292,8 @@ export interface EvidenceRecord {
   allowed_use: string | null;
   reviewer: string | null;
   reviewed_at: string | null;
+  document?: Record<string, unknown> | null;
+  pilot_ids?: string[];
 }
 
 export type MetricStatus = "available" | "not_estimated" | "not_applicable" | "blocked";

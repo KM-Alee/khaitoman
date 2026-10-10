@@ -96,7 +96,9 @@ def chronology(
         r.check(rule)
     s = units.nonnegative(initial_m3, "initial_m3")
     if exceeds(s, capacity_m3):
-        r.fail("pond_capacity", s - capacity_m3, [asset_id], detail="initial inventory above capacity")
+        r.fail(
+            "pond_capacity", s - capacity_m3, [asset_id], detail="initial inventory above capacity"
+        )
     after: list[float] = []
     totals = {k.value: 0.0 for k in INFLOW | OUTFLOW}
     fill_day: dict[date, float] = {}
@@ -117,7 +119,9 @@ def chronology(
                 )
             s -= v
         else:
-            r.fail("event_order", 0.0, [e.event_id], e.timestamp, f"non-pond event {e.kind} on pond")
+            r.fail(
+                "event_order", 0.0, [e.event_id], e.timestamp, f"non-pond event {e.kind} on pond"
+            )
             continue
         totals[e.kind.value] += v
         if e.kind is LedgerEventKind.pond_fill:
@@ -162,7 +166,9 @@ def chronology(
         r.check("pond_release_rate")
         for d, v in rel_day.items():
             if exceeds(v, max_release_m3_day):
-                r.fail("pond_release_rate", v - max_release_m3_day, [asset_id], None, f"release on {d}")
+                r.fail(
+                    "pond_release_rate", v - max_release_m3_day, [asset_id], None, f"release on {d}"
+                )
     return PondTrace(ev, after, initial_m3, s, r, totals, peak)
 
 
@@ -203,16 +209,22 @@ def exogenous_events(
             s += rain
             if s > spec.usable_capacity_m3:
                 spill = s - spec.usable_capacity_m3
-                out.append(_ev(f"spill:{tag}", end, ORDER_SPILL, LedgerEventKind.pond_spill, spill, spec))
+                out.append(
+                    _ev(f"spill:{tag}", end, ORDER_SPILL, LedgerEventKind.pond_spill, spill, spec)
+                )
                 s -= spill
         avail = max(s, 0.0)
         evap = min(units.pond_evaporation_m3(spec.k_evap, et0, spec.surface_area_m2), avail)
         if evap > 0:
-            out.append(_ev(f"evap:{tag}", end, ORDER_EVAP, LedgerEventKind.pond_evaporation, evap, spec))
+            out.append(
+                _ev(f"evap:{tag}", end, ORDER_EVAP, LedgerEventKind.pond_evaporation, evap, spec)
+            )
             s -= evap
         seep = min(spec.seepage_m3_day, max(s, 0.0))
         if seep > 0:
-            out.append(_ev(f"seep:{tag}", end, ORDER_SEEP, LedgerEventKind.pond_seepage, seep, spec))
+            out.append(
+                _ev(f"seep:{tag}", end, ORDER_SEEP, LedgerEventKind.pond_seepage, seep, spec)
+            )
             s -= seep
     trace = chronology(
         ctrl + out,
@@ -225,8 +237,17 @@ def exogenous_events(
     return out, trace
 
 
-def _ev(eid: str, ts: datetime, order: int, kind: LedgerEventKind, v: float, spec: PondSpec) -> LedgerEvent:
-    return LedgerEvent(event_id=eid, timestamp=ts, explicit_order=order, kind=kind, volume_m3=v, asset_id=spec.asset_id)
+def _ev(
+    eid: str, ts: datetime, order: int, kind: LedgerEventKind, v: float, spec: PondSpec
+) -> LedgerEvent:
+    return LedgerEvent(
+        event_id=eid,
+        timestamp=ts,
+        explicit_order=order,
+        kind=kind,
+        volume_m3=v,
+        asset_id=spec.asset_id,
+    )
 
 
 def size_for_irrigations(

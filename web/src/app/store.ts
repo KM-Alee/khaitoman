@@ -136,7 +136,7 @@ export const useUI = create<UIState>()(
       trackJob: (j) =>
         set((s) => ({
           jobs: [
-            { ...j, startedAt: Date.now(), lastUpdate: Date.now(), state: "queued", stage: null, progress: null, resultRef: null, error: null },
+            { ...j, startedAt: Date.now(), lastUpdate: Date.now(), state: "queued" as JobState, stage: null, progress: null, resultRef: null, error: null },
             ...s.jobs.filter((x) => x.jobId !== j.jobId),
           ].slice(0, 20),
         })),

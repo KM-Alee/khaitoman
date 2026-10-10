@@ -72,12 +72,19 @@ class PilotData:
     def fields_hash(self) -> str:
         return content_hash(
             {
-                "fields": [f.model_dump(mode="json") for f in sorted(self.fields.values(), key=lambda f: f.field_id)],
+                "fields": [
+                    f.model_dump(mode="json")
+                    for f in sorted(self.fields.values(), key=lambda f: f.field_id)
+                ],
                 "nodes": [n.model_dump(mode="json") for n in self.nodes],
                 "edges": [e.model_dump(mode="json") for e in self.edges],
-                "assets": [a.model_dump(mode="json") for a in sorted(self.assets.values(), key=lambda a: a.asset_id)],
+                "assets": [
+                    a.model_dump(mode="json")
+                    for a in sorted(self.assets.values(), key=lambda a: a.asset_id)
+                ],
                 "instances": [
-                    i.model_dump(mode="json") for i in sorted(self.instances.values(), key=lambda i: i.instance_id)
+                    i.model_dump(mode="json")
+                    for i in sorted(self.instances.values(), key=lambda i: i.instance_id)
                 ],
             }
         )
@@ -129,10 +136,14 @@ def load_pilot(pilot_id: str, pilot_version: str | None = None) -> PilotData:
     assets = {a["asset_id"]: Asset.model_validate(a) for a in _read(d / "assets.json")}
     iv = _read(d / "interventions.json")
     types = {t["type_id"]: InterventionType.model_validate(t) for t in iv.get("types", [])}
-    instances = {i["instance_id"]: InterventionInstance.model_validate(i) for i in iv.get("instances", [])}
+    instances = {
+        i["instance_id"]: InterventionInstance.model_validate(i) for i in iv.get("instances", [])
+    }
     soils = {}
     if (d / "soils.json").exists():
-        soils = {s["soil_profile_id"]: SoilProfile.model_validate(s) for s in _read(d / "soils.json")}
+        soils = {
+            s["soil_profile_id"]: SoilProfile.model_validate(s) for s in _read(d / "soils.json")
+        }
     refs = []
     if (d / "service_reference.json").exists():
         refs = [ServiceReference.model_validate(r) for r in _read(d / "service_reference.json")]
@@ -140,15 +151,38 @@ def load_pilot(pilot_id: str, pilot_version: str | None = None) -> PilotData:
     hashes = {
         p.name: file_sha256(p)
         for p in sorted(d.glob("*.json*"))
-        if p.name in {"fields.geojson", "network.json", "roster.json", "assets.json", "interventions.json",
-                      "soils.json", "service_reference.json", "pilot.json"}
+        if p.name
+        in {
+            "fields.geojson",
+            "network.json",
+            "roster.json",
+            "assets.json",
+            "interventions.json",
+            "soils.json",
+            "service_reference.json",
+            "pilot.json",
+        }
     }
     label = "pilot package"
     if (d / "FIXTURE_LABEL").exists():  # labelled synthetic test fixture, never pilot evidence
         label = "TEST FIXTURE: " + (d / "FIXTURE_LABEL").read_text().strip()
     return PilotData(
-        pilot_id, version, fields, Network.from_records(nodes, edges), nodes, edges, roster, assets,
-        types, instances, soils, refs, pilot, d, hashes, label,
+        pilot_id,
+        version,
+        fields,
+        Network.from_records(nodes, edges),
+        nodes,
+        edges,
+        roster,
+        assets,
+        types,
+        instances,
+        soils,
+        refs,
+        pilot,
+        d,
+        hashes,
+        label,
     )
 
 
@@ -157,17 +191,26 @@ def load_pilot(pilot_id: str, pilot_version: str | None = None) -> PilotData:
 
 def commissioned_on(inst: InterventionInstance, decision_at: datetime) -> date:
     """decision date + procurement/start delay + construction/service lead time (T4.6)."""
-    return local_crop_date(decision_at) + timedelta(days=inst.procurement_delay_days + inst.lead_time_days)
+    return local_crop_date(decision_at) + timedelta(
+        days=inst.procurement_delay_days + inst.lead_time_days
+    )
 
 
-PROPOSED_COST_CATEGORIES = {ActionCategory.pond, ActionCategory.shared_repair, ActionCategory.leveling}
+PROPOSED_COST_CATEGORIES = {
+    ActionCategory.pond,
+    ActionCategory.shared_repair,
+    ActionCategory.leveling,
+}
 
 
 def missing_cost(inst: InterventionInstance) -> str | None:
     """Proposed works need a nonzero dated cost (or an explicit reviewed zero)."""
-    if inst.category in PROPOSED_COST_CATEGORIES and inst.capex_pkr <= 0:
-        if not inst.parameters.get("zero_cost_reviewed"):
-            return f"{inst.instance_id}: capex missing (0 PKR without a reviewed zero-cost record)"
+    if (
+        inst.category in PROPOSED_COST_CATEGORIES
+        and inst.capex_pkr <= 0
+        and not inst.parameters.get("zero_cost_reviewed")
+    ):
+        return f"{inst.instance_id}: capex missing (0 PKR without a reviewed zero-cost record)"
     return None
 
 
@@ -185,13 +228,13 @@ def instance_admissibility(
         if pre not in pilot.instances and pre not in pilot.assets:
             return f"{inst.instance_id}: prerequisite {pre} not in pilot version"
     on = commissioned_on(inst, decision_at)
-    if inst.category in (ActionCategory.pond, ActionCategory.leveling, ActionCategory.shared_repair):
-        if on > planting:
-            return (
-                f"{inst.instance_id}: commissioned {on} after planting {planting} "
-                f"(decision {local_crop_date(decision_at)} + {inst.procurement_delay_days} + "
-                f"{inst.lead_time_days} days); v2 requires commissioning before planting"
-            )
+    timed = (ActionCategory.pond, ActionCategory.leveling, ActionCategory.shared_repair)
+    if inst.category in timed and on > planting:
+        return (
+            f"{inst.instance_id}: commissioned {on} after planting {planting} "
+            f"(decision {local_crop_date(decision_at)} + {inst.procurement_delay_days} + "
+            f"{inst.lead_time_days} days); v2 requires commissioning before planting"
+        )
     if inst.category is ActionCategory.pump_supplement:
         for tid in inst.target_ids:
             a = pilot.assets.get(tid)
@@ -211,7 +254,9 @@ def asset_available_on(a: Asset) -> date | None:
 
 def configurations(
     pilot: PilotData, decision_at: datetime, planting: date
-) -> tuple[list[SharedConfiguration], dict[str, list[tuple[str, datetime, datetime]]], dict[str, str]]:
+) -> tuple[
+    list[SharedConfiguration], dict[str, list[tuple[str, datetime, datetime]]], dict[str, str]
+]:
     """Enumerate admissible shared-repair configurations (<= 2 repairs -> <= 4 configs).
 
     Returns (configs, downtime closures per config, excluded repair reasons).
@@ -246,7 +291,11 @@ def configurations(
                         dd = int(inst.parameters.get("downtime_days", 0))
                         if dd > 0:
                             closures.append(
-                                (eid, local_midnight_utc(on - timedelta(days=dd)), local_midnight_utc(on))
+                                (
+                                    eid,
+                                    local_midnight_utc(on - timedelta(days=dd)),
+                                    local_midnight_utc(on),
+                                )
                             )
             configs.append(
                 SharedConfiguration(
@@ -264,13 +313,15 @@ def configurations(
 # --------------------------------------------------------------------------- intervals
 
 
-def atomic_intervals(boundaries: Iterable[datetime], horizon: tuple[datetime, datetime]) -> list[AtomicInterval]:
+def atomic_intervals(
+    boundaries: Iterable[datetime], horizon: tuple[datetime, datetime]
+) -> list[AtomicInterval]:
     """Smallest non-overlapping intervals induced by the given boundaries (T4.1)."""
     h0, h1 = to_utc(horizon[0]), to_utc(horizon[1])
     cuts = sorted({h0, h1, *(to_utc(b) for b in boundaries if h0 < to_utc(b) < h1)})
     return [
         AtomicInterval(interval_id=f"t{i:05d}", start=a, end=b)
-        for i, (a, b) in enumerate(zip(cuts[:-1], cuts[1:], strict=True))
+        for i, (a, b) in enumerate(itertools.pairwise(cuts))
     ]
 
 

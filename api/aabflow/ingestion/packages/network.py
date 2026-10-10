@@ -111,7 +111,9 @@ def build_network(
 
     def node(nid: str, kind: NodeKind, xy_m, label: str) -> str:
         lon, lat = to_wgs84(Point(xy_m), crs).coords[0]
-        nodes.append(Node(node_id=nid, kind=kind, lon=round(lon, 7), lat=round(lat, 7), label=label))
+        nodes.append(
+            Node(node_id=nid, kind=kind, lon=round(lon, 7), lat=round(lat, 7), label=label)
+        )
         return nid
 
     # Moghas: nearest point on the observed parent canal to each command area.
@@ -125,10 +127,18 @@ def build_network(
     # recorded as an assumption; slope does not verify flow direction, T4.2).
     src_d = max(0.0, first - 600.0)
     bif_d = max(src_d + 1.0, first - 150.0)
-    src = node(_pid(pilot_id, "node", "source"), NodeKind.source, canal_m.interpolate(src_d).coords[0],
-               "Parent canal intake point (assumed)")  # fmt: skip
-    bif = node(_pid(pilot_id, "node", "bifurcation"), NodeKind.junction,
-               canal_m.interpolate(bif_d).coords[0], "Parent canal junction above moghas (assumed)")  # fmt: skip
+    src = node(
+        _pid(pilot_id, "node", "source"),
+        NodeKind.source,
+        canal_m.interpolate(src_d).coords[0],
+        "Parent canal intake point (assumed)",
+    )
+    bif = node(
+        _pid(pilot_id, "node", "bifurcation"),
+        NodeKind.junction,
+        canal_m.interpolate(bif_d).coords[0],
+        "Parent canal junction above moghas (assumed)",
+    )
     parent_id = parent_canal["properties"]["source_feature_id"]
     source_edge = _pid(pilot_id, "edge", "parent-canal")
     edges.append(
@@ -147,8 +157,12 @@ def build_network(
     )
     for k, (grp, params, mp) in enumerate(zip(groups, watercourses, mogha_pts, strict=True), 1):
         wc = f"wc{k}"
-        mogha = node(_pid(pilot_id, "node", f"{wc}-mogha"), NodeKind.outlet, mp.coords[0],
-                     f"Watercourse {k} head (mogha), assumed")  # fmt: skip
+        mogha = node(
+            _pid(pilot_id, "node", f"{wc}-mogha"),
+            NodeKind.outlet,
+            mp.coords[0],
+            f"Watercourse {k} head (mogha), assumed",
+        )
         mogha_of[wc] = mogha
         edges.append(
             Edge(
@@ -163,15 +177,23 @@ def build_network(
             )
         )
         # Order fields by distance from the mogha; thirds -> head/middle/tail.
-        order = sorted(grp, key=lambda s: (mp.distance(to_metric(Point(s.centroid_lonlat), crs)), s.field_id))
+        order = sorted(
+            grp, key=lambda s: (mp.distance(to_metric(Point(s.centroid_lonlat), crs)), s.field_id)
+        )
         wc_fields[wc] = [s.field_id for s in order]
         thirds = np.array_split(np.arange(len(order)), 3)
         prev = mogha
         for gi, (gname, idx) in enumerate(zip(GROUPS, thirds, strict=True)):
             members = [order[i] for i in idx]
-            cxy = np.mean([to_metric(Point(s.centroid_lonlat), crs).coords[0] for s in members], axis=0)
-            out = node(_pid(pilot_id, "node", f"{wc}-{gname}"), NodeKind.outlet, tuple(cxy),
-                       f"WC{k} {gname} outlet (assumed)")  # fmt: skip
+            cxy = np.mean(
+                [to_metric(Point(s.centroid_lonlat), crs).coords[0] for s in members], axis=0
+            )
+            out = node(
+                _pid(pilot_id, "node", f"{wc}-{gname}"),
+                NodeKind.outlet,
+                tuple(cxy),
+                f"WC{k} {gname} outlet (assumed)",
+            )
             eid = _pid(pilot_id, "edge", f"{wc}-reach{gi + 1}")
             edges.append(
                 Edge(
@@ -192,8 +214,10 @@ def build_network(
                 field_wc[s.field_id] = wc
             prev = out
     notes = [
-        "Graph is a declared operational assumption; watercourse reaches are not in OSM "
-        "and have geometry_ref=null (rendered dashed).",
+        (
+            "Graph is a declared operational assumption; watercourse reaches are not in OSM "
+            "and have geometry_ref=null (rendered dashed)."
+        ),
         f"Parent canal geometry {parent_id} is observed; flow direction along it is assumed.",
         "Moghas are placed at the nearest parent-canal point to each command area (assumption).",
     ]

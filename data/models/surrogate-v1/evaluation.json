@@ -1,0 +1,109 @@
+{
+ "model_version": "surrogate-v1",
+ "created_at": "2026-10-10T00:42:13.395946+00:00",
+ "adapter_version": "aabflow-aquacrop-adapter-1.0.0",
+ "crops": {
+  "wheat": {
+   "test": {
+    "n": 66,
+    "mae_kg_ha": 194.43633268633377,
+    "rmse_kg_ha": 243.73165768597997,
+    "bias_kg_ha": -82.12126313791907,
+    "nmae": 0.025174379117089137,
+    "reference_yield_kg_ha": 7723.580064556367
+   },
+   "test_ranking": {
+    "contexts": 6,
+    "median_spearman": 0.9681818181818183,
+    "min_spearman": 0.9066082746806284
+   },
+   "decision_regret_summary": {
+    "n": 12,
+    "median": 0.0009429085513296075,
+    "max": 0.006688047840653367,
+    "median_kg": 97.15823828253633
+   },
+   "baseline_test": {
+    "n": 66,
+    "mae_kg_ha": 927.1744878957527,
+    "rmse_kg_ha": 1372.8686551096519,
+    "bias_kg_ha": 266.23079635172894,
+    "nmae": 0.12004465288714639,
+    "reference_yield_kg_ha": 7723.580064556367
+   },
+   "gate_results": {
+    "nmae": true,
+    "median_spearman": true,
+    "median_regret": true,
+    "max_regret": true,
+    "fixtures": true,
+    "beats_naive_baseline": true
+   },
+   "passed": true,
+   "loyo_cv": {
+    "nmae_mean": 0.03916382509468907,
+    "nmae_max": 0.08094104466044391,
+    "nmae_std": 0.01904062465877003
+   },
+   "samples": {
+    "total": 1870,
+    "fit_pool": 1648,
+    "test": 66,
+    "holdout_family_test": 6,
+    "years": 26
+   }
+  },
+  "cotton": {
+   "test": {
+    "n": 66,
+    "mae_kg_ha": 221.58697625270835,
+    "rmse_kg_ha": 278.82917427116786,
+    "bias_kg_ha": -195.84986437859803,
+    "nmae": 0.06737465758144595,
+    "reference_yield_kg_ha": 3288.877215959764
+   },
+   "test_ranking": {
+    "contexts": 6,
+    "median_spearman": 0.9772727272727273,
+    "min_spearman": 0.9545454545454546
+   },
+   "decision_regret_summary": {
+    "n": 12,
+    "median": 0.005715333936546755,
+    "max": 0.012646940347686335,
+    "median_kg": 347.69635810667387
+   },
+   "baseline_test": {
+    "n": 66,
+    "mae_kg_ha": 470.0677383928447,
+    "rmse_kg_ha": 642.2610340862412,
+    "bias_kg_ha": -117.26782764634991,
+    "nmae": 0.14292650881333344,
+    "reference_yield_kg_ha": 3288.877215959764
+   },
+   "gate_results": {
+    "nmae": true,
+    "median_spearman": true,
+    "median_regret": true,
+    "max_regret": true,
+    "fixtures": true,
+    "beats_naive_baseline": true
+   },
+   "passed": true,
+   "loyo_cv": {
+    "nmae_mean": 0.06879459211893466,
+    "nmae_max": 0.14950783349697644,
+    "nmae_std": 0.02383877960075495
+   },
+   "samples": {
+    "total": 1871,
+    "fit_pool": 1649,
+    "test": 66,
+    "holdout_family_test": 6,
+    "years": 26
+   }
+  }
+ },
+ "passed": true,
+ "wall_s": 119.5
+}

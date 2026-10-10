@@ -1,0 +1,112 @@
+{
+  "intake_id": "pilot-a-reviewed-v1",
+  "pilot_id": "pilot-a",
+  "name": "Lower Chenab representative pilot A",
+  "geographic_name_basis": "Inside the published Mungi study search extent (doi:10.3390/w14030405) but no OSM waterway named Mungi was found in that extent (Overpass, 2026-10-09). The AOI is crossed by the Gugera (Gogera) Branch canal of the Lower Chenab Canal system (OSM way 1429447136, wikidata Q5615200), so it is named a Lower Chenab representative pilot, not Mungi.",
+  "aoi": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "id": "aoi",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                72.33,
+                30.776
+              ],
+              [
+                72.33,
+                30.798
+              ],
+              [
+                72.306,
+                30.798
+              ],
+              [
+                72.306,
+                30.776
+              ],
+              [
+                72.33,
+                30.776
+              ]
+            ]
+          ]
+        },
+        "properties": {
+          "pilot_id": "pilot-a",
+          "name": "Lower Chenab representative pilot A"
+        }
+      }
+    ]
+  },
+  "aoi_check": {
+    "area_m2": 5607559.6,
+    "bbox": [
+      72.306,
+      30.776,
+      72.33,
+      30.798
+    ],
+    "centroid": [
+      72.318,
+      30.787
+    ],
+    "metric_crs": "EPSG:32643",
+    "estimated_pixels": 131720,
+    "warnings": [],
+    "blockers": []
+  },
+  "source_mode": "raw_package",
+  "bundle_ref": "data/raw/bundles/pilot-a/20261010T003625Z-48408f71",
+  "parent_canal_feature_id": "osm:way/1429447136",
+  "review_version": 0,
+  "created_at": "2026-10-10T00:47:17Z",
+  "history": [
+    {
+      "state": "created",
+      "at": "2026-10-10T00:47:17Z",
+      "detail": "raw_package"
+    },
+    {
+      "state": "acquired_raw",
+      "at": "2026-10-10T00:47:17Z",
+      "detail": "imported data/raw/bundles/pilot-a/20261010T003625Z-48408f71"
+    },
+    {
+      "state": "awaiting_inference",
+      "at": "2026-10-10T00:47:18Z",
+      "detail": "docker compose -f compose.yaml -f vision/compose.vision.yaml --profile vision run --rm --no-deps -T vision python /app/vision/run_batch.py /app/vision/batches/3768567ae9ee0beb.yaml --record /app/vision/runs/3768567ae9ee0beb/run.json --label 3768567ae9ee0beb"
+    },
+    {
+      "state": "processed",
+      "at": "2026-10-10T00:51:00Z",
+      "detail": "931 raw polygons"
+    },
+    {
+      "state": "needs_review",
+      "at": "2026-10-10T00:51:01Z",
+      "detail": "only 6 eligible fields after review; 30 required"
+    },
+    {
+      "state": "awaiting_inference",
+      "at": "2026-10-10T00:55:00Z",
+      "detail": "review rules retuned (min area 0.5 ha, compactness 0.30); reprocess"
+    },
+    {
+      "state": "processed",
+      "at": "2026-10-10T00:51:26Z",
+      "detail": "931 raw polygons"
+    },
+    {
+      "state": "needs_review",
+      "at": "2026-10-10T00:51:27Z",
+      "detail": "30 proposed fields"
+    }
+  ],
+  "state": "needs_review",
+  "review_started_at": "2026-10-10T00:51:27Z"
+}

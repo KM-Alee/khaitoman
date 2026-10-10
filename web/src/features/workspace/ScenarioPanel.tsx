@@ -12,7 +12,7 @@ import {
   Wrench,
   Clock3,
 } from "lucide-react";
-import { useScenario } from "./useScenario";
+import { defaultDecisionAt, useScenario } from "./useScenario";
 import { useRevision } from "@/lib/api/queries";
 import type { ActionCategory, InterventionInstance } from "@/lib/api/types";
 import { formatDate, formatPKR, formatPKRCompact, formatPercent, titleCase } from "@/lib/formatting";
@@ -98,7 +98,7 @@ export function ScenarioPanel({ onCollapse, className }: { onCollapse?: () => vo
                   s.patch({
                     season_id: ns.season_id,
                     planning_mode: (ns.planning_modes[0] as typeof draft.planning_mode) ?? draft.planning_mode,
-                    decision_at: `${ns.start.slice(0, 10)}T00:00:00+05:00`,
+                    decision_at: defaultDecisionAt(ns),
                     weather_scenario_ids: [],
                   });
                 }}

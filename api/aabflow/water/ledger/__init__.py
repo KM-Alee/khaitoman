@@ -65,7 +65,7 @@ from aabflow.water.context import (
     missing_cost,
 )
 from aabflow.water.network import overlap_seconds
-from aabflow.water.pond import PondSpec, chronology, exogenous_events, sort_key
+from aabflow.water.pond import PondSpec, exogenous_events, sort_key
 from aabflow.water.pumps import PumpSpec, validate_pump_use
 from aabflow.water.roster import Closure, ResolvedSupply, WindowCap, resolve_supply, window_cap
 from aabflow.water.validation import Residuals, exceeds, tol
@@ -182,7 +182,10 @@ def build_season_context(pilot: PilotData, season_id: str) -> SeasonContext:
         if w.field_id not in pilot.fields:
             raise ValueError(f"window {w.window_id} references unknown field {w.field_id}")
         by_field[w.field_id].append(w)
-    weather = {w.weather_scenario_id: w for w in scenarios.load_weather_scenarios(season_id, pilot.pilot_id)}
+    weather = {
+        w.weather_scenario_id: w
+        for w in scenarios.load_weather_scenarios(season_id, pilot.pilot_id)
+    }
     wdaily = {wid: scenarios.weather_daily(ws.transformed_sha256) for wid, ws in weather.items()}
     try:
         profs = scenarios.load_supply_profiles(season_id, pilot.pilot_id)
@@ -279,14 +282,21 @@ def build_season_context(pilot: PilotData, season_id: str) -> SeasonContext:
         elif inst.category is ActionCategory.leveling:
             eff = inst.parameters.get("application_efficiency_after")
             if eff is None:
-                ctx.excluded_instances[inst.instance_id] = "leveling lacks application_efficiency_after"
+                ctx.excluded_instances[inst.instance_id] = (
+                    "leveling lacks application_efficiency_after"
+                )
                 continue
             for fid in inst.target_ids:
-                ctx.leveling[fid] = (inst.instance_id, units.fraction(float(eff), "application_efficiency"))
+                ctx.leveling[fid] = (
+                    inst.instance_id,
+                    units.fraction(float(eff), "application_efficiency"),
+                )
         elif inst.category is ActionCategory.pump_supplement:
             for tid in inst.target_ids:
                 if tid in ctx.pumps and ctx.pumps[tid].cost_per_m3_pkr is None:
-                    ctx.excluded_instances[inst.instance_id] = f"pump {tid} has no declared cost per m3"
+                    ctx.excluded_instances[inst.instance_id] = (
+                        f"pump {tid} has no declared cost per m3"
+                    )
     for spec in ctx.ponds.values():
         if spec.commissioned_on:
             bounds.append(local_midnight_utc(spec.commissioned_on))
@@ -299,7 +309,9 @@ def _cached_context(pilot_id: str, pilot_version: str, season_id: str) -> Season
     return build_season_context(load_pilot(pilot_id, pilot_version), season_id)
 
 
-def season_context(pilot_id: str, season_id: str, pilot_version: str | None = None) -> SeasonContext:
+def season_context(
+    pilot_id: str, season_id: str, pilot_version: str | None = None
+) -> SeasonContext:
     from aabflow.water.context import latest_version
 
     return _cached_context(pilot_id, pilot_version or latest_version(pilot_id), season_id)
@@ -317,7 +329,9 @@ def pond_field_ids(ctx: SeasonContext, asset_id: str) -> list[str]:
 
 @dataclass
 class PolicyEvaluation:
-    outcome_events: list[LedgerEvent]  # field-level events (receipts, pond incl. exogenous, pump, application)
+    outcome_events: list[
+        LedgerEvent
+    ]  # field-level events (receipts, pond incl. exogenous, pump, application)
     routed: dict[tuple[str, str], float]  # (resource_id, interval_id) -> volume
     residuals: Residuals
     canal_receipt_m3: float
@@ -340,10 +354,17 @@ def evaluate_events(
     r = Residuals()
     fid = policy.field_id
     if fid not in ctx.pilot.fields:
-        r.fail("area", 0, [fid], detail=f"field {fid} not in pilot version {ctx.pilot.pilot_version}")
+        r.fail(
+            "area", 0, [fid], detail=f"field {fid} not in pilot version {ctx.pilot.pilot_version}"
+        )
         return PolicyEvaluation([], {}, r, 0, 0)
     if policy.shared_configuration_id != config_id:
-        r.fail("event_order", 0, [policy.candidate_policy_id], detail="policy belongs to another configuration")
+        r.fail(
+            "event_order",
+            0,
+            [policy.candidate_policy_id],
+            detail="policy belongs to another configuration",
+        )
     f = ctx.pilot.fields[fid]
     events: list[LedgerEvent] = []
     routed: dict[tuple[str, str], float] = defaultdict(float)
@@ -356,8 +377,13 @@ def evaluate_events(
     try:
         expect_area = units.cropped_area_ha(f.gross_area_ha, footprint)
         if abs(expect_area - policy.cropped_area_ha) > 1e-9:
-            r.fail("area", abs(expect_area - policy.cropped_area_ha), [fid], unit="ha",
-                   detail=f"cropped area {policy.cropped_area_ha} != gross - new pond footprint {expect_area}")
+            r.fail(
+                "area",
+                abs(expect_area - policy.cropped_area_ha),
+                [fid],
+                unit="ha",
+                detail=f"cropped area {policy.cropped_area_ha} != gross - new pond footprint {expect_area}",
+            )
     except units.UnitError as exc:
         r.fail("area", 0, [fid], unit="ha", detail=str(exc))
     # ---- instances: admissibility, costs, commissioning (T4.6)
@@ -379,8 +405,17 @@ def evaluate_events(
             r.fail("commissioning", 0, [a], detail="new pond used without requiring its instance")
     if policy.application_efficiency != f.existing_application_efficiency:
         lev = ctx.leveling.get(fid)
-        if lev is None or lev[0] not in policy.required_instance_ids or lev[1] != policy.application_efficiency:
-            r.fail("commissioning", 0, [fid], detail="application efficiency differs without admissible leveling")
+        if (
+            lev is None
+            or lev[0] not in policy.required_instance_ids
+            or lev[1] != policy.application_efficiency
+        ):
+            r.fail(
+                "commissioning",
+                0,
+                [fid],
+                detail="application efficiency differs without admissible leveling",
+            )
     # ---- receipts: rights, route, chronology
     r.check("receipt_right")
     r.check("route_open")
@@ -392,71 +427,142 @@ def evaluate_events(
     for ev in policy.receipt_events:
         events.append(ev)
         if ev.kind is not LedgerEventKind.outlet_receipt or ev.field_id != fid:
-            r.fail("receipt_right", ev.volume_m3, [ev.event_id], ev.timestamp, "receipt event malformed")
+            r.fail(
+                "receipt_right",
+                ev.volume_m3,
+                [ev.event_id],
+                ev.timestamp,
+                "receipt event malformed",
+            )
             continue
         w = ctx.windows.get(ev.window_id or "")
         if w is None or w.field_id != fid:
-            r.fail("receipt_right", ev.volume_m3, [ev.event_id, ev.window_id or "?"], ev.timestamp,
-                   "receipt outside the field's permitted windows")
+            r.fail(
+                "receipt_right",
+                ev.volume_m3,
+                [ev.event_id, ev.window_id or "?"],
+                ev.timestamp,
+                "receipt outside the field's permitted windows",
+            )
             continue
         if to_utc(ev.timestamp) != to_utc(w.end):
-            r.fail("receipt_right", ev.volume_m3, [ev.event_id], ev.timestamp,
-                   f"receipt must be booked at its window end {w.end.isoformat()}")
+            r.fail(
+                "receipt_right",
+                ev.volume_m3,
+                [ev.event_id],
+                ev.timestamp,
+                f"receipt must be booked at its window end {w.end.isoformat()}",
+            )
         cap = ctx.cap(w.window_id, supply, config_id, extra_closures)
         if ev.volume_m3 > 0 and cap.field_cap_m3 <= 0:
-            r.fail("route_open", ev.volume_m3, [ev.event_id, w.window_id, *path], ev.timestamp,
-                   f"route closed for window {w.window_id} under {supply.supply_profile_id}")
+            r.fail(
+                "route_open",
+                ev.volume_m3,
+                [ev.event_id, w.window_id, *path],
+                ev.timestamp,
+                f"route closed for window {w.window_id} under {supply.supply_profile_id}",
+            )
             continue
         if exceeds(ev.volume_m3, cap.field_cap_m3):
-            r.fail("receipt_right", ev.volume_m3 - cap.field_cap_m3, [ev.event_id, w.window_id], ev.timestamp,
-                   f"receipt {ev.volume_m3:.2f} m3 exceeds window cap {cap.field_cap_m3:.2f} m3 "
-                   f"under {supply.supply_profile_id}")
+            r.fail(
+                "receipt_right",
+                ev.volume_m3 - cap.field_cap_m3,
+                [ev.event_id, w.window_id],
+                ev.timestamp,
+                f"receipt {ev.volume_m3:.2f} m3 exceeds window cap {cap.field_cap_m3:.2f} m3 "
+                f"under {supply.supply_profile_id}",
+            )
         canal += ev.volume_m3
         receipts_by_day[local_crop_date(ev.timestamp)] += ev.volume_m3
         for piece, vol in cap.split(ev.volume_m3):
             legs = ctx.pilot.network.route(vol, path, overrides)
             iid = ivl.get((piece.start, piece.end))
             if iid is None:
-                r.fail("event_order", vol, [w.window_id], piece.start, "window piece not an atomic interval")
+                r.fail(
+                    "event_order",
+                    vol,
+                    [w.window_id],
+                    piece.start,
+                    "window piece not an atomic interval",
+                )
                 continue
             routed[(f"outlet:{f.outlet_node_id}", iid)] += vol
             for leg in legs:
                 routed[(f"edge:{leg.edge_id}", iid)] += leg.intake_m3
             if legs:
-                routed[(f"source:{ctx.pilot.network.root_of(f.outlet_node_id)}", iid)] += legs[0].intake_m3
+                routed[(f"source:{ctx.pilot.network.root_of(f.outlet_node_id)}", iid)] += legs[
+                    0
+                ].intake_m3
     # ---- ponds
     fills_by_day: dict[date, float] = defaultdict(float)
     release_by_day: dict[date, float] = defaultdict(float)
     by_pond: dict[str, list[LedgerEvent]] = defaultdict(list)
-    receipt_ts = {(ev.window_id, to_utc(ev.timestamp)): ev.volume_m3 for ev in policy.receipt_events}
+    receipt_ts = {
+        (ev.window_id, to_utc(ev.timestamp)): ev.volume_m3 for ev in policy.receipt_events
+    }
     fill_per_receipt: dict[str, float] = defaultdict(float)
     for ev in policy.pond_events:
         if ev.asset_id not in ctx.ponds:
-            r.fail("commissioning", ev.volume_m3, [ev.asset_id or "?"], ev.timestamp, "pond not available")
+            r.fail(
+                "commissioning",
+                ev.volume_m3,
+                [ev.asset_id or "?"],
+                ev.timestamp,
+                "pond not available",
+            )
             continue
         if fid not in pond_field_ids(ctx, ev.asset_id):
-            r.fail("pond_sharing", ev.volume_m3, [ev.asset_id, fid], ev.timestamp, "field has no access to pond")
+            r.fail(
+                "pond_sharing",
+                ev.volume_m3,
+                [ev.asset_id, fid],
+                ev.timestamp,
+                "field has no access to pond",
+            )
         if ev.asset_id not in policy.uses_asset_ids:
-            r.fail("pond_sharing", ev.volume_m3, [ev.asset_id], ev.timestamp, "pond use not declared")
+            r.fail(
+                "pond_sharing", ev.volume_m3, [ev.asset_id], ev.timestamp, "pond use not declared"
+            )
         spec = ctx.ponds[ev.asset_id]
         d = local_crop_date(ev.timestamp)
         if spec.commissioned_on and d < spec.commissioned_on:
-            r.fail("commissioning", ev.volume_m3, [ev.asset_id], ev.timestamp,
-                   f"pond used {d} before commissioning {spec.commissioned_on}")
+            r.fail(
+                "commissioning",
+                ev.volume_m3,
+                [ev.asset_id],
+                ev.timestamp,
+                f"pond used {d} before commissioning {spec.commissioned_on}",
+            )
         if ev.kind is LedgerEventKind.pond_fill:
             key = (ev.window_id, to_utc(ev.timestamp))
             if key not in receipt_ts:
-                r.fail("field_balance", ev.volume_m3, [ev.event_id], ev.timestamp,
-                       "pond fill without a matching receipt at that instant")
+                r.fail(
+                    "field_balance",
+                    ev.volume_m3,
+                    [ev.event_id],
+                    ev.timestamp,
+                    "pond fill without a matching receipt at that instant",
+                )
             fill_per_receipt[str(key)] += ev.volume_m3
             if exceeds(fill_per_receipt[str(key)], receipt_ts.get(key, 0.0)):
-                r.fail("field_balance", fill_per_receipt[str(key)] - receipt_ts.get(key, 0.0), [ev.event_id],
-                       ev.timestamp, "pond fill exceeds the receipt it comes from")
+                r.fail(
+                    "field_balance",
+                    fill_per_receipt[str(key)] - receipt_ts.get(key, 0.0),
+                    [ev.event_id],
+                    ev.timestamp,
+                    "pond fill exceeds the receipt it comes from",
+                )
             fills_by_day[d] += ev.volume_m3
         elif ev.kind is LedgerEventKind.pond_release:
             release_by_day[d] += ev.volume_m3
         else:
-            r.fail("event_order", ev.volume_m3, [ev.event_id], ev.timestamp, "pond events must be fill/release")
+            r.fail(
+                "event_order",
+                ev.volume_m3,
+                [ev.event_id],
+                ev.timestamp,
+                "pond events must be fill/release",
+            )
             continue
         by_pond[ev.asset_id].append(ev)
     loss = spill = rain = terminal = 0.0
@@ -505,11 +611,21 @@ def evaluate_events(
         water = receipts_by_day[d] - fills_by_day[d] + release_by_day[d] + pump_by_day[d]
         applied = units.depth_mm_to_volume_m3(sched[d], policy.cropped_area_ha)
         if abs(water - applied) > tol(max(water, applied)) + 1e-6 * max(1.0, water):
-            r.fail("field_balance", water - applied, [fid], local_midnight_utc(d),
-                   f"{d}: water at field {water:.4f} m3 != applied {applied:.4f} m3")
+            r.fail(
+                "field_balance",
+                water - applied,
+                [fid],
+                local_midnight_utc(d),
+                f"{d}: water at field {water:.4f} m3 != applied {applied:.4f} m3",
+            )
         if applied > 0 and (d < planting or d > ctx.season.sim_end):
-            r.fail("daily_application", applied, [fid], local_midnight_utc(d),
-                   f"application on {d} outside crop interval")
+            r.fail(
+                "daily_application",
+                applied,
+                [fid],
+                local_midnight_utc(d),
+                f"application on {d} outside crop interval",
+            )
         if applied > 0:
             events.append(
                 LedgerEvent(
@@ -523,8 +639,14 @@ def evaluate_events(
                 )
             )
         if sched[d] > ctx.crop.max_daily_irrigation_mm + 1e-9:
-            r.fail("daily_application", sched[d], [fid], local_midnight_utc(d),
-                   f"{sched[d]:.2f} mm exceeds the field application limit", unit="mm")
+            r.fail(
+                "daily_application",
+                sched[d],
+                [fid],
+                local_midnight_utc(d),
+                f"{sched[d]:.2f} mm exceeds the field application limit",
+                unit="mm",
+            )
     return PolicyEvaluation(
         order_events(events), dict(routed), r, canal, gw, loss, spill, rain, terminal, peaks
     )
@@ -543,13 +665,23 @@ def evaluate_policy(
     extra_closures: tuple[Closure, ...] = (),
 ) -> StateOutcome:
     """Validate one policy under an (ad-hoc) state; null yield when undeliverable."""
-    ev = evaluate_events(policy, ctx, resolved_supply, weather_scenario_id, config_id, extra_closures)
+    ev = evaluate_events(
+        policy, ctx, resolved_supply, weather_scenario_id, config_id, extra_closures
+    )
     sid = state_id or scenarios.state_id(weather_scenario_id, resolved_supply.supply_profile_id)
-    ok = ev.residuals.ok and (yield_kg_ha is not None or not policy.application_schedule or crop_outcome_hash)
+    ok = ev.residuals.ok and (
+        yield_kg_ha is not None or not policy.application_schedule or crop_outcome_hash
+    )
     if yield_kg_ha is None and crop_outcome_hash is None:
         # look up the stored outcome for this weather state
-        prior = next((o for o in policy.outcomes if o.weather_scenario_id == weather_scenario_id
-                      and o.crop_outcome_hash), None)
+        prior = next(
+            (
+                o
+                for o in policy.outcomes
+                if o.weather_scenario_id == weather_scenario_id and o.crop_outcome_hash
+            ),
+            None,
+        )
         if prior is not None:
             crop_outcome_hash, yield_kg_ha = prior.crop_outcome_hash, prior.yield_kg_ha
     ok = ev.residuals.ok and yield_kg_ha is not None
@@ -565,7 +697,8 @@ def evaluate_policy(
         canal_receipt_m3=ev.canal_receipt_m3,
         weather_scenario_id=weather_scenario_id,
         supply_profile_id=resolved_supply.supply_profile_id,
-        violations=ev.residuals.reasons()[:10] or ([] if ok else ["no exact crop outcome for this weather state"]),
+        violations=ev.residuals.reasons()[:10]
+        or ([] if ok else ["no exact crop outcome for this weather state"]),
         pond_loss_m3=ev.pond_loss_m3,
         pond_spill_m3=ev.pond_spill_m3,
         pond_rain_m3=ev.pond_rain_m3,
@@ -594,15 +727,29 @@ def library_capacities(ctx: SeasonContext) -> list[ResourceCapacity]:
             c = net.capacity_m3(e.edge_id, a, b)
             closed = net.closed_seconds(e.edge_id, a, b) > 0
             if closed:
-                out.append(ResourceCapacity(resource_id=f"edge:{e.edge_id}", interval_id=iv.interval_id, capacity_m3=0.0))
+                out.append(
+                    ResourceCapacity(
+                        resource_id=f"edge:{e.edge_id}", interval_id=iv.interval_id, capacity_m3=0.0
+                    )
+                )
             elif c is not None:
-                out.append(ResourceCapacity(resource_id=f"edge:{e.edge_id}", interval_id=iv.interval_id, capacity_m3=c))
+                out.append(
+                    ResourceCapacity(
+                        resource_id=f"edge:{e.edge_id}", interval_id=iv.interval_id, capacity_m3=c
+                    )
+                )
         for cid, cl in ctx.downtime.items():
             for c in cl:
                 if overlap_seconds(a, b, c.start, c.end) > 0:
                     for eid in c.edge_ids:
-                        out.append(ResourceCapacity(resource_id=f"edge:{eid}", interval_id=iv.interval_id,
-                                                    capacity_m3=0.0, shared_configuration_id=cid))
+                        out.append(
+                            ResourceCapacity(
+                                resource_id=f"edge:{eid}",
+                                interval_id=iv.interval_id,
+                                capacity_m3=0.0,
+                                shared_configuration_id=cid,
+                            )
+                        )
         roots = {n for n, node in net.nodes.items() if node.kind.value == "source"}
         for w in ctx.weather:
             for sid, rs in ctx.resolved.items():
@@ -612,24 +759,53 @@ def library_capacities(ctx: SeasonContext) -> list[ResourceCapacity]:
                     state = scenarios.state_id(w, sid)
                     if c.edge_ids:
                         for eid in c.edge_ids:
-                            out.append(ResourceCapacity(resource_id=f"edge:{eid}", interval_id=iv.interval_id,
-                                                        capacity_m3=0.0, state_id=state))
+                            out.append(
+                                ResourceCapacity(
+                                    resource_id=f"edge:{eid}",
+                                    interval_id=iv.interval_id,
+                                    capacity_m3=0.0,
+                                    state_id=state,
+                                )
+                            )
                     else:
                         for root in roots:
-                            out.append(ResourceCapacity(resource_id=f"source:{root}", interval_id=iv.interval_id,
-                                                        capacity_m3=0.0, state_id=state))
+                            out.append(
+                                ResourceCapacity(
+                                    resource_id=f"source:{root}",
+                                    interval_id=iv.interval_id,
+                                    capacity_m3=0.0,
+                                    state_id=state,
+                                )
+                            )
     for p in ctx.pumps.values():
         for d in ctx.days:
             if p.commissioned_on and d < p.commissioned_on:
                 cap = 0.0
             else:
                 cap = p.daily_cap_m3
-            out.append(ResourceCapacity(resource_id=f"pump:{p.asset_id}", interval_id=day_interval_id(d), capacity_m3=cap))
+            out.append(
+                ResourceCapacity(
+                    resource_id=f"pump:{p.asset_id}",
+                    interval_id=day_interval_id(d),
+                    capacity_m3=cap,
+                )
+            )
         if p.seasonal_cap_m3 is not None:
-            out.append(ResourceCapacity(resource_id=f"gw:{p.asset_id}", interval_id="season", capacity_m3=p.seasonal_cap_m3))
+            out.append(
+                ResourceCapacity(
+                    resource_id=f"gw:{p.asset_id}",
+                    interval_id="season",
+                    capacity_m3=p.seasonal_cap_m3,
+                )
+            )
     for spec in ctx.ponds.values():
-        out.append(ResourceCapacity(resource_id=f"pond:{spec.asset_id}", interval_id="season",
-                                    capacity_m3=spec.usable_capacity_m3))
+        out.append(
+            ResourceCapacity(
+                resource_id=f"pond:{spec.asset_id}",
+                interval_id="season",
+                capacity_m3=spec.usable_capacity_m3,
+            )
+        )
     return out
 
 
@@ -694,10 +870,20 @@ def reconstruct(
     for pid in policy_ids:
         p = pols.get(pid)
         if p is None:
-            r.fail("event_order", 0, [pid], detail=f"policy {pid} not in library {library.candidate_library_hash[:12]}")
+            r.fail(
+                "event_order",
+                0,
+                [pid],
+                detail=f"policy {pid} not in library {library.candidate_library_hash[:12]}",
+            )
             continue
         if p.field_id in seen_fields:
-            r.fail("receipt_right", 0, [p.field_id, pid, seen_fields[p.field_id]], detail="two policies for one field")
+            r.fail(
+                "receipt_right",
+                0,
+                [p.field_id, pid, seen_fields[p.field_id]],
+                detail="two policies for one field",
+            )
         seen_fields[p.field_id] = pid
         ev = evaluate_events(p, ctx, supply, weather_id, config_id, extra_closures)
         r.extend(ev.residuals)
@@ -708,24 +894,52 @@ def reconstruct(
         for aid in ev.peak_pond_m3:
             pond_users[aid].append(p.field_id)
         # exact crop outcome for the weather state
-        so = next((o for o in p.outcomes if o.weather_scenario_id == weather_id and o.crop_outcome_hash), None)
+        so = next(
+            (o for o in p.outcomes if o.weather_scenario_id == weather_id and o.crop_outcome_hash),
+            None,
+        )
         if check_crop_outcomes and (p.application_schedule or so is not None):
             r.check("daily_application")
             if so is None:
-                r.fail("daily_application", 0, [pid], detail=f"no exact crop outcome for weather {weather_id}")
+                r.fail(
+                    "daily_application",
+                    0,
+                    [pid],
+                    detail=f"no exact crop outcome for weather {weather_id}",
+                )
             else:
                 co = load_outcome(so.crop_outcome_hash)
                 if co is None or not co.has_finished:
-                    r.fail("daily_application", 0, [pid], detail="crop outcome artifact missing or unfinished")
-                elif abs(co.seasonal_irrigation_mm - sum(a.gross_depth_mm for a in p.application_schedule)) > 1e-6:
-                    r.fail("daily_application", co.seasonal_irrigation_mm, [pid],
-                           detail="crop outcome irrigation differs from the policy schedule", unit="mm")
+                    r.fail(
+                        "daily_application",
+                        0,
+                        [pid],
+                        detail="crop outcome artifact missing or unfinished",
+                    )
+                elif (
+                    abs(
+                        co.seasonal_irrigation_mm
+                        - sum(a.gross_depth_mm for a in p.application_schedule)
+                    )
+                    > 1e-6
+                ):
+                    r.fail(
+                        "daily_application",
+                        co.seasonal_irrigation_mm,
+                        [pid],
+                        detail="crop outcome irrigation differs from the policy schedule",
+                        unit="mm",
+                    )
     for aid, users in pond_users.items():
         if len(set(users)) > 1:
             spec = ctx.ponds[aid]
             if exceeds(routed_total[(f"pond:{aid}", "season")], spec.usable_capacity_m3):
-                r.fail("pond_sharing", routed_total[(f"pond:{aid}", "season")] - spec.usable_capacity_m3,
-                       [aid, *users], detail="combined peak reservations exceed the shared pond")
+                r.fail(
+                    "pond_sharing",
+                    routed_total[(f"pond:{aid}", "season")] - spec.usable_capacity_m3,
+                    [aid, *users],
+                    detail="combined peak reservations exceed the shared pond",
+                )
     # shared pumps across all fields
     for aid, spec in ctx.pumps.items():
         r.extend(validate_pump_use(spec, pump_events))
@@ -742,9 +956,13 @@ def reconstruct(
         used = routed_total.get((c.resource_id, c.interval_id), 0.0)
         if exceeds(used, c.capacity_m3):
             rule = "source_capacity" if c.resource_id.startswith("source:") else "edge_capacity"
-            r.fail(rule, used - c.capacity_m3, [c.resource_id, c.interval_id],
-                   next((i.start for i in ctx.intervals if i.interval_id == c.interval_id), None),
-                   f"{used:.2f} m3 through {c.resource_id} exceeds {c.capacity_m3:.2f} m3")
+            r.fail(
+                rule,
+                used - c.capacity_m3,
+                [c.resource_id, c.interval_id],
+                next((i.start for i in ctx.intervals if i.interval_id == c.interval_id), None),
+                f"{used:.2f} m3 through {c.resource_id} exceeds {c.capacity_m3:.2f} m3",
+            )
     # routed network events + node balance
     events.extend(_network_events(ctx, routed_total, config_id, r))
     return order_events(events), r.report()
@@ -764,16 +982,40 @@ def _network_events(
             by_iv[iid][rid[5:]] = v
         elif rid.startswith("source:"):
             iv = ivmap[iid]
-            out.append(LedgerEvent(event_id=f"src:{rid[7:]}:{iid}", timestamp=iv.end, explicit_order=-3,
-                                   kind=LedgerEventKind.source_release, volume_m3=v, note=f"interval {iid}"))
+            out.append(
+                LedgerEvent(
+                    event_id=f"src:{rid[7:]}:{iid}",
+                    timestamp=iv.end,
+                    explicit_order=-3,
+                    kind=LedgerEventKind.source_release,
+                    volume_m3=v,
+                    note=f"interval {iid}",
+                )
+            )
     for iid, flows in by_iv.items():
         iv = ivmap[iid]
         for eid, intake in flows.items():
             delivered = intake * net.factor(eid, overrides)
-            out.append(LedgerEvent(event_id=f"edge:{eid}:{iid}", timestamp=iv.end, explicit_order=-2,
-                                   kind=LedgerEventKind.edge_transfer, volume_m3=intake, edge_id=eid))
-            out.append(LedgerEvent(event_id=f"loss:{eid}:{iid}", timestamp=iv.end, explicit_order=-1,
-                                   kind=LedgerEventKind.edge_loss, volume_m3=intake - delivered, edge_id=eid))
+            out.append(
+                LedgerEvent(
+                    event_id=f"edge:{eid}:{iid}",
+                    timestamp=iv.end,
+                    explicit_order=-2,
+                    kind=LedgerEventKind.edge_transfer,
+                    volume_m3=intake,
+                    edge_id=eid,
+                )
+            )
+            out.append(
+                LedgerEvent(
+                    event_id=f"loss:{eid}:{iid}",
+                    timestamp=iv.end,
+                    explicit_order=-1,
+                    kind=LedgerEventKind.edge_loss,
+                    volume_m3=intake - delivered,
+                    edge_id=eid,
+                )
+            )
         # node balance: delivered by incoming edge == sum(child intakes) + outlet receipts at node
         for eid, intake in flows.items():
             e = net.edges[eid]
@@ -782,9 +1024,14 @@ def _network_events(
             local = routed.get((f"outlet:{e.downstream_node_id}", iid), 0.0)
             resid = delivered - child - local
             if abs(resid) > tol(delivered):
-                r.fail("node_balance", resid, [e.downstream_node_id, iid], iv.start,
-                       f"node {e.downstream_node_id}: delivered {delivered:.6f} != downstream "
-                       f"{child:.6f} + outlet {local:.6f}")
+                r.fail(
+                    "node_balance",
+                    resid,
+                    [e.downstream_node_id, iid],
+                    iv.start,
+                    f"node {e.downstream_node_id}: delivered {delivered:.6f} != downstream "
+                    f"{child:.6f} + outlet {local:.6f}",
+                )
     return out
 
 

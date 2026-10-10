@@ -7,4 +7,5 @@ from .pilot import *
 from .policy import *
 from .run import *
 from .scenario import *
+from .surrogate import *
 from .water import *

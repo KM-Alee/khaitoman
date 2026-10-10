@@ -16,6 +16,7 @@ A completed run is reused by key (a disclosed content-hash cache hit, T2.6).
 from __future__ import annotations
 
 import json
+import math
 import shutil
 import subprocess
 from dataclasses import dataclass
@@ -28,7 +29,7 @@ from ..common import IngestionError, read_json
 VISION_DIR_IN_CONTAINER = "/app/vision"
 CHECKPOINT = "/app/data/models/delineate-anything/DelineateAnythingv2.pt"
 CHECKPOINT_ID = "MykolaL/DelineateAnything:DelineateAnythingv2.pt"
-BASE_CONFIG = "configs/conf_cpu_v2.yaml"
+BASE_CONFIG = "configs/conf_pilot_s2_sr4.yaml"
 UPSTREAM_COMMIT = "4cfab87ecccbe8d1bda4167676f623e3728570d9"
 ENTRY = "scene"
 COMPOSE_CMD = [
@@ -121,7 +122,9 @@ def prepare(input_tif: Path, repo_root: Path) -> InferenceJob:
         shutil.copyfile(input_tif, dst)
     elif file_sha256(dst) != file_sha256(input_tif):
         raise IngestionError(f"staged inference input for {key} differs from source raster")
-    job = InferenceJob(key, repo_root, dst, repo_root / "vision" / "batches" / f"{key}.yaml", run_dir)
+    job = InferenceJob(
+        key, repo_root, dst, repo_root / "vision" / "batches" / f"{key}.yaml", run_dir
+    )
     batch = {
         "base_config": f"{VISION_DIR_IN_CONTAINER}/{BASE_CONFIG}",
         "data_root": job.container_path(run_dir / "input"),
@@ -155,7 +158,14 @@ def run(job: InferenceJob, timeout_s: int = 3600) -> dict:
         return rec
     if not docker_available():
         raise InferencePending(job.key, job.command_str())
-    proc = subprocess.run(job.command(), cwd=job.repo_root, capture_output=True, text=True, timeout=timeout_s)
+    proc = subprocess.run(
+        job.command(),
+        cwd=job.repo_root,
+        capture_output=True,
+        text=True,
+        timeout=timeout_s,
+        check=False,
+    )
     if proc.returncode != 0 or not job.done():
         raise IngestionError(
             f"Delineate inference {job.key} failed (rc={proc.returncode}): {proc.stderr[-2000:]}"
@@ -170,8 +180,8 @@ def collect(job: InferenceJob) -> dict:
 
     Each feature gets a model id ``da:<key>:<fid>`` from the GeoPackage feature id.
     """
-    import geopandas as gpd  # noqa: PLC0415
-    import pyogrio  # noqa: PLC0415
+    import geopandas as gpd
+    import pyogrio
 
     if not job.output_gpkg.exists():
         raise InferencePending(job.key, job.command_str())
@@ -182,7 +192,10 @@ def collect(job: InferenceJob) -> dict:
     out = gdf.to_crs("EPSG:4326")
     feats = []
     for fid, row in out.iterrows():
-        props = {k: (None if v != v else v) for k, v in row.drop(labels=out.geometry.name).items()}
+        props = {
+            k: (None if isinstance(v, float) and math.isnan(v) else v)
+            for k, v in row.drop(labels=out.geometry.name).items()
+        }
         props = {k: (v.item() if hasattr(v, "item") else v) for k, v in props.items()}
         mid = f"da:{job.key}:{int(fid)}"
         feats.append(

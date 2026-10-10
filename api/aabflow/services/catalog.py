@@ -16,7 +16,13 @@ import json
 from pathlib import Path
 from typing import Any
 
-from aabflow.domain.schemas import CropProfile, Season, SupplyProfile, UncertaintySet, WeatherScenario
+from aabflow.domain.schemas import (
+    CropProfile,
+    Season,
+    SupplyProfile,
+    UncertaintySet,
+    WeatherScenario,
+)
 
 
 def _load(path: Path) -> Any:
@@ -130,3 +136,17 @@ class Catalog:
             "generator_version": lib.get("generator_version"),
             "created_at": lib.get("created_at"),
         }
+
+    # ------------------------------------------------------------------- prices
+    def prices(self) -> list[dict[str, Any]]:
+        """Dated crop price records ``[{crop, season_id?, price_pkr_per_kg, evidence_id, observed_on, basis}]``."""
+        return self._cached("prices.json", lambda raw: [r for r in raw or [] if isinstance(r, dict)])
+
+    def price(self, crop: str | None, season_id: str) -> dict[str, Any] | None:
+        rows = [
+            r for r in self.prices()
+            if r.get("crop") == crop and r.get("season_id") in (None, season_id)
+            and r.get("price_pkr_per_kg") and r.get("evidence_id")
+        ]
+        rows.sort(key=lambda r: (r.get("season_id") is None, str(r.get("observed_on", ""))))
+        return rows[0] if rows else None

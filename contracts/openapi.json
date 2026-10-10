@@ -1,0 +1,3612 @@
+{
+  "components": {
+    "schemas": {
+      "ActionCategory": {
+        "description": "Five action categories (PRD \u00a76.2).",
+        "enum": [
+          "timing",
+          "leveling",
+          "pond",
+          "shared_repair",
+          "pump_supplement"
+        ],
+        "title": "ActionCategory",
+        "type": "string"
+      },
+      "Asset": {
+        "additionalProperties": false,
+        "properties": {
+          "annual_upkeep_pkr": {
+            "default": 0,
+            "description": "Integer Pakistani rupees",
+            "minimum": 0.0,
+            "title": "Annual Upkeep Pkr",
+            "type": "integer"
+          },
+          "asset_id": {
+            "title": "Asset Id",
+            "type": "string"
+          },
+          "commissioned_at": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Commissioned At"
+          },
+          "cost_per_m3_pkr": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cost Per M3 Pkr"
+          },
+          "efficiency": {
+            "anyOf": [
+              {
+                "maximum": 1.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Efficiency"
+          },
+          "evidence_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Evidence Ids",
+            "type": "array"
+          },
+          "existing": {
+            "title": "Existing",
+            "type": "boolean"
+          },
+          "field_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Field Ids",
+            "type": "array"
+          },
+          "footprint_m2": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Footprint M2"
+          },
+          "head_m": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Head M"
+          },
+          "initial_inventory_m3": {
+            "default": 0.0,
+            "minimum": 0.0,
+            "title": "Initial Inventory M3",
+            "type": "number"
+          },
+          "k_evap": {
+            "default": 1.0,
+            "minimum": 0.0,
+            "title": "K Evap",
+            "type": "number"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/AssetKind"
+          },
+          "max_fill_m3_day": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Fill M3 Day"
+          },
+          "max_rate_m3_h": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Rate M3 H"
+          },
+          "max_release_m3_day": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Release M3 Day"
+          },
+          "node_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Node Id"
+          },
+          "quality_status": {
+            "default": "unknown",
+            "enum": [
+              "unknown",
+              "acceptable",
+              "marginal",
+              "poor"
+            ],
+            "title": "Quality Status",
+            "type": "string"
+          },
+          "rain_capture_fraction": {
+            "default": 1.0,
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Rain Capture Fraction",
+            "type": "number"
+          },
+          "seasonal_cap_m3": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seasonal Cap M3"
+          },
+          "seepage_m3_day": {
+            "default": 0.0,
+            "minimum": 0.0,
+            "title": "Seepage M3 Day",
+            "type": "number"
+          },
+          "surface_area_m2": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Surface Area M2"
+          },
+          "usable_capacity_m3": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Usable Capacity M3"
+          }
+        },
+        "required": [
+          "asset_id",
+          "kind",
+          "existing",
+          "field_ids"
+        ],
+        "title": "Asset",
+        "type": "object"
+      },
+      "AssetKind": {
+        "enum": [
+          "pond",
+          "pump"
+        ],
+        "title": "AssetKind",
+        "type": "string"
+      },
+      "AssumptionRange": {
+        "additionalProperties": false,
+        "properties": {
+          "high": {
+            "title": "High",
+            "type": "number"
+          },
+          "low": {
+            "title": "Low",
+            "type": "number"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string"
+          }
+        },
+        "required": [
+          "low",
+          "high",
+          "unit"
+        ],
+        "title": "AssumptionRange",
+        "type": "object"
+      },
+      "Capabilities": {
+        "additionalProperties": false,
+        "properties": {
+          "chat": {
+            "additionalProperties": true,
+            "title": "Chat",
+            "type": "object"
+          },
+          "exact_science": {
+            "title": "Exact Science",
+            "type": "boolean"
+          },
+          "features": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/FeatureStatus"
+            },
+            "title": "Features",
+            "type": "object"
+          },
+          "pilots": {
+            "items": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "title": "Pilots",
+            "type": "array"
+          },
+          "surrogate_gate": {
+            "title": "Surrogate Gate",
+            "type": "string"
+          }
+        },
+        "required": [
+          "pilots",
+          "exact_science",
+          "surrogate_gate",
+          "chat",
+          "features"
+        ],
+        "title": "Capabilities",
+        "type": "object"
+      },
+      "CapacityInterval": {
+        "additionalProperties": false,
+        "properties": {
+          "end": {
+            "format": "date-time",
+            "title": "End",
+            "type": "string"
+          },
+          "max_rate_m3_s": {
+            "minimum": 0.0,
+            "title": "Max Rate M3 S",
+            "type": "number"
+          },
+          "start": {
+            "format": "date-time",
+            "title": "Start",
+            "type": "string"
+          }
+        },
+        "required": [
+          "start",
+          "end",
+          "max_rate_m3_s"
+        ],
+        "title": "CapacityInterval",
+        "type": "object"
+      },
+      "Crop": {
+        "enum": [
+          "wheat",
+          "cotton"
+        ],
+        "title": "Crop",
+        "type": "string"
+      },
+      "Edge": {
+        "additionalProperties": false,
+        "properties": {
+          "capacities": {
+            "items": {
+              "$ref": "#/components/schemas/CapacityInterval"
+            },
+            "title": "Capacities",
+            "type": "array"
+          },
+          "closures": {
+            "items": {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "format": "date-time",
+                  "type": "string"
+                }
+              ],
+              "type": "array"
+            },
+            "title": "Closures",
+            "type": "array"
+          },
+          "delivery_factor": {
+            "exclusiveMinimum": 0.0,
+            "maximum": 1.0,
+            "title": "Delivery Factor",
+            "type": "number"
+          },
+          "downstream_node_id": {
+            "title": "Downstream Node Id",
+            "type": "string"
+          },
+          "edge_id": {
+            "title": "Edge Id",
+            "type": "string"
+          },
+          "evidence_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Evidence Ids",
+            "type": "array"
+          },
+          "geometry_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Geometry Ref"
+          },
+          "reach_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reach Label"
+          },
+          "source_feature_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Feature Ids",
+            "type": "array"
+          },
+          "upstream_node_id": {
+            "title": "Upstream Node Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "edge_id",
+          "upstream_node_id",
+          "downstream_node_id",
+          "geometry_ref",
+          "delivery_factor"
+        ],
+        "title": "Edge",
+        "type": "object"
+      },
+      "EvidenceDetail": {
+        "additionalProperties": false,
+        "properties": {
+          "document": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Document"
+          },
+          "pilot_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Pilot Ids",
+            "type": "array"
+          },
+          "record": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EvidenceRecord"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "EvidenceDetail",
+        "type": "object"
+      },
+      "EvidenceHit": {
+        "additionalProperties": false,
+        "properties": {
+          "doc_id": {
+            "title": "Doc Id",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "pilot_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pilot Id"
+          },
+          "score": {
+            "title": "Score",
+            "type": "number"
+          },
+          "snippet": {
+            "title": "Snippet",
+            "type": "string"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "doc_id",
+          "kind",
+          "pilot_id",
+          "title",
+          "snippet",
+          "source_url",
+          "score"
+        ],
+        "title": "EvidenceHit",
+        "type": "object"
+      },
+      "EvidenceKind": {
+        "enum": [
+          "observed_remote_sensing",
+          "public_geography",
+          "gridded_reanalysis",
+          "literature",
+          "user_supplied",
+          "assumption",
+          "model_output",
+          "derived"
+        ],
+        "title": "EvidenceKind",
+        "type": "string"
+      },
+      "EvidenceRecord": {
+        "additionalProperties": false,
+        "properties": {
+          "allowed_use": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Allowed Use"
+          },
+          "assumption_range": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AssumptionRange"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "evidence_id": {
+            "title": "Evidence Id",
+            "type": "string"
+          },
+          "geographic_scope": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Geographic Scope"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/EvidenceKind"
+          },
+          "license_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "License Id"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Limitations",
+            "type": "array"
+          },
+          "method_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Method Version"
+          },
+          "parent_evidence_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Parent Evidence Ids",
+            "type": "array"
+          },
+          "raw_sha256": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Raw Sha256"
+          },
+          "retrieved_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retrieved At"
+          },
+          "reviewed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewed At"
+          },
+          "reviewer": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewer"
+          },
+          "source_asset_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Asset Id"
+          },
+          "source_period": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Period"
+          },
+          "source_title": {
+            "title": "Source Title",
+            "type": "string"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "transformation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Transformation"
+          },
+          "units": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Units"
+          },
+          "verification_state": {
+            "$ref": "#/components/schemas/VerificationState",
+            "default": "unchecked"
+          }
+        },
+        "required": [
+          "evidence_id",
+          "source_title",
+          "kind"
+        ],
+        "title": "EvidenceRecord",
+        "type": "object"
+      },
+      "EvidenceSearch": {
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "title": "Query",
+            "type": "string"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/EvidenceHit"
+            },
+            "title": "Results",
+            "type": "array"
+          }
+        },
+        "required": [
+          "query",
+          "results"
+        ],
+        "title": "EvidenceSearch",
+        "type": "object"
+      },
+      "FeatureStatus": {
+        "additionalProperties": false,
+        "properties": {
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "status": {
+            "enum": [
+              "available",
+              "not_available",
+              "partial",
+              "blocked"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "FeatureStatus",
+        "type": "object"
+      },
+      "FieldDetail": {
+        "additionalProperties": false,
+        "properties": {
+          "assets": {
+            "items": {
+              "$ref": "#/components/schemas/Asset"
+            },
+            "title": "Assets",
+            "type": "array"
+          },
+          "evidence_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Evidence Ids",
+            "type": "array"
+          },
+          "field": {
+            "$ref": "#/components/schemas/Field_"
+          },
+          "geometry": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Geometry"
+          },
+          "interventions": {
+            "items": {
+              "$ref": "#/components/schemas/InterventionInstance"
+            },
+            "title": "Interventions",
+            "type": "array"
+          },
+          "pilot_id": {
+            "title": "Pilot Id",
+            "type": "string"
+          },
+          "pilot_version": {
+            "title": "Pilot Version",
+            "type": "string"
+          },
+          "roster_windows": {
+            "additionalProperties": {
+              "items": {
+                "$ref": "#/components/schemas/RosterWindow"
+              },
+              "type": "array"
+            },
+            "title": "Roster Windows",
+            "type": "object"
+          },
+          "route_edge_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Route Edge Ids",
+            "type": "array"
+          },
+          "service_references": {
+            "items": {
+              "$ref": "#/components/schemas/ServiceReference"
+            },
+            "title": "Service References",
+            "type": "array"
+          },
+          "soil": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SoilProfile"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "pilot_id",
+          "pilot_version",
+          "field",
+          "geometry",
+          "soil",
+          "assets",
+          "roster_windows",
+          "service_references",
+          "route_edge_ids",
+          "interventions",
+          "evidence_ids"
+        ],
+        "title": "FieldDetail",
+        "type": "object"
+      },
+      "Field_": {
+        "additionalProperties": false,
+        "description": "A reviewed field. Named Field_ to avoid shadowing pydantic.Field; exported as FieldRecord.",
+        "properties": {
+          "evidence_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Evidence Ids",
+            "type": "array"
+          },
+          "existing_application_efficiency": {
+            "default": 0.6,
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Existing Application Efficiency",
+            "type": "number"
+          },
+          "field_id": {
+            "title": "Field Id",
+            "type": "string"
+          },
+          "geometry_ref": {
+            "title": "Geometry Ref",
+            "type": "string"
+          },
+          "geometry_version": {
+            "default": 1,
+            "title": "Geometry Version",
+            "type": "integer"
+          },
+          "gross_area_ha": {
+            "minimum": 0.0,
+            "title": "Gross Area Ha",
+            "type": "number"
+          },
+          "gross_area_m2": {
+            "minimum": 0.0,
+            "title": "Gross Area M2",
+            "type": "number"
+          },
+          "group": {
+            "enum": [
+              "head",
+              "middle",
+              "tail"
+            ],
+            "title": "Group",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "outlet_node_id": {
+            "title": "Outlet Node Id",
+            "type": "string"
+          },
+          "owner_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Owner Ref"
+          },
+          "soil_profile_id": {
+            "title": "Soil Profile Id",
+            "type": "string"
+          },
+          "source_model_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Model Ids",
+            "type": "array"
+          },
+          "supersedes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Supersedes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "field_id",
+          "label",
+          "geometry_ref",
+          "gross_area_m2",
+          "gross_area_ha",
+          "soil_profile_id",
+          "outlet_node_id",
+          "group"
+        ],
+        "title": "Field_",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "Health": {
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "database": {
+            "enum": [
+              "ok",
+              "unavailable"
+            ],
+            "title": "Database",
+            "type": "string"
+          },
+          "dispatcher": {
+            "enum": [
+              "running",
+              "stopped"
+            ],
+            "title": "Dispatcher",
+            "type": "string"
+          },
+          "libraries_ready": {
+            "title": "Libraries Ready",
+            "type": "integer"
+          },
+          "pilots_published": {
+            "title": "Pilots Published",
+            "type": "integer"
+          },
+          "schema_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Schema Version"
+          },
+          "status": {
+            "enum": [
+              "ok",
+              "degraded"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "versions": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "title": "Versions",
+            "type": "object"
+          },
+          "workers": {
+            "title": "Workers",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "status",
+          "contract_version",
+          "schema_version",
+          "database",
+          "pilots_published",
+          "libraries_ready",
+          "workers",
+          "dispatcher",
+          "versions"
+        ],
+        "title": "Health",
+        "type": "object"
+      },
+      "ImageryRef": {
+        "additionalProperties": false,
+        "properties": {
+          "acquired_at": {
+            "format": "date-time",
+            "title": "Acquired At",
+            "type": "string"
+          },
+          "aoi_valid_fraction": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Aoi Valid Fraction",
+            "type": "number"
+          },
+          "collection": {
+            "default": "sentinel-2-l2a",
+            "title": "Collection",
+            "type": "string"
+          },
+          "display_corners_wgs84": {
+            "items": {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            "title": "Display Corners Wgs84",
+            "type": "array"
+          },
+          "display_image_ref": {
+            "title": "Display Image Ref",
+            "type": "string"
+          },
+          "evidence_id": {
+            "title": "Evidence Id",
+            "type": "string"
+          },
+          "resolution_m": {
+            "default": 10.0,
+            "title": "Resolution M",
+            "type": "number"
+          },
+          "scene_id": {
+            "title": "Scene Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "scene_id",
+          "acquired_at",
+          "aoi_valid_fraction",
+          "display_image_ref",
+          "display_corners_wgs84",
+          "evidence_id"
+        ],
+        "title": "ImageryRef",
+        "type": "object"
+      },
+      "InterventionEligibility": {
+        "additionalProperties": false,
+        "properties": {
+          "category": {
+            "$ref": "#/components/schemas/ActionCategory"
+          },
+          "commissioned_on": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Commissioned On"
+          },
+          "eligible": {
+            "title": "Eligible",
+            "type": "boolean"
+          },
+          "in_library": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "In Library"
+          },
+          "instance": {
+            "$ref": "#/components/schemas/InterventionInstance"
+          },
+          "reasons": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Reasons",
+            "type": "array"
+          },
+          "type_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Type Label"
+          }
+        },
+        "required": [
+          "instance",
+          "type_label",
+          "category",
+          "commissioned_on",
+          "eligible",
+          "reasons",
+          "in_library"
+        ],
+        "title": "InterventionEligibility",
+        "type": "object"
+      },
+      "InterventionInstance": {
+        "additionalProperties": false,
+        "description": "E.g. `pilot-a:field-007:pond-small` or `pilot-a:edge-02:repair` (PRD \u00a76.2).",
+        "properties": {
+          "capex_pkr": {
+            "default": 0,
+            "description": "Integer Pakistani rupees",
+            "minimum": 0.0,
+            "title": "Capex Pkr",
+            "type": "integer"
+          },
+          "category": {
+            "$ref": "#/components/schemas/ActionCategory"
+          },
+          "evidence_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Evidence Ids",
+            "type": "array"
+          },
+          "instance_id": {
+            "title": "Instance Id",
+            "type": "string"
+          },
+          "lead_time_days": {
+            "default": 0,
+            "minimum": 0.0,
+            "title": "Lead Time Days",
+            "type": "integer"
+          },
+          "mutually_exclusive_group": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mutually Exclusive Group"
+          },
+          "parameters": {
+            "additionalProperties": true,
+            "title": "Parameters",
+            "type": "object"
+          },
+          "prerequisites": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Prerequisites",
+            "type": "array"
+          },
+          "procurement_delay_days": {
+            "default": 0,
+            "minimum": 0.0,
+            "title": "Procurement Delay Days",
+            "type": "integer"
+          },
+          "seasonal_opex_pkr": {
+            "default": 0,
+            "description": "Integer Pakistani rupees",
+            "minimum": 0.0,
+            "title": "Seasonal Opex Pkr",
+            "type": "integer"
+          },
+          "shared": {
+            "default": false,
+            "title": "Shared",
+            "type": "boolean"
+          },
+          "target_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Target Ids",
+            "type": "array"
+          },
+          "type_id": {
+            "title": "Type Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "instance_id",
+          "type_id",
+          "category",
+          "target_ids"
+        ],
+        "title": "InterventionInstance",
+        "type": "object"
+      },
+      "InterventionList": {
+        "additionalProperties": false,
+        "properties": {
+          "decision_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decision At"
+          },
+          "interventions": {
+            "items": {
+              "$ref": "#/components/schemas/InterventionEligibility"
+            },
+            "title": "Interventions",
+            "type": "array"
+          },
+          "pilot_id": {
+            "title": "Pilot Id",
+            "type": "string"
+          },
+          "pilot_version": {
+            "title": "Pilot Version",
+            "type": "string"
+          },
+          "planting_date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Planting Date"
+          },
+          "season_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Season Id"
+          }
+        },
+        "required": [
+          "pilot_id",
+          "pilot_version",
+          "season_id",
+          "decision_at",
+          "planting_date",
+          "interventions"
+        ],
+        "title": "InterventionList",
+        "type": "object"
+      },
+      "Legend": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/LegendItem"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "legend_id": {
+            "title": "Legend Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "legend_id",
+          "label",
+          "items"
+        ],
+        "title": "Legend",
+        "type": "object"
+      },
+      "LegendItem": {
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "style": {
+            "title": "Style",
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "label",
+          "style"
+        ],
+        "title": "LegendItem",
+        "type": "object"
+      },
+      "ManifestFile": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "path": {
+            "title": "Path",
+            "type": "string"
+          },
+          "sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Sha256",
+            "type": "string"
+          },
+          "size_bytes": {
+            "minimum": 0.0,
+            "title": "Size Bytes",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "path",
+          "size_bytes",
+          "sha256",
+          "kind"
+        ],
+        "title": "ManifestFile",
+        "type": "object"
+      },
+      "MapImagery": {
+        "additionalProperties": false,
+        "properties": {
+          "acquired_at": {
+            "format": "date-time",
+            "title": "Acquired At",
+            "type": "string"
+          },
+          "aoi_valid_fraction": {
+            "title": "Aoi Valid Fraction",
+            "type": "number"
+          },
+          "corners": {
+            "items": {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            "title": "Corners",
+            "type": "array"
+          },
+          "evidence_id": {
+            "title": "Evidence Id",
+            "type": "string"
+          },
+          "ndvi_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ndvi Url"
+          },
+          "resolution_m": {
+            "title": "Resolution M",
+            "type": "number"
+          },
+          "scene_id": {
+            "title": "Scene Id",
+            "type": "string"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "scene_id",
+          "acquired_at",
+          "url",
+          "corners",
+          "evidence_id",
+          "resolution_m",
+          "aoi_valid_fraction"
+        ],
+        "title": "MapImagery",
+        "type": "object"
+      },
+      "MapTerrain": {
+        "additionalProperties": false,
+        "properties": {
+          "bounds": {
+            "maxItems": 4,
+            "minItems": 4,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "title": "Bounds",
+            "type": "array"
+          },
+          "encoding": {
+            "title": "Encoding",
+            "type": "string"
+          },
+          "evidence_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence Id"
+          },
+          "height": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Height"
+          },
+          "max_m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max M"
+          },
+          "min_m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min M"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          },
+          "width": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Width"
+          }
+        },
+        "required": [
+          "url",
+          "bounds",
+          "encoding"
+        ],
+        "title": "MapTerrain",
+        "type": "object"
+      },
+      "Node": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/NodeKind"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "lat": {
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "title": "Lon",
+            "type": "number"
+          },
+          "node_id": {
+            "title": "Node Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "node_id",
+          "kind",
+          "lon",
+          "lat"
+        ],
+        "title": "Node",
+        "type": "object"
+      },
+      "NodeKind": {
+        "enum": [
+          "source",
+          "junction",
+          "outlet",
+          "pump"
+        ],
+        "title": "NodeKind",
+        "type": "string"
+      },
+      "PackageState": {
+        "enum": [
+          "acquired_raw",
+          "processed",
+          "needs_review",
+          "reviewed",
+          "validated",
+          "published"
+        ],
+        "title": "PackageState",
+        "type": "string"
+      },
+      "PilotList": {
+        "additionalProperties": false,
+        "properties": {
+          "pilots": {
+            "items": {
+              "$ref": "#/components/schemas/PilotSummary"
+            },
+            "title": "Pilots",
+            "type": "array"
+          }
+        },
+        "required": [
+          "pilots"
+        ],
+        "title": "PilotList",
+        "type": "object"
+      },
+      "PilotManifest": {
+        "additionalProperties": false,
+        "properties": {
+          "files": {
+            "items": {
+              "$ref": "#/components/schemas/ManifestFile"
+            },
+            "title": "Files",
+            "type": "array"
+          },
+          "generated_at": {
+            "format": "date-time",
+            "title": "Generated At",
+            "type": "string"
+          },
+          "licenses": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Licenses",
+            "type": "array"
+          },
+          "manifest_version": {
+            "const": "1",
+            "default": "1",
+            "title": "Manifest Version",
+            "type": "string"
+          },
+          "pilot_id": {
+            "title": "Pilot Id",
+            "type": "string"
+          },
+          "pilot_version": {
+            "title": "Pilot Version",
+            "type": "string"
+          },
+          "processing_versions": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Processing Versions",
+            "type": "object"
+          },
+          "source_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Ids",
+            "type": "array"
+          },
+          "state": {
+            "$ref": "#/components/schemas/PackageState"
+          }
+        },
+        "required": [
+          "pilot_id",
+          "pilot_version",
+          "state",
+          "files",
+          "source_ids",
+          "licenses",
+          "processing_versions",
+          "generated_at"
+        ],
+        "title": "PilotManifest",
+        "type": "object"
+      },
+      "PilotMap": {
+        "additionalProperties": false,
+        "properties": {
+          "aoi_bbox": {
+            "maxItems": 4,
+            "minItems": 4,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "title": "Aoi Bbox",
+            "type": "array"
+          },
+          "aoi_url": {
+            "title": "Aoi Url",
+            "type": "string"
+          },
+          "assets": {
+            "items": {
+              "$ref": "#/components/schemas/Asset"
+            },
+            "title": "Assets",
+            "type": "array"
+          },
+          "canals_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Canals Url"
+          },
+          "field_groups": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Field Groups",
+            "type": "object"
+          },
+          "fields_raw_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fields Raw Url"
+          },
+          "fields_url": {
+            "title": "Fields Url",
+            "type": "string"
+          },
+          "imagery": {
+            "items": {
+              "$ref": "#/components/schemas/MapImagery"
+            },
+            "title": "Imagery",
+            "type": "array"
+          },
+          "legends": {
+            "items": {
+              "$ref": "#/components/schemas/Legend"
+            },
+            "title": "Legends",
+            "type": "array"
+          },
+          "network": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/Node"
+                  },
+                  "type": "array"
+                },
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/Edge"
+                  },
+                  "type": "array"
+                }
+              ]
+            },
+            "title": "Network",
+            "type": "object"
+          },
+          "pilot_id": {
+            "title": "Pilot Id",
+            "type": "string"
+          },
+          "pilot_version": {
+            "title": "Pilot Version",
+            "type": "string"
+          },
+          "terrain": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MapTerrain"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "pilot_id",
+          "pilot_version",
+          "aoi_bbox",
+          "aoi_url",
+          "fields_url",
+          "canals_url",
+          "fields_raw_url",
+          "imagery",
+          "terrain",
+          "network",
+          "assets",
+          "field_groups",
+          "legends"
+        ],
+        "title": "PilotMap",
+        "type": "object"
+      },
+      "PilotSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "aoi_area_m2": {
+            "title": "Aoi Area M2",
+            "type": "number"
+          },
+          "aoi_bbox": {
+            "maxItems": 4,
+            "minItems": 4,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "title": "Aoi Bbox",
+            "type": "array"
+          },
+          "field_count": {
+            "title": "Field Count",
+            "type": "integer"
+          },
+          "imagery": {
+            "items": {
+              "$ref": "#/components/schemas/ImageryRef"
+            },
+            "title": "Imagery",
+            "type": "array"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "pilot_id": {
+            "title": "Pilot Id",
+            "type": "string"
+          },
+          "pilot_version": {
+            "title": "Pilot Version",
+            "type": "string"
+          },
+          "review_flags": {
+            "$ref": "#/components/schemas/ReviewFlags"
+          },
+          "state": {
+            "$ref": "#/components/schemas/PackageState"
+          },
+          "versions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Versions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "pilot_id",
+          "pilot_version",
+          "name",
+          "state",
+          "review_flags",
+          "aoi_bbox",
+          "aoi_area_m2",
+          "imagery",
+          "versions",
+          "field_count"
+        ],
+        "title": "PilotSummary",
+        "type": "object"
+      },
+      "PilotVersionDetail": {
+        "additionalProperties": false,
+        "properties": {
+          "aoi_area_m2": {
+            "title": "Aoi Area M2",
+            "type": "number"
+          },
+          "aoi_bbox": {
+            "maxItems": 4,
+            "minItems": 4,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "title": "Aoi Bbox",
+            "type": "array"
+          },
+          "counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Counts",
+            "type": "object"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "geographic_name_basis": {
+            "title": "Geographic Name Basis",
+            "type": "string"
+          },
+          "imagery": {
+            "items": {
+              "$ref": "#/components/schemas/ImageryRef"
+            },
+            "title": "Imagery",
+            "type": "array"
+          },
+          "manifest": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PilotManifest"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "metric_crs": {
+            "title": "Metric Crs",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "package_sha256": {
+            "title": "Package Sha256",
+            "type": "string"
+          },
+          "pilot_id": {
+            "title": "Pilot Id",
+            "type": "string"
+          },
+          "pilot_version": {
+            "title": "Pilot Version",
+            "type": "string"
+          },
+          "resource_status": {
+            "title": "Resource Status"
+          },
+          "review_flags": {
+            "$ref": "#/components/schemas/ReviewFlags"
+          },
+          "seasons": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Seasons",
+            "type": "array"
+          },
+          "source_refs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Refs",
+            "type": "array"
+          },
+          "state": {
+            "$ref": "#/components/schemas/PackageState"
+          },
+          "timezone": {
+            "title": "Timezone",
+            "type": "string"
+          }
+        },
+        "required": [
+          "pilot_id",
+          "pilot_version",
+          "name",
+          "geographic_name_basis",
+          "state",
+          "review_flags",
+          "metric_crs",
+          "timezone",
+          "aoi_bbox",
+          "aoi_area_m2",
+          "created_at",
+          "package_sha256",
+          "source_refs",
+          "imagery",
+          "manifest",
+          "counts",
+          "seasons"
+        ],
+        "title": "PilotVersionDetail",
+        "type": "object"
+      },
+      "ReviewFlags": {
+        "additionalProperties": false,
+        "description": "Independent flags; never collapse into one 'verified' badge (PRD \u00a72.3).",
+        "properties": {
+          "cost_evidence": {
+            "default": "assumed",
+            "enum": [
+              "assumed",
+              "referenced",
+              "quoted"
+            ],
+            "title": "Cost Evidence",
+            "type": "string"
+          },
+          "crop_calibration": {
+            "default": "uncalibrated",
+            "enum": [
+              "uncalibrated",
+              "plausibility_checked",
+              "calibrated"
+            ],
+            "title": "Crop Calibration",
+            "type": "string"
+          },
+          "geography_reviewed": {
+            "default": false,
+            "title": "Geography Reviewed",
+            "type": "boolean"
+          },
+          "rights_verification": {
+            "default": "assumed",
+            "enum": [
+              "assumed",
+              "configured",
+              "verified"
+            ],
+            "title": "Rights Verification",
+            "type": "string"
+          },
+          "topology_structurally_valid": {
+            "default": false,
+            "title": "Topology Structurally Valid",
+            "type": "boolean"
+          }
+        },
+        "title": "ReviewFlags",
+        "type": "object"
+      },
+      "RightsBasis": {
+        "enum": [
+          "time",
+          "volume"
+        ],
+        "title": "RightsBasis",
+        "type": "string"
+      },
+      "RosterWindow": {
+        "additionalProperties": false,
+        "properties": {
+          "accounting_boundary": {
+            "default": "outlet",
+            "enum": [
+              "outlet",
+              "field_inlet"
+            ],
+            "title": "Accounting Boundary",
+            "type": "string"
+          },
+          "basis": {
+            "$ref": "#/components/schemas/RightsBasis",
+            "default": "time"
+          },
+          "end": {
+            "format": "date-time",
+            "title": "End",
+            "type": "string"
+          },
+          "field_id": {
+            "title": "Field Id",
+            "type": "string"
+          },
+          "outlet_node_id": {
+            "title": "Outlet Node Id",
+            "type": "string"
+          },
+          "rate_m3_s": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rate M3 S"
+          },
+          "source_rule": {
+            "title": "Source Rule",
+            "type": "string"
+          },
+          "start": {
+            "format": "date-time",
+            "title": "Start",
+            "type": "string"
+          },
+          "verification": {
+            "default": "assumed",
+            "enum": [
+              "assumed",
+              "configured",
+              "verified"
+            ],
+            "title": "Verification",
+            "type": "string"
+          },
+          "volume_cap_m3": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Volume Cap M3"
+          },
+          "window_id": {
+            "title": "Window Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "window_id",
+          "field_id",
+          "outlet_node_id",
+          "start",
+          "end",
+          "source_rule"
+        ],
+        "title": "RosterWindow",
+        "type": "object"
+      },
+      "Season": {
+        "additionalProperties": false,
+        "properties": {
+          "crop": {
+            "$ref": "#/components/schemas/Crop"
+          },
+          "crop_profile_id": {
+            "title": "Crop Profile Id",
+            "type": "string"
+          },
+          "decision_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decision At"
+          },
+          "end": {
+            "format": "date",
+            "title": "End",
+            "type": "string"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Notes",
+            "type": "array"
+          },
+          "planning_modes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Planning Modes",
+            "type": "array"
+          },
+          "planting_date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Planting Date"
+          },
+          "season_id": {
+            "title": "Season Id",
+            "type": "string"
+          },
+          "sim_end": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sim End"
+          },
+          "sim_start": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sim Start"
+          },
+          "start": {
+            "format": "date",
+            "title": "Start",
+            "type": "string"
+          },
+          "weather_basis": {
+            "anyOf": [
+              {
+                "enum": [
+                  "analog",
+                  "actual"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weather Basis"
+          }
+        },
+        "required": [
+          "season_id",
+          "crop",
+          "crop_profile_id",
+          "start",
+          "end",
+          "planning_modes"
+        ],
+        "title": "Season",
+        "type": "object"
+      },
+      "SeasonEntry": {
+        "additionalProperties": false,
+        "properties": {
+          "library": {
+            "additionalProperties": true,
+            "title": "Library",
+            "type": "object"
+          },
+          "roster_configured": {
+            "title": "Roster Configured",
+            "type": "boolean"
+          },
+          "season": {
+            "$ref": "#/components/schemas/Season"
+          }
+        },
+        "required": [
+          "season",
+          "library",
+          "roster_configured"
+        ],
+        "title": "SeasonEntry",
+        "type": "object"
+      },
+      "SeasonList": {
+        "additionalProperties": false,
+        "properties": {
+          "seasons": {
+            "items": {
+              "$ref": "#/components/schemas/SeasonEntry"
+            },
+            "title": "Seasons",
+            "type": "array"
+          }
+        },
+        "required": [
+          "seasons"
+        ],
+        "title": "SeasonList",
+        "type": "object"
+      },
+      "ServiceReference": {
+        "additionalProperties": false,
+        "properties": {
+          "basis": {
+            "$ref": "#/components/schemas/RightsBasis"
+          },
+          "evidence_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Evidence Ids",
+            "type": "array"
+          },
+          "field_id": {
+            "title": "Field Id",
+            "type": "string"
+          },
+          "reference_receipt_m3": {
+            "minimum": 0.0,
+            "title": "Reference Receipt M3",
+            "type": "number"
+          },
+          "season_id": {
+            "title": "Season Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "field_id",
+          "season_id",
+          "reference_receipt_m3",
+          "basis"
+        ],
+        "title": "ServiceReference",
+        "type": "object"
+      },
+      "SoilProfile": {
+        "additionalProperties": false,
+        "properties": {
+          "archetype": {
+            "title": "Archetype",
+            "type": "string"
+          },
+          "engine_soil_type": {
+            "title": "Engine Soil Type",
+            "type": "string"
+          },
+          "evidence_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Evidence Ids",
+            "type": "array"
+          },
+          "initial_water": {
+            "anyOf": [
+              {
+                "enum": [
+                  "FC",
+                  "WP",
+                  "SAT"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "default": "FC",
+            "title": "Initial Water"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Limitations",
+            "type": "array"
+          },
+          "soil_profile_id": {
+            "title": "Soil Profile Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "soil_profile_id",
+          "engine_soil_type",
+          "archetype"
+        ],
+        "title": "SoilProfile",
+        "type": "object"
+      },
+      "SupplyProfile": {
+        "additionalProperties": false,
+        "properties": {
+          "base_profile_hash": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Base Profile Hash",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "pre_reduced": {
+            "default": false,
+            "title": "Pre Reduced",
+            "type": "boolean"
+          },
+          "resolved_hash": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Resolved Hash",
+            "type": "string"
+          },
+          "supply_profile_id": {
+            "title": "Supply Profile Id",
+            "type": "string"
+          },
+          "transformations": {
+            "items": {
+              "$ref": "#/components/schemas/SupplyTransformation"
+            },
+            "title": "Transformations",
+            "type": "array"
+          }
+        },
+        "required": [
+          "supply_profile_id",
+          "base_profile_hash",
+          "label",
+          "resolved_hash"
+        ],
+        "title": "SupplyProfile",
+        "type": "object"
+      },
+      "SupplyTransformation": {
+        "additionalProperties": false,
+        "properties": {
+          "edge_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Edge Ids",
+            "type": "array"
+          },
+          "end": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End"
+          },
+          "kind": {
+            "enum": [
+              "absolute_multiplier",
+              "relative_multiplier",
+              "closure"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "multiplier": {
+            "anyOf": [
+              {
+                "maximum": 1.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Multiplier"
+          },
+          "start": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start"
+          },
+          "transformation_id": {
+            "title": "Transformation Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "transformation_id",
+          "kind"
+        ],
+        "title": "SupplyTransformation",
+        "type": "object"
+      },
+      "UncertaintySet": {
+        "additionalProperties": false,
+        "properties": {
+          "pilot_id": {
+            "title": "Pilot Id",
+            "type": "string"
+          },
+          "season_id": {
+            "title": "Season Id",
+            "type": "string"
+          },
+          "states": {
+            "items": {
+              "$ref": "#/components/schemas/UncertaintyState"
+            },
+            "title": "States",
+            "type": "array"
+          },
+          "uncertainty_set_id": {
+            "title": "Uncertainty Set Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "uncertainty_set_id",
+          "pilot_id",
+          "season_id",
+          "states"
+        ],
+        "title": "UncertaintySet",
+        "type": "object"
+      },
+      "UncertaintySetList": {
+        "additionalProperties": false,
+        "properties": {
+          "supply_profiles": {
+            "items": {
+              "$ref": "#/components/schemas/SupplyProfile"
+            },
+            "title": "Supply Profiles",
+            "type": "array"
+          },
+          "uncertainty_sets": {
+            "items": {
+              "$ref": "#/components/schemas/UncertaintySet"
+            },
+            "title": "Uncertainty Sets",
+            "type": "array"
+          }
+        },
+        "required": [
+          "uncertainty_sets",
+          "supply_profiles"
+        ],
+        "title": "UncertaintySetList",
+        "type": "object"
+      },
+      "UncertaintyState": {
+        "additionalProperties": false,
+        "properties": {
+          "resolved_supply_profile_hash": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Resolved Supply Profile Hash",
+            "type": "string"
+          },
+          "state_id": {
+            "title": "State Id",
+            "type": "string"
+          },
+          "supply_profile_id": {
+            "title": "Supply Profile Id",
+            "type": "string"
+          },
+          "weather_scenario_id": {
+            "title": "Weather Scenario Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "state_id",
+          "weather_scenario_id",
+          "supply_profile_id",
+          "resolved_supply_profile_hash"
+        ],
+        "title": "UncertaintyState",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      },
+      "VerificationState": {
+        "enum": [
+          "unchecked",
+          "source_checked",
+          "artifact_checked",
+          "locally_reviewed"
+        ],
+        "title": "VerificationState",
+        "type": "string"
+      },
+      "WeatherScenario": {
+        "additionalProperties": false,
+        "description": "A named weather state for a season, mapped from an analog historical year.",
+        "properties": {
+          "analog_season_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Analog Season Label"
+          },
+          "analog_season_start": {
+            "format": "date",
+            "title": "Analog Season Start",
+            "type": "string"
+          },
+          "date_mapping_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date Mapping Ref"
+          },
+          "grid_cell": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grid Cell"
+          },
+          "is_typical": {
+            "default": false,
+            "title": "Is Typical",
+            "type": "boolean"
+          },
+          "kind": {
+            "default": "analog",
+            "enum": [
+              "analog",
+              "actual"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "leap_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Leap Note"
+          },
+          "leap_rule": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Leap Rule"
+          },
+          "offset_days": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Offset Days"
+          },
+          "original_end": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Original End"
+          },
+          "original_start": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Original Start"
+          },
+          "scenario_end": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scenario End"
+          },
+          "scenario_start": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scenario Start"
+          },
+          "season_id": {
+            "title": "Season Id",
+            "type": "string"
+          },
+          "selection_basis": {
+            "title": "Selection Basis",
+            "type": "string"
+          },
+          "source_sha256": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Sha256"
+          },
+          "statistics": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Statistics",
+            "type": "object"
+          },
+          "transformed_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Transformed Sha256",
+            "type": "string"
+          },
+          "weather_scenario_id": {
+            "title": "Weather Scenario Id",
+            "type": "string"
+          },
+          "weather_series_id": {
+            "title": "Weather Series Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "weather_scenario_id",
+          "season_id",
+          "label",
+          "analog_season_start",
+          "weather_series_id",
+          "transformed_sha256",
+          "selection_basis"
+        ],
+        "title": "WeatherScenario",
+        "type": "object"
+      },
+      "WeatherScenarioList": {
+        "additionalProperties": false,
+        "properties": {
+          "weather_scenarios": {
+            "items": {
+              "$ref": "#/components/schemas/WeatherScenario"
+            },
+            "title": "Weather Scenarios",
+            "type": "array"
+          }
+        },
+        "required": [
+          "weather_scenarios"
+        ],
+        "title": "WeatherScenarioList",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "title": "AabFlow",
+    "version": "2.0.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v2/capabilities": {
+      "get": {
+        "operationId": "capabilities_api_v2_capabilities_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Capabilities"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Capabilities"
+      }
+    },
+    "/api/v2/evidence/search": {
+      "get": {
+        "operationId": "evidence_search_api_v2_evidence_search_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "required": true,
+            "schema": {
+              "maxLength": 200,
+              "minLength": 1,
+              "title": "Q",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pilot_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Pilot Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "kind",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Kind"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 10,
+              "maximum": 25,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvidenceSearch"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Evidence Search"
+      }
+    },
+    "/api/v2/evidence/{evidence_id}": {
+      "get": {
+        "operationId": "evidence_detail_api_v2_evidence__evidence_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "evidence_id",
+            "required": true,
+            "schema": {
+              "title": "Evidence Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvidenceDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Evidence Detail"
+      }
+    },
+    "/api/v2/fields/{field_id}": {
+      "get": {
+        "operationId": "field_detail_api_v2_fields__field_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "field_id",
+            "required": true,
+            "schema": {
+              "title": "Field Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pilot_version",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Pilot Version"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pilot_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Pilot Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FieldDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Field Detail"
+      }
+    },
+    "/api/v2/health": {
+      "get": {
+        "operationId": "health_api_v2_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health"
+      }
+    },
+    "/api/v2/interventions": {
+      "get": {
+        "operationId": "interventions_api_v2_interventions_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "pilot_id",
+            "required": true,
+            "schema": {
+              "title": "Pilot Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "season_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Season Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pilot_version",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Pilot Version"
+            }
+          },
+          {
+            "in": "query",
+            "name": "decision_at",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Decision At"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InterventionList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Interventions"
+      }
+    },
+    "/api/v2/pilots": {
+      "get": {
+        "operationId": "list_pilots_api_v2_pilots_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PilotList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Pilots"
+      }
+    },
+    "/api/v2/pilots/{pilot_id}/versions/{version}": {
+      "get": {
+        "operationId": "pilot_version_api_v2_pilots__pilot_id__versions__version__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "pilot_id",
+            "required": true,
+            "schema": {
+              "title": "Pilot Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "version",
+            "required": true,
+            "schema": {
+              "title": "Version",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PilotVersionDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Pilot Version"
+      }
+    },
+    "/api/v2/pilots/{pilot_id}/versions/{version}/map": {
+      "get": {
+        "operationId": "pilot_map_api_v2_pilots__pilot_id__versions__version__map_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "pilot_id",
+            "required": true,
+            "schema": {
+              "title": "Pilot Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "version",
+            "required": true,
+            "schema": {
+              "title": "Version",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PilotMap"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Pilot Map"
+      }
+    },
+    "/api/v2/seasons": {
+      "get": {
+        "operationId": "seasons_api_v2_seasons_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "pilot_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Pilot Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pilot_version",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Pilot Version"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeasonList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Seasons"
+      }
+    },
+    "/api/v2/uncertainty-sets": {
+      "get": {
+        "operationId": "uncertainty_sets_api_v2_uncertainty_sets_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "pilot_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Pilot Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "season_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Season Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UncertaintySetList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Uncertainty Sets"
+      }
+    },
+    "/api/v2/weather-scenarios": {
+      "get": {
+        "operationId": "weather_scenarios_api_v2_weather_scenarios_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "pilot_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Pilot Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "season_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Season Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeatherScenarioList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Weather Scenarios"
+      }
+    }
+  }
+}

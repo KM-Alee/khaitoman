@@ -12,7 +12,9 @@ A = "pond-x"
 
 
 def ev(eid, ts, kind, v, order=0):
-    return LedgerEvent(event_id=eid, timestamp=ts, explicit_order=order, kind=kind, volume_m3=v, asset_id=A)
+    return LedgerEvent(
+        event_id=eid, timestamp=ts, explicit_order=order, kind=kind, volume_m3=v, asset_id=A
+    )
 
 
 T0 = datetime(2027, 1, 1, 6, tzinfo=UTC)
@@ -20,8 +22,11 @@ T0 = datetime(2027, 1, 1, 6, tzinfo=UTC)
 
 def test_two_period_trace_fixture():
     """T4.4: start 0, fill 120, irrigate 100, loss 5, end 15; next: release 10, loss 1, end 4."""
-    p1 = [ev("f", T0, K.pond_fill, 120), ev("r", T0 + timedelta(hours=2), K.pond_release, 100),
-          ev("e", T0 + timedelta(hours=20), K.pond_evaporation, 5)]
+    p1 = [
+        ev("f", T0, K.pond_fill, 120),
+        ev("r", T0 + timedelta(hours=2), K.pond_release, 100),
+        ev("e", T0 + timedelta(hours=20), K.pond_evaporation, 5),
+    ]
     tr1 = chronology(p1, capacity_m3=200, initial_m3=0, asset_id=A)
     assert tr1.residuals.ok and tr1.terminal_m3 == pytest.approx(15)
     assert tr1.inventory_after == pytest.approx([120, 20, 15])
@@ -46,14 +51,20 @@ def test_at03_monday_before_friday_rejected():
     bad = tr.residuals.failures[0]
     assert "use-mon" in bad.entity_ids and bad.max_violation == pytest.approx(400)
     # Same volumes in the right order pass: the ledger, not the period total, decides.
-    ok = [ev("fill-fri", friday, K.pond_fill, 500), ev("use-mon", friday + timedelta(days=3), K.pond_release, 400)]
+    ok = [
+        ev("fill-fri", friday, K.pond_fill, 500),
+        ev("use-mon", friday + timedelta(days=3), K.pond_release, 400),
+    ]
     assert chronology(ok, capacity_m3=1000, initial_m3=0, asset_id=A).residuals.ok
 
 
 def test_at03_intra_period_over_capacity_rejected():
     """Period end is within capacity, but an intermediate event overflows."""
-    events = [ev("f1", T0, K.pond_fill, 80), ev("f2", T0 + timedelta(hours=1), K.pond_fill, 50),
-              ev("r", T0 + timedelta(hours=5), K.pond_release, 60)]
+    events = [
+        ev("f1", T0, K.pond_fill, 80),
+        ev("f2", T0 + timedelta(hours=1), K.pond_fill, 50),
+        ev("r", T0 + timedelta(hours=5), K.pond_release, 60),
+    ]
     tr = chronology(events, capacity_m3=100, initial_m3=0, asset_id=A)
     assert tr.terminal_m3 == pytest.approx(70)  # period total looks fine
     fails = tr.residuals.failures
@@ -63,21 +74,35 @@ def test_at03_intra_period_over_capacity_rejected():
 
 def test_simultaneous_events_use_explicit_order():
     same = T0
-    fill_first = [ev("b", same, K.pond_release, 50, order=1), ev("a", same, K.pond_fill, 50, order=0)]
+    fill_first = [
+        ev("b", same, K.pond_release, 50, order=1),
+        ev("a", same, K.pond_fill, 50, order=0),
+    ]
     assert chronology(fill_first, 100, 0, A).residuals.ok
-    release_first = [ev("a", same, K.pond_release, 50, order=0), ev("b", same, K.pond_fill, 50, order=1)]
+    release_first = [
+        ev("a", same, K.pond_release, 50, order=0),
+        ev("b", same, K.pond_fill, 50, order=1),
+    ]
     assert not chronology(release_first, 100, 0, A).residuals.ok
 
 
 def test_losses_bounded_by_inventory():
-    events = [ev("f", T0, K.pond_fill, 10), ev("e", T0 + timedelta(hours=1), K.pond_evaporation, 50)]
+    events = [
+        ev("f", T0, K.pond_fill, 10),
+        ev("e", T0 + timedelta(hours=1), K.pond_evaporation, 50),
+    ]
     tr = chronology(events, 100, 0, A)
     assert "pond_loss_bound" in {f.rule for f in tr.residuals.failures}
 
 
 def test_exogenous_losses_capped_and_spill_explicit():
-    spec = PondSpec(asset_id=A, usable_capacity_m3=100, surface_area_m2=1000, initial_inventory_m3=95,
-                    seepage_m3_day=3)
+    spec = PondSpec(
+        asset_id=A,
+        usable_capacity_m3=100,
+        surface_area_m2=1000,
+        initial_inventory_m3=95,
+        seepage_m3_day=3,
+    )
     days = [date(2027, 1, 1) + timedelta(days=i) for i in range(30)]
     wet = {d: (20.0, 1.0) for d in days[:2]} | {d: (0.0, 6.0) for d in days[2:]}
     exo, tr = exogenous_events(spec, [], wet, days)

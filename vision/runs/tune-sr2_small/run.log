@@ -1,0 +1,75 @@
+Creating new Ultralytics Settings v0.0.6 file ✅ 
+View Ultralytics Settings with 'yolo settings' or at '/tmp/ultralytics/settings.json'
+Update Settings with 'yolo settings key=value', i.e. 'yolo settings runs_dir=path/to/dir'. For help see https://docs.ultralytics.com/quickstart/#ultralytics-settings.
+
+--- stderr ---
+WARNING:__main__:Mask at /app/vision/runs/8d8a8f5a2b9f7cf2/masks/scene.tif is not existent. Mask skipped.
+INFO:__main__:scene is queued for delineation.
+INFO:methods.main.inference:Device: cpu
+INFO:methods.main.inference:Creating output folder: /tmp/delineate-temp-sr2_small
+INFO:methods.main.inference:Creating output folder: /app/vision/runs/tune-sr2_small/output
+INFO:methods.main.inference:['/app/vision/runs/8d8a8f5a2b9f7cf2/input/scene/scene.tif']
+INFO:methods.main.inference:Estimating normalization bounds...
+
+  0%|          | 0/1 [00:00<?, ?it/s]
+100%|██████████| 1/1 [00:00<00:00, 82.40it/s]
+INFO:methods.main.inference:Selected area scale: 1.0
+INFO:methods.main.inference:Selected batch size: 4
+INFO:methods.main.inference:Selected region size: 1024x1024
+INFO:methods.main.inference:Selected num workers: [3, 3]
+INFO:methods.main.inference:Simplification resolution: [1024, 1024]
+INFO:methods.main.inference:Loading the model...
+INFO:methods.main.inference:Starting delineation...
+
+Delineating:   0%|          | 0.00/1 [00:00<?]
+Delineating:   0%|          | 0.00/1 [00:00<?]
+Delineating:  13%|█▎        | 0.13/1 [00:23<02:41]
+Delineating:  42%|████▏     | 0.42/1 [00:42<00:57]
+Delineating:  63%|██████▎   | 0.63/1 [01:08<00:40]
+Delineating:  92%|█████████▏| 0.92/1 [01:42<00:08]
+Delineating: 100%|██████████| 1.00/1 [01:43<00:00]
+Delineating: 100%|██████████| 1.00/1 [01:43<00:00]
+INFO:methods.main.inference:All regions have been delineated in 103.78 seconds.
+
+Filtering:   0%|          | 0/1274 [00:00<?, ?poly/s]
+Filtering: 100%|██████████| 1274/1274 [00:00<00:00, 22319.82poly/s]
+
+Deleting:   0%|          | 0/238 [00:00<?, ?poly/s]
+Deleting: 100%|██████████| 238/238 [00:00<00:00, 42417.11poly/s]
+
+Merging:   0%|          | 0/126 [00:00<?, ?poly/s]
+Merging: 100%|██████████| 126/126 [00:00<00:00, 5929.14poly/s]
+INFO:methods.main.inference:Temporary files have been deleted.
+INFO:methods.main.inference:Delineation finished in 105.21 seconds.
+INFO:methods.main.inference:Simplification started
+
+Writing features:   0%|          | 0/1145 [00:00<?, ?poly/s]
+Writing features:   0%|          | 1/1145 [00:05<1:36:49,  5.08s/poly]
+Writing features:   8%|▊         | 87/1145 [00:05<00:44, 23.72poly/s] 
+Writing features:  15%|█▌        | 177/1145 [00:05<00:17, 56.61poly/s]
+Writing features:  30%|██▉       | 338/1145 [00:05<00:05, 135.71poly/s]
+Writing features:  45%|████▍     | 512/1145 [00:05<00:02, 244.46poly/s]
+Writing features:  56%|█████▌    | 642/1145 [00:05<00:01, 325.62poly/s]
+Writing features:  69%|██████▊   | 785/1145 [00:05<00:00, 416.47poly/s]
+Writing features:  83%|████████▎ | 951/1145 [00:05<00:00, 571.88poly/s]
+Writing features:  98%|█████████▊| 1122/1145 [00:05<00:00, 745.19poly/s]
+Writing features: 100%|█████████▉| 1140/1145 [00:06<00:00, 166.47poly/s]
+
+Scanning:   0%|          | 0/1202 [00:00<?, ?it/s]
+Scanning: 100%|██████████| 1202/1202 [00:00<00:00, 67026.78it/s]
+
+Merging:   0%|          | 0/1202 [00:00<?, ?it/s]
+Merging: 100%|██████████| 1202/1202 [00:00<00:00, 58590.69it/s]
+
+Deleting:   0%|          | 0/122 [00:00<?, ?it/s]
+Deleting: 100%|██████████| 122/122 [00:00<00:00, 30271.24it/s]
+
+Inserting:   0%|          | 0/60 [00:00<?, ?it/s]
+Inserting: 100%|██████████| 60/60 [00:00<00:00, 25634.94it/s]
+
+Calc area:   0%|          | 0/1140 [00:00<?, ?it/s]
+Calc area: 100%|██████████| 1140/1140 [00:00<00:00, 24634.75it/s]
+
+Resolving overlaps: 0it [00:00, ?it/s]
+Resolving overlaps: 0it [00:00, ?it/s]
+INFO:methods.main.inference:Simplification finished in 9.65 seconds

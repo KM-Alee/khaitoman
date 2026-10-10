@@ -43,7 +43,7 @@ from aabflow.science.adapter import (
     engine_version,
     schedule_frame,
 )
-from aabflow.science.paths import atomic_write_text, experiments_dir
+from aabflow.science.paths import experiments_dir
 from aabflow.science.weather import load_weather
 
 
@@ -54,7 +54,10 @@ def _resolved(exp: CropExperiment) -> tuple[CropProfile, SoilProfile]:
 def schedule_hash(exp: CropExperiment) -> str:
     sched = schedule_frame(exp)
     return content_hash(
-        [[d.strftime("%Y-%m-%d"), float(v)] for d, v in zip(sched["Date"], sched["Depth"], strict=True)]
+        [
+            [d.strftime("%Y-%m-%d"), float(v)]
+            for d, v in zip(sched["Date"], sched["Depth"], strict=True)
+        ]
     )
 
 
@@ -73,9 +76,7 @@ def crop_experiment_hash(
         {
             "experiment": body,
             "crop_profile": cp.model_dump(mode="json", exclude={"evidence_ids"}),
-            "soil_profile": sp.model_dump(
-                mode="json", exclude={"evidence_ids", "limitations"}
-            ),
+            "soil_profile": sp.model_dump(mode="json", exclude={"evidence_ids", "limitations"}),
             "engine": {"name": ENGINE_NAME, "version": engine_version()},
             "adapter_version": ADAPTER_VERSION,
             "field_mapping_version": FIELD_MAPPING_VERSION,
@@ -314,7 +315,10 @@ def run_batch(
                     else:
                         failed[h] = err or "unknown"
                     if progress and i % 200 == 0:
-                        print(f"  experiments {i}/{len(todo)} ({time.perf_counter() - t0:.0f}s)", flush=True)
+                        print(
+                            f"  experiments {i}/{len(todo)} ({time.perf_counter() - t0:.0f}s)",
+                            flush=True,
+                        )
     return BatchReport(
         total=len(items),
         cached=cached,

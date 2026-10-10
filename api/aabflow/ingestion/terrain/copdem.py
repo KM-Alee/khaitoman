@@ -71,7 +71,12 @@ class DemWindow:
 def read_dem_window(bbox: tuple[float, float, float, float], buffer_deg: float = 0.01):
     """Original GLO-30 heights for the buffered bbox: (heights, transform, crs, url)."""
     west, south, east, north = bbox
-    west, south, east, north = west - buffer_deg, south - buffer_deg, east + buffer_deg, north + buffer_deg
+    west, south, east, north = (
+        west - buffer_deg,
+        south - buffer_deg,
+        east + buffer_deg,
+        north + buffer_deg,
+    )
     if math.floor(west) != math.floor(east) or math.floor(south) != math.floor(north):
         raise IngestionError("AOI window crosses a 1° DEM tile edge; mosaic not implemented")
     url = tile_url(south, west)

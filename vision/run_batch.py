@@ -40,14 +40,16 @@ def sha256(path: Path) -> str:
 
 def gpkg_count(path: Path) -> int | None:
     """Feature count of the first feature table (a GeoPackage is SQLite)."""
-    import sqlite3  # noqa: PLC0415
+    import sqlite3
 
     con = sqlite3.connect(f"file:{path}?mode=ro", uri=True)
     try:
         row = con.execute(
             "SELECT table_name FROM gpkg_contents WHERE data_type='features' LIMIT 1"
         ).fetchone()
-        return None if row is None else con.execute(f'SELECT count(*) FROM "{row[0]}"').fetchone()[0]
+        return (
+            None if row is None else con.execute(f'SELECT count(*) FROM "{row[0]}"').fetchone()[0]
+        )
     finally:
         con.close()
 
@@ -77,10 +79,13 @@ def main() -> int:
         if t.suffix in (".tif", ".tiff")
     }
 
-    import torch  # noqa: PLC0415 (vision image only)
+    import torch
 
     commit = subprocess.run(
-        ["git", "-C", str(UPSTREAM), "rev-parse", "HEAD"], capture_output=True, text=True
+        ["git", "-c", f"safe.directory={UPSTREAM}", "-C", str(UPSTREAM), "rev-parse", "HEAD"],
+        capture_output=True,
+        text=True,
+        check=False,
     ).stdout.strip()
 
     started = dt.datetime.now(dt.UTC)
@@ -90,6 +95,7 @@ def main() -> int:
         cwd=UPSTREAM,
         capture_output=True,
         text=True,
+        check=False,
     )
     wall = time.perf_counter() - t0
     finished = dt.datetime.now(dt.UTC)

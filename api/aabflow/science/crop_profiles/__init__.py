@@ -75,6 +75,11 @@ def profile(crop_profile_id: str) -> CropProfile:
         raise KeyError(f"unknown crop profile {crop_profile_id!r}") from None
 
 
+def season_crop(crop: Crop) -> CropProfile:
+    """The release profile for a crop (one profile per crop/yield basis in v2)."""
+    return next(p for p in CROP_PROFILES.values() if p.crop is crop)
+
+
 def planting_in_window(p: CropProfile, sim_start: date) -> date:
     """First occurrence of the profile's month/day on or after ``sim_start``."""
     d = date(sim_start.year, p.planting_date.month, p.planting_date.day)
@@ -134,8 +139,10 @@ SEASONS: dict[str, Season] = {
             DECISION_AT,
             [
                 "Scenario calendar until locally reviewed (PRD §2.2).",
-                "Decision 10 Oct 2026: 90-day ponds and 120-day repairs cannot commission "
-                "before 15 Nov planting; availability follows commissioning dates.",
+                (
+                    "Decision 10 Oct 2026: 90-day ponds and 120-day repairs cannot commission "
+                    "before 15 Nov planting; availability follows commissioning dates."
+                ),
             ],
         ),
         _season(
@@ -157,8 +164,10 @@ SEASONS: dict[str, Season] = {
             "Kharif cotton 2027",
             DECISION_AT,
             [
-                "Planting ~1 May 2027 leaves time to commission ponds and repairs "
-                "(PRD §2.2); new assets may legitimately appear."
+                (
+                    "Planting ~1 May 2027 leaves time to commission ponds and repairs "
+                    "(PRD §2.2); new assets may legitimately appear."
+                )
             ],
         ),
         _season(

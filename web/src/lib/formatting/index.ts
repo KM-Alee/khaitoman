@@ -142,6 +142,7 @@ export function formatWithUnit(value: number, unit: string): string {
 export function formatDelta(value: number, unit: string): string {
   if (!Number.isFinite(value)) return "—";
   if (value === 0) return `±0 ${shortUnit(unit)}`.trim();
+  if (unit === "fraction" || unit === "ratio") return `${value > 0 ? "+" : MINUS}${formatNumber(Math.abs(value) * 100, 1)} pp`;
   const body = formatWithUnit(Math.abs(value), unit);
   return (value > 0 ? "+" : MINUS) + body;
 }

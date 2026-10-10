@@ -55,18 +55,18 @@
   --surface-sunken: #e4e8e1;
   --ink: #172b2a;
   --ink-secondary: #4b6260;
-  --ink-tertiary: #5d7270; /* >= 4.5:1 on surface and canvas */
+  --ink-tertiary: #536966; /* measured >= 4.5:1 on surface, canvas, surface-muted */
   --water: #087f8c;
   --water-deep: #075e68;
   --water-soft: #d6ecec;
   --vegetation: #386a4b;
   --vegetation-soft: #dde9df;
-  --warning: #a35b08;
+  --warning: #975306; /* PRD start #A35B08 darkened: 4.45:1 on surface-muted failed AA */
   --warning-soft: #f6e7d2;
   --danger: #a63e32;
   --danger-soft: #f5dfdb;
   --border: #cfdad5;
-  --border-strong: #8fa5a0; /* >= 3:1 non-text contrast on surface */
+  --border-strong: #7a908b; /* measured >= 3:1 non-text contrast on surface and canvas */
   --focus: #245fbd;
   --on-water: #ffffff;
   --scrim: rgb(23 43 42 / 0.42);
@@ -135,7 +135,7 @@
   --ink-secondary: #a9bbb7;
   --ink-tertiary: #93a8a4;
   --water: #3fb3bf;
-  --water-deep: #2c96a2;
+  --water-deep: #5cc3ce;
   --water-soft: #143b3e;
   --vegetation: #86b996;
   --vegetation-soft: #1b3326;

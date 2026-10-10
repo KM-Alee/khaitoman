@@ -158,9 +158,11 @@ export class MapEngine {
   }
 
   /* ------------------------------------------------------------ events */
-  on(fn: (e: EngineEvent) => void) {
+  on(fn: (e: EngineEvent) => void): () => void {
     this.listeners.add(fn);
-    return () => this.listeners.delete(fn);
+    return () => {
+      this.listeners.delete(fn);
+    };
   }
   private emit(e: EngineEvent) {
     for (const l of this.listeners) l(e);

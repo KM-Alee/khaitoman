@@ -46,8 +46,13 @@ def main() -> None:
     second = client.responses.create(
         model=model,
         previous_response_id=first.id,
-        input=[{"type": "function_call_output", "call_id": calls[0].call_id,
-                "output": json.dumps({"production_kg": 1234.5, "status": "OPTIMAL"})}],
+        input=[
+            {
+                "type": "function_call_output",
+                "call_id": calls[0].call_id,
+                "output": json.dumps({"production_kg": 1234.5, "status": "OPTIMAL"}),
+            }
+        ],
         tools=[TOOL],
     )
     out = {

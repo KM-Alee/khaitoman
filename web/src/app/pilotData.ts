@@ -39,14 +39,14 @@ export function usePilotData() {
       idx.set(id, {
         id,
         label: String(p.label ?? id),
-        group: (p.group as FieldRecord["group"]) ?? null,
+        group: ((p.group ?? map.data?.fieldGroups?.[id]) as FieldRecord["group"]) ?? null,
         areaM2: typeof p.gross_area_m2 === "number" ? p.gross_area_m2 : null,
         props: p,
         geometry: f.geometry ?? null,
       });
     }
     return idx;
-  }, [fieldsFC]);
+  }, [fieldsFC, map.data?.fieldGroups]);
 
   const sortedFields = useMemo(
     () => [...fieldIndex.values()].sort((a, b) => a.label.localeCompare(b.label, undefined, { numeric: true })),

@@ -44,7 +44,11 @@ class DomainError(Exception):
         self.status = status or STATUS[code]
 
     def body(self) -> dict[str, Any]:
-        out: dict[str, Any] = {"code": self.code.value, "detail": self.detail, "fields": self.fields}
+        out: dict[str, Any] = {
+            "code": self.code.value,
+            "detail": self.detail,
+            "fields": self.fields,
+        }
         out.update(self.extra)
         return out
 
@@ -81,7 +85,11 @@ def install(app: FastAPI) -> None:
         for err in exc.errors():
             fields.setdefault(_loc(tuple(err.get("loc", ()))), err.get("msg", "invalid"))
         return JSONResponse(
-            {"code": ErrorCode.INVALID_INPUT.value, "detail": "request failed validation", "fields": fields},
+            {
+                "code": ErrorCode.INVALID_INPUT.value,
+                "detail": "request failed validation",
+                "fields": fields,
+            },
             status_code=422,
         )
 
@@ -89,5 +97,6 @@ def install(app: FastAPI) -> None:
     async def _http(request: Request, exc: StarletteHTTPException) -> JSONResponse:
         code = ErrorCode.NOT_FOUND if exc.status_code == 404 else ErrorCode.INVALID_INPUT
         return JSONResponse(
-            {"code": code.value, "detail": str(exc.detail), "fields": {}}, status_code=exc.status_code
+            {"code": code.value, "detail": str(exc.detail), "fields": {}},
+            status_code=exc.status_code,
         )

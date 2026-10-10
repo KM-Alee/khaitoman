@@ -77,26 +77,52 @@ def validate_pump_use(spec: PumpSpec, events: Iterable[LedgerEvent]) -> Residual
     r = Residuals()
     for rule in ("pump_access", "pump_rate", "pump_seasonal_cap", "pump_cost", "commissioning"):
         r.check(rule)
-    ev = [e for e in events if e.kind is LedgerEventKind.pump_abstraction and e.asset_id == spec.asset_id]
+    ev = [
+        e
+        for e in events
+        if e.kind is LedgerEventKind.pump_abstraction and e.asset_id == spec.asset_id
+    ]
     per_day: dict[date, float] = {}
     total = 0.0
     for e in ev:
         if e.field_id not in spec.field_ids:
-            r.fail("pump_access", e.volume_m3, [spec.asset_id, e.field_id or "?"], e.timestamp,
-                   f"field {e.field_id} has no access to pump {spec.asset_id}")
+            r.fail(
+                "pump_access",
+                e.volume_m3,
+                [spec.asset_id, e.field_id or "?"],
+                e.timestamp,
+                f"field {e.field_id} has no access to pump {spec.asset_id}",
+            )
         d = local_crop_date(e.timestamp)
         if spec.commissioned_on is not None and d < spec.commissioned_on:
-            r.fail("commissioning", e.volume_m3, [spec.asset_id], e.timestamp,
-                   f"pump used on {d} before commissioning {spec.commissioned_on}")
+            r.fail(
+                "commissioning",
+                e.volume_m3,
+                [spec.asset_id],
+                e.timestamp,
+                f"pump used on {d} before commissioning {spec.commissioned_on}",
+            )
         per_day[d] = per_day.get(d, 0.0) + e.volume_m3
         total += e.volume_m3
     for d, v in per_day.items():
         if exceeds(v, spec.daily_cap_m3):
-            r.fail("pump_rate", v - spec.daily_cap_m3, [spec.asset_id], None,
-                   f"{v:.1f} m3 on {d} exceeds {spec.daily_cap_m3:.1f} m3/day (shared across fields)")
+            r.fail(
+                "pump_rate",
+                v - spec.daily_cap_m3,
+                [spec.asset_id],
+                None,
+                f"{v:.1f} m3 on {d} exceeds {spec.daily_cap_m3:.1f} m3/day (shared across fields)",
+            )
     if spec.seasonal_cap_m3 is not None and exceeds(total, spec.seasonal_cap_m3):
-        r.fail("pump_seasonal_cap", total - spec.seasonal_cap_m3, [spec.asset_id], None,
-               f"seasonal abstraction {total:.1f} m3 exceeds cap {spec.seasonal_cap_m3:.1f} m3")
+        r.fail(
+            "pump_seasonal_cap",
+            total - spec.seasonal_cap_m3,
+            [spec.asset_id],
+            None,
+            f"seasonal abstraction {total:.1f} m3 exceeds cap {spec.seasonal_cap_m3:.1f} m3",
+        )
     if total > 0 and spec.cost_per_m3_pkr is None:
-        r.fail("pump_cost", total, [spec.asset_id], None, "pump used without a declared cost per m3")
+        r.fail(
+            "pump_cost", total, [spec.asset_id], None, "pump used without a declared cost per m3"
+        )
     return r

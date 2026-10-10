@@ -82,5 +82,14 @@ vision-weights:   ## download Delineate Anything weights + SHA256SUMS
 vision-shell:
 	$(VIS) bash
 
-water-tests pilot-a pilot-b candidates train-surrogate domain-tests core-acceptance copilot-evals release-check:
+water-tests:      ## chronology, network, roster, pond, pump invariants (unit + property)
+	$(API) pytest -q tests/unit/test_water_*.py tests/property
+
+candidates:       ## exact experiments + candidate libraries, e.g. make candidates PILOT=pilot-a
+	$(API) python scripts/science_build_libraries.py $(or $(PILOT),pilot-a)
+
+train-surrogate:  ## fixed-split surrogate training, evaluation artifacts and gate
+	$(API) python scripts/science_train_surrogate.py
+
+pilot-a pilot-b domain-tests core-acceptance copilot-evals release-check:
 	@echo "make $@: not implemented yet" >&2; exit 1

@@ -18,10 +18,11 @@ from pathlib import Path
 
 import numpy as np
 from PIL import Image
+from pyproj import Transformer
 from rasterio.crs import CRS
 from rasterio.enums import Resampling
 from rasterio.transform import array_bounds
-from rasterio.warp import calculate_default_transform, reproject, transform_bounds
+from rasterio.warp import calculate_default_transform, reproject
 
 STRETCH_ID = "s2-rgb-shared-p2-p98-gamma1.4-v1"
 GAMMA = 1.4
@@ -102,7 +103,11 @@ def render_display(
             dst_nodata=0,
         )
     mb = array_bounds(dh, dw, dst_tf)  # (west, south, east, north) in 3857
-    wgs = transform_bounds(DISPLAY_CRS, "EPSG:4326", *mb, densify_pts=0)
+    # A 3857 rectangle is a lon/lat rectangle: transform the two corners exactly.
+    t = Transformer.from_crs(DISPLAY_CRS, "EPSG:4326", always_xy=True)
+    w_, s_ = t.transform(mb[0], mb[1])
+    e_, n_ = t.transform(mb[2], mb[3])
+    wgs = (w_, s_, e_, n_)
     img = Image.fromarray(np.moveaxis(dst, 0, -1), mode="RGBA")
     buf = BytesIO()
     img.save(buf, format="WEBP", quality=quality, method=6)

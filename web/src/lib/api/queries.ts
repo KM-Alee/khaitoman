@@ -135,13 +135,13 @@ export interface FieldDetail {
   field: FieldRecord;
   raw: Record<string, unknown>;
 }
-export function useField(pilotVersion?: string, fieldId?: string | null) {
+export function useField(pilotVersion?: string, fieldId?: string | null, pilotId?: string) {
   return useQuery({
-    queryKey: qk.field(pilotVersion ?? "", fieldId ?? ""),
+    queryKey: qk.field(`${pilotId ?? ""}@${pilotVersion ?? ""}`, fieldId ?? ""),
     enabled: !!pilotVersion && !!fieldId,
     queryFn: async ({ signal }) => {
       const r = await api.get<Record<string, unknown>>(
-        `/fields/${enc(fieldId!)}${qs({ pilot_version: pilotVersion })}`,
+        `/fields/${enc(fieldId!)}${qs({ pilot_version: pilotVersion, pilot_id: pilotId })}`,
         signal,
       );
       const field = ((r as { field?: FieldRecord }).field ?? r) as FieldRecord;
@@ -162,7 +162,18 @@ export function useSeasons(pilotId?: string) {
   return useQuery({
     queryKey: qk.seasons(pilotId ?? ""),
     enabled: !!pilotId,
-    queryFn: async ({ signal }) => listOf<Season>(await api.get(`/seasons${qs({ pilot_id: pilotId })}`, signal), "seasons"),
+    queryFn: async ({ signal }) =>
+      listOf<Record<string, unknown>>(await api.get(`/seasons${qs({ pilot_id: pilotId })}`, signal), "seasons").map((e) => {
+        // SeasonEntry {season, library, roster_configured} or a bare Season
+        const season = (e.season ?? e) as Season;
+        const lib = (e.library ?? null) as Record<string, unknown> | null;
+        return {
+          ...season,
+          library: lib,
+          roster_configured: (e.roster_configured as boolean | undefined) ?? null,
+          library_ready: lib ? Boolean(lib.ready ?? lib.available ?? lib.library_hash ?? lib.candidate_library_hash) : season.library_ready,
+        } as Season;
+      }),
     staleTime: 60_000,
     retry,
   });
@@ -203,16 +214,30 @@ export function useUncertaintySets(pilotId?: string, seasonId?: string) {
   });
 }
 
-export function useInterventions(pilotId?: string, seasonId?: string) {
+export function useInterventions(pilotId?: string, seasonId?: string, decisionAt?: string | null) {
   return useQuery({
-    queryKey: qk.interventions(pilotId ?? "", seasonId ?? ""),
+    queryKey: [...qk.interventions(pilotId ?? "", seasonId ?? ""), decisionAt ?? ""],
     enabled: !!pilotId && !!seasonId,
     queryFn: async ({ signal }) => {
-      const r = await api.get<unknown>(`/interventions${qs({ pilot_id: pilotId, season_id: seasonId })}`, signal);
-      return listOf<InterventionInstance>(
-        Array.isArray(r) ? r : (r as Record<string, unknown>)?.instances ?? (r as Record<string, unknown>)?.interventions,
-        "instances",
+      const r = await api.get<unknown>(`/interventions${qs({ pilot_id: pilotId, season_id: seasonId, decision_at: decisionAt })}`, signal);
+      const raw = listOf<Record<string, unknown>>(
+        Array.isArray(r) ? r : (r as Record<string, unknown>)?.interventions ?? (r as Record<string, unknown>)?.instances,
+        "interventions",
       );
+      // InterventionEligibility {instance, eligible, reasons, commissioned_on, type_label} → flat instance
+      return raw.map((e) => {
+        if (!e.instance) return e as unknown as InterventionInstance;
+        const inst = e.instance as InterventionInstance;
+        return {
+          ...inst,
+          category: (e.category as InterventionInstance["category"]) ?? inst.category,
+          eligible: e.eligible as boolean,
+          eligibility_reasons: (e.reasons as string[]) ?? [],
+          earliest_commissioning: (e.commissioned_on as string | null) ?? null,
+          label: (e.type_label as string | undefined) ? `${e.type_label} · ${inst.target_ids.join(", ")}` : undefined,
+          in_library: (e.in_library as boolean | null) ?? null,
+        } as InterventionInstance;
+      });
     },
     staleTime: 60_000,
     retry,
@@ -364,17 +389,46 @@ export function useEvidence(id?: string | null) {
   return useQuery({
     queryKey: qk.evidence(id ?? ""),
     enabled: !!id,
-    queryFn: ({ signal }) => api.get<EvidenceRecord>(`/evidence/${enc(id!)}`, signal),
+    queryFn: async ({ signal }) => {
+      const r = await api.get<Record<string, unknown>>(`/evidence/${enc(id!)}`, signal);
+      // EvidenceDetail {record, document, pilot_ids} or a bare record
+      if (r && "record" in r) {
+        if (!r.record) {
+          const doc = (r.document ?? {}) as Record<string, unknown>;
+          return {
+            evidence_id: id!,
+            source_title: String(doc.title ?? id),
+            kind: (doc.kind as EvidenceRecord["kind"]) ?? "literature",
+            verification_state: "unchecked",
+            source_url: (doc.source_url as string | null) ?? null,
+            limitations: [],
+            parent_evidence_ids: [],
+            document: doc,
+          } as unknown as EvidenceRecord;
+        }
+        return { ...(r.record as EvidenceRecord), document: r.document ?? null, pilot_ids: r.pilot_ids ?? [] } as EvidenceRecord;
+      }
+      return r as unknown as EvidenceRecord;
+    },
     staleTime: Number.POSITIVE_INFINITY,
     retry,
   });
 }
 
+export interface EvidenceHit {
+  doc_id: string;
+  kind: string;
+  pilot_id: string | null;
+  score: number;
+  snippet: string;
+  source_url: string | null;
+  title: string;
+}
 export function useEvidenceSearch(q: string, pilotId?: string) {
   return useQuery({
     queryKey: qk.evidenceSearch(q, pilotId),
     queryFn: async ({ signal }) =>
-      listOf<EvidenceRecord>(await api.get(`/evidence/search${qs({ q, pilot_id: pilotId })}`, signal), "results"),
+      listOf<EvidenceHit>(await api.get(`/evidence/search${qs({ q, pilot_id: pilotId })}`, signal), "results"),
     staleTime: 30_000,
     retry,
   });

@@ -15,18 +15,18 @@ from fastapi.staticfiles import StaticFiles
 
 load_dotenv()
 
-from aabflow import config  # noqa: E402
-from aabflow.api import errors  # noqa: E402
-from aabflow.api.state import AppState  # noqa: E402
-from aabflow.repositories.sqlite import init_db  # noqa: E402
-from aabflow.services.catalog import Catalog  # noqa: E402
-from aabflow.services.pilots import PilotRepository  # noqa: E402
+from aabflow import config
+from aabflow.api import errors
+from aabflow.api.state import AppState
+from aabflow.repositories.sqlite import init_db
+from aabflow.services.catalog import Catalog
+from aabflow.services.pilots import PilotRepository
 
 
 def _routers() -> list[APIRouter]:
-    from aabflow.api import pilots, system
+    from aabflow.api import jobs, pilots, system
 
-    return [system.router, pilots.router]
+    return [system.router, pilots.router, jobs.router]
 
 
 def _dispatcher_cls():

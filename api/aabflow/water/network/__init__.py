@@ -137,7 +137,9 @@ class Network:
             return units.delivery_factor(overrides[edge_id], f"{edge_id}.delivery_factor")
         return self.edges[edge_id].delivery_factor
 
-    def path_factor(self, edge_ids: Iterable[str], overrides: Mapping[str, float] | None = None) -> float:
+    def path_factor(
+        self, edge_ids: Iterable[str], overrides: Mapping[str, float] | None = None
+    ) -> float:
         f = 1.0
         for eid in edge_ids:
             f *= self.factor(eid, overrides)

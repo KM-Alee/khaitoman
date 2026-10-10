@@ -110,7 +110,11 @@ LEGENDS = [
         label="Canal network",
         items=[
             LegendItem(key="observed", label="Observed canal geometry (OSM/GRAIN)", style="solid"),
-            LegendItem(key="assumed", label="Assumed operational connection (no observed geometry)", style="dashed"),
+            LegendItem(
+                key="assumed",
+                label="Assumed operational connection (no observed geometry)",
+                style="dashed",
+            ),
         ],
     ),
     Legend(
@@ -186,7 +190,9 @@ def pilot_map(pilot_id: str, version: str, state: State) -> PilotMap:
         aoi_url=asset_url(pkg, p.aoi_geojson_ref),
         fields_url=asset_url(pkg, "fields.geojson"),
         canals_url=asset_url(pkg, "canals.geojson") if _exists(pkg, "canals.geojson") else None,
-        fields_raw_url=asset_url(pkg, "fields_raw.geojson") if _exists(pkg, "fields_raw.geojson") else None,
+        fields_raw_url=asset_url(pkg, "fields_raw.geojson")
+        if _exists(pkg, "fields_raw.geojson")
+        else None,
         imagery=imagery,
         terrain=terrain,
         network={"nodes": list(pkg.nodes.values()), "edges": list(pkg.edges.values())},
@@ -208,11 +214,15 @@ def field_detail(
     windows = {sid: [w for w in ws if w.field_id == field_id] for sid, ws in pkg.roster.items()}
     assets = [a for a in pkg.assets.values() if field_id in a.field_ids]
     interventions = [
-        i for i in pkg.instances.values() if field_id in i.target_ids or any(a.asset_id in i.target_ids for a in assets)
+        i
+        for i in pkg.instances.values()
+        if field_id in i.target_ids or any(a.asset_id in i.target_ids for a in assets)
     ]
     route = pkg.route_edge_ids(field_id)
     for eid in route:
-        interventions += [i for i in pkg.instances.values() if eid in i.target_ids and i not in interventions]
+        interventions += [
+            i for i in pkg.instances.values() if eid in i.target_ids and i not in interventions
+        ]
     feat = pkg.field_features.get(field_id)
     ev = set(f.evidence_ids)
     for a in assets:
@@ -233,7 +243,9 @@ def field_detail(
 
 
 @router.get("/seasons", response_model=SeasonList)
-def seasons(state: State, pilot_id: str | None = None, pilot_version: str | None = None) -> SeasonList:
+def seasons(
+    state: State, pilot_id: str | None = None, pilot_version: str | None = None
+) -> SeasonList:
     pkg = state.pilots.package(pilot_id, pilot_version) if pilot_id else None
     out = []
     for s in state.catalog.seasons():
@@ -242,28 +254,39 @@ def seasons(state: State, pilot_id: str | None = None, pilot_version: str | None
             if pilot_id
             else {"ready": False, "reason": "pass pilot_id for library readiness"}
         )
-        out.append(SeasonEntry(season=s, library=lib, roster_configured=bool(pkg and pkg.roster.get(s.season_id))))
+        out.append(
+            SeasonEntry(
+                season=s, library=lib, roster_configured=bool(pkg and pkg.roster.get(s.season_id))
+            )
+        )
     return SeasonList(seasons=out)
 
 
 @router.get("/weather-scenarios", response_model=WeatherScenarioList)
-def weather_scenarios(state: State, pilot_id: str | None = None, season_id: str | None = None) -> WeatherScenarioList:
+def weather_scenarios(
+    state: State, pilot_id: str | None = None, season_id: str | None = None
+) -> WeatherScenarioList:
     if pilot_id:
         state.pilots.package(pilot_id)
     if season_id and state.catalog.season(season_id) is None:
         raise not_found("season_id", season_id)
-    return WeatherScenarioList(weather_scenarios=state.catalog.weather_scenarios(pilot_id, season_id))
+    return WeatherScenarioList(
+        weather_scenarios=state.catalog.weather_scenarios(pilot_id, season_id)
+    )
 
 
 @router.get("/uncertainty-sets", response_model=UncertaintySetList)
-def uncertainty_sets(state: State, pilot_id: str | None = None, season_id: str | None = None) -> UncertaintySetList:
+def uncertainty_sets(
+    state: State, pilot_id: str | None = None, season_id: str | None = None
+) -> UncertaintySetList:
     if pilot_id:
         state.pilots.package(pilot_id)
     if season_id and state.catalog.season(season_id) is None:
         raise not_found("season_id", season_id)
     profiles = state.catalog.supply_profiles(pilot_id, season_id) if season_id else []
     return UncertaintySetList(
-        uncertainty_sets=state.catalog.uncertainty_sets(pilot_id, season_id), supply_profiles=profiles
+        uncertainty_sets=state.catalog.uncertainty_sets(pilot_id, season_id),
+        supply_profiles=profiles,
     )
 
 
@@ -316,7 +339,9 @@ def interventions(
     )
 
 
-def _library_instances(state: AppState, pilot_id: str, season_id: str) -> tuple[dict[str, str], set[str]]:
+def _library_instances(
+    state: AppState, pilot_id: str, season_id: str
+) -> tuple[dict[str, str], set[str]]:
     import json
 
     h = state.catalog.latest_library_hash(pilot_id, season_id)
@@ -353,14 +378,19 @@ def evidence_search(
 def evidence_detail(evidence_id: str, state: State, conn: Conn) -> EvidenceDetail:
     holders = [pkg for pkg in state.pilots.published() if evidence_id in pkg.evidence]
     if holders:
-        return EvidenceDetail(record=holders[-1].evidence[evidence_id], pilot_ids=[p.pilot_id for p in holders])
+        return EvidenceDetail(
+            record=holders[-1].evidence[evidence_id], pilot_ids=[p.pilot_id for p in holders]
+        )
     evidence_service.ensure_index(conn, state.pilots)
     row = conn.execute(
-        "SELECT doc_id, kind, pilot_id, title, body, source_url FROM evidence_fts WHERE doc_id = ?", (evidence_id,)
+        "SELECT doc_id, kind, pilot_id, title, body, source_url FROM evidence_fts WHERE doc_id = ?",
+        (evidence_id,),
     ).fetchone()
     if row is None:
         raise not_found("evidence_id", evidence_id)
-    return EvidenceDetail(document=dict(row), pilot_ids=[row["pilot_id"]] if row["pilot_id"] else [])
+    return EvidenceDetail(
+        document=dict(row), pilot_ids=[row["pilot_id"]] if row["pilot_id"] else []
+    )
 
 
 @assets_router.get("/assets/pilots/{pilot_id}/{version}/{rel:path}", include_in_schema=False)

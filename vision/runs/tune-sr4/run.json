@@ -1,0 +1,52 @@
+{
+  "label": "tune-sr4",
+  "command": "python delineate.py -b /app/vision/batches/tune-sr4.yaml",
+  "cwd": "/opt/delineate",
+  "upstream_commit": "",
+  "started_at": "2026-10-10T00:43:42.732396+00:00",
+  "finished_at": "2026-10-10T00:46:01.370320+00:00",
+  "wall_seconds": 138.638,
+  "returncode": 0,
+  "stderr_error_markers": [],
+  "ok": true,
+  "device": "cpu",
+  "torch": "2.14.1+cpu",
+  "torch_threads": 20,
+  "cpu_count": 20,
+  "platform": "Linux-7.2.9-1-cachyos-x86_64-with-glibc2.41",
+  "shm_bytes": 4294967296,
+  "batch_config": {
+    "base_config": "/app/vision/configs/conf_cpu_v2_sr4.yaml",
+    "data_root": "/app/vision/runs/8d8a8f5a2b9f7cf2/input",
+    "output_root": "/app/vision/runs/tune-sr4/output",
+    "temp_root": "/tmp/delineate-temp-sr4",
+    "keep_temp": false,
+    "mask_root": "/app/vision/runs/8d8a8f5a2b9f7cf2/masks",
+    "include": [
+      "scene"
+    ],
+    "exclude": null,
+    "override": null
+  },
+  "base_config_path": "/app/vision/configs/conf_cpu_v2_sr4.yaml",
+  "base_config_sha256": "b336fd642fcd68014acbaa5e9ef29a0eec7e9354c869870b0a2311c751bf68bd",
+  "checkpoints": {
+    "/app/data/models/delineate-anything/DelineateAnythingv2.pt": "46700b8a279b07922953a11adaeb5e658d9a2384b6334c8e0a3090886218915a"
+  },
+  "inputs": {
+    "scene/scene.tif": "5622f1dd89b0c8d5e45c7eb19fa1d8ffa07a521be0f21b0f06a7b795be16ba1b"
+  },
+  "outputs": {
+    "scene.gpkg": {
+      "sha256": "3b1adee428366bba258e78bacc76f99bd6d957436b0dad8503d2648c5ebfd3cb",
+      "size_bytes": 2535424,
+      "feature_count": 931
+    },
+    "scene.simp.gpkg": {
+      "sha256": "5d500321ab70a7b7c1504cfac172aa039e380b3007eaa2ba3b110ce69a439ed6",
+      "size_bytes": 360448,
+      "feature_count": 921
+    }
+  },
+  "log": "/app/vision/runs/tune-sr4/run.log"
+}

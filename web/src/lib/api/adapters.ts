@@ -53,6 +53,8 @@ export interface MapBundle {
   edges: Edge[];
   assets: Asset[];
   attribution: string[];
+  fieldGroups: Record<string, string>;
+  legends: { legend_id: string; label: string; items: { key: string; label: string; style: string }[] }[];
 }
 
 export function assetUrl(pilotId: string, version: string, ref: string): string {
@@ -134,6 +136,8 @@ export function readMapBundle(raw: unknown, pilotId: string, version: string): M
     attribution: ((pick<string[]>(o, "attribution", "attributions") ?? []) as string[]).filter(
       (s) => typeof s === "string",
     ),
+    fieldGroups: (isObj(o.field_groups) ? o.field_groups : {}) as Record<string, string>,
+    legends: (Array.isArray(o.legends) ? o.legends.filter(isObj) : []) as unknown as MapBundle["legends"],
   };
 }
 

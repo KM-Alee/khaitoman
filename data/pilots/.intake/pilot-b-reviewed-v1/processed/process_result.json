@@ -1,0 +1,418 @@
+{
+  "imagery": [
+    {
+      "scene_id": "S2C_43RBQ_20250223_0_L2A",
+      "label": "primary",
+      "collection": "sentinel-2-l2a",
+      "acquired_at": "2025-02-23T06:00:51.949000Z",
+      "image_ref": "imagery/S2C_43RBQ_20250223_0_L2A.webp",
+      "corners_wgs84": [
+        [
+          72.22700957,
+          30.68308609
+        ],
+        [
+          72.2630809,
+          30.68308609
+        ],
+        [
+          72.2630809,
+          30.6509803
+        ],
+        [
+          72.22700957,
+          30.6509803
+        ]
+      ],
+      "bounds_wgs84": [
+        72.22700957,
+        30.6509803,
+        72.2630809,
+        30.68308609
+      ],
+      "width": 345,
+      "height": 357,
+      "display_crs": "EPSG:3857",
+      "resolution_m": 10.0,
+      "source_grid": {
+        "crs": "EPSG:32643",
+        "transform": [
+          10.0,
+          0.0,
+          234350.0,
+          0.0,
+          -10.0,
+          3397680.0
+        ],
+        "width": 337,
+        "height": 348
+      },
+      "aoi_valid_fraction": 1.0,
+      "scene_cloud_cover": 0.000435,
+      "scl_histogram_aoi": {
+        "vegetation": 35181,
+        "not_vegetated": 9329,
+        "water": 2284
+      },
+      "scl_invalid_classes": [
+        0,
+        1,
+        3,
+        8,
+        9,
+        10,
+        11
+      ],
+      "assets": {
+        "red": {
+          "key": "red",
+          "href": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/43/R/BQ/2025/2/S2C_43RBQ_20250223_0_L2A/B04.tif",
+          "gsd": 10.0,
+          "scale": 0.0001,
+          "offset": -0.1,
+          "nodata": 0,
+          "dtype": "uint16"
+        },
+        "green": {
+          "key": "green",
+          "href": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/43/R/BQ/2025/2/S2C_43RBQ_20250223_0_L2A/B03.tif",
+          "gsd": 10.0,
+          "scale": 0.0001,
+          "offset": -0.1,
+          "nodata": 0,
+          "dtype": "uint16"
+        },
+        "blue": {
+          "key": "blue",
+          "href": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/43/R/BQ/2025/2/S2C_43RBQ_20250223_0_L2A/B02.tif",
+          "gsd": 10.0,
+          "scale": 0.0001,
+          "offset": -0.1,
+          "nodata": 0,
+          "dtype": "uint16"
+        },
+        "nir": {
+          "key": "nir",
+          "href": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/43/R/BQ/2025/2/S2C_43RBQ_20250223_0_L2A/B08.tif",
+          "gsd": 10.0,
+          "scale": 0.0001,
+          "offset": -0.1,
+          "nodata": 0,
+          "dtype": "uint16"
+        },
+        "scl": {
+          "key": "scl",
+          "href": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/43/R/BQ/2025/2/S2C_43RBQ_20250223_0_L2A/SCL.tif",
+          "gsd": 20.0,
+          "scale": 1.0,
+          "offset": 0.0,
+          "nodata": 0,
+          "dtype": "uint8"
+        }
+      },
+      "stretch": {
+        "stretch_id": "s2-rgb-shared-p2-p98-gamma1.4-v1",
+        "input": "surface reflectance (scale/offset from STAC raster:bands)",
+        "bands": [
+          "red",
+          "green",
+          "blue"
+        ],
+        "low_percentile": 2.0,
+        "high_percentile": 98.0,
+        "low_reflectance": 0.013600000000000001,
+        "high_reflectance": 0.2056,
+        "gamma": 1.4,
+        "invalid_pixels": "transparent (SCL classes 0,1,3,8,9,10,11)",
+        "note": "Display stretch only; not scientific reflectance data.",
+        "display_crs": "EPSG:3857",
+        "resampling": "bilinear (RGB), nearest (alpha)",
+        "width": 345,
+        "height": 357
+      },
+      "reflectance_offset_check": {
+        "published_offsets": {
+          "red": -0.1,
+          "green": -0.1,
+          "blue": -0.1,
+          "nir": -0.1
+        },
+        "negative_fraction_if_applied": {
+          "red": 0.7238735973259661,
+          "green": 0.734626010436918,
+          "blue": 0.8559381288584195,
+          "nir": 0.05696817763225212
+        },
+        "offset_applied": false,
+        "decision": "published offset NOT applied: it would make valid pixels negative, so DNs are treated as offset-free (scale only)"
+      },
+      "ndvi": {
+        "ref": "imagery/S2C_43RBQ_20250223_0_L2A.ndvi.tif",
+        "method": "(NIR-red)/(NIR+red) on surface reflectance (scale/offset from STAC); SCL-invalid pixels and NIR+red<=0 are NaN",
+        "aoi_mean": 0.6660699804835943,
+        "aoi_median": 0.8702033194411413,
+        "aoi_valid_fraction": 1.0,
+        "interpretation": "observation context only; not water stress, crop identity or yield"
+      },
+      "item_sha256": "df6884aa78a6910d353b7d2cc35e50fa7c88a9124591bfbcdf21369c5aaa28a7",
+      "window_sha256": {
+        "red": "fd148dfcd1e0096de30b3f4d452b148ae97b4ebb7dc2c72f8697b0192fbc26ef",
+        "green": "3e533511430e2fd840085d5f453ff207b3d9580695c571bf06f5b9d406e837cd",
+        "blue": "f431b7d9175b89ddb6dd0549d97faba8dc8e141023a4fcb2c88f6f14b6665eda",
+        "nir": "41314f6de14eaa48808251271ea400619f7bc5b7b6e13071fd322a164aa19ab1",
+        "scl": "c5f5018d66c3f1f46e8a3a2d7a81485eff10832c5fa0e3c76f1823973f871445"
+      }
+    },
+    {
+      "scene_id": "S2B_43RBP_20241210_0_L2A",
+      "label": "secondary",
+      "collection": "sentinel-2-l2a",
+      "acquired_at": "2024-12-10T06:00:40.147000Z",
+      "image_ref": "imagery/S2B_43RBP_20241210_0_L2A.webp",
+      "corners_wgs84": [
+        [
+          72.22700957,
+          30.68308609
+        ],
+        [
+          72.2630809,
+          30.68308609
+        ],
+        [
+          72.2630809,
+          30.6509803
+        ],
+        [
+          72.22700957,
+          30.6509803
+        ]
+      ],
+      "bounds_wgs84": [
+        72.22700957,
+        30.6509803,
+        72.2630809,
+        30.68308609
+      ],
+      "width": 345,
+      "height": 357,
+      "display_crs": "EPSG:3857",
+      "resolution_m": 10.0,
+      "source_grid": {
+        "crs": "EPSG:32643",
+        "transform": [
+          10.0,
+          0.0,
+          234350.0,
+          0.0,
+          -10.0,
+          3397680.0
+        ],
+        "width": 337,
+        "height": 348
+      },
+      "aoi_valid_fraction": 1.0,
+      "scene_cloud_cover": 0.000378,
+      "scl_histogram_aoi": {
+        "vegetation": 2018,
+        "not_vegetated": 41768,
+        "water": 3008
+      },
+      "scl_invalid_classes": [
+        0,
+        1,
+        3,
+        8,
+        9,
+        10,
+        11
+      ],
+      "assets": {
+        "red": {
+          "key": "red",
+          "href": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/43/R/BP/2024/12/S2B_43RBP_20241210_0_L2A/B04.tif",
+          "gsd": 10.0,
+          "scale": 0.0001,
+          "offset": -0.1,
+          "nodata": 0,
+          "dtype": "uint16"
+        },
+        "green": {
+          "key": "green",
+          "href": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/43/R/BP/2024/12/S2B_43RBP_20241210_0_L2A/B03.tif",
+          "gsd": 10.0,
+          "scale": 0.0001,
+          "offset": -0.1,
+          "nodata": 0,
+          "dtype": "uint16"
+        },
+        "blue": {
+          "key": "blue",
+          "href": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/43/R/BP/2024/12/S2B_43RBP_20241210_0_L2A/B02.tif",
+          "gsd": 10.0,
+          "scale": 0.0001,
+          "offset": -0.1,
+          "nodata": 0,
+          "dtype": "uint16"
+        },
+        "nir": {
+          "key": "nir",
+          "href": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/43/R/BP/2024/12/S2B_43RBP_20241210_0_L2A/B08.tif",
+          "gsd": 10.0,
+          "scale": 0.0001,
+          "offset": -0.1,
+          "nodata": 0,
+          "dtype": "uint16"
+        },
+        "scl": {
+          "key": "scl",
+          "href": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/43/R/BP/2024/12/S2B_43RBP_20241210_0_L2A/SCL.tif",
+          "gsd": 20.0,
+          "scale": 1.0,
+          "offset": 0.0,
+          "nodata": 0,
+          "dtype": "uint8"
+        }
+      },
+      "stretch": {
+        "stretch_id": "s2-rgb-shared-p2-p98-gamma1.4-v1",
+        "input": "surface reflectance (scale/offset from STAC raster:bands)",
+        "bands": [
+          "red",
+          "green",
+          "blue"
+        ],
+        "low_percentile": 2.0,
+        "high_percentile": 98.0,
+        "low_reflectance": 0.027,
+        "high_reflectance": 0.201,
+        "gamma": 1.4,
+        "invalid_pixels": "transparent (SCL classes 0,1,3,8,9,10,11)",
+        "note": "Display stretch only; not scientific reflectance data.",
+        "display_crs": "EPSG:3857",
+        "resampling": "bilinear (RGB), nearest (alpha)",
+        "width": 345,
+        "height": 357
+      },
+      "reflectance_offset_check": {
+        "published_offsets": {
+          "red": -0.1,
+          "green": -0.1,
+          "blue": -0.1,
+          "nir": -0.1
+        },
+        "negative_fraction_if_applied": {
+          "red": 0.23378184794842935,
+          "green": 0.2728691292336028,
+          "blue": 0.6427828370681128,
+          "nir": 0.06697875098059279
+        },
+        "offset_applied": false,
+        "decision": "published offset NOT applied: it would make valid pixels negative, so DNs are treated as offset-free (scale only)"
+      },
+      "ndvi": {
+        "ref": "imagery/S2B_43RBP_20241210_0_L2A.ndvi.tif",
+        "method": "(NIR-red)/(NIR+red) on surface reflectance (scale/offset from STAC); SCL-invalid pixels and NIR+red<=0 are NaN",
+        "aoi_mean": 0.23552526682019778,
+        "aoi_median": 0.17833231892878884,
+        "aoi_valid_fraction": 1.0,
+        "interpretation": "observation context only; not water stress, crop identity or yield"
+      },
+      "item_sha256": "da46feb9df4fbcbc186b9872615f0aeaa070568eadb8616a61912c871d2bdcd7",
+      "window_sha256": {
+        "red": "407b17f7e6147f8444778c06c3ae552a3a40ac89af5fd17a924fd6dcedb22ed8",
+        "green": "c89d60dba92431ddb890df5d85f83b1685e58277902abc67e7a38f3690f4f5a4",
+        "blue": "607626176f94c3518237ec5af86c3a1256b91ea135fde5826645907b0674030a",
+        "nir": "c693b20b29fb15fcdf46e6a348206a39ab7d61b2476b28f50893902871017af2",
+        "scl": "9bfdd96af70463386785d1d97dc6eda8307c174a0279a4e826b3177585c9a05e"
+      }
+    }
+  ],
+  "canals": {
+    "ref": "canals.geojson",
+    "osm_features": 9,
+    "grain_features": 13,
+    "osm_base_timestamp": "2026-10-10T00:37:56Z"
+  },
+  "weather": {
+    "weather_series_id": "openmeteo-archive-30.7000N-72.2000E-20140101-20251231",
+    "point_requested": [
+      30.667,
+      72.245
+    ],
+    "point_returned": [
+      30.700005,
+      72.2
+    ],
+    "elevation_m": 142.0,
+    "start": "2014-01-01",
+    "end": "2025-12-31",
+    "complete_years": [
+      2014,
+      2015,
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+    ],
+    "source_model": "era5_seamless",
+    "raw_ref": "weather/openmeteo-archive-30.7000N-72.2000E-20140101-20251231.json",
+    "normalized_ref": "weather/openmeteo-archive-30.7000N-72.2000E-20140101-20251231.parquet",
+    "source_sha256": "c49501f2132cc2ae4389e5af2646352d3771d7e5abf3d572f1defc5cb4d98b37",
+    "normalized_sha256": "9bffb5ade11d4a83fe71bbda9157899b3e779b5853337ba02ac3ba80a1286cb5",
+    "retrieved_at": "2026-10-10T00:39:39Z",
+    "source_url": "https://archive-api.open-meteo.com/v1/archive?latitude=30.66700&longitude=72.24500&start_date=2014-01-01&end_date=2025-12-31&daily=temperature_2m_min%2Ctemperature_2m_max%2Cprecipitation_sum%2Cet0_fao_evapotranspiration&timezone=Asia%2FKarachi&temperature_unit=celsius&precipitation_unit=mm&timeformat=iso8601&models=era5_seamless",
+    "units": {
+      "MinTemp": "°C",
+      "MaxTemp": "°C",
+      "Precipitation": "mm",
+      "ReferenceET": "mm"
+    },
+    "timezone": "Asia/Karachi",
+    "generationtime_ms": 999.6238946914673,
+    "rows": 4383
+  },
+  "terrain": {
+    "image_ref": "terrain/dem.png",
+    "bounds": [
+      72.22375,
+      30.64708333,
+      72.26569444,
+      30.68708333
+    ],
+    "width": 151,
+    "height": 144,
+    "min_m": 137.24600219726562,
+    "max_m": 149.88845825195312,
+    "encoding": "terrarium",
+    "decode": "height_m = (R*256 + G + B/256) - 32768",
+    "crs": "EPSG:4326",
+    "source_url": "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N30_00_E072_00_DEM/Copernicus_DSM_COG_10_N30_00_E072_00_DEM.tif",
+    "source_sha256": "ef822fdcc1c133b27e9a1d502ed1abdc1e693267e27e3512ce16d5802418759b",
+    "resolution_deg": [
+      0.0002777777777777778,
+      0.0002777777777777778
+    ],
+    "note": "Display context only; slope does not verify canal flow direction."
+  },
+  "inference": {
+    "inference_key": "50ca220c256bbf74",
+    "batch": "vision/batches/50ca220c256bbf74.yaml",
+    "command": "docker compose -f compose.yaml -f vision/compose.vision.yaml --profile vision run --rm --no-deps -T vision python /app/vision/run_batch.py /app/vision/batches/50ca220c256bbf74.yaml --record /app/vision/runs/50ca220c256bbf74/run.json --label 50ca220c256bbf74",
+    "state": "pending"
+  },
+  "warnings": [
+    "S2B_43RBP_20241210_0_L2A: published offset NOT applied: it would make valid pixels negative, so DNs are treated as offset-free (scale only)",
+    "S2C_43RBQ_20250223_0_L2A: published offset NOT applied: it would make valid pixels negative, so DNs are treated as offset-free (scale only)"
+  ],
+  "blockers": [
+    "inference_pending: docker compose -f compose.yaml -f vision/compose.vision.yaml --profile vision run --rm --no-deps -T vision python /app/vision/run_batch.py /app/vision/batches/50ca220c256bbf74.yaml --record /app/vision/runs/50ca220c256bbf74/run.json --label 50ca220c256bbf74"
+  ],
+  "cache_hits": [],
+  "processed_at": "2026-10-10T00:47:36Z"
+}

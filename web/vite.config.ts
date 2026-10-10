@@ -13,11 +13,29 @@ export default defineConfig({
   resolve: { alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) } },
   server: {
     port: 5173,
+    // Compose service names used by the Playwright container (e2e → web).
+    allowedHosts: ["localhost", "127.0.0.1", "web"],
     proxy: {
       "/api/v2": apiTarget,
       "/assets": apiTarget,
     },
   },
-  build: { outDir: "dist", assetsDir: "static" },
+  build: {
+    outDir: "dist",
+    assetsDir: "static",
+    chunkSizeWarningLimit: 1100,
+    rollupOptions: {
+      output: {
+        manualChunks: (id) =>
+          id.includes("node_modules/maplibre-gl")
+            ? "maplibre"
+            : id.includes("node_modules/echarts") || id.includes("node_modules/zrender")
+              ? "echarts"
+              : id.includes("node_modules/react") || id.includes("node_modules/@radix-ui") || id.includes("node_modules/@tanstack")
+                ? "vendor"
+                : undefined,
+      },
+    },
+  },
   test: { environment: "jsdom", globals: true, setupFiles: ["src/test-setup.ts"] },
 });

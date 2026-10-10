@@ -71,6 +71,11 @@ class BundleWriter:
 
     @property
     def prefix(self) -> str:
+        """Staging prefix; renamed to the final bundle id by ``finalize``."""
+        return f"bundles/{self.pilot_id}/{self.bundle_id}.partial"
+
+    @property
+    def final_prefix(self) -> str:
         return f"bundles/{self.pilot_id}/{self.bundle_id}"
 
     @property
@@ -103,8 +108,21 @@ class BundleWriter:
             "sources": self.sources,
             **(extra or {}),
         }
-        p, _ = self.store.put(f"{self.prefix}/bundle_manifest.json", dumps(manifest).encode())
-        return p
+        self.store.put(f"{self.prefix}/bundle_manifest.json", dumps(manifest).encode())
+        final = self.store.path(self.final_prefix)
+        if final.exists():
+            raise BundleError(f"bundle {self.final_prefix} already exists")
+        self.root.rename(final)
+        return final / "bundle_manifest.json"
+
+    def abort(self) -> None:
+        """Remove an incomplete staging directory (never a finalized bundle)."""
+        import shutil
+
+        if self.root.exists() and self.root.name.endswith(".partial"):
+            for p in self.root.rglob("*"):
+                p.chmod(0o644 if p.is_file() else 0o755)
+            shutil.rmtree(self.root)
 
 
 @dataclass
@@ -129,7 +147,7 @@ class Bundle:
 
     @property
     def created_at(self) -> datetime:
-        return datetime.fromisoformat(str(self.manifest["created_at"]).replace("Z", "+00:00"))
+        return datetime.fromisoformat(str(self.manifest["created_at"]))
 
 
 def validate_bundle(root: Path, *, check_hashes: bool = True) -> Bundle:

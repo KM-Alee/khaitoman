@@ -10,6 +10,7 @@ import math
 from dataclasses import dataclass
 
 import shapely
+import shapely.validation
 from pyproj import CRS, Transformer
 from shapely.geometry import Polygon, box, mapping, shape
 from shapely.ops import transform
@@ -33,7 +34,7 @@ class AoiError(ValueError):
 def utm_crs_for(lon: float, lat: float) -> CRS:
     if not (-180 <= lon <= 180 and -80 <= lat <= 84):
         raise AoiError(f"coordinates out of UTM range or swapped: lon={lon}, lat={lat}")
-    zone = int(math.floor((lon + 180) / 6)) + 1
+    zone = math.floor((lon + 180) / 6) + 1
     epsg = (32600 if lat >= 0 else 32700) + zone
     return CRS.from_epsg(epsg)
 
@@ -115,7 +116,9 @@ class Aoi:
 
     def estimate_pixels(self, resolution_m: float = 10.0, buffer_m: float = 0.0) -> int:
         minx, miny, maxx, maxy = self.metric_geometry.buffer(buffer_m).bounds
-        return int(math.ceil((maxx - minx) / resolution_m) * math.ceil((maxy - miny) / resolution_m))
+        return int(
+            math.ceil((maxx - minx) / resolution_m) * math.ceil((maxy - miny) / resolution_m)
+        )
 
     def feature_collection(self, properties: dict | None = None) -> dict:
         return {
