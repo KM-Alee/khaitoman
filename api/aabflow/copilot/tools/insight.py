@@ -91,14 +91,27 @@ async def get_plan_ladder(ctx: ToolCtx, args: LadderArgs) -> dict[str, Any]:
         out["missing_note"] = (
             f"Not solved in this revision: {missing}. Offer solve_scenario for them instead of guessing."
         )
-    if len(have) >= 2:
-        ids = [runs[k]["run_id"] for k in have]
+    # B0/B1/P share conditions (matched); R is evaluated across uncertain states, so it is shown
+    # next to them from its own run metrics instead of entering the matched comparison.
+    matched = [k for k in have if k != "R"]
+    if len(matched) >= 2:
+        ids = [runs[k]["run_id"] for k in matched]
         res = await ctx.backend.post(
             "/comparisons", {"run_ids": ids}, idempotency_key=ctx.idem("compare_runs", ids)
         )
         labels = {runs[k]["run_id"]: D.PLAN_NAMES[k] for k in have}
-        out["comparison"] = await comparison_view(ctx, res, labels)
+        main = next((k for k in ("P", "B1") if k in matched), matched[-1])
+        pair = (ids[0], runs[main]["run_id"])
+        extra = [await ctx.run_in_pilot(runs["R"]["run_id"])] if "R" in have else []
+        out["comparison"] = await comparison_view(
+            ctx, res, labels, pair=pair, steps=True, extra_views=extra
+        )
         out["datasets"] = out["comparison"].pop("datasets")
+        if extra:
+            out["robust_plan_note"] = (
+                "R (robust) is evaluated across the weather/supply states of its uncertainty set; its row is "
+                "for reference, not a matched comparison. Use read_analysis kind=stress for robustness."
+            )
     for k in have:
         ctx.session_ids.add(runs[k]["run_id"])
     return out

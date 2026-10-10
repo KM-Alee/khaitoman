@@ -325,6 +325,46 @@ def test_provider_failure_after_tools_shows_only_tool_results(app_env):
     assert any("unavailable" in b["text"] for b in _blocks(t, "uncertainty"))
 
 
+def test_malformed_final_answers_stop_after_two_attempts(app_env):
+    broken = {
+        "language": "en",
+        "blocks": [],
+        "needs_clarification": False,
+        "visuals": [{"chart": "bar"}],
+    }
+    prov = ScriptedProvider(
+        [lambda o: [("inspect_run", {"run_id": None, "field_id": None})], broken, broken, broken]
+    )
+    t = ask(app_env, prov, "show")
+    assert t["status"] == "failed" and t["error"]["code"] == "ANSWER_INVALID"
+    assert len(prov.requests) == 3 and prov.requests[2]["tool_choice"]["name"] == "final_answer"
+    assert t["answer"]["deterministic"] is True and not _blocks(t, "text")
+    assert all(p.get("rejected") for p in t["timings"]["provider_calls"][1:])
+
+
+def test_stalled_provider_call_is_retried_once_for_the_answer(app_env):
+    from aabflow.copilot.orchestrator import TurnLimits
+    from tests.copilot.fakes import Stall
+
+    extras = app_env["app"].state.aab.extras
+    extras["copilot_limits"] = TurnLimits(provider_call_s=0.5)
+    try:
+        prov = ScriptedProvider(
+            [
+                lambda o: [("inspect_run", {"run_id": None, "field_id": None})],
+                Stall(5),
+                lambda o: final([{"type": "text", "text": "Here is the plan."}]),
+            ]
+        )
+        t = ask(app_env, prov, "show the plan")
+    finally:
+        extras.pop("copilot_limits", None)
+    assert t["status"] == "completed", t
+    assert prov.requests[2]["tool_choice"] == {"type": "function", "name": "final_answer"}
+    assert prov.requests[2]["input"] == prov.requests[1]["input"]  # same tool outputs resent
+    assert any(p.get("timed_out") for p in t["timings"]["provider_calls"])
+
+
 def test_tool_failure_is_reported_not_hidden(app_env):
     prov = ScriptedProvider(
         [

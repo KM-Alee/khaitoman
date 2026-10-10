@@ -56,6 +56,35 @@ def test_every_schema_is_strict():
         assert t["description"]
 
 
+def _model_fields(model, schema, path):
+    """Every Pydantic field (recursively) must reach the provider schema; a dropped field such as
+    ``title`` makes every strict call fail validation."""
+    from pydantic import BaseModel
+
+    props = schema["properties"]
+    assert set(model.model_fields) == set(props), (path, set(model.model_fields) ^ set(props))
+    for name, f in model.model_fields.items():
+        ann = f.annotation
+        for sub in getattr(ann, "__args__", ()) + (ann,):
+            inner = getattr(sub, "__args__", (sub,))
+            for t in inner:
+                if isinstance(t, type) and issubclass(t, BaseModel):
+                    node = props[name]
+                    node = node.get("items", node)
+                    _model_fields(t, node, f"{path}.{name}")
+
+
+def test_every_model_field_reaches_the_strict_schema():
+    from aabflow.copilot.answer_validation import FinalAnswer
+
+    _model_fields(FinalAnswer, FINAL_ANSWER_TOOL["parameters"], "final_answer")
+    assert (
+        "title" in FINAL_ANSWER_TOOL["parameters"]["properties"]["visuals"]["items"]["properties"]
+    )
+    for spec in REGISTRY.values():
+        _model_fields(spec.args, spec.openai_tool()["parameters"], spec.name)
+
+
 def test_tool_declarations():
     for spec in REGISTRY.values():
         assert spec.semantics in ("read", "create", "compute", "view")

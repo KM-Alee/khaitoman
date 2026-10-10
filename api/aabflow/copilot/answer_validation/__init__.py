@@ -308,6 +308,25 @@ class Validation:
         return not self.issues and not self.numeric_issues
 
 
+_ID_ACTIONS = {
+    "run_": "open_run",
+    "rev_": "open_branch",
+    "ana_": "open_analysis",
+    "cmp_": "open_comparison",
+    "rpt_": "open_report",
+}
+
+
+def action_for_id(ref_id: str) -> str | None:
+    """The workspace view an ID opens, from its type prefix (field IDs look like ``pilot:field-001``)."""
+    for prefix, action in _ID_ACTIONS.items():
+        if ref_id.startswith(prefix):
+            return action
+    if ":field-" in ref_id or ref_id.split(":")[-1].startswith("f"):
+        return "open_field"
+    return None
+
+
 def _cites(raw: list[str] | None, text: str, facts: Facts, where: str, issues: list[str]):
     cites = []
     for c in raw or []:
@@ -439,12 +458,15 @@ async def validate_answer(answer: FinalAnswer, facts: Facts, tctx: Any) -> Valid
             if b.ref_id not in facts.ids:
                 issues.append(f"block {i}: {b.ref_id!r} was not returned by a tool in this turn")
                 continue
+            action = action_for_id(b.ref_id) or b.action  # the ID decides what the button opens
+            if any(x["type"] == "action" and x["ref_id"] == b.ref_id for x in blocks):
+                continue
             blocks.append(
                 {
                     "type": "action",
-                    "action": b.action,
+                    "action": action,
                     "ref_id": b.ref_id,
-                    "label": (b.label or b.action.replace("_", " "))[:80],
+                    "label": (b.label or action.replace("_", " "))[:80],
                 }
             )
     visuals: list[dict[str, Any]] = []

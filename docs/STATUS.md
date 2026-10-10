@@ -14,7 +14,7 @@ Status values: `not_started`, `in_progress`, `passed`, `failed`, `blocked`.
 | M4 | Polished decision loop: workspace/compare, replay, report, visual system, error/stale | in_progress | MapLibre workspace 3D, DEM decoding, optional Esri World Imagery with offline Sentinel-2 fallback (`web/src/components/map/engine.ts`, `tests/e2e/offline-imagery.spec.ts`). Vitest 49/49 passes. |
 | M5 | Expanded intelligence: frontier, stress/robust, surrogate, why-not/synergy | in_progress | Frontier/stress routes mounted under `/api/v2/analyses/`. P01 `surrogate-v7-gpu`: both crops and all three sources pass release gates; 52 default preview requests cover both pilots/all published scenarios. `data/models/surrogate-v7-gpu/evaluation.json`; `evidence/commands/p01-complete-20261010T075535Z.log`. Full M5 acceptance remains P04. |
 | M6 | Complete core: impact/SDG, onboarding UI, evidence, export, offline/restart | not_started | |
-| M7 | Copilot (last): tool registry, provider loop, cards, bilingual, 30×3 eval | not_started | User decision 2026-10-10: the 30×3 live eval will not be run. AT17 stays unpassed. Existing copilot unit tests remain the check. |
+| M7 | Copilot (last): tool registry, provider loop, cards, bilingual, 30×3 eval | in_progress | User decision 2026-10-10: the 30×3 live eval will not be run. AT17 stays unpassed. Existing copilot unit tests remain the check. |
 | M8 | Release: regression, cold launch, rehearsals, release report | not_started | |
 
 ## Features (PRD §3)
@@ -39,7 +39,7 @@ Status values: `not_started`, `in_progress`, `passed`, `failed`, `blocked`.
 | F16 | Impact and SDG analysis | M6 | not_started | |
 | F17 | Evidence and reproducibility | M1–M6 | in_progress | P01: immutable publication/collision/restoration checks, all four pilot-b hashes reproduced, real raw crop artifacts, density reports with selections and bounds, GPU device/process and per-pilot evaluation records. Domain 85 passed. `docs/P01_DOMAIN.md`, `evidence/commands/p01-complete-20261010T075535Z.log`. Reports/export/import remain separate P05/P08 deliverables. |
 | F18 | Complete visual/interaction system | M4/M6 | not_started | |
-| F19 | Conversational copilot | M7 | not_started | |
+| F19 | Conversational copilot | M7 | in_progress | Backend done on `feat/copilot-luna`: 27 validated tools (incl. one-step `run_what_if`, plan ladder, equity, water, economics, SDG, action plan, timeline, saved analyses), server-materialized visual blocks, SSE progress events, schema v3 persistence; contract in `docs/COPILOT.md`. `tests/copilot` 104 passed (scripted fixture provider). Live `gpt-6-luna` smoke 6/7 completed, 1 honest timeout (`evidence/copilot/smoke-20261010T131112Z.json`). Chat UI on the redesigned system still to build. |
 | F20 | Reliable full demo | M8 | not_started | |
 
 ## Acceptance tests (PRD §11.2)

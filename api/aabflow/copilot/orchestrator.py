@@ -44,8 +44,11 @@ from aabflow.domain.hashes import content_hash
 
 log = logging.getLogger("aabflow.copilot")
 
-# A final answer with visuals takes the hosted model ~15-25 s; start it with this much time left.
+# A final answer with visuals takes the hosted model ~10-30 s; start it with this much time left.
 FINAL_RESERVE_S = 28.0
+# One hosted call may stall (seen live: >60 s). Cap each call so one stalled call leaves time to retry
+# once with a forced final answer instead of losing the whole turn.
+PROVIDER_CALL_CAP_S = 40.0
 
 
 @dataclass(frozen=True)
@@ -54,6 +57,7 @@ class TurnLimits:
     max_tool_calls: int = 12
     max_jobs: int = 3
     wall_s: float = 90.0
+    provider_call_s: float = PROVIDER_CALL_CAP_S
 
 
 @dataclass
@@ -273,6 +277,8 @@ class Turn:
         prev: str | None = None
         rounds = calls_made = 0
         regen_used = False
+        invalid_finals = 0
+        stalled = False
         final: dict[str, Any] | None = None
         status = "completed"
         error: dict[str, Any] | None = None
@@ -285,8 +291,11 @@ class Turn:
             if remaining < 4:
                 status = "budget_exhausted"
                 break
-            force_final = rounds == self.limits.max_rounds - 1 or (
-                rounds > 0 and remaining < FINAL_RESERVE_S
+            force_final = (
+                rounds == self.limits.max_rounds - 1
+                or (rounds > 0 and remaining < FINAL_RESERVE_S)
+                or invalid_finals > 0
+                or stalled
             )
             choice: Any = {"type": "function", "name": "final_answer"} if force_final else "auto"
             self.emit(
@@ -302,7 +311,14 @@ class Turn:
             )
             t_call = time.monotonic()
             try:
-                resp = await self._respond(instructions, items, tools, prev, choice, remaining)
+                resp = await self._respond(
+                    instructions,
+                    items,
+                    tools,
+                    prev,
+                    choice,
+                    min(remaining, self.limits.provider_call_s),
+                )
             except asyncio.CancelledError:
                 status = "cancelled"
                 break
@@ -312,6 +328,18 @@ class Turn:
                 self.emit("error", error)
                 break
             except TimeoutError:
+                self.timings["provider_calls"].append(
+                    {
+                        "round": rounds + 1,
+                        "latency_ms": int((time.monotonic() - t_call) * 1000),
+                        "calls": [],
+                        "timed_out": True,
+                        "forced_final": bool(force_final),
+                    }
+                )
+                if not stalled and not force_final and tctx.remaining_s() >= 20:
+                    stalled = True  # retry this round once, asking directly for the answer
+                    continue
                 status = "budget_exhausted"
                 error = {"code": "TURN_TIMEOUT", "detail": "the turn reached its time budget"}
                 break
@@ -364,13 +392,23 @@ class Turn:
                 try:
                     ans = FinalAnswer.model_validate(c.parsed())
                 except (ValidationError, ValueError) as exc:
+                    reason = f"invalid answer: {exc}"[:800]
+                    self.timings["provider_calls"][-1]["rejected"] = reason
+                    invalid_finals += 1
+                    if invalid_finals >= 2:
+                        status = "failed"
+                        error = {
+                            "code": "ANSWER_INVALID",
+                            "detail": "the hosted model twice returned an answer that does not match the "
+                            "answer schema",
+                        }
+                        self.emit("error", error)
+                        break
                     outputs.append(
                         {
                             "type": "function_call_output",
                             "call_id": c.call_id,
-                            "output": json.dumps(
-                                {"accepted": False, "reason": f"invalid answer: {exc}"[:800]}
-                            ),
+                            "output": json.dumps({"accepted": False, "reason": reason}),
                         }
                     )
                     items = outputs
@@ -385,6 +423,7 @@ class Turn:
                     final = v_or_final
                     break
                 regen_used = True
+                self.timings["provider_calls"][-1]["rejected"] = v_or_final[:12]
                 self.emit(
                     "thinking",
                     {
@@ -833,8 +872,15 @@ class Turn:
                     continue
                 if j["state"] in TERMINAL_JOB_STATES:
                     pending.remove(jid)
+                    before = set(self.tctx.datasets.items)
                     try:
                         payload = await describe_job(self.tctx, j)
+                        fresh = [d for k, d in self.tctx.datasets.items.items() if k not in before]
+                        made = [
+                            default_visual(d, f"job-{jid}-{i + 1}") for i, d in enumerate(fresh)
+                        ]
+                        # server-built charts of the finished job's own rows (marked auto)
+                        payload["visuals"] = [v.model_dump(mode="json") for v in made if v]
                     except ToolFailure as exc:
                         payload = {
                             "job_id": jid,

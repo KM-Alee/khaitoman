@@ -281,6 +281,7 @@ class WhatIfArgs(ToolArgs):
     submits_jobs=True,
     activity="Running your what-if as a new scenario",
     timeout_s=80,
+    max_result_chars=16_000,
 )
 async def run_what_if(ctx: ToolCtx, args: WhatIfArgs) -> dict[str, Any]:
     """One-step what-if: create a reversible branch of the current scenario with typed changes (budget as said,

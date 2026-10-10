@@ -74,6 +74,13 @@ def final(
     }
 
 
+class Stall:
+    """A step that never answers within ``seconds`` (simulates a stalled hosted call)."""
+
+    def __init__(self, seconds: float):
+        self.seconds = seconds
+
+
 class ScriptedProvider:
     model = "scripted-test-provider"
 
@@ -102,6 +109,11 @@ class ScriptedProvider:
         if not self.steps:
             raise ProviderError("PROVIDER_ERROR", "script exhausted")
         step = self.steps.pop(0)
+        if isinstance(step, Stall):
+            import asyncio
+
+            await asyncio.sleep(step.seconds)
+            raise ProviderError("PROVIDER_TIMEOUT", "stalled step was not cancelled")
         res = step(outputs) if callable(step) else step
         if isinstance(res, Exception):
             raise res

@@ -305,7 +305,7 @@ async def compare_runs(ctx: ToolCtx, args: CompareArgs) -> dict[str, Any]:
     res = await ctx.backend.post(
         "/comparisons", {"run_ids": ids}, idempotency_key=ctx.idem("compare_runs", ids)
     )
-    return await comparison_view(ctx, res)
+    return await comparison_view(ctx, res, steps=len(ids) > 2)
 
 
 def _slim(d: dict[str, Any]) -> dict[str, Any]:
@@ -314,12 +314,25 @@ def _slim(d: dict[str, Any]) -> dict[str, Any]:
 
 
 async def comparison_view(
-    ctx: ToolCtx, res: dict[str, Any], labels_by_run: dict[str, str] | None = None
+    ctx: ToolCtx,
+    res: dict[str, Any],
+    labels_by_run: dict[str, str] | None = None,
+    pair: tuple[str, str] | None = None,
+    steps: bool = False,
+    extra_views: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """Model-facing summary of a comparison plus its chart datasets (deltas come from the service)."""
     from aabflow.copilot import datasets as D
 
-    run_level = [d for d in res["deltas"] if d["field_id"] is None]
+    key_metrics = {m for m, _ in D.PLAN_COLUMNS} | {
+        "cropped_area_ha",
+        "withdrawal_productivity_kg_m3",
+    }
+    run_level = [
+        d
+        for d in res["deltas"]
+        if d["field_id"] is None and (len(res["run_ids"]) == 2 or d["metric_id"] in key_metrics)
+    ]
     field_prod = sorted(
         (
             d
@@ -332,9 +345,9 @@ async def comparison_view(
     call_id, tool = ctx.call()
     roster = await ctx.field_roster()
     made = [
-        D.plans_side_by_side(ctx, res, labels_by_run or {}, call_id, tool),
-        D.field_deltas(ctx, res, roster, call_id, tool),
-        D.incremental_steps(ctx, res, call_id, tool),
+        D.plans_side_by_side(ctx, res, labels_by_run or {}, call_id, tool, extra_views),
+        D.field_deltas(ctx, res, roster, call_id, tool, pair=pair),
+        D.incremental_steps(ctx, res, call_id, tool) if steps else None,
     ]
     return {
         "comparison_id": res["comparison_id"],

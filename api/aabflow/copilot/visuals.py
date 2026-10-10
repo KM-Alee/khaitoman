@@ -173,9 +173,11 @@ class Dataset:
     def col(self, key: str | None) -> Column | None:
         return next((c for c in self.columns if c.key == key), None)
 
-    def descriptor(self) -> dict[str, Any]:
-        """Compact description returned to the model inside the tool output."""
-        return {
+    def descriptor(self, max_inline_rows: int = 12) -> dict[str, Any]:
+        """Compact description returned to the model inside the tool output.
+
+        Small datasets also carry their rows so the model can read the values it talks about."""
+        out = {
             "dataset_id": self.dataset_id,
             "title": self.title,
             "kind": self.kind,
@@ -186,6 +188,9 @@ class Dataset:
             ],
             "charts": self.charts,
         }
+        if len(self.rows) <= max_inline_rows:
+            out["data"] = self.rows
+        return out
 
 
 class DatasetStore:

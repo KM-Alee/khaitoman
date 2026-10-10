@@ -156,3 +156,14 @@ def test_caption_numbers_are_checked():
     facts.add({"run_id": "run_x", "production_kg": 154117.9})
     assert unsupported_numbers("About 154 t in total", facts) == []
     assert unsupported_numbers("About 999 t in total", facts) == ["999 t"]
+
+
+def test_action_kind_follows_the_id():
+    from aabflow.copilot.answer_validation import action_for_id
+
+    assert action_for_id("run_abc") == "open_run"
+    assert action_for_id("ana_abc") == "open_analysis"
+    assert action_for_id("rev_abc") == "open_branch"
+    assert action_for_id("cmp_abc") == "open_comparison"
+    assert action_for_id("rpt_abc") == "open_report"
+    assert action_for_id("pilot-a:field-001") == "open_field"

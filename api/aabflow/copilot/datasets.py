@@ -308,8 +308,12 @@ def plans_side_by_side(
     labels_by_run: dict[str, str],
     call_id: str | None,
     tool: str,
+    extra_views: list[dict[str, Any]] | None = None,
 ) -> Dataset:
-    """One row per compared run, values copied from the comparison's run-level a/b values."""
+    """One row per compared run, values copied from the comparison's run-level a/b values.
+
+    ``extra_views``: run views shown alongside but outside the matched comparison (the robust plan R is
+    evaluated across uncertain states, so it is labelled non-matched); their values come from the run."""
     run_ids = cmp["run_ids"]
     plans = {p["run_id"]: p for p in cmp["plans"]}
     vals: dict[str, dict[str, Any]] = {r: {} for r in run_ids}
@@ -334,6 +338,24 @@ def plans_side_by_side(
         for mid, _ in PLAN_COLUMNS:
             row[mid] = vals[r].get(mid) if p.get("outcome", "plan") == "plan" else None
         rows.append(row)
+    extra_notes = []
+    for view in extra_views or []:
+        run = view["run"]
+        by = {m["metric_id"]: m for m in view.get("metrics", []) if m.get("field_id") is None}
+        row = {
+            "plan": labels_by_run.get(run["run_id"])
+            or PLAN_NAMES.get(run["plan_kind"], run["run_id"]),
+            "plan_kind": run["plan_kind"],
+            "solver_status": run["solver_status"],
+            "run_id": run["run_id"],
+        }
+        for mid, _ in PLAN_COLUMNS:
+            row[mid] = (by.get(mid) or {}).get("value") if run["outcome"] == "plan" else None
+        rows.append(row)
+        extra_notes.append(
+            f"{row['plan']} is evaluated across several weather/supply states; it is shown for reference and "
+            "is not part of the matched comparison."
+        )
     cols = [col("plan", "category"), col("plan_kind", "category")]
     for mid, unit in PLAN_COLUMNS:
         cols.append(col(mid, "number", units.get(mid) or unit, basis=basis_of(mid)))
@@ -354,12 +376,12 @@ def plans_side_by_side(
         source=_src(
             tool,
             call_id,
-            run_ids=run_ids,
+            run_ids=[r["run_id"] for r in rows],
             comparison_ids=cmp["comparison_id"],
             endpoint="/comparisons",
         ),
         basis=["model_output", "computed_from_inputs"],
-        notes=[cmp["labels"]["comparison"]]
+        notes=[cmp["labels"]["comparison"], *extra_notes]
         + (
             []
             if cmp["compatible"]
@@ -377,9 +399,10 @@ def field_deltas(
     call_id: str | None,
     tool: str,
     metric_id: str = "field_production_kg",
+    pair: tuple[str, str] | None = None,
 ) -> Dataset | None:
-    """Per-field server-computed deltas between the first (a) and last (b) compared run."""
-    a_id, b_id = cmp["run_ids"][0], cmp["run_ids"][-1]
+    """Per-field server-computed deltas between two compared runs (default: first and last)."""
+    a_id, b_id = pair or (cmp["run_ids"][0], cmp["run_ids"][-1])
     rows = []
     unit = None
     for d in cmp["deltas"]:
@@ -1117,18 +1140,14 @@ def timeline(
         in (
             "canal_receipt_m3",
             "pump_m3",
-            "pump_abstraction_m3",
             "pond_release_m3",
-            "irrigation_mm",
-            "gross_application_mm",
-            "rain_mm",
+            "field_application_m3",
+            "gross_irrigation_mm",
             "precipitation_mm",
-            "soil_water_mm",
-            "root_zone_depletion_mm",
-            "water_stress",
-            "canopy_cover",
+            "et_mm",
+            "root_zone_water_mm",
+            "canopy_fraction",
             "biomass_kg_ha",
-            "yield_kg_ha",
         )
     ] or series[:8]
     rows = []
@@ -1148,8 +1167,9 @@ def timeline(
         )
         for s in keep
     ]
-    water = [s["series_id"] for s in keep if s.get("kind") == "water"][:3]
-    crop = [s["series_id"] for s in keep if s.get("kind") == "crop"][:2]
+    ids = [s["series_id"] for s in keep]
+    water = [x for x in ("canal_receipt_m3", "pump_m3", "pond_release_m3") if x in ids] or ids[:1]
+    crop = [x for x in ("canopy_fraction",) if x in ids] or ids[:1]
     return ctx.datasets.add(
         kind="timeline",
         title=f"Season timeline for {field_label(roster, fid) if fid else 'the network'} "
@@ -1158,9 +1178,9 @@ def timeline(
         rows=rows,
         charts=["line", "area", "bar"],
         defaults={
-            "line": Encoding(x="date", y=crop or [keep[0]["series_id"]]),
-            "area": Encoding(x="date", y=water or [keep[0]["series_id"]]),
-            "bar": Encoding(x="date", y=water or [keep[0]["series_id"]]),
+            "line": Encoding(x="date", y=crop),
+            "area": Encoding(x="date", y=water),
+            "bar": Encoding(x="date", y=water),
         },
         source=_src(tool, call_id, run_ids=tl["run_id"], endpoint=f"/runs/{tl['run_id']}/timeline"),
         basis=["model_output", "computed_from_inputs"],
