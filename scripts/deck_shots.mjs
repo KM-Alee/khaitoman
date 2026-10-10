@@ -69,7 +69,7 @@ await mapIdle(raw);
 await shot(raw, "04-ai-raw-fields");
 
 await pg.goto(`${base}${p}/explore?tab=surrogate&run=${P}&field=${encodeURIComponent(s.focus_field_id)}`);
-await pg.getByTestId("preview-yield").waitFor({ timeout: 60_000 });
+await pg.getByTestId("preview-yield").waitFor({ timeout: 90_000 }).catch(() => console.log("preview not shown"));
 await pg.waitForTimeout(1200);
 await shot(pg, "05-instant-crop");
 

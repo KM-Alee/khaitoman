@@ -247,7 +247,7 @@ const chartText = { catAxisLabelFontFace: BODY, valAxisLabelFontFace: BODY, data
   const items = [
     ["+18.8%", "more wheat than today's routine\n129.7 t → 154.1 t", COL.wheat],
     ["61%", "of its water for the worst-off tail field, back from 44% under 'optimise existing'", COL.glow],
-    ["65%", "of the ₨30 lakh budget used\n₨19.5 lakh on 33 works", COL.text],
+    ["65%", "of the Rs 30 lakh budget used\nRs 19.5 lakh on 33 works", COL.text],
   ];
   items.forEach(([b, l, c], i) => {
     card(s, xs[i], 2.2, 3.85, 2.9, `anim-k${i}`);
@@ -267,7 +267,7 @@ const chartText = { catAxisLabelFontFace: BODY, valAxisLabelFontFace: BODY, data
 // 5 · AI inside ------------------------------------------------------------------------------------
 {
   const s = slide();
-  drop(s, 5.2, 6.1, 2.6, 78);
+  drop(s, 5.6, 6.85, 2.0, 78);
   eyebrow(s, "Is AI the core? Yes: four engines");
   title(s, "It sees, predicts, plans and explains", "Perceive → simulate → decide → explain and act. Every fact below is read from stored evidence.");
   const eng = [
@@ -293,7 +293,7 @@ const chartText = { catAxisLabelFontFace: BODY, valAxisLabelFontFace: BODY, data
 // 6 · Sees -----------------------------------------------------------------------------------------
 {
   const s = slide();
-  drop(s, 11.2, 5.1, 2.4, 70);
+  drop(s, 12.1, 6.35, 1.6, 70);
   eyebrow(s, "Engine 1 · Sees", M, 0.25, COL.glow);
   title(s, "The AI found every field from space");
   shotFrame(s, "04-ai-raw-fields.png", M, 1.55, 7.6);
@@ -347,7 +347,7 @@ const chartText = { catAxisLabelFontFace: BODY, valAxisLabelFontFace: BODY, data
   eyebrow(s, "Engine 3 · Plans", M, 0.25, COL.water);
   title(s, "It tells a committee when not to spend", "Six budget settings, each solved to a proven optimum (frontier analysis).");
   card(s, M, 2.1, 7.6, 4.55, "anim-fcard");
-  s.addChart(pres.charts.LINE, [{ name: "Wheat (t)", labels: ["₨0", "₨5 lakh", "₨15 lakh", "₨30 lakh", "₨80 lakh"], values: [140.5, 152.9, 153.3, 154.1, 154.6] }], {
+  s.addChart(pres.charts.LINE, [{ name: "Wheat (t)", labels: ["Rs 0", "Rs 5 lakh", "Rs 15 lakh", "Rs 30 lakh", "Rs 80 lakh"], values: [140.5, 152.9, 153.3, 154.1, 154.6] }], {
     x: M + 0.2,
     y: 2.2,
     w: 7.2,
@@ -373,9 +373,9 @@ const chartText = { catAxisLabelFontFace: BODY, valAxisLabelFontFace: BODY, data
     ...chartText,
     objectName: "anim-fchart",
   });
-  stat(s, 8.6, 2.2, 4.1, "+12.4 t", "from the first ₨5 lakh", COL.wheat, "anim-f1", 50);
-  stat(s, 8.6, 3.85, 4.1, "+1.7 t", "from the next ₨75 lakh", COL.text2, "anim-f2", 50);
-  s.addText("A 95% tail floor at ₨30 lakh is proven infeasible: an honest “no”, not a fake “yes”.", {
+  stat(s, 8.6, 2.2, 4.1, "+12.4 t", "from the first Rs 5 lakh", COL.wheat, "anim-f1", 50);
+  stat(s, 8.6, 3.85, 4.1, "+1.7 t", "from the next Rs 75 lakh", COL.text2, "anim-f2", 50);
+  s.addText("A 95% tail floor at Rs 30 lakh is proven infeasible: an honest “no”, not a fake “yes”.", {
     x: 8.6,
     y: 5.55,
     w: 4.1,
@@ -394,7 +394,7 @@ const chartText = { catAxisLabelFontFace: BODY, valAxisLabelFontFace: BODY, data
 // 9 · Bad years ------------------------------------------------------------------------------------
 {
   const s = slide();
-  drop(s, -1.0, 4.6, 3.0, 74);
+  drop(s, -1.9, 6.0, 2.6, 74);
   eyebrow(s, "Stress test");
   title(s, "The robust plan holds in all 9 tested seasons", "3 weather years × 3 canal supplies. A plan that breaks a water rule gets no yield, never a made-up one.");
   const rows = [
@@ -443,7 +443,7 @@ const chartText = { catAxisLabelFontFace: BODY, valAxisLabelFontFace: BODY, data
   drop(s, 6.0, -1.2, 2.6, 76);
   eyebrow(s, "Engine 4 · Explains and acts", M, 0.25, COL.veg);
   title(s, "One sentence in, a season plan out");
-  s.addText("“We have ₨10 lakh. Don't hurt the tail farmers, and make sure it survives a dry year.”", {
+  s.addText("“We have Rs 10 lakh. Don't hurt the tail farmers, and make sure it survives a dry year.”", {
     x: M,
     y: 1.35,
     w: W - 2 * M,
@@ -477,7 +477,7 @@ const chartText = { catAxisLabelFontFace: BODY, valAxisLabelFontFace: BODY, data
 // 11 · Trust ---------------------------------------------------------------------------------------
 {
   const s = slide();
-  drop(s, 10.9, 4.9, 2.6, 72);
+  drop(s, 12.0, 6.3, 1.8, 72);
   eyebrow(s, "Why a committee can trust it");
   title(s, "Honest by construction");
   const rows = [
