@@ -18,6 +18,7 @@ import { useAppActions } from "@/app/actions";
 import { BREAKPOINTS, useMediaQuery, useReducedMotion } from "@/app/environment";
 import { MapBinder } from "@/components/map/MapBinder";
 import { MapSlot } from "@/components/map/MapSlot";
+import { getEngine, useMapRuntime } from "@/components/map/runtime";
 import { AssistantPanel } from "@/components/layout/AssistantPanel";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -73,7 +74,13 @@ export function PlanSeasonScreen() {
   const recommended = st && (inv.phase === "done" || turn?.answer) ? recommendedRunId(st) : null;
   const active = inv.phase === "running" || inv.phase === "replaying";
   const contextRun = turn?.context?.selected_run_id ?? inv.context.selected_run_id ?? runParam ?? null;
-  const mapRun = st?.mapRunId ?? recommended ?? contextRun;
+  // Once the brief names its recommendation the map shows that plan; until then the newest run a step made.
+  const mapRun = recommended ?? st?.mapRunId ?? contextRun;
+  const mapReady = useMapRuntime((m) => m.ready);
+  // The persistent map keeps the last screen's camera (often one field); frame the whole watercourse.
+  useEffect(() => {
+    if (mapReady) getEngine()?.fitAOI(!reduced);
+  }, [mapReady, reduced]);
   const pilotKey = `${pilotId}@${version}`;
   const terminal = turn && turn.status !== "completed" ? TERMINAL_COPY[turn.status] : undefined;
 
