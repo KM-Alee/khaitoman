@@ -24,6 +24,8 @@ def test_pilot_b_raw_bundle_reuses_the_delineate_cache(tmp_path, monkeypatch):
     manifest = config.ROOT / "data" / "pilots" / "pilot-b" / "reviewed-v1" / "manifest.json"
     published = config.ROOT / "data" / "pilots" / "pilot-b"
     before_manifest = file_sha256(manifest)
+    v2_manifest = published / "reviewed-v2" / "manifest.json"
+    v2_manifest_before = file_sha256(v2_manifest) if v2_manifest.is_file() else None
     run_record = config.ROOT / "vision" / "runs" / PILOT_B_INFERENCE_KEY / "run.json"
     batch = config.ROOT / "vision" / "batches" / f"{PILOT_B_INFERENCE_KEY}.yaml"
     before_run = run_record.read_bytes()
@@ -75,8 +77,14 @@ def test_pilot_b_raw_bundle_reuses_the_delineate_cache(tmp_path, monkeypatch):
         assert result["input_sha256"] == recorded["inputs"]["scene/scene.tif"]
         assert f"delineate:{PILOT_B_INFERENCE_KEY}" in result["cache_hits"]
         assert file_sha256(manifest) == before_manifest
-        assert not (published / "reviewed-v2").exists()
+        v2 = published / "reviewed-v2"
+        if v2.exists():
+            assert (v2 / "manifest.json").is_file()
+            assert file_sha256(v2 / "manifest.json") == v2_manifest_before
+        else:
+            assert not v2.exists()
         assert not (published / "reviewed-v1.partial").exists()
+        assert not (published / "reviewed-v2.partial").exists()
         assert manifest.is_file()
     finally:
         if batch.exists() and batch.read_bytes() != before_batch:

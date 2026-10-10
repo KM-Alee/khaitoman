@@ -6,7 +6,12 @@ import json
 
 from aabflow.repositories.sqlite import connect
 from tests.fixtures.api_app import settings_for
-from tests.integration.test_onboarding_support import POLY, onboarding_client, write_raw_bundle
+from tests.integration.test_onboarding_support import (
+    PILOT_B_BUNDLE,
+    POLY,
+    onboarding_client,
+    write_raw_bundle,
+)
 
 
 def test_aoi_check_reports_area_without_starting_a_job(tmp_path):
@@ -29,7 +34,7 @@ def test_raw_package_list_is_not_the_published_pilot(tmp_path):
         assert response.status_code == 200, response.text
         packages = response.json()["packages"]
     refs = [row["bundle_ref"] for row in packages]
-    assert any(row["bundle_id"] == "20261010T003841Z-798d10d2" for row in packages)
+    assert any(row["bundle_ref"] == PILOT_B_BUNDLE for row in packages)
     assert all("reviewed-v1" not in ref for ref in refs)
     assert all(row["intake_kind"] == "raw_source_bundle" for row in packages)
     assert all("/pilots/" not in ref for ref in refs)
@@ -105,3 +110,17 @@ def test_online_intake_accepts_the_ui_shape(tmp_path):
         record = json.loads((tmp_path / "onboarding" / oid / "intake.json").read_text())
         assert record["source_mode"] == "online"
         assert record["bundle_ref"] is None
+
+
+def test_malformed_aoi_ring_is_invalid_input_not_a_server_error(tmp_path):
+    two_points = {"type": "Polygon", "coordinates": [[[72.0, 30.0], [72.2, 30.0]]]}
+    with onboarding_client(tmp_path) as client:
+        checked = client.post("/api/v2/onboarding/aoi-check", json={"aoi": two_points})
+        assert checked.status_code == 422, checked.text
+        assert checked.json()["code"] == "INVALID_INPUT"
+        assert "aoi" in checked.json()["fields"]
+        created = client.post(
+            "/api/v2/onboarding", json={"aoi": two_points, "source_mode": "online"}
+        )
+        assert created.status_code == 422, created.text
+        assert created.json()["code"] == "INVALID_INPUT"
