@@ -12,6 +12,7 @@ from dataclasses import dataclass
 import shapely
 import shapely.validation
 from pyproj import CRS, Transformer
+from shapely.errors import ShapelyError
 from shapely.geometry import Polygon, box, mapping, shape
 from shapely.ops import transform
 
@@ -57,13 +58,19 @@ class Aoi:
     @classmethod
     def from_geojson(cls, gj: dict) -> Aoi:
         g = gj
-        if gj.get("type") == "FeatureCollection":
-            if len(gj["features"]) != 1:
-                raise AoiError("AOI FeatureCollection must contain exactly one feature")
-            g = gj["features"][0]["geometry"]
-        elif gj.get("type") == "Feature":
-            g = gj["geometry"]
-        geom = shape(g)
+        try:
+            if gj.get("type") == "FeatureCollection":
+                if len(gj["features"]) != 1:
+                    raise AoiError("AOI FeatureCollection must contain exactly one feature")
+                g = gj["features"][0]["geometry"]
+            elif gj.get("type") == "Feature":
+                g = gj["geometry"]
+            geom = shape(g)
+        except AoiError:
+            raise
+        except (KeyError, TypeError, ValueError, AttributeError, IndexError, ShapelyError) as exc:
+            # A malformed ring (too few positions, wrong nesting) is invalid input, not a 500.
+            raise AoiError(f"AOI is not valid GeoJSON geometry: {exc}") from exc
         return cls.from_geometry(geom)
 
     @classmethod
