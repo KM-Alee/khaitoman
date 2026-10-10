@@ -55,7 +55,8 @@ services:
     profiles: [test]
     build: { context: ., target: e2e }
     image: aabflow-e2e:local
-    environment: { PLAYWRIGHT_BASE_URL: "http://demo:8000" }
+    # NODE_PATH lets specs under tests/e2e resolve web deps such as @axe-core/playwright.
+    environment: { PLAYWRIGHT_BASE_URL: "http://demo:8000", NODE_PATH: "/app/web/node_modules" }
     volumes:
       - ".:/app"
       - "/app/web/node_modules"

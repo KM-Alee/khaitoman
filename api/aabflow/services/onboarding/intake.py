@@ -7,7 +7,7 @@ import sqlite3
 from typing import Any
 
 from aabflow import config
-from aabflow.api.errors import conflict, invalid
+from aabflow.api.errors import DomainError, conflict, invalid
 from aabflow.config import Settings
 from aabflow.domain.hashes import content_hash
 from aabflow.domain.ids import new_id
@@ -20,6 +20,7 @@ from aabflow.ingestion.onboarding.catalog import (
     resolve_raw_package,
 )
 from aabflow.ingestion.onboarding.layers import LayerError, list_layers, read_layer
+from aabflow.ingestion.onboarding.review_input import structural_blockers
 from aabflow.ingestion.packages.bundle import BundleError
 from aabflow.ingestion.packages.validate import PackageValidationError
 from aabflow.jobs import queue
@@ -145,6 +146,13 @@ def view(conn: sqlite3.Connection, settings: Settings, onboarding_id: str) -> di
     state = row["state"]
     job_error = _loads_error(job["error_ref"]) if job is not None and job["error_ref"] else None
     error = job_error or status.get("error")
+    review = _review_state(settings, row)
+    summary = inference.get("review_summary") if isinstance(inference, dict) else None
+    if review is not None and review.get("review_summary") is not None:
+        summary = review.pop("review_summary")
+    elif review is not None:
+        review.pop("review_summary", None)
+    publish_blockers = review.pop("publish_blockers") if review is not None else []
     return {
         "onboarding_id": row["onboarding_id"],
         "intake_id": row["onboarding_id"],
@@ -159,7 +167,11 @@ def view(conn: sqlite3.Connection, settings: Settings, onboarding_id: str) -> di
         "aoi_check": status.get("aoi_check"),
         "blockers": blockers,
         "warnings": warnings,
-        "validation": {"blockers": blockers, "warnings": warnings},
+        "validation": {
+            "blockers": blockers,
+            "warnings": warnings,
+            "publish_blockers": publish_blockers,
+        },
         "job_id": row["job_id"],
         "job_state": None if job is None else job["state"],
         "progress": None if job is None else job["progress"],
@@ -167,9 +179,48 @@ def view(conn: sqlite3.Connection, settings: Settings, onboarding_id: str) -> di
         "error": error,
         "inference": inference or None,
         "cache_hit": bool(inference.get("cache_hit")) if isinstance(inference, dict) else False,
-        "review_summary": inference.get("review_summary") if isinstance(inference, dict) else None,
+        "review_summary": summary,
+        "review": review,
         "created_at": row["created_at"],
         "updated_at": row["updated_at"],
+    }
+
+
+_REVIEWABLE = ("needs_review", "reviewed", "validated")
+
+
+def _review_state(settings: Settings, row: sqlite3.Row) -> dict[str, Any] | None:
+    """Last applied review inputs and the structural checks publish will run.
+
+    A review PATCH replaces the whole reviewer input (field edits are not merged
+    across versions), so the UI starts from the edits stored for the current
+    version. ``publish_blockers`` are the same checks ``publish`` refuses on.
+    """
+    try:
+        workdir = store.workdir_for(settings, row)
+        st = pipeline.status(workdir)
+    except (DomainError, pipeline.StageError, ValueError, OSError):
+        return None
+    version = int(st.get("review_version") or 0)
+    applied: dict[str, Any] = {}
+    edits_path = workdir / "review" / f"edits_v{version}.json"
+    if version > 0 and edits_path.is_file() and not edits_path.is_symlink():
+        from aabflow.ingestion.common import read_json
+
+        applied = read_json(edits_path)
+    state = st.get("state")
+    return {
+        "version": version,
+        "field_edits": list(applied.get("field_edits") or []),
+        "reviewer": applied.get("reviewer"),
+        "review_config": {
+            key: value for key, value in (st.get("review_config") or {}).items() if key != "network"
+        },
+        "network": st.get("network_review"),
+        "parent_canal_feature_id": st.get("parent_canal_feature_id"),
+        "applied_at": applied.get("applied_at"),
+        "review_summary": st.get("review_summary"),
+        "publish_blockers": structural_blockers(st) if state in _REVIEWABLE else [],
     }
 
 
@@ -272,6 +323,17 @@ def apply_review(
     except ValueError as exc:
         raise invalid(str(exc)) from exc
     st = pipeline.status(workdir)
+    # Source warnings (AOI check, imagery processing) still apply after a review; keep them.
+    status = store_status(row)
+    inference = status.get("inference") or {}
+    warnings: list[str] = []
+    for item in [
+        *((status.get("aoi_check") or {}).get("warnings") or []),
+        *(inference.get("warnings") or [] if isinstance(inference, dict) else []),
+        *(result.get("warnings") or []),
+    ]:
+        if item not in warnings:
+            warnings.append(item)
     store.patch(
         conn,
         onboarding_id,
@@ -280,7 +342,7 @@ def apply_review(
         status={
             "stage": st["state"],
             "blockers": result.get("blockers") or [],
-            "warnings": result.get("warnings") or [],
+            "warnings": warnings,
         },
     )
     return {
