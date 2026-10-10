@@ -1,0 +1,30 @@
+513 tests collected in 1.45s
+core-acceptance v1: running 14 AT tests once
+..............                                                           [100%]
+14 passed in 5.01s
+core-acceptance: v1
+g_core: false
+m7_completion_gate: false
+at13_at18_marked_passed: false
+batches_launched: none
+pytest_exit: 0
+note: v1 runs existing AT tests once, fails on executed failures, and lists AT ids with no test. It is not the G-CORE completion gate and does not mark AT13-AT18 passed.
+AT01 status=no_test tests=0 marked_passed=false
+AT02 status=passed tests=2 marked_passed=true
+AT03 status=passed tests=2 marked_passed=true
+AT04 status=passed tests=4 marked_passed=true
+AT05 status=passed tests=1 marked_passed=true
+AT06 status=passed tests=1 marked_passed=true
+AT07 status=passed tests=1 marked_passed=true
+AT08 status=passed tests=1 marked_passed=true
+AT09 status=no_test tests=0 marked_passed=false
+AT10 status=no_test tests=0 marked_passed=false
+AT11 status=no_test tests=0 marked_passed=false
+AT12 status=passed tests=2 marked_passed=true
+AT13 status=no_test tests=0 marked_passed=false
+AT14 status=no_test tests=0 marked_passed=false
+AT15 status=no_test tests=0 marked_passed=false
+AT16 status=no_test tests=0 marked_passed=false
+AT17 status=no_test tests=0 marked_passed=false
+AT18 status=no_test tests=0 marked_passed=false
+absent: AT01,AT09,AT10,AT11,AT13,AT14,AT15,AT16,AT17,AT18
