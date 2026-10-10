@@ -338,7 +338,11 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Evidence Detail */
+        /**
+         * Evidence Detail
+         * @description Package IDs such as ``ev:aoi`` repeat across pilots; ``pilot_id``/``pilot_version``
+         *     pick the record of the package being viewed instead of the last one published.
+         */
         get: operations["evidence_detail_api_v2_evidence__evidence_id__get"];
         put?: never;
         post?: never;
@@ -4199,7 +4203,10 @@ export interface operations {
     };
     evidence_detail_api_v2_evidence__evidence_id__get: {
         parameters: {
-            query?: never;
+            query?: {
+                pilot_id?: string | null;
+                pilot_version?: string | null;
+            };
             header?: never;
             path: {
                 evidence_id: string;

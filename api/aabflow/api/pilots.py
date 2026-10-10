@@ -375,8 +375,25 @@ def evidence_search(
 
 
 @router.get("/evidence/{evidence_id}", response_model=EvidenceDetail)
-def evidence_detail(evidence_id: str, state: State, conn: Conn) -> EvidenceDetail:
+def evidence_detail(
+    evidence_id: str,
+    state: State,
+    conn: Conn,
+    pilot_id: str | None = None,
+    pilot_version: str | None = None,
+) -> EvidenceDetail:
+    """Package IDs such as ``ev:aoi`` repeat across pilots; ``pilot_id``/``pilot_version``
+    pick the record of the package being viewed instead of the last one published."""
     holders = [pkg for pkg in state.pilots.published() if evidence_id in pkg.evidence]
+    scoped = [
+        pkg
+        for pkg in holders
+        if (pilot_id is None or pkg.pilot_id == pilot_id)
+        and (pilot_version is None or pkg.pilot_version == pilot_version)
+    ]
+    if pilot_id is not None and holders and not scoped:
+        raise not_found("evidence_id", evidence_id)
+    holders = scoped or holders
     if holders:
         return EvidenceDetail(
             record=holders[-1].evidence[evidence_id], pilot_ids=[p.pilot_id for p in holders]

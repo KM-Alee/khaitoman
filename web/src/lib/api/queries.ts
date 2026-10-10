@@ -3,6 +3,7 @@
  * analysis), so a completed job can invalidate exactly what it produced (T10.2).
  */
 import { useMutation, useQuery, useQueryClient, type UseQueryOptions } from "@tanstack/react-query";
+import { useParams } from "react-router";
 import { api, qs, ApiError } from "./client";
 import { readMapBundle, readTimeline, type MapBundle, type Timeline } from "./adapters";
 import type {
@@ -567,6 +568,27 @@ export function useRunList(pilotId?: string, version?: string) {
   });
 }
 
+/**
+ * Ordinary (non-analysis) runs that share a revision with `runId`, newest first.
+ * Lets a reloaded or shared `?run=` link rebuild the B0/B1/P ladder from the server.
+ */
+export function useRevisionSiblings(runId?: string | null) {
+  const anchor = useRun(runId);
+  const revisionId = anchor.data?.scenario_revision_id ?? null;
+  const list = useQuery({
+    queryKey: ["runs-by-revision", revisionId ?? ""],
+    enabled: !!revisionId,
+    queryFn: async ({ signal }) =>
+      listOf<RunListItem & { analysis_id?: string | null }>(
+        await api.get(`/runs${qs({ scenario_revision_id: revisionId })}`, signal),
+        "runs",
+      ),
+    staleTime: 10_000,
+    retry,
+  });
+  return { anchor, list, isLoading: anchor.isLoading || list.isLoading, error: anchor.error ?? list.error };
+}
+
 export function useComparison(runIds: string[]) {
   return useQuery({
     queryKey: qk.comparison(runIds),
@@ -618,11 +640,13 @@ export function useJob(jobId?: string | null) {
 }
 
 export function useEvidence(id?: string | null) {
+  // Package evidence IDs (ev:aoi, ev:network, …) repeat across pilots: scope to the viewed one.
+  const { pilotId, version } = useParams();
   return useQuery({
-    queryKey: qk.evidence(id ?? ""),
+    queryKey: [...qk.evidence(id ?? ""), pilotId ?? "", version ?? ""],
     enabled: !!id,
     queryFn: async ({ signal }) => {
-      const r = await api.get<Record<string, unknown>>(`/evidence/${enc(id!)}`, signal);
+      const r = await api.get<Record<string, unknown>>(`/evidence/${enc(id!)}${qs({ pilot_id: pilotId, pilot_version: version })}`, signal);
       // EvidenceDetail {record, document, pilot_ids} or a bare record
       if (r && "record" in r) {
         if (!r.record) {

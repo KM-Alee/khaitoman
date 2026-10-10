@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { ArrowRight, BadgeCheck, Columns2, PlayCircle, SplitSquareHorizontal, TriangleAlert } from "lucide-react";
 import { usePilotData } from "@/app/pilotData";
 import { useUI, type MapMetric } from "@/app/store";
-import { useComparison, useRuns } from "@/lib/api/queries";
+import { useComparison, useRevisionSiblings, useRuns } from "@/lib/api/queries";
 import type { PlanKind, RunResult } from "@/lib/api/types";
 import { fieldMetricMap, runMetrics } from "@/lib/api/adapters";
 import { formatWithUnit, formatDelta, shortId, titleCase } from "@/lib/formatting";
@@ -25,25 +25,36 @@ const ORDER: PlanKind[] = ["B0", "B1", "P", "R"];
 export function useLadderRuns() {
   const { sel } = usePilotData();
   const s = useScenario();
-  const ids = useMemo(() => {
-    const fromUrl = sel.compareRunIds;
-    if (fromUrl.length) return fromUrl;
+  const local = useMemo(() => {
+    if (sel.compareRunIds.length) return sel.compareRunIds;
     const r = s.revisionRuns;
     return ORDER.map((k) => r[k]).filter(Boolean) as string[];
   }, [sel.compareRunIds, s.revisionRuns]);
+  // A reloaded or shared `?run=` link has no session runs: rebuild the ladder from the
+  // newest ordinary run of each kind on that run's revision.
+  const siblings = useRevisionSiblings(local.length ? null : sel.runId);
+  const ids = useMemo(() => {
+    if (local.length) return local;
+    const latest = new Map<string, string>();
+    for (const r of siblings.list.data ?? []) {
+      if (r.analysis_id || !r.plan_kind || r.outcome === undefined) continue;
+      if (!latest.has(r.plan_kind)) latest.set(r.plan_kind, r.run_id);
+    }
+    return ORDER.map((k) => latest.get(k)).filter(Boolean) as string[];
+  }, [local, siblings.list.data]);
   const runs = useRuns(ids);
   const byKind = useMemo(() => {
     const m = new Map<PlanKind, RunResult>();
     for (const r of runs.data ?? []) if (!m.has(r.plan_kind)) m.set(r.plan_kind, r);
     return m;
   }, [runs.data]);
-  return { ids, runs, byKind };
+  return { ids, runs, byKind, siblingsLoading: siblings.isLoading };
 }
 
 export function CompareScreen() {
   const { sel } = usePilotData();
   const { mobile } = useShell();
-  const { ids, runs, byKind } = useLadderRuns();
+  const { ids, runs, byKind, siblingsLoading } = useLadderRuns();
   const [view, setView] = useState<"paired" | "swipe">(mobile ? "swipe" : "paired");
   const [metric, setMetric] = useState<MapMetric>("yield");
   const kinds = ORDER.filter((k) => byKind.has(k));
@@ -67,6 +78,15 @@ export function CompareScreen() {
     return vals.length ? niceDomain(vals, def.scale === "categorical" ? "sequential-yield" : def.scale) : null;
   }, [metric, leftRun, rightRun]);
 
+  if (!ids.length && siblingsLoading)
+    return (
+      <div className="flex flex-1 flex-col" aria-busy>
+        <CompareTabs />
+        <div className="p-3 md:p-4">
+          <Skeleton className="h-44" />
+        </div>
+      </div>
+    );
   if (!ids.length)
     return (
       <div className="flex flex-1 flex-col">

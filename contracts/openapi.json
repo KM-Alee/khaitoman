@@ -7937,6 +7937,7 @@
     },
     "/api/v2/evidence/{evidence_id}": {
       "get": {
+        "description": "Package IDs such as ``ev:aoi`` repeat across pilots; ``pilot_id``/``pilot_version``\npick the record of the package being viewed instead of the last one published.",
         "operationId": "evidence_detail_api_v2_evidence__evidence_id__get",
         "parameters": [
           {
@@ -7946,6 +7947,38 @@
             "schema": {
               "title": "Evidence Id",
               "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pilot_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Pilot Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pilot_version",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Pilot Version"
             }
           }
         ],
