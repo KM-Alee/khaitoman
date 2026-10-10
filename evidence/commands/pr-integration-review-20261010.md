@@ -1,50 +1,46 @@
 # PR integration review, 2026-10-10
 
-The user authorized resolving conflicts, reviewing and merging all open PRs, and rebuilding.
+The user authorized conflict resolution, a small review of all open PRs, merging, and rebuilding.
 
-Prepared and pushed merge commits, without rebase or force push:
+## Integrated work and fixes
 
-| PR | Reviewed head | Scope |
-| --- | --- | --- |
-| #5 | `04f4471` | Decision checks; preserve reviewed provenance and queue history |
-| #6 | `9d7c9a9` | Raw onboarding; integrate reviewed P02 history |
-| #7 | `7181398` | Stored-metric impact cards; integrate decision/provenance history |
-| #8 | `d18fb37` | ZIP import/export; preserve impact and package routers |
-| #9 | `d2708ce` | Reports; preserve report, impact and package contract entries |
-| #10 | `730b5b3` | Deployment and expanded integration; preserve all routes and provenance |
+PRs #5–#9 were independently reviewed and merged with merge commits into their existing stacked bases. The builder's PR #10 is the final integration into main; reviewer-created draft #11 is superseded, avoiding self-approval of that draft.
 
-Review comments were posted to each PR. No approval or GitHub merge was performed.
-The integration branch includes the previously unpublished history under
-`codex/laptop-serving-base`; this draft is the explicit proposal to bring that
-history and the six PRs to `main` after validation. Partial feature chunks and
-historical evidence do not establish full acceptance.
+- Preserved all decision, onboarding, impact, ZIP, report, demo and copilot routes and the reviewed P02 provenance safeguards.
+- Regenerated OpenAPI/TypeScript contracts; restored missing ReportAccepted, ReportCreate and ReportView definitions.
+- Fixed malformed AOI parsing to return typed INVALID_INPUT errors, catching specific geometry/structure exceptions.
+- Real onboarding tests may select a validated local acquisition of the same pilot AOI. Each acquisition retains its original timestamp and manifest; inference input/output hashes and the recorded CPU cache must still match.
+- Preserved existing reviewed-v1 and reviewed-v2 manifests during raw reprocessing.
+- Restored the vision config's committed LF bytes locally. Windows CRLF bytes had changed its hash and prevented reuse of the existing inference cache. No new inference or GPU execution was required.
 
-## External validation blocker
+## Executed validation
 
-Docker Desktop's Linux engine is unavailable. `docker info` failed with:
+All commands ran in Docker; project dependencies were not installed on the host.
 
-```text
-failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine
-open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
-```
+| Check | Executed result |
+| --- | --- |
+| Fast Python suite, final run | 623 passed, 1 skipped, 8 warnings in 114.81s |
+| Science smoke | 45 passed in 1139.19s |
+| Core acceptance v1 | 19 passed, 1 skipped in 14.96s; exit 0; g_core=false |
+| Onboarding PR branch | 13 targeted cache, route, rejection and job checks passed |
+| Reports/packages/impact PR branch | 38 checks passed |
+| Frontend | 105 tests passed in 16 files |
+| Frontend production build | Passed: TypeScript and Vite |
+| E2E TypeScript | Passed |
+| API contract generation | Runtime OpenAPI and TypeScript regenerated; combined source matches the validated integration |
+| Ruff | Passed; only EXE002 excluded because Windows bind mounts report ordinary tracked files as executable |
+| Browser smoke | Real pilot-a workspace: 30 fields, imagery, terrain, JSON API 404, healthy API; no page errors |
+| Docker builds | api, web, e2e and frozen demo images built successfully |
 
-The Docker backend log reports an inaccessible `sailor-ingest.sock` during
-startup. Graceful Desktop start/stop commands did not recover the engine.
-Automatic approval review rejected force-stopping Docker and removing that
-socket as blocked by policy. Manual Docker Desktop restart was requested.
-Existing data, images, volumes and unrelated untracked evidence were preserved.
+Fast-suite stdout: pr-integration-python-20261010.log.
+Browser screenshot: ../screenshots/pr-integration-windows-20261010.png.
 
-## Required before merging
+## Limits
 
-1. Run Ruff check/fix and format on manually resolved Python routes.
-2. Regenerate OpenAPI and TypeScript contracts on the affected feature branches;
-   the report conflict was combined provisionally and must match runtime output.
-3. Run the combined fast Python suite, science/domain checks where affected,
-   core-acceptance v1, frontend tests and frontend production build inside Docker.
-4. Verify the real local API and workspace in a browser.
-5. Approve and merge #5–#10 in dependency order, then merge the integration PR
-   with a merge commit. Do not push directly to `main`.
-6. Pull `main` with `--ff-only`, rebuild the local Compose stack and verify health.
+The existing exact-original-raw-bundle test skips because pilot-b bundle 20261010T003841Z-798d10d2 is absent. Real local bundle 20261010T123300Z-798d10d2 was validated and exercised through the cache/review/publish pipeline without fabricating historical provenance. The v1 runner reports AT01 partial; full original-bundle reproducibility and full acceptance are not claimed.
 
-No new executed-test result, rebuilt image, new GPU inference, public deployment,
-or full acceptance gate is claimed by this review.
+P06-service, P07-process and P08-zip are partial chunks; merging them and the later integration snapshot does not complete their parent gates. Core v1 leaves AT09–AT11 and AT13–AT18 unmarked, and does not unlock M7. No 30×3 copilot evaluation, public Vercel/Tunnel activation, machine reboot or full rollback was executed in this review.
+
+npm ci reported six dependency audit advisories (two moderate, one high, three critical). This integration review does not establish that the locked dependency tree is free of advisories; no forced lockfile upgrade was performed.
+
+Existing untracked evidence, real runtime data, Docker images and volumes were preserved.
