@@ -76,6 +76,10 @@ interface UIState {
   commandOpen: boolean;
   /** "Ask AabFlow" assistant slot (docs/UI_SYSTEM.md › Assistant slot). */
   assistantOpen: boolean;
+  /** Docked side-panel widths in px (drag handles; UI preference only). */
+  panelWidths: { scenario: number; inspector: number; assistant: number };
+  /** The assistant fills the work area as a full chat instead of a side panel. */
+  assistantFull: boolean;
   /** A question handed to the assistant from outside it (landing Ask box); read once by CopilotPanel. */
   assistantDraft: { text: string; autoSend: boolean } | null;
   /** Fields an assistant answer (or the tour) asked the map to highlight; null = none. */
@@ -127,6 +131,8 @@ export const useUI = create<UIState>()(
       commandOpen: false,
       assistantOpen: false,
       assistantDraft: null,
+      panelWidths: { scenario: 312, inspector: 372, assistant: 420 },
+      assistantFull: false,
       assistantHighlight: null,
       tourSeen: false,
       pendingRun: false,
@@ -180,6 +186,8 @@ export const useUI = create<UIState>()(
         showParcels: s.showParcels,
         areaUnit: s.areaUnit,
         scenarioOpen: s.scenarioOpen,
+        panelWidths: s.panelWidths,
+        assistantFull: s.assistantFull,
         tourSeen: s.tourSeen,
         drafts: s.drafts,
         active: s.active,
