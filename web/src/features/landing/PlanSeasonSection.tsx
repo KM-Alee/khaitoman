@@ -14,7 +14,7 @@ export function PlanSeasonSection({ pilotId, version }: { pilotId: string; versi
   const demo = useDemoSession();
   const h = useHeadline();
   const s = demo.kind === "ready" || demo.kind === "incomplete" ? demo.session : null;
-  const turn = s?.plan_turn_id ?? null;
+  const turn = s?.plan_turn_id && s.available[s.plan_turn_id] ? s.plan_turn_id : null;
   const pid = s?.pilot_id ?? h.data?.pilot_id ?? pilotId;
   const ver = s?.pilot_version ?? h.data?.pilot_version ?? version;
   return (

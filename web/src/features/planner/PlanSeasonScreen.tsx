@@ -28,7 +28,7 @@ import { AnswerView } from "@/features/copilot/blocks";
 import { openSession, send } from "@/features/copilot/conversation";
 import { cn } from "@/lib/cn";
 import { PlanSeasonCard } from "./PlanSeasonCard";
-import { Timeline } from "./Timeline";
+import { Timeline } from "./InvestigationTimeline";
 import { briefBlocks, recommendedRunId, sourceLabel, timelineGroups } from "./timeline";
 import { usePlanInvestigation } from "./usePlanInvestigation";
 

@@ -1,0 +1,88 @@
+{
+  "url": "http://web:5173/p/pilot-a/reviewed-v1/plan-season",
+  "health": {
+    "status": "ok",
+    "contract_version": "2.0.0",
+    "schema_version": "4",
+    "database": "ok",
+    "pilots_published": 3,
+    "libraries_ready": 12,
+    "workers": 2,
+    "dispatcher": "running",
+    "versions": {
+      "aquacrop": "3.1.0",
+      "ortools": "9.15.6755",
+      "fastapi": "0.141.1",
+      "pydantic": "2.13.5",
+      "lightgbm": "4.7.0"
+    }
+  },
+  "map": {
+    "layers": [
+      "bg",
+      "imagery",
+      "imagery-hd",
+      "hillshade",
+      "aoi-mask",
+      "aoi-outline",
+      "parcels-fill",
+      "parcels-line",
+      "fields-raw",
+      "canals-casing",
+      "canals-line",
+      "edges-observed",
+      "edges-assumed",
+      "edges-hit",
+      "route-glow",
+      "route-line",
+      "particles-glow",
+      "particles-core",
+      "fields-fill",
+      "fields-ext",
+      "fields-outline",
+      "fields-hover",
+      "fields-sel-glow",
+      "fields-sel-line",
+      "fields-sel-cap",
+      "assets-flat",
+      "assets-ext"
+    ],
+    "sources": [
+      "imagery",
+      "imagery-hd",
+      "dem",
+      "dem-hs",
+      "aoi-mask",
+      "aoi",
+      "fields-raw",
+      "canals",
+      "edges",
+      "route",
+      "particles",
+      "fields",
+      "assets-3d"
+    ],
+    "fields": 30,
+    "edges": 9,
+    "selected": null,
+    "terrain": {
+      "available": true,
+      "on": false,
+      "exaggeration": 1.8
+    },
+    "pitch": 0,
+    "bearing": 0,
+    "mode": "3d",
+    "reducedMotion": true,
+    "flows": 0
+  },
+  "pageErrors": [],
+  "checks": {
+    "mapLoaded": true,
+    "panelKeyboardResize": true,
+    "panelReset": true,
+    "fullChatOpenEscape": true,
+    "plannerIdle": true,
+    "unknownApiJson404": true
+  }
+}
