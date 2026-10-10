@@ -21,6 +21,7 @@ import maplibregl, {
 } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { MapBundle } from "@/lib/api/adapters";
+import { backendCredentials, backendMapRequest } from "@/lib/api/urls";
 import type { Asset, Edge, NetNode } from "@/lib/api/types";
 import { canvasReadbackIsTrustworthy, demEncoding, demTileTemplate, demStats } from "./demTiles";
 import {
@@ -121,7 +122,7 @@ const imageryCache = new Map<string, Promise<ImageBitmap>>();
 function decodeImagery(url: string): Promise<ImageBitmap> {
   let p = imageryCache.get(url);
   if (!p) {
-    p = fetch(url)
+    p = fetch(url, { credentials: backendCredentials(url) })
       .then((r) => {
         if (!r.ok) throw new Error(`imagery ${r.status}`);
         return r.blob();
@@ -236,6 +237,7 @@ export class MapEngine {
       layers: [{ id: "bg", type: "background", paint: { "background-color": cssVar("--map-bg", "#dfe3da") } }],
     };
     this.map = new maplibregl.Map({
+      transformRequest: backendMapRequest,
       container,
       style,
       center: [72.5, 30.8],

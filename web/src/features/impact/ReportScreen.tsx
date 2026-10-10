@@ -5,6 +5,7 @@ import { persist } from "zustand/middleware";
 import { usePilotData } from "@/app/pilotData";
 import { useUI } from "@/app/store";
 import { api, describeError } from "@/lib/api/client";
+import { backendUrl } from "@/lib/api/urls";
 import { useCreateReport, useRun, useRunActionPlan } from "@/lib/api/queries";
 import { useQuery } from "@tanstack/react-query";
 import type { PlanKind, RunResult } from "@/lib/api/types";
@@ -125,7 +126,7 @@ export function ReportScreen() {
                 {downloads.length ? (
                   <div className="mt-2 flex flex-wrap gap-2">
                     {downloads.map((d) => (
-                      <a key={d.url} href={d.url} className={buttonClass("secondary", "sm")} download>
+                      <a key={d.url} href={backendUrl(d.url)} className={buttonClass("secondary", "sm")} download>
                         <Download size={13} aria-hidden /> {d.label ?? d.kind.toUpperCase()}
                       </a>
                     ))}

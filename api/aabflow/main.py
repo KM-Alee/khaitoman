@@ -10,6 +10,7 @@ from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
 from fastapi import APIRouter, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -97,6 +98,21 @@ def create_app(settings: config.Settings | None = None) -> FastAPI:
         catalog=Catalog(settings.libraries_dir),
     )
     errors.install(app)
+    if settings.cors_origins:
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=list(settings.cors_origins),
+            allow_credentials=True,
+            allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+            allow_headers=[
+                "Content-Type",
+                "X-Contract-Version",
+                "Idempotency-Key",
+                "Last-Event-ID",
+            ],
+            expose_headers=["Content-Disposition", "X-Contract-Version"],
+            max_age=600,
+        )
 
     api = APIRouter(prefix="/api/v2")
     for r in _routers():

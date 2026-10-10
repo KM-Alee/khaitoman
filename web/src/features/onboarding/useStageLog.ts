@@ -21,7 +21,7 @@ export function useStageLog(jobId: string | null | undefined): StageEvent[] {
   useEffect(() => {
     setEvents([]);
     if (!jobId || typeof EventSource === "undefined") return;
-    const es = new EventSource(`${API_BASE}/jobs/${encodeURIComponent(jobId)}/events`);
+    const es = new EventSource(`${API_BASE}/jobs/${encodeURIComponent(jobId)}/events`, { withCredentials: true });
     const seen = new Set<number>();
     const handle = (ev: MessageEvent) => {
       try {

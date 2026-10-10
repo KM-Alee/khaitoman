@@ -39,12 +39,14 @@ import { useScenario } from "@/features/workspace/useScenario";
 import { useRunContext } from "@/features/workspace/useRunContext";
 import { useTour } from "@/features/tour/store";
 import { cn } from "@/lib/cn";
+import { BACKEND_ORIGIN } from "@/lib/api/urls";
 import { JourneyNav } from "./NavigationRail";
 
 export function ConnectionState({ compact }: { compact?: boolean }) {
   const health = useHealth();
   const ok = health.data?.status === "ok";
-  const label = health.isLoading ? "Connecting" : ok ? "Local API online" : "Local API unreachable";
+  const location = BACKEND_ORIGIN ? "Backend" : "Local";
+  const label = health.isLoading ? "Connecting" : ok ? `${location} API online` : `${location} API unreachable`;
   return (
     <Tooltip content={health.data ? `${label} · contract ${health.data.contract_version} · schema ${health.data.schema_version ?? "—"}` : label}>
       <span
@@ -57,7 +59,7 @@ export function ConnectionState({ compact }: { compact?: boolean }) {
         data-testid="connection-state"
       >
         {ok || health.isLoading ? <Wifi size={14} aria-hidden /> : <WifiOff size={14} aria-hidden />}
-        {compact ? null : <span>{ok ? "Local" : health.isLoading ? "…" : "Offline"}</span>}
+        {compact ? null : <span>{ok ? location : health.isLoading ? "…" : "Offline"}</span>}
       </span>
     </Tooltip>
   );

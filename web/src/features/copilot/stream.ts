@@ -42,7 +42,7 @@ export interface TurnStream {
 }
 
 const defaultCreate = (): ((url: string) => EventSourceLike) | null =>
-  typeof EventSource === "undefined" ? null : (url: string) => new EventSource(url) as unknown as EventSourceLike;
+  typeof EventSource === "undefined" ? null : (url: string) => new EventSource(url, { withCredentials: true }) as unknown as EventSourceLike;
 
 export function openTurnStream(o: StreamOptions): TurnStream {
   const create = o.createEventSource === undefined ? defaultCreate() : o.createEventSource;

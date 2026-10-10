@@ -1,0 +1,58 @@
+# Separate project, image and data from the live development stack.
+name: aabflow-laptop
+services:
+  backend:
+    build: { context: ., target: backend }
+    image: aabflow-laptop-backend:${AABFLOW_IMAGE_TAG:-local}
+    user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
+    env_file: [{ path: "${AABFLOW_RUNTIME_ENV_FILE:-.env}", required: false }]
+    environment:
+      AABFLOW_DATA_DIR: /app/data
+      AABFLOW_DB_PATH: /app/data/app.sqlite
+      AABFLOW_CORS_ORIGINS: "${AABFLOW_CORS_ORIGINS:-}"
+      AABFLOW_WORKERS: "${AABFLOW_WORKERS:-2}"
+      AABFLOW_SOLVER_WORKERS: "${AABFLOW_SOLVER_WORKERS:-2}"
+    ports: ["127.0.0.1:${AABFLOW_LAPTOP_PORT:-8010}:8000"]
+    volumes:
+      - "./.laptop/data:/app/data"
+      - "./.laptop/vision/runs:/app/vision/runs"
+      - "./.laptop/vision/batches:/app/vision/batches"
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 60s
+    healthcheck:
+      test: [CMD, python, -c, "import json, urllib.request; h=json.load(urllib.request.urlopen('http://127.0.0.1:8000/api/v2/health', timeout=10)); assert h['status']=='ok' and h['database']=='ok' and h['dispatcher']=='running'"]
+      interval: 30s
+      timeout: 15s
+      retries: 3
+      start_period: 90s
+    logging: { driver: json-file, options: { max-size: 10m, max-file: "3" } }
+
+  vision:
+    profiles: [vision]
+    build: { context: ., dockerfile: docker/laptop-vision.Dockerfile }
+    image: aabflow-laptop-vision:${AABFLOW_IMAGE_TAG:-local}
+    user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
+    shm_size: 4gb
+    volumes:
+      - "./.laptop/data:/app/data"
+      - "./.laptop/vision/runs:/app/vision/runs"
+      - "./.laptop/vision/batches:/app/vision/batches"
+
+  tunnel:
+    profiles: [tunnel]
+    image: cloudflare/cloudflared:2026.10.0
+    user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
+    command: [tunnel, --no-autoupdate, --metrics, "0.0.0.0:2000", run, --token-file, /run/secrets/tunnel_token]
+    secrets: [tunnel_token]
+    depends_on: { backend: { condition: service_healthy } }
+    restart: unless-stopped
+    init: true
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    logging: { driver: json-file, options: { max-size: 10m, max-file: "3" } }
+
+secrets:
+  tunnel_token:
+    file: "${AABFLOW_TUNNEL_TOKEN_FILE:-./.laptop/cloudflared-token}"

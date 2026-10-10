@@ -17,6 +17,10 @@ make up               # API http://127.0.0.1:8000  UI http://127.0.0.1:5173
 
 Put `OPENAI_API_KEY` in `.env` for the copilot. `make help` lists every command.
 
+For a future Vercel frontend with the API, data and workers on the laptop, see
+[the laptop deployment runbook](docs/LAPTOP_DEPLOYMENT.md). Its separate frozen
+Compose project keeps serving while the development checkout changes.
+
 ## Day to day
 
 | Task | Command |

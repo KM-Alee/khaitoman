@@ -61,6 +61,16 @@ COPY web/ ./
 COPY contracts/ /app/contracts/
 RUN npm run build
 
+# ---------------------------------------------------------------- laptop backend (no frontend or source bind mount)
+FROM python-deps AS backend
+COPY api ./api
+COPY scripts ./scripts
+COPY vision/configs ./vision/configs
+COPY vision/*.py ./vision/
+EXPOSE 8000
+# Exactly one API process owns the SQLite job dispatcher. No reload during development.
+CMD ["uvicorn", "aabflow.main:app", "--app-dir", "api", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
+
 # ---------------------------------------------------------------- demo
 FROM python-deps AS app
 COPY api ./api

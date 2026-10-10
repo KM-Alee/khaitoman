@@ -7,6 +7,7 @@ import { useCallback, useMemo, useState } from "react";
 import { Link, useParams } from "react-router";
 import { ArrowLeft, Check, Plus } from "lucide-react";
 import { usePilots } from "@/lib/api/queries";
+import { assetUrl } from "@/lib/api/adapters";
 import { BrandMark } from "@/components/layout/NavigationRail";
 import { ConnectionState } from "@/components/layout/ContextBar";
 import { JobTray, JobWatchers } from "@/components/layout/JobTray";
@@ -61,7 +62,7 @@ export function OnboardingScreen() {
             label: p.name,
             image:
               img?.display_image_ref && img.display_corners_wgs84
-                ? { url: `/assets/pilots/${p.pilot_id}/${p.pilot_version}/${img.display_image_ref}`, corners: img.display_corners_wgs84 }
+                ? { url: assetUrl(p.pilot_id, p.pilot_version, img.display_image_ref), corners: img.display_corners_wgs84 }
                 : null,
           };
         }),

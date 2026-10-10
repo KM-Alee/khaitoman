@@ -1,3 +1,4 @@
+import { backendMapRequest } from "@/lib/api/urls";
 /**
  * Onboarding map (T10.3): one MapLibre instance per mount. In draw mode it is a constrained
  * polygon tool (click to add vertices, click the first vertex or press Enter to close,
@@ -96,6 +97,7 @@ export function AoiDrawMap({
     if (!ref.current) return;
     const water = cssVar("--water", "#087f8c");
     const m = new maplibregl.Map({
+      transformRequest: backendMapRequest,
       container: ref.current,
       style: {
         version: 8,

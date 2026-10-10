@@ -49,7 +49,7 @@ export function watchJob(jobId: string, onUpdate: (u: JobUpdate) => void): () =>
 
   try {
     if (typeof EventSource !== "undefined") {
-      es = new EventSource(`${API_BASE}/jobs/${encodeURIComponent(jobId)}/events`);
+      es = new EventSource(`${API_BASE}/jobs/${encodeURIComponent(jobId)}/events`, { withCredentials: true });
       const handle = (ev: MessageEvent) => {
         try {
           const e = JSON.parse(ev.data) as Partial<JobEvent> & { state?: Job["state"] };
