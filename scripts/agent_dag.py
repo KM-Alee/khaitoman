@@ -80,7 +80,7 @@ def validate_manifest(manifest: dict[str, Any]) -> dict[str, dict[str, Any]]:
     )
     _require(manifest.get("model") == MODEL, f"model must be {MODEL}")
     workers = manifest.get("max_workers")
-    _require(type(workers) is int and 1 <= workers <= 3, "max_workers must be between 1 and 3")
+    _require(type(workers) is int and 1 <= workers <= 6, "max_workers must be between 1 and 6")
     resources = manifest.get("resources")
     _require(isinstance(resources, dict) and bool(resources), "resources must be a nonempty object")
     _require(
