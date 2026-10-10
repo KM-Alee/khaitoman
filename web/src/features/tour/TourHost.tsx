@@ -125,8 +125,8 @@ function TourRunner() {
   // Keyboard: → next, ← back, Esc exit (never while typing).
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      const t = e.target as HTMLElement | null;
-      if (t?.closest("input,textarea,select,[contenteditable=true]")) return;
+      const t = e.target;
+      if (t instanceof Element && t.closest("input,textarea,select,[contenteditable=true]")) return;
       if (e.key === "Escape") {
         e.preventDefault();
         exit();
@@ -258,10 +258,18 @@ function useTargetRect(selector: string | undefined, key: string) {
         setRect((p) => (p && Math.abs(p.x - r.x) < 0.5 && Math.abs(p.y - r.y) < 0.5 && Math.abs(p.width - r.width) < 0.5 && Math.abs(p.height - r.height) < 0.5 ? p : r));
         setMissing(false);
       } else if (performance.now() - t0 > 15000) setMissing(true);
-      raf = requestAnimationFrame(loop);
     };
-    raf = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(raf);
+    // 10 Hz is plenty: the spotlight glides between positions with a CSS transition.
+    loop();
+    raf = window.setInterval(loop, 100);
+    const onMove = () => loop();
+    window.addEventListener("resize", onMove);
+    window.addEventListener("scroll", onMove, true);
+    return () => {
+      window.clearInterval(raf);
+      window.removeEventListener("resize", onMove);
+      window.removeEventListener("scroll", onMove, true);
+    };
   }, [selector, key]);
   return { rect, missing };
 }
@@ -280,30 +288,28 @@ function Spotlight({ rect, onBackdrop }: { rect: DOMRect | null; onBackdrop: () 
       }
     : null;
   const box = r ? { left: r.x, top: r.y, width: Math.min(r.w, vw - r.x - 4), height: Math.min(r.h, vh - r.y - 4) } : null;
-  const glide = "transition-[left,top,width,height,opacity] duration-500 ease-[var(--ease-inout)]";
+  const glide = "transition-[left,top,width,height,right,bottom] duration-500 ease-[var(--ease-inout)]";
+  const dim = cn("fixed z-[90] bg-[var(--scrim)]", glide);
+  // Four plain rectangles dim everything around the hole and pause clicks there; the
+  // highlighted element stays usable. (Cheap to composite, unlike a huge box-shadow.)
   return (
     <>
-      {/* Click catchers around the hole: the highlighted element stays usable, the rest is paused. */}
       {box ? (
         <>
-          <div className="fixed left-0 right-0 top-0 z-[90]" style={{ height: box.top }} onClick={onBackdrop} aria-hidden />
-          <div className="fixed bottom-0 left-0 right-0 z-[90]" style={{ top: box.top + box.height }} onClick={onBackdrop} aria-hidden />
-          <div className="fixed left-0 z-[90]" style={{ top: box.top, height: box.height, width: box.left }} onClick={onBackdrop} aria-hidden />
-          <div className="fixed right-0 z-[90]" style={{ top: box.top, height: box.height, left: box.left + box.width }} onClick={onBackdrop} aria-hidden />
+          <div className={dim} style={{ left: 0, top: 0, width: vw, height: box.top }} onClick={onBackdrop} aria-hidden />
+          <div className={dim} style={{ left: 0, top: box.top + box.height, width: vw, height: Math.max(0, vh - box.top - box.height) }} onClick={onBackdrop} aria-hidden />
+          <div className={dim} style={{ left: 0, top: box.top, width: box.left, height: box.height }} onClick={onBackdrop} aria-hidden />
+          <div className={dim} style={{ left: box.left + box.width, top: box.top, width: Math.max(0, vw - box.left - box.width), height: box.height }} onClick={onBackdrop} aria-hidden />
+          <div
+            className={cn("pointer-events-none fixed z-[91] rounded-[10px] ring-2 ring-water-glow", glide)}
+            style={{ ...box, boxShadow: "0 0 0 6px color-mix(in srgb, var(--water-glow) 22%, transparent)" }}
+            data-testid="tour-spotlight"
+            aria-hidden
+          />
         </>
       ) : (
-        <div className="fixed inset-0 z-[90]" onClick={onBackdrop} aria-hidden />
+        <div className="fixed inset-0 z-[90] bg-[var(--scrim)]" onClick={onBackdrop} aria-hidden data-testid="tour-spotlight" />
       )}
-      <div
-        className={cn("pointer-events-none fixed z-[91] rounded-[20px]", glide)}
-        style={
-          box
-            ? { ...box, boxShadow: "0 0 0 9999px var(--scrim), 0 0 0 2px var(--water-glow), 0 0 36px 6px color-mix(in srgb, var(--water-glow) 45%, transparent)" }
-            : { left: vw / 2, top: vh / 2, width: 0, height: 0, boxShadow: "0 0 0 9999px var(--scrim)" }
-        }
-        data-testid="tour-spotlight"
-        aria-hidden
-      />
     </>
   );
 }

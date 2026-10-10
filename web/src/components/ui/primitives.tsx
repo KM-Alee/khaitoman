@@ -298,20 +298,23 @@ export function SliderField({
 }) {
   const id = useId();
   const [text, setText] = useState(format(value));
-  const [focused, setFocused] = useState(false);
+  // Only text the user is typing is protected from outside updates; merely focusing the
+  // input (e.g. "Try it" focusing it right after adopting saved settings) is not.
+  const [editing, setEditing] = useState(false);
   const [invalid, setInvalid] = useState(false);
   useEffect(() => {
-    if (!focused) setText(format(value));
-  }, [value, focused, format]);
-  const commitText = () => {
+    if (!editing) setText(format(value));
+  }, [value, editing, format]);
+  const commitText = (): boolean => {
     const v = parse(text);
     if (v === null || v < min || v > max) {
       setInvalid(true);
-      return;
+      return false;
     }
     setInvalid(false);
     onChange(v);
     onCommit?.(v);
+    return true;
   };
   return (
     <div className="flex flex-col gap-2">
@@ -336,18 +339,20 @@ export function SliderField({
               inputWidth,
             )}
             value={text}
-            onFocus={() => setFocused(true)}
-            onChange={(e) => setText(e.target.value)}
+            onChange={(e) => {
+              setEditing(true);
+              setText(e.target.value);
+            }}
             onBlur={() => {
-              setFocused(false);
-              commitText();
+              if (editing && commitText()) setEditing(false);
             }}
             onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                commitText();
+              if (e.key === "Enter" && commitText()) {
+                setEditing(false);
                 (e.target as HTMLInputElement).blur();
               }
               if (e.key === "Escape") {
+                setEditing(false);
                 setText(format(value));
                 setInvalid(false);
               }

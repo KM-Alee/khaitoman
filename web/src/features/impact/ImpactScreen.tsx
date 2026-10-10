@@ -44,7 +44,7 @@ const TAB_COPY: Record<string, { title: string; lead: string }> = {
 export function ImpactNav() {
   const { sel } = usePilotData();
   return (
-    <nav aria-label="Impact views" className="no-print flex h-14 shrink-0 items-center gap-1 overflow-x-auto border-b border-border bg-surface/80 px-3 backdrop-blur md:px-6">
+    <nav aria-label="Impact views" className="no-print flex h-14 shrink-0 items-center gap-1 overflow-x-auto border-b border-border bg-surface px-3 md:px-6">
       {[
         { s: "impact" as const, l: "Costs & benefits" },
         { s: "report" as const, l: "Action plan & report" },
