@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { ExternalLink, FileDown, Info } from "lucide-react";
+import { FileDown, Info } from "lucide-react";
 import { usePilotData } from "@/app/pilotData";
 import { useMediaQuery } from "@/app/environment";
 import {
@@ -11,17 +11,17 @@ import {
   type RunAccounting,
   type RunEconomics,
   type RunEquity,
-  type RunImpact,
 } from "@/lib/api/queries";
 import type { PlanKind } from "@/lib/api/types";
-import { formatDelta, formatMass, formatNumber, formatPKR, formatPercent, formatVolume, formatWithUnit, shortId, titleCase } from "@/lib/formatting";
+import { formatDelta, formatMass, formatNumber, formatPKR, formatPercent, formatVolume, shortId, titleCase } from "@/lib/formatting";
 import { ChartPanel, DataTable, EChart, baseOption, chartTokens } from "@/components/charts/EChart";
 import { Chip, MetricValueView, Skeleton, StatePanel } from "@/components/status";
 import { Button } from "@/components/ui/Button";
-import { Eyebrow, Segmented } from "@/components/ui/primitives";
+import { Segmented } from "@/components/ui/primitives";
 import { SubTabs } from "@/features/compare/CompareTabs";
 import { useLadderRuns } from "@/features/compare/CompareScreen";
 import { cn } from "@/lib/cn";
+import { SdgCards } from "./SdgCards";
 import { BudgetMeter, Panel, Rows, StatusReasonView, ViewGate, isStatusReason, useFieldLabel } from "./viewKit";
 
 const TABS = [
@@ -93,22 +93,26 @@ export function ImpactScreen() {
       <SubTabs label="Impact sections" tabs={TABS} value={tab} onChange={(v) => sel.setParams({ tab: v })} />
       <div className="min-h-0 flex-1 overflow-y-auto p-3 md:p-4">
         {!sel.runId ? (
-          <div className="mx-auto max-w-[560px] pt-10">
+          <div className="mx-auto max-w-[560px] pt-10" data-testid="impact-empty">
             <StatePanel state="empty" title="Impact needs a run" action={{ label: "Go to Workspace", onClick: () => sel.go("workspace") }}>
               Water accounting, economics, equity and SDG proxies are computed by the server for a completed run.
             </StatePanel>
           </div>
         ) : run.isLoading ? (
-          <div className="grid gap-3 md:grid-cols-2">
+          <div className="grid gap-3 md:grid-cols-2" aria-busy="true" role="status" aria-label="Impact loading" data-testid="impact-loading">
             <Skeleton className="h-72" />
             <Skeleton className="h-72" />
           </div>
         ) : run.error || !run.data ? (
-          <StatePanel state="error" error={run.error} title="Run unavailable" />
+          <div data-testid="impact-error">
+            <StatePanel state="error" error={run.error} title="Run unavailable" />
+          </div>
         ) : run.data.outcome !== "plan" ? (
-          <StatePanel state={run.data.solver_status === "INFEASIBLE" ? "infeasible" : "unknown"} title={`No plan (${run.data.solver_status})`}>
-            Impact views exist only for runs with a validated plan.
-          </StatePanel>
+          <div data-testid="impact-infeasible">
+            <StatePanel state={run.data.solver_status === "INFEASIBLE" ? "infeasible" : "unknown"} title={`No plan (${run.data.solver_status})`}>
+              Impact views exist only for runs with a validated plan.
+            </StatePanel>
+          </div>
         ) : (
           <div className="mx-auto max-w-[1600px]">
             <div className="mb-3 flex flex-wrap items-center gap-2 text-[12px] text-ink-secondary">
@@ -729,132 +733,10 @@ function ProductionDelta({ fields, label }: { fields: RunEquity["fields"]; label
 /* ================================================================ SDG proxies */
 function SdgTab({ runId, baseline }: { runId: string; baseline: { kind: PlanKind; id: string } | null }) {
   const q = useRunImpact(runId, baseline?.id);
-  return <ViewGate q={q} title="SDG proxies">{(d) => <Sdg d={d} />}</ViewGate>;
-}
-
-const METRIC_LABEL: Record<string, string> = {
-  sdg_2_4_production_retained_fraction: "Production retained (worst ÷ typical)",
-  production_kg: "Production",
-  worst_tested_production_kg: "Worst tested production",
-  typical_production_kg: "Typical-state production",
-  sdg_6_4_water_productivity_kg_m3: "Water productivity",
-  groundwater_m3: "Groundwater abstraction",
-  sdg_6_5_min_entitlement_fulfillment: "Minimum entitlement fulfilment",
-  sdg_6_4_groundwater_change_m3: "Groundwater change vs baseline",
-  sdg_13_1_worst_tested_production_kg: "Worst tested production",
-};
-function metricLabel(id: string): string {
-  if (METRIC_LABEL[id]) return METRIC_LABEL[id];
-  const t = id.replace(/^sdg_\d+_\d+_/, "").replace(/_(kg_m3|m3|kg|pkr|fraction)$/, "").replace(/_/g, " ");
-  return t.charAt(0).toUpperCase() + t.slice(1);
-}
-
-const SDG_TITLE: Record<string, string> = {
-  "SDG 2.4": "Sustainable food production",
-  "SDG 6.4/6.5": "Water-use efficiency & integrated management",
-  "SDG 13.1": "Resilience to climate hazards",
-};
-
-function Sdg({ d }: { d: RunImpact }) {
   return (
-    <div className="flex flex-col gap-3" data-testid="sdg">
-      <p className="flex items-start gap-1.5 text-[12px] text-ink-secondary">
-        <Info size={13} className="mt-0.5 shrink-0" aria-hidden />
-        Project proxies computed from model output and aligned to SDG targets. They are not official UN indicators and are never combined into a 0–100 score.
-      </p>
-      <div className="grid gap-3 lg:grid-cols-3">
-        {d.cards.map((c) => (
-          <article key={c.card} className="flex min-w-0 flex-col rounded-[14px] border border-border bg-surface p-4 shadow-1" data-testid="sdg-card">
-            <div className="flex items-center justify-between gap-2">
-              <div className="text-[12px] font-semibold text-water">{c.card}</div>
-              <Chip size="sm" tone="warning" title={`official_indicator=${String(c.official_indicator)}`}>
-                {c.official_indicator ? "Official indicator" : "Project proxy · not official"}
-              </Chip>
-            </div>
-            <h3 className="mt-0.5 text-[14px] font-semibold leading-snug text-ink">{SDG_TITLE[c.card] ?? c.card}</h3>
-            <p className="mt-2 text-[12px] leading-snug text-ink-secondary">{c.interpretation}</p>
-            <ul className="mt-3 flex flex-col divide-y divide-border border-y border-border">
-              {c.values.map((v) => (
-                <li key={v.metric_id} className="py-2.5">
-                  <div className="flex items-baseline justify-between gap-3">
-                    <span className="text-[12px] text-ink-secondary" title={v.definition_id}>
-                      {metricLabel(v.metric_id)}
-                    </span>
-                    <MetricValueView metric={v} size="sm" showReason={false} className="shrink-0 text-right" />
-                  </div>
-                  {v.reason ? <div className="mt-0.5 text-[11px] text-ink-tertiary">{v.reason}</div> : null}
-                  {c.formulas[v.metric_id] ? <code className="mt-1 block break-words font-mono text-[11px] leading-snug text-ink">{c.formulas[v.metric_id]}</code> : null}
-                </li>
-              ))}
-            </ul>
-            {Object.entries(c.formulas).filter(([k]) => !c.values.some((v) => v.metric_id === k)).length ? (
-              <div className="mt-2">
-                <Eyebrow>Supporting definitions</Eyebrow>
-                {Object.entries(c.formulas)
-                  .filter(([k]) => !c.values.some((v) => v.metric_id === k))
-                  .map(([k, f]) => (
-                    <div key={k} className="mt-1 text-[11px]">
-                      <span className="text-ink-secondary">{metricLabel(k)}: </span>
-                      <code className="break-words font-mono text-ink">{f}</code>
-                    </div>
-                  ))}
-              </div>
-            ) : null}
-            <div className="mt-3">
-              <Eyebrow>Limitations</Eyebrow>
-              <ul className="mt-1 list-disc pl-4 text-[12px] text-ink-secondary">
-                {c.limitations.map((l) => (
-                  <li key={l}>{l}</li>
-                ))}
-              </ul>
-            </div>
-            <div className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1 pt-3 text-[11px] text-ink-tertiary">
-              <span>
-                Runs: <span className="font-mono">{c.run_ids.map((r) => shortId(r)).join(", ")}</span>
-              </span>
-              <span>official_indicator = {String(c.official_indicator)}</span>
-              {c.target_url ? (
-                <a href={c.target_url} target="_blank" rel="noreferrer" className="no-print ml-auto inline-flex items-center gap-1 text-water hover:underline">
-                  UN target <ExternalLink size={11} aria-hidden />
-                </a>
-              ) : null}
-            </div>
-          </article>
-        ))}
-      </div>
-      <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
-        <Panel title="CO₂ estimate" className="self-start">
-          <StatusReasonView v={d.co2} />
-        </Panel>
-        <ProductionDistribution d={d} />
-      </div>
-    </div>
-  );
-}
-
-function ProductionDistribution({ d }: { d: RunImpact }) {
-  const t = chartTokens();
-  const label = useFieldLabel();
-  const rows = d.distribution.filter((r) => typeof r.production_kg === "number").sort((a, b) => b.production_kg! - a.production_kg!);
-  const option = useMemo(
-    () => ({
-      ...baseOption(),
-      grid: { left: 40, right: 12, top: 24, bottom: 44 },
-      tooltip: { ...(baseOption().tooltip as object), trigger: "axis", axisPointer: { type: "shadow" } },
-      xAxis: { ...(baseOption().xAxis as object), type: "category", data: rows.map((r) => label(r.field_id)), axisLabel: { color: t.ink3, fontSize: 10, rotate: 50 } },
-      yAxis: { ...(baseOption().yAxis as object), type: "value", name: "t", nameTextStyle: { color: t.ink3, fontSize: 11 }, axisLabel: { color: t.ink3, fontSize: 11, formatter: (v: number) => formatNumber(v / 1000, v % 1000 ? 1 : 0) } },
-      series: [{ type: "bar", name: "Production", data: rows.map((r) => r.production_kg), itemStyle: { color: t.veg, borderRadius: [3, 3, 0, 0] }, barMaxWidth: 14, tooltip: { valueFormatter: (v: number) => formatWithUnit(v, "kg") } }],
-    }),
-    [rows, t], // eslint-disable-line react-hooks/exhaustive-deps
-  );
-  return (
-    <ChartPanel
-      id="sdg-distribution"
-      title="Production distribution by field"
-      summary="Shown with the proxies so an aggregate never hides fields with low output."
-      chart={rows.length ? <EChart option={option} height={220} ariaLabel="Bar chart of production per field" /> : <p className="p-4 text-[13px] text-ink-secondary">No per-field production reported.</p>}
-      table={<DataTable caption="Production by field" dense columns={[{ key: "f", label: "Field" }, { key: "p", label: "Production", align: "right" }]} rows={rows.map((r) => ({ f: label(r.field_id), p: formatMass(r.production_kg!) }))} />}
-    />
+    <ViewGate q={q} title="SDG proxies" testId="sdg">
+      {(d) => <SdgCards impact={d} />}
+    </ViewGate>
   );
 }
 
