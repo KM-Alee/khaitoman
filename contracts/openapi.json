@@ -2,7 +2,7 @@
   "components": {
     "schemas": {
       "ActionCategory": {
-        "description": "Five action categories (PRD \u00a76.2).",
+        "description": "Five action categories (PRD §6.2).",
         "enum": [
           "timing",
           "leveling",
@@ -513,6 +513,40 @@
           "max_rate_m3_s"
         ],
         "title": "CapacityInterval",
+        "type": "object"
+      },
+      "Co2Estimate": {
+        "additionalProperties": false,
+        "properties": {
+          "official_indicator": {
+            "const": false,
+            "default": false,
+            "title": "Official Indicator",
+            "type": "boolean"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          },
+          "status": {
+            "const": "not_estimated",
+            "default": "not_estimated",
+            "title": "Status",
+            "type": "string"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "null"
+          },
+          "value": {
+            "title": "Value",
+            "type": "null"
+          }
+        },
+        "required": [
+          "reason"
+        ],
+        "title": "Co2Estimate",
         "type": "object"
       },
       "ComparisonRequest": {
@@ -1044,6 +1078,152 @@
         "title": "FeatureStatus",
         "type": "object"
       },
+      "FieldChange": {
+        "additionalProperties": false,
+        "properties": {
+          "baseline_production_kg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline Production Kg"
+          },
+          "baseline_run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline Run Id"
+          },
+          "causal": {
+            "default": false,
+            "title": "Causal",
+            "type": "boolean"
+          },
+          "crop": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Crop"
+          },
+          "definition_id": {
+            "title": "Definition Id",
+            "type": "string"
+          },
+          "delta_kg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delta Kg"
+          },
+          "field_id": {
+            "title": "Field Id",
+            "type": "string"
+          },
+          "production_kg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Production Kg"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/MetricStatus"
+          },
+          "unit": {
+            "const": "kg",
+            "default": "kg",
+            "title": "Unit",
+            "type": "string"
+          }
+        },
+        "required": [
+          "field_id",
+          "production_kg",
+          "status",
+          "run_id",
+          "definition_id"
+        ],
+        "title": "FieldChange",
+        "type": "object"
+      },
+      "FieldChangeSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "fields_better_off": {
+            "title": "Fields Better Off",
+            "type": "integer"
+          },
+          "fields_not_comparable": {
+            "title": "Fields Not Comparable",
+            "type": "integer"
+          },
+          "fields_unchanged": {
+            "title": "Fields Unchanged",
+            "type": "integer"
+          },
+          "fields_worse_off": {
+            "title": "Fields Worse Off",
+            "type": "integer"
+          },
+          "quantum_kg": {
+            "title": "Quantum Kg",
+            "type": "number"
+          },
+          "unit": {
+            "const": "kg",
+            "default": "kg",
+            "title": "Unit",
+            "type": "string"
+          }
+        },
+        "required": [
+          "quantum_kg",
+          "fields_worse_off",
+          "fields_better_off",
+          "fields_unchanged",
+          "fields_not_comparable"
+        ],
+        "title": "FieldChangeSummary",
+        "type": "object"
+      },
       "FieldDetail": {
         "additionalProperties": false,
         "properties": {
@@ -1502,6 +1682,133 @@
         "title": "ImageryRef",
         "type": "object"
       },
+      "ImpactRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "baseline_run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline Run Id"
+          },
+          "contract_version": {
+            "const": "2.0.0",
+            "default": "2.0.0",
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "stress_analysis_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stress Analysis Id"
+          }
+        },
+        "required": [
+          "run_id"
+        ],
+        "title": "ImpactRequest",
+        "type": "object"
+      },
+      "ImpactResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "available": {
+            "title": "Available",
+            "type": "boolean"
+          },
+          "baseline_run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline Run Id"
+          },
+          "cards": {
+            "items": {
+              "$ref": "#/components/schemas/SdgCard"
+            },
+            "title": "Cards",
+            "type": "array"
+          },
+          "co2": {
+            "$ref": "#/components/schemas/Co2Estimate"
+          },
+          "compatibility_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Compatibility Label"
+          },
+          "compatible": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Compatible"
+          },
+          "distribution": {
+            "items": {
+              "$ref": "#/components/schemas/FieldChange"
+            },
+            "title": "Distribution",
+            "type": "array"
+          },
+          "field_change_summary": {
+            "$ref": "#/components/schemas/FieldChangeSummary"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "available",
+          "run_id",
+          "field_change_summary",
+          "co2"
+        ],
+        "title": "ImpactResponse",
+        "type": "object"
+      },
       "InfeasibilityKind": {
         "enum": [
           "missing_input",
@@ -1581,7 +1888,7 @@
       },
       "InterventionInstance": {
         "additionalProperties": false,
-        "description": "E.g. `pilot-a:field-007:pond-small` or `pilot-a:edge-02:repair` (PRD \u00a76.2).",
+        "description": "E.g. `pilot-a:field-007:pond-small` or `pilot-a:edge-02:repair` (PRD §6.2).",
         "properties": {
           "capex_pkr": {
             "default": 0,
@@ -2580,13 +2887,13 @@
         "additionalProperties": false,
         "properties": {
           "abs_tolerance_m3": {
-            "default": 1e-06,
+            "default": 1E-06,
             "minimum": 0.0,
             "title": "Abs Tolerance M3",
             "type": "number"
           },
           "rel_tolerance": {
-            "default": 1e-09,
+            "default": 1E-09,
             "minimum": 0.0,
             "title": "Rel Tolerance",
             "type": "number"
@@ -3046,7 +3353,7 @@
         "type": "object"
       },
       "PlanKind": {
-        "description": "Baseline ladder (PRD \u00a76.4).",
+        "description": "Baseline ladder (PRD §6.4).",
         "enum": [
           "B0",
           "B1",
@@ -3472,210 +3779,9 @@
         "title": "Readiness",
         "type": "object"
       },
-      "ReportAccepted": {
-        "additionalProperties": false,
-        "properties": {
-          "job": {
-            "$ref": "#/components/schemas/Job"
-          },
-          "job_id": {
-            "title": "Job Id",
-            "type": "string"
-          },
-          "report_id": {
-            "title": "Report Id",
-            "type": "string"
-          }
-        },
-        "required": [
-          "report_id",
-          "job_id",
-          "job"
-        ],
-        "title": "ReportAccepted",
-        "type": "object"
-      },
-      "ReportCreate": {
-        "additionalProperties": false,
-        "description": "Body reserved by copilot ``create_report``: run ids, analysis ids, report type.",
-        "properties": {
-          "analysis_ids": {
-            "items": {
-              "type": "string"
-            },
-            "maxItems": 64,
-            "title": "Analysis Ids",
-            "type": "array"
-          },
-          "contract_version": {
-            "const": "2.0.0",
-            "default": "2.0.0",
-            "title": "Contract Version",
-            "type": "string"
-          },
-          "report_type": {
-            "default": "one_page_plan",
-            "enum": [
-              "one_page_plan",
-              "full_report"
-            ],
-            "title": "Report Type",
-            "type": "string"
-          },
-          "run_ids": {
-            "items": {
-              "type": "string"
-            },
-            "maxItems": 64,
-            "minItems": 1,
-            "title": "Run Ids",
-            "type": "array"
-          }
-        },
-        "required": [
-          "run_ids"
-        ],
-        "title": "ReportCreate",
-        "type": "object"
-      },
-      "ReportView": {
-        "additionalProperties": false,
-        "properties": {
-          "analysis_ids": {
-            "items": {
-              "type": "string"
-            },
-            "title": "Analysis Ids",
-            "type": "array"
-          },
-          "artifact_kind": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Artifact Kind"
-          },
-          "created_at": {
-            "title": "Created At",
-            "type": "string"
-          },
-          "download_url": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Download Url"
-          },
-          "final_self_contained_report": {
-            "title": "Final Self Contained Report",
-            "type": "boolean"
-          },
-          "job_error": {
-            "anyOf": [
-              {
-                "additionalProperties": true,
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Job Error"
-          },
-          "job_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Job Id"
-          },
-          "job_state": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Job State"
-          },
-          "report_hash": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Report Hash"
-          },
-          "report_hash_scope": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Report Hash Scope"
-          },
-          "report_id": {
-            "title": "Report Id",
-            "type": "string"
-          },
-          "report_type": {
-            "title": "Report Type",
-            "type": "string"
-          },
-          "run_ids": {
-            "items": {
-              "type": "string"
-            },
-            "title": "Run Ids",
-            "type": "array"
-          },
-          "status": {
-            "title": "Status",
-            "type": "string"
-          }
-        },
-        "required": [
-          "report_id",
-          "status",
-          "report_type",
-          "run_ids",
-          "analysis_ids",
-          "job_id",
-          "job_state",
-          "job_error",
-          "download_url",
-          "created_at",
-          "report_hash",
-          "report_hash_scope",
-          "artifact_kind",
-          "final_self_contained_report"
-        ],
-        "title": "ReportView",
-        "type": "object"
-      },
       "ReviewFlags": {
         "additionalProperties": false,
-        "description": "Independent flags; never collapse into one 'verified' badge (PRD \u00a72.3).",
+        "description": "Independent flags; never collapse into one 'verified' badge (PRD §2.3).",
         "properties": {
           "cost_evidence": {
             "default": "assumed",
@@ -4712,6 +4818,172 @@
         "title": "ScenarioView",
         "type": "object"
       },
+      "SdgCard": {
+        "additionalProperties": false,
+        "properties": {
+          "baseline_run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline Run Id"
+          },
+          "card": {
+            "enum": [
+              "SDG 2.4",
+              "SDG 6.4/6.5",
+              "SDG 13.1"
+            ],
+            "title": "Card",
+            "type": "string"
+          },
+          "crop": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Crop"
+          },
+          "denominator": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Term"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "difference_from_typical": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Term"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "formula": {
+            "title": "Formula",
+            "type": "string"
+          },
+          "formulas": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Formulas",
+            "type": "object"
+          },
+          "interpretation": {
+            "title": "Interpretation",
+            "type": "string"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Limitations",
+            "type": "array"
+          },
+          "metrics": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Metrics",
+            "type": "array"
+          },
+          "numerator": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Term"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "official_indicator": {
+            "const": false,
+            "default": false,
+            "title": "Official Indicator",
+            "type": "boolean"
+          },
+          "official_target_text": {
+            "title": "Official Target Text",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "run_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Run Ids",
+            "type": "array"
+          },
+          "source_records": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Records",
+            "type": "array"
+          },
+          "status": {
+            "$ref": "#/components/schemas/MetricStatus"
+          },
+          "target_url": {
+            "title": "Target Url",
+            "type": "string"
+          },
+          "values": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Values",
+            "type": "array"
+          }
+        },
+        "required": [
+          "card",
+          "official_target_text",
+          "target_url",
+          "interpretation",
+          "status",
+          "formula",
+          "formulas",
+          "metrics",
+          "values",
+          "limitations",
+          "run_id",
+          "run_ids",
+          "source_records"
+        ],
+        "title": "SdgCard",
+        "type": "object"
+      },
       "Season": {
         "additionalProperties": false,
         "properties": {
@@ -5412,6 +5684,114 @@
         "title": "SynergyRequest",
         "type": "object"
       },
+      "Term": {
+        "additionalProperties": false,
+        "properties": {
+          "definition_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Definition Id"
+          },
+          "evidence_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Evidence Ids",
+            "type": "array"
+          },
+          "formula": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Formula"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "metric_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metric Id"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "role": {
+            "enum": [
+              "numerator",
+              "denominator",
+              "difference",
+              "component"
+            ],
+            "title": "Role",
+            "type": "string"
+          },
+          "run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Run Id"
+          },
+          "status": {
+            "$ref": "#/components/schemas/MetricStatus"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "role",
+          "label",
+          "value",
+          "unit",
+          "status"
+        ],
+        "title": "Term",
+        "type": "object"
+      },
       "Timeline": {
         "additionalProperties": false,
         "properties": {
@@ -6073,6 +6453,207 @@
           "instance_id"
         ],
         "title": "WhyNotRequest",
+        "type": "object"
+      },
+      "ReportAccepted": {
+        "additionalProperties": false,
+        "properties": {
+          "job": {
+            "$ref": "#/components/schemas/Job"
+          },
+          "job_id": {
+            "title": "Job Id",
+            "type": "string"
+          },
+          "report_id": {
+            "title": "Report Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "report_id",
+          "job_id",
+          "job"
+        ],
+        "title": "ReportAccepted",
+        "type": "object"
+      },
+      "ReportCreate": {
+        "additionalProperties": false,
+        "description": "Body reserved by copilot ``create_report``: run ids, analysis ids, report type.",
+        "properties": {
+          "analysis_ids": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 64,
+            "title": "Analysis Ids",
+            "type": "array"
+          },
+          "contract_version": {
+            "const": "2.0.0",
+            "default": "2.0.0",
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "report_type": {
+            "default": "one_page_plan",
+            "enum": [
+              "one_page_plan",
+              "full_report"
+            ],
+            "title": "Report Type",
+            "type": "string"
+          },
+          "run_ids": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 64,
+            "minItems": 1,
+            "title": "Run Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "run_ids"
+        ],
+        "title": "ReportCreate",
+        "type": "object"
+      },
+      "ReportView": {
+        "additionalProperties": false,
+        "properties": {
+          "analysis_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Analysis Ids",
+            "type": "array"
+          },
+          "artifact_kind": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Artifact Kind"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "download_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Download Url"
+          },
+          "final_self_contained_report": {
+            "title": "Final Self Contained Report",
+            "type": "boolean"
+          },
+          "job_error": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Job Error"
+          },
+          "job_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Job Id"
+          },
+          "job_state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Job State"
+          },
+          "report_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Report Hash"
+          },
+          "report_hash_scope": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Report Hash Scope"
+          },
+          "report_id": {
+            "title": "Report Id",
+            "type": "string"
+          },
+          "report_type": {
+            "title": "Report Type",
+            "type": "string"
+          },
+          "run_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Run Ids",
+            "type": "array"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "report_id",
+          "status",
+          "report_type",
+          "run_ids",
+          "analysis_ids",
+          "job_id",
+          "job_state",
+          "job_error",
+          "download_url",
+          "created_at",
+          "report_hash",
+          "report_hash_scope",
+          "artifact_kind",
+          "final_self_contained_report"
+        ],
+        "title": "ReportView",
         "type": "object"
       }
     }
@@ -7190,6 +7771,62 @@
         "summary": "Health"
       }
     },
+    "/api/v2/impact": {
+      "post": {
+        "operationId": "create_impact_api_v2_impact_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImpactRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImpactResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Impact"
+      }
+    },
     "/api/v2/interventions": {
       "get": {
         "operationId": "interventions_api_v2_interventions_get",
@@ -7558,120 +8195,25 @@
         "summary": "Pilot Map"
       }
     },
-    "/api/v2/reports": {
-      "post": {
-        "operationId": "create_report_api_v2_reports_post",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "Idempotency-Key",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Idempotency-Key"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ReportCreate"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "202": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ReportAccepted"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Create Report"
-      }
-    },
-    "/api/v2/reports/{report_id}": {
+    "/api/v2/pilots/{pilot_id}/versions/{version}/package": {
       "get": {
-        "operationId": "get_report_api_v2_reports__report_id__get",
+        "operationId": "export_pilot_package_api_v2_pilots__pilot_id__versions__version__package_get",
         "parameters": [
           {
             "in": "path",
-            "name": "report_id",
+            "name": "pilot_id",
             "required": true,
             "schema": {
-              "title": "Report Id",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ReportView"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Get Report"
-      }
-    },
-    "/api/v2/reports/{report_id}/files/{rel}": {
-      "get": {
-        "operationId": "report_file_api_v2_reports__report_id__files__rel__get",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "report_id",
-            "required": true,
-            "schema": {
-              "title": "Report Id",
+              "title": "Pilot Id",
               "type": "string"
             }
           },
           {
             "in": "path",
-            "name": "rel",
+            "name": "version",
             "required": true,
             "schema": {
-              "title": "Rel",
+              "title": "Version",
               "type": "string"
             }
           }
@@ -7696,7 +8238,67 @@
             "description": "Validation Error"
           }
         },
-        "summary": "Report File"
+        "summary": "Export Pilot Package"
+      },
+      "post": {
+        "operationId": "import_pilot_package_api_v2_pilots__pilot_id__versions__version__package_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "pilot_id",
+            "required": true,
+            "schema": {
+              "title": "Pilot Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "version",
+            "required": true,
+            "schema": {
+              "title": "Version",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Import Pilot Package"
       }
     },
     "/api/v2/runs": {
@@ -8141,9 +8743,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": true,
-                  "title": "Response Run Impact Api V2 Runs  Run Id  Impact Get",
-                  "type": "object"
+                  "$ref": "#/components/schemas/ImpactResponse"
                 }
               }
             },
@@ -8903,6 +9503,147 @@
           }
         },
         "summary": "Weather Scenarios"
+      }
+    },
+    "/api/v2/reports": {
+      "post": {
+        "operationId": "create_report_api_v2_reports_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportAccepted"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Report"
+      }
+    },
+    "/api/v2/reports/{report_id}": {
+      "get": {
+        "operationId": "get_report_api_v2_reports__report_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "report_id",
+            "required": true,
+            "schema": {
+              "title": "Report Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Report"
+      }
+    },
+    "/api/v2/reports/{report_id}/files/{rel}": {
+      "get": {
+        "operationId": "report_file_api_v2_reports__report_id__files__rel__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "report_id",
+            "required": true,
+            "schema": {
+              "title": "Report Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "rel",
+            "required": true,
+            "schema": {
+              "title": "Rel",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Report File"
       }
     }
   }

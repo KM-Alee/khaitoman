@@ -10,7 +10,10 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, time, timedelta
+from typing import Literal
 from zoneinfo import ZoneInfo
+
+Warabandi = Literal["declared_cca", "selected_area"]
 
 from aabflow.domain.schemas import (
     ActionCategory,
@@ -353,54 +356,93 @@ def build_roster(
     net: NetworkBuild,
     field_area_ha: dict[str, float],
     seasons: tuple[SeasonCalendar, ...] = SEASONS,
+    warabandi: Warabandi = "declared_cca",
 ) -> dict[str, list[RosterWindow]]:
     """Fixed, exclusive weekly warabandi turns (head → tail) per watercourse.
 
-    The watercourse runs at ``allowance × declared CCA`` and each field's turn lasts
-    ``cycle × area / CCA`` (time right proportional to land). The reviewed fields are a
-    subset of the command, so their turns are spread over the week in head-to-tail
-    order; the gaps belong to shareholders who are not modelled.
+    ``declared_cca`` runs the watercourse at allowance × 120 ha and spreads the reviewed
+    fields across the week. ``selected_area`` is the earlier published pilot-a rule:
+    the rate and the contiguous turns use the reviewed area on that watercourse.
     """
     cycle = timedelta(hours=ASSUMPTIONS["asm:warabandi-cycle"].value)
-    cca = ASSUMPTIONS["asm:watercourse-cca"].value
-    rate = round(watercourse_rate_m3_s(cca), 6)
+    declared = ASSUMPTIONS["asm:watercourse-cca"].value
+    allowance = ASSUMPTIONS["asm:water-allowance"].value
     out: dict[str, list[RosterWindow]] = {}
     for cal in seasons:
         wins: list[RosterWindow] = []
         for wc, fids in net.watercourse_fields.items():
             sel = sum(field_area_ha[f] for f in fids)
-            if sel > cca:
-                raise ValueError(f"{wc}: reviewed area {sel:.1f} ha exceeds declared CCA {cca} ha")
+            if sel <= 0:
+                raise ValueError(f"{wc}: reviewed area must be positive")
+            if warabandi == "selected_area":
+                cca = sel
+            else:
+                cca = declared
+                if sel > cca:
+                    raise ValueError(
+                        f"{wc}: reviewed area {sel:.1f} ha exceeds declared CCA {cca} ha"
+                    )
+            rate = round(watercourse_rate_m3_s(cca), 6)
+            if warabandi == "selected_area":
+                rule = (
+                    "weekly warabandi, head-to-tail order, turn time ∝ field area, "
+                    f"watercourse rate {rate} m3/s from allowance {allowance} L/s/ha (assumed)"
+                )
+            else:
+                rule = (
+                    "weekly warabandi, head-to-tail order, turn = 168 h x field "
+                    f"area / {cca:g} ha CCA at {rate} m3/s ({allowance} L/s/ha); assumed"
+                )
             t0 = _pkt(cal.start)
             end = _pkt(cal.end + timedelta(days=1))
             k = 0
             while t0 < end:
-                cum = 0.0
-                for fid in fids:
-                    s = t0 + cycle * (cum / sel)
-                    e = min(s + cycle * (field_area_ha[fid] / cca), end)
-                    cum += field_area_ha[fid]
-                    if s >= end:
-                        break
-                    k += 1
-                    wins.append(
-                        RosterWindow(
-                            window_id=f"{pilot_id}:{cal.season_id}:{wc}:w{k:04d}",
-                            field_id=fid,
-                            outlet_node_id=net.mogha_of[wc],
-                            start=s.replace(microsecond=0),
-                            end=e.replace(microsecond=0),
-                            basis=RightsBasis.time,
-                            rate_m3_s=rate,
-                            accounting_boundary="outlet",
-                            verification="assumed",
-                            source_rule=(
-                                "weekly warabandi, head-to-tail order, turn = 168 h x field "
-                                f"area / {cca:g} ha CCA at {rate} m3/s "
-                                f"({ASSUMPTIONS['asm:water-allowance'].value} L/s/ha); assumed"
-                            ),
+                if warabandi == "selected_area":
+                    t = t0
+                    for fid in fids:
+                        dur = cycle * (field_area_ha[fid] / cca)
+                        s, e = t, min(t + dur, end)
+                        t = t + dur
+                        if s >= end:
+                            break
+                        k += 1
+                        wins.append(
+                            RosterWindow(
+                                window_id=f"{pilot_id}:{cal.season_id}:{wc}:w{k:04d}",
+                                field_id=fid,
+                                outlet_node_id=net.mogha_of[wc],
+                                start=s.replace(microsecond=0),
+                                end=e.replace(microsecond=0),
+                                basis=RightsBasis.time,
+                                rate_m3_s=rate,
+                                accounting_boundary="outlet",
+                                verification="assumed",
+                                source_rule=rule,
+                            )
                         )
-                    )
+                else:
+                    cum = 0.0
+                    for fid in fids:
+                        s = t0 + cycle * (cum / sel)
+                        e = min(s + cycle * (field_area_ha[fid] / cca), end)
+                        cum += field_area_ha[fid]
+                        if s >= end:
+                            break
+                        k += 1
+                        wins.append(
+                            RosterWindow(
+                                window_id=f"{pilot_id}:{cal.season_id}:{wc}:w{k:04d}",
+                                field_id=fid,
+                                outlet_node_id=net.mogha_of[wc],
+                                start=s.replace(microsecond=0),
+                                end=e.replace(microsecond=0),
+                                basis=RightsBasis.time,
+                                rate_m3_s=rate,
+                                accounting_boundary="outlet",
+                                verification="assumed",
+                                source_rule=rule,
+                            )
+                        )
                 t0 = t0 + cycle
         out[cal.season_id] = wins
     return out
@@ -415,6 +457,7 @@ def build_service_reference(
     net: NetworkBuild,
     edges: list[Edge],
     seasons: tuple[SeasonCalendar, ...] = SEASONS,
+    warabandi: Warabandi = "declared_cca",
 ) -> list[ServiceReference]:
     """Fixed full-supply reference: Σ rate×open seconds × nominal path factor to the field outlet.
 
@@ -440,7 +483,7 @@ def build_service_reference(
                     reference_receipt_m3=round(tot[fid], 3),
                     basis=RightsBasis.time,
                     evidence_ids=[
-                        "asm:watercourse-cca",
+                        *(["asm:watercourse-cca"] if warabandi == "declared_cca" else []),
                         "asm:water-allowance",
                         "asm:warabandi-cycle",
                         "asm:canal-closure",

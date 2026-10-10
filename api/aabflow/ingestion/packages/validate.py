@@ -446,6 +446,9 @@ def validate_package(root: Path) -> list[str]:
 
     # Imagery and weather.
     for im in pilot.imagery:
+        if not im.scene_id.strip():
+            errors.append("imagery: missing scene id")
+            continue
         meta = root / f"imagery/{im.scene_id}.json"
         if not meta.is_file() or not (root / im.display_image_ref).is_file():
             errors.append(f"imagery {im.scene_id}: metadata or display image missing")

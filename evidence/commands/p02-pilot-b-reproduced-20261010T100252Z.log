@@ -1,0 +1,7 @@
+=== make pilot-b 2026-10-10T10:02:52Z ===
+./scripts/agent_runtime.sh compose run --rm --no-deps api python scripts/publish_pilot.py --pilot pilot-b --version reviewed-v1
+ Container aabflow-worker-p02-run1-api-run-a281eaa68526 Creating 
+ Container aabflow-worker-p02-run1-api-run-a281eaa68526 Created 
+reproduced pilot-b/reviewed-v1: 27 files, 27 source ids, package_sha256 f8c48181732fd5863112b00015328b5eff64baf615ee767d21ffbf53ea0ff963
+EXIT:
+## feat/p02-provenance

@@ -47,16 +47,16 @@ Status values: `todo`, `building` (branch pushed, no PR yet), `review #n`, `done
 | ID | Milestone | Delivers | Needs | Status |
 |---|---|---|---|---|
 | P00 | M1–M5 | One PR with the whole current working tree (`git add .`; `.env` and `.xfer/` stay ignored), opened by the lead thread, including these plan docs: workflow, Esri imagery, surrogate retrain + domain-coverage test, pilot weather, copilot tool shapes. Refresh `docs/STATUS.md` with evidence for M0–M5 rows. | — | done #2 |
-| P01 | M2 | Pilot-b candidate libraries for all 4 seasons (`make candidates PILOT=pilot-b`). `make domain-tests` runs the AT02–AT04 tests and the water/property suites. | P00 | review #3 |
-| P02 | M1 | AT01 test (`tests/integration/test_pilot_packages.py`): both pilots have real scene/source IDs, ≥30 reviewed fields, valid directed graph, manifest hashes match. `make pilot-a`/`pilot-b` reproduce the package. | P00 | todo |
-| P03 | M3 | Mark AT05–AT08, AT12 with evidence; fill any rule in PRD §11.2 those tests miss. `make core-acceptance` v1 runs every AT test that exists; partial v1 cannot unlock M7. | P00, P01 | todo |
+| P01 | M2 | Pilot-b candidate libraries for all 4 seasons (`make candidates PILOT=pilot-b`). `make domain-tests` runs the AT02–AT04 tests and the water/property suites. | P00 | done #3 |
+| P02 | M1 | AT01 test (`tests/integration/test_pilot_packages.py`): both pilots have real scene/source IDs, ≥30 reviewed fields, valid directed graph, manifest hashes match. `make pilot-a`/`pilot-b` reproduce the package. | P00 | done #4 |
+| P03 | M3 | Mark AT05–AT08, AT12 with evidence; fill any rule in PRD §11.2 those tests miss. `make core-acceptance` v1 runs every AT test that exists; partial v1 cannot unlock M7. | P00, P01 | done #5 |
 | P04 | M5 | AT09–AT11 evidence; surrogate preview ≤300 ms after load (PRD §11.1), in-domain on the default request. | P01, P03 | todo |
 | P05 | M6 | Reports + evidence API (F14, F17): `POST /reports`, `GET /reports/{id}`, files route, report job, self-contained `report.html`, CSVs, GeoJSON, `manifest.json` with sha256. Match the contract the copilot already calls. | P00 | todo |
 | P06 | M6 | Impact/SDG (F16, PRD §8.5, T7.5): `services/impact`, three cards (2.4, 6.4/6.5, 13.1), field-change distribution, no 0–100 score, CO₂ `not_estimated`. Impact screen SDG cards. | P03, P04 | todo |
 | P07 | M6 | Onboarding API + job (F03, AT16, T9.1): aoi-check, raw-packages, intake, process, versioned review (409 on stale), publish with validation, layers. UI wizard wired. Integration test publishes pilot-b `reviewed-v2` from its real raw bundle. | P00 | todo |
 | P08 | M6 | Package export/import zip (T9.3–T9.5) with all import checks; `scripts/build_evidence_pack.py` writes the §13.3 pack. | P05, P07; pack also P04/P06 | todo |
 | P09 | M6 | AT15 offline (sockets blocked; boot, pilots, solve, replay, frontier, stress, export) + `scripts/offline_check.py` on `web/dist`. AT18 restart (runs restore and re-verify, interrupted jobs marked honestly, tampered artifact refused). | P08, P11-core | todo |
-| P10 | M7 | Copilot live smoke eval, then full 30×3; fix failures; English/Urdu/Roman Urdu answers and cards; `make copilot-evals`. AT17. | Full G-CORE including P09; provider connectivity | todo |
+| P10 | M7 | Copilot code stays; no 30×3 live eval (user decision 2026-10-10). AT17 is not marked passed. Existing unit tests stay green. | Full G-CORE including P09 | todo |
 | P11 | M4 | AT13 (report, UI and copilot show the same values, units, run IDs) and AT14 (six screens: responsive, keyboard, contrast, states, reduced motion; Playwright + axe). Screenshots at 3 viewports in `evidence/screenshots/`. Esri check in a real browser. | P06, P07, P10 | todo |
 | P12 | M8 | Playwright E2E of the full PRD §13.2 stage route against the real API (`tests/e2e/stage-route.spec.ts`). | P11 | todo |
 | P13 | M8 | Cold launch via `make demo`, §11.1 timings recorded, `make release-check`, release/capability report (each F and AT passed/failed/blocked with artifact paths), evidence pack, final STATUS. | P12 | todo |
@@ -67,5 +67,5 @@ Gap issues (`gh issue list --label gap`) jump the queue: the builder fixes open 
 
 1. P00 (#2) is merged. P01 (#3) is ready for reviewer verification; the builder takes P02 next.
 2. After shared-interface inventory, P02, P03 and P05 API preparation can proceed independently; the DAG caps workers and expensive resources. P05 artifacts require P03; P07 process needs P02 and review uses P01 version/library semantics. Final chunk validation uses all recorded dependencies.
-3. P11-core runs before P09/G-CORE; it validates non-chat UI and partial consistency without passing full AT13/AT14. P10 implementation/evaluation starts only after complete non-chat acceptance (T13.2/T13.4); only provider connectivity may be checked early.
-4. P11-final follows P10, then P12 and P13. Multi-parent joins require integrated ancestor SHAs; release completion also requires independent reviewer/milestone gates. See AGENT_WORKFLOW for the complete sequence and checkpoint/resume protocol.
+3. P11-core runs before P09/G-CORE. Each required check runs once. Reuse libraries, the trained surrogate, and cached inference. Do not retrain or repeat a passing run.
+4. The 30×3 copilot evaluation is waived. AT17 stays unpassed. P11-final, P12, and P13 still ship the product once each. Reviewer merges remain required for release.
