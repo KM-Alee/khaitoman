@@ -5,6 +5,7 @@
 import { useMutation, useQuery, useQueryClient, type UseQueryOptions } from "@tanstack/react-query";
 import { useParams } from "react-router";
 import { api, qs, ApiError } from "./client";
+import type { components } from "@/generated/api";
 import { readMapBundle, readTimeline, type MapBundle, type Timeline } from "./adapters";
 import type {
   Capabilities,
@@ -765,8 +766,8 @@ export function useStartAnalysis() {
 
 export function useCreateReport() {
   return useMutation({
-    mutationFn: async (body: { run_ids: string[]; analysis_ids?: string[]; report_type: string }) =>
-      api.post<Record<string, unknown>>("/reports", body, { idempotent: true }),
+    mutationFn: async (body: components["schemas"]["ReportCreate"]) =>
+      api.post<components["schemas"]["ReportAccepted"]>("/reports", body, { idempotent: true }),
   });
 }
 

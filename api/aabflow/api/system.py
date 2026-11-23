@@ -5,18 +5,60 @@ from __future__ import annotations
 import importlib.util
 import json
 import sqlite3
+from html import escape
 from importlib.metadata import PackageNotFoundError, version
 from typing import Annotated
+from urllib.parse import urlsplit
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
+from fastapi.responses import HTMLResponse
 
 from aabflow import config
+from aabflow.api.errors import invalid
 from aabflow.api.models import Capabilities, FeatureStatus, Health
 from aabflow.api.state import AppState, get_state
 from aabflow.copilot.provider import configured_model
 
 router = APIRouter()
 State = Annotated[AppState, Depends(get_state)]
+
+
+@router.get("/access/ready", response_class=HTMLResponse, include_in_schema=False)
+def access_ready(state: State, return_to: Annotated[str, Query(max_length=2048)]) -> HTMLResponse:
+    """Browser landing after the edge's Access login; only return to an allowed UI.
+
+    Cloudflare protects this route just like every other backend path. This route
+    does not authenticate a caller or supply an Access credential.
+    """
+    try:
+        target = urlsplit(return_to)
+        origin = f"{target.scheme}://{target.netloc}"
+        allowed = (
+            target.scheme in {"http", "https"}
+            and not target.username
+            and not target.password
+            and origin in state.settings.cors_origins
+            and not any(ord(c) < 32 or c == "\\" for c in return_to)
+        )
+    except ValueError:
+        allowed = False
+    if not allowed:
+        raise invalid(
+            "Return URL must use a configured frontend origin", {"return_to": "origin not allowed"}
+        )
+    href = escape(return_to, quote=True)
+    return HTMLResponse(
+        '<!doctype html><html lang="en"><meta charset="utf-8">'
+        '<meta name="viewport" content="width=device-width,initial-scale=1">'
+        f'<meta http-equiv="refresh" content="0;url={href}">'
+        "<title>AabFlow connection ready</title><main><h1>Return to AabFlow</h1>"
+        f'<p><a href="{href}">Continue to the app</a></p></main></html>',
+        headers={
+            "Cache-Control": "no-store",
+            "Referrer-Policy": "no-referrer",
+            "Content-Security-Policy": "default-src 'none'; frame-ancestors 'none'; base-uri 'none'",
+        },
+    )
 
 
 def _version(dist: str) -> str | None:

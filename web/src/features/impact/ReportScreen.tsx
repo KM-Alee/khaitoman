@@ -5,8 +5,9 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { usePilotData } from "@/app/pilotData";
 import { useUI } from "@/app/store";
-import { api, describeError } from "@/lib/api/client";
+import { api, describeError, CONTRACT_VERSION } from "@/lib/api/client";
 import { backendUrl } from "@/lib/api/urls";
+import type { components } from "@/generated/api";
 import { useCreateReport, useRun, useRunActionPlan } from "@/lib/api/queries";
 import { useQuery } from "@tanstack/react-query";
 import type { PlanKind, RunResult } from "@/lib/api/types";
@@ -44,7 +45,7 @@ export function ReportScreen() {
   const report = useQuery({
     queryKey: ["report", reportId ?? ""],
     enabled: !!reportId,
-    queryFn: () => api.get<Record<string, unknown>>(`/reports/${encodeURIComponent(reportId!)}`),
+    queryFn: () => api.get<components["schemas"]["ReportView"]>(`/reports/${encodeURIComponent(reportId!)}`),
     refetchInterval: (q) => (["succeeded", "completed", "ready", "failed"].includes(String(q.state.data?.status ?? "")) ? false : 1500),
   });
   const job = jobs.find((j) => j.operation === "report" && j.resultRef === reportId) ?? jobs.find((j) => j.operation === "report" && !j.dismissed && j.pilotKey === sel.pilotKey);
@@ -74,7 +75,7 @@ export function ReportScreen() {
   const exportReport = async () => {
     if (!r) return;
     try {
-      const res = await create.mutateAsync({ run_ids: ladder.ids.length ? ladder.ids : [r.run_id], report_type: "action_plan" });
+      const res = await create.mutateAsync({ contract_version: CONTRACT_VERSION, run_ids: ladder.ids.length ? ladder.ids : [r.run_id], report_type: "one_page_plan" });
       const rid = String(res.report_id ?? "");
       if (rid) setReportId(rid);
       if (res.job_id) trackJob({ jobId: String(res.job_id), label: "Decision package export", operation: "report", revisionId: null, pilotKey: sel.pilotKey });
@@ -83,7 +84,7 @@ export function ReportScreen() {
       toast({ tone: "danger", title: `Export failed: ${d.title}`, description: d.detail });
     }
   };
-  const downloads = ((report.data?.downloads as { kind: string; url: string; label?: string }[] | undefined) ?? []).filter((d) => d.url);
+  const downloads = report.data?.download_url ? [{ url: report.data.download_url, label: "Download report HTML" }] : [];
 
   return (
     <div className="flex min-h-0 flex-1 flex-col print:block" data-testid="report">
@@ -140,7 +141,7 @@ export function ReportScreen() {
                   <div className="mt-2 flex flex-wrap gap-2">
                     {downloads.map((d) => (
                       <a key={d.url} href={backendUrl(d.url)} className={buttonClass("secondary", "sm")} download>
-                        <Download size={13} aria-hidden /> {d.label ?? d.kind.toUpperCase()}
+                        <Download size={13} aria-hidden /> {d.label}
                       </a>
                     ))}
                   </div>

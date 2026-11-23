@@ -1,0 +1,89 @@
+AabFlow public activation — 2026-10-10 UTC
+Source: origin/main 3cc65e3; deployment branch codex/laptop-serving
+Frontend code commit: 03f5ecc5b0d1c73cd8628a36eb822511c14c0aab
+Vercel: dpl_FwyQERRpR2vWazzaKqNn3p1UTfHD READY production app.khmanan.site; code 18ad06c
+Backend: aabflow-laptop-backend-1 healthy, schema 4, database ok, dispatcher running
+Cloudflare tunnel: aabflow-laptop 92f3c888-5097-48a7-8726-06ce5b485dc1 Healthy; /ready passed
+All backend paths protected by owner-email Access; OPTIONS-only bypass
+Public allowed preflight 200; unapproved origin preflight 400
+Unauthenticated health/report/asset/SSE: 302 Access redirects
+Public compiled frontend origin: https://api.khmanan.site
+Owner email OTP authenticated; frontend Backend API online; real satellite map rendered
+Downloaded report HTML: 150622 bytes; run_5f2a5629def1436c8f8181f34188d783 present
+Downloaded schedule CSV: 22288 bytes; 395 irrigation events
+New planner turn: turn_afc2c16f135542f2923560621c2bef0c; completed in 90748 ms, 5 rounds; rendered 12 steps
+Docker boot enabled; backend/tunnel unless-stopped; user guard enabled and active; Linger=yes
+Sleep/idle/lid inhibitor: AabFlow block active
+Full data/vision/image backup: .laptop/backup-20261010T175626Z; SQLite integrity ok
+make contracts (isolated Docker project): passed, clean generated diff
+Self-review: canonical report request/response types, idempotency retained, no domain/science scope changes
+Unverified: physical laptop reboot, deliberately unhealthy guard recovery, long SSE reconnect/session expiry, full database rollback, new uncached vision, ArcGIS account referrer restrictions
+
+Executed validation final result lines:
+634 passed, 8 warnings in 75.34s (0:01:15)
+      Tests  115 passed (115)
+✓ built in 5.63s
+
+Public browser requests (origin access log; credentials not logged):
+INFO:     172.30.0.3:57494 - "GET /assets/pilots/pilot-a/reviewed-v1/canals.geojson HTTP/1.1" 200 OK
+INFO:     172.30.0.3:57498 - "GET /assets/pilots/pilot-b/reviewed-v2/fields.geojson HTTP/1.1" 200 OK
+INFO:     172.30.0.3:57516 - "GET /assets/pilots/pilot-a/reviewed-v1/fields.geojson HTTP/1.1" 200 OK
+INFO:     172.30.0.3:39126 - "GET /assets/pilots/pilot-b/reviewed-v1/canals.geojson HTTP/1.1" 200 OK
+INFO:     172.30.0.3:57540 - "GET /assets/pilots/pilot-b/reviewed-v2/canals.geojson HTTP/1.1" 200 OK
+INFO:     172.30.0.3:57526 - "GET /assets/pilots/pilot-b/reviewed-v1/fields.geojson HTTP/1.1" 200 OK
+INFO:     172.30.0.3:57494 - "GET /assets/pilots/pilot-a/reviewed-v1/aoi.geojson HTTP/1.1" 200 OK
+INFO:     172.30.0.3:57516 - "GET /assets/pilots/pilot-a/reviewed-v1/fields_raw.geojson HTTP/1.1" 200 OK
+INFO:     172.30.0.3:39126 - "GET /assets/pilots/pilot-a/reviewed-v1/imagery/S2C_43RBQ_20250223_0_L2A.webp HTTP/1.1" 200 OK
+INFO:     172.30.0.3:57514 - "GET /assets/pilots/pilot-a/reviewed-v1/terrain/dem.png HTTP/1.1" 200 OK
+INFO:     172.30.0.3:38780 - "GET /assets/pilots/pilot-a/reviewed-v1/fields_raw.geojson HTTP/1.1" 200 OK
+INFO:     172.30.0.3:37196 - "OPTIONS /api/v2/reports HTTP/1.1" 200 OK
+INFO:     172.30.0.3:37196 - "POST /api/v2/reports HTTP/1.1" 422 Unprocessable Entity
+INFO:     172.30.0.3:45316 - "POST /api/v2/reports HTTP/1.1" 202 Accepted
+INFO:     172.30.0.3:45332 - "GET /api/v2/jobs/job_ae6181584975488e8b7bcdbf1ebbcdbc/events HTTP/1.1" 200 OK
+INFO:     172.30.0.3:45334 - "GET /api/v2/reports/rpt_84f5b4b695644d38a3d2110d87b1dccc HTTP/1.1" 200 OK
+INFO:     172.30.0.3:35452 - "GET /api/v2/reports/rpt_84f5b4b695644d38a3d2110d87b1dccc/files/report.html HTTP/1.1" 200 OK
+
+ArcGIS replacement: encrypted Vercel production VITE_ARCGIS_KEY saved; production rebuilt.
+Browser HD layer enabled, Esri attribution visible, 19 tile assets observed, no console errors.
+Screenshot: evidence/screenshots/laptop-public-hd-20261010.png
+
+Connection recovery update (8262ae9)
+- Reproduced: loopback health 200; unauthenticated public health 302 Access; OPTIONS from https://khaitoman.vercel.app 400.
+- Added edge-login HTML landing restricted to configured frontend origins; no cookie or authentication credential supplied by the origin.
+- Docker ruff edited Python: passed; contracts regenerated, unchanged.
+- Docker make test: 645 passed, 8 warnings in 82.65s.
+- Docker make web-test: 19 files / 117 tests passed; TypeScript and Vite build passed.
+- Frozen laptop update: backup-20261010T181242Z with .vision and .image; SQLite integrity ok; schema 4, dispatcher running, 3 pilots, 12 ready libraries.
+- Local HTML landing 200; public unauthenticated landing 302 Access.
+- Authenticated browser visited the protected landing and returned automatically to the exact public workspace URL with its selected real run.
+- Named tunnel readiness passed after backend recreation.
+- Guard enabled/active; Linger=yes; sleep/idle/lid inhibitor active; backend/tunnel restart unless-stopped.
+- Vercel production dpl_9xaQ66415QWEW5S3EVkc7zHmMWnT READY, serving commit 8262ae9 on codex/laptop-serving with app.khmanan.site assigned.
+- Public khaitoman.vercel.app deep report URL returned 307, Location exact canonical path + real run query. Protected team alias retains Vercel SSO before routing.
+- Browser opened Vercel production workspace URL and landed on app.khmanan.site with selected real run, Backend API online, 30 fields, computed results and Esri attribution.
+- Browser error/warning scan empty. Screenshot evidence/screenshots/laptop-connection-fixed-20261010.png.
+- Allowed public origin preflight still 200 with exact origin + credentials. Access protection remains in place.
+
+Public mode activation (owner confirmed at action time, 10 October 2026)
+- Cloudflare existing app 06429ebd-2d6e-4ad5-9b96-5517f9114a6d saved successfully.
+- All-path Bypass / Everyone policy df12efcc-4ca9-4ebd-a079-8dcf18b2ecfd: AabFlow public access.
+- Owner-only policy retained for restoring private access; no DNS/source/token changes.
+- Vercel Production VITE_BACKEND_ACCESS_REQUIRED=false saved before code 2a87378 push.
+- Anonymous curl requests supplied no cookies, Authorization or Access service tokens.
+- Health 200 / 269 bytes; pilots 200 / 3628 bytes; fields GeoJSON 200 / 413416 bytes / 30 features.
+- Sentinel-2 WebP 200 / 56610 bytes; DEM PNG 200 / 37359 bytes; saved full report 200 / 150622 bytes.
+- All six responses had exact app.khmanan.site CORS origin and CF-Cache-Status DYNAMIC.
+- Anonymous POST reports 202: rpt_b8ee035b15604c16ab683a6051bb11b0, job_f277edd681eb413abbdc8172f275e5d3.
+- Anonymous SSE 200 / text/event-stream / 1580 bytes / succeeded event verified.
+- Anonymous new one-page report download 200 / 38217 bytes / real run_5f2a5629def1436c8f8181f34188d783 verified.
+- Allowed OPTIONS 200; other-origin OPTIONS 400.
+- Docker make test: 645 passed, 8 warnings in 71.86s.
+- Docker make web-test: 19 files / 118 tests passed. TypeScript/Vite build: passed in 6.24s.
+- Self-review and React checklist: no actionable findings; hooks, keyboard retry control and labelled alert retained; no domain/science/source edits.
+- Serving check: schema 4, database ok, dispatcher running, 3 pilots, 12 ready libraries, 2 workers.
+- Docker enabled boot; user guard enabled/active; Linger=yes; AabFlow sleep/idle/lid inhibitor block active.
+- Earlier authenticated/HTTP 302 evidence above is historical and superseded by public mode.
+- Vercel dpl_DAybN3JM5DceXgDPTLns8v8cA6w6 READY production at 2a87378a17aaff80c5357066b43c67facf421733; app.khmanan.site assigned.
+- Live production bundle public retry copy verified; Access sign-in copy absent.
+- Reloaded browser workspace: Backend API online, real 30 fields, saved results, Esri HD attribution; warning/error scan empty.
+- Screenshot evidence/screenshots/laptop-anonymous-public-20261010.png; browser cookies were not used by the anonymous curl checks.

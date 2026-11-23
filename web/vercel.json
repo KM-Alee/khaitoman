@@ -4,5 +4,13 @@
   "installCommand": "npm ci",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "khaitoman(.*)\\.vercel\\.app" }],
+      "destination": "https://app.khmanan.site/:path*",
+      "permanent": false
+    }
+  ],
   "rewrites": [{ "source": "/((?!static/).*)", "destination": "/index.html" }]
 }
