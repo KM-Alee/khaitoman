@@ -245,6 +245,38 @@ def test_complete_when_every_record_exists(app_dir):
     assert body["complete"] is True and body["missing_ids"] == []
 
 
+@pytest.mark.parametrize(
+    "mode,status,available",
+    [
+        (None, None, False),
+        ("chat", "completed", False),
+        ("plan", "failed", False),
+        ("plan", "running", False),
+        ("plan", "completed", True),
+    ],
+)
+def test_saved_plan_requires_a_completed_plan_turn(app_dir, mode, status, available):
+    client, tmp = app_dir
+    write_manifest(tmp, json.dumps({**fixture_manifest(), "plan_turn_id": "turn_fx"}))
+    insert_fixture_records(tmp, ALL_IDS)
+    if mode is not None:
+        with sqlite3.connect(tmp / "app.sqlite") as conn:
+            conn.execute(
+                "INSERT INTO copilot_sessions (session_id, created_at, role, ui_context) "
+                "VALUES ('cps_fx', ?, 'planner', '{}')",
+                (NOW,),
+            )
+            conn.execute(
+                "INSERT INTO copilot_turns (turn_id, session_id, seq, created_at, status, "
+                "user_message, context, mode) VALUES ('turn_fx', 'cps_fx', 1, ?, ?, 'goal', '{}', ?)",
+                (NOW, status, mode),
+            )
+    body = client.get("/api/v2/demo/session").json()
+    assert body["available"]["turn_fx"] is available
+    assert body["complete"] is available
+    assert body["missing_ids"] == ([] if available else ["turn_fx"])
+
+
 def _counts(tmp: Path) -> dict[str, int]:
     conn = sqlite3.connect(tmp / "app.sqlite")
     try:

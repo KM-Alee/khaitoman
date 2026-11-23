@@ -1,0 +1,34 @@
+........................................................................ [ 11%]
+........................................................................ [ 22%]
+.......................................................s................ [ 34%]
+........................................................................ [ 45%]
+........................................................................ [ 56%]
+........................................................................ [ 68%]
+........................................................................ [ 79%]
+........................................................................ [ 90%]
+..........................................................               [100%]
+=============================== warnings summary ===============================
+tests/integration/test_onboarding_pilot_b.py::test_pilot_b_raw_bundle_reuses_the_delineate_cache
+tests/integration/test_onboarding_pilot_b.py::test_pilot_b_raw_bundle_reuses_the_delineate_cache
+tests/integration/test_onboarding_review.py::test_pilot_b_review_publishes_reviewed_v2
+tests/integration/test_onboarding_review.py::test_pilot_b_review_publishes_reviewed_v2
+tests/unit/test_ingestion_sources.py::test_display_stretch_corners_and_webp
+  /opt/venv/lib/python3.11/site-packages/rasterio/transform.py:189: PendingDeprecationWarning: Use `@` matmul instead of `*` mul operator for matrix multiplication
+    return Affine.translation(west, north) * Affine.scale(
+
+tests/unit/test_ingestion_sources.py::test_write_and_read_local_window
+  /opt/venv/lib/python3.11/site-packages/rasterio/windows.py:360: PendingDeprecationWarning: Use `@` matmul instead of `*` mul operator for matrix multiplication
+    x, y = transform * (window.col_off or 0.0, window.row_off or 0.0)
+
+tests/unit/test_ingestion_sources.py::test_write_and_read_local_window
+  /opt/venv/lib/python3.11/site-packages/rasterio/windows.py:361: PendingDeprecationWarning: Use `@` matmul instead of `*` mul operator for matrix multiplication
+    return Affine.translation(
+
+tests/unit/test_packages_zip.py::test_hostile_zip_cases_write_nothing
+  /usr/local/lib/python3.11/zipfile.py:1606: UserWarning: Duplicate name: 'a.json'
+    return self._open_to_write(zinfo, force_zip64=force_zip64)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+SKIPPED [1] tests/integration/test_pilot_packages.py:188: ignored raw bundles are not in this checkout: data/raw/bundles/pilot-b/20261010T003841Z-798d10d2
+633 passed, 1 skipped, 8 warnings in 132.20s (0:02:12)

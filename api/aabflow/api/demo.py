@@ -118,6 +118,8 @@ class DemoManifest(StrictModel):
                 out[rid] = "run"
         out[self.analyses.frontier] = "analysis"
         out[self.analyses.stress] = "analysis"
+        if self.plan_turn_id is not None:
+            out[self.plan_turn_id] = "plan_turn"
         return out
 
 
@@ -147,6 +149,15 @@ def load_manifest(path: Path) -> DemoManifest:
 
 def _exists(conn: sqlite3.Connection, ident: str, kind: str) -> bool:
     try:
+        if kind == "plan_turn":
+            return (
+                conn.execute(
+                    "SELECT 1 FROM copilot_turns WHERE turn_id = ? "
+                    "AND mode = 'plan' AND status = 'completed'",
+                    (ident,),
+                ).fetchone()
+                is not None
+            )
         if kind == "run":
             row = run_row(conn, ident)
             return (Path(row["run_dir"]) / "manifest.json").is_file()
